@@ -5415,6 +5415,10 @@
 
       if (route === 'sports') {
         setViewMode('sports');
+        if (typeof selectSport === 'function') selectSport('cricket');
+        if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+        if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+        if (typeof closeModals === 'function') closeModals();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (route === 'all-casinos') {
         openCategoryView('casino');
