@@ -1,0 +1,15 @@
+# System & Temporary Files
+.chrome_profile*
+*.bak*
+*.forensic_bak
+*.pre_func_bak
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Environment
+.env*

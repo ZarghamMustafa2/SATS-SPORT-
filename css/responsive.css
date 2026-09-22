@@ -1,0 +1,638 @@
+/* ==========================================================================
+   SATSPORT SPORTS EXCHANGE — 1:1 FORENSIC RESPONSIVE STYLES
+   Parity with https://www.satsport.co.in/sports at all screen widths
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Large Desktop Adjustments (min-width: 1201px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 992px) {
+  .casino-header-mobile {
+    display: none !important;
+  }
+  .site_footer {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. Medium Desktops & Tablets Landscape (max-width: 1200px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 991px) {
+  .product-tabs-wrapper {
+    display: none !important;
+  }
+  .quick-links {
+    grid-auto-columns: calc((100% - (4 * 12px)) / 4) !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Tablets Portrait & Smaller (max-width: 1024px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 991px) {
+  #sidebar {
+    position: fixed !important;
+    top: 80px !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 270px !important;
+    z-index: 9999 !important;
+    transform: translateX(-100%) !important;
+    margin-left: 0 !important;
+    transition: transform 0.3s ease !important;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.18) !important;
+  }
+
+  #sidebar.active,
+  #sidebar.mobile-show {
+    transform: translateX(0) !important;
+    margin-left: 0 !important;
+  }
+
+  #content {
+    margin-left: 0 !important;
+    margin-top: 80px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .content-wrapper {
+    width: 100% !important;
+    padding: 0 8px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Mobile Phones (max-width: 768px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 65px !important;
+  }
+
+  /* Top Bar (Height: 60px on Mobile) */
+  .top-bar {
+    height: 60px !important;
+    padding: 0 12px 0 0 !important;
+  }
+
+  .top-bar .logo-section {
+    width: auto !important;
+    height: 45px !important;
+    gap: 10px !important;
+    margin-right: 0 !important;
+  }
+
+  .top-bar .side-toggle {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .top-bar .side-toggle img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .top-bar .logo-section a img {
+    max-width: 95px !important;
+  }
+
+  .product-tabs-wrapper {
+    display: none !important;
+  }
+
+  .auth-btn.login-btn {
+    padding: 5px 14px !important;
+    font-size: 13px !important;
+    height: 34px !important;
+  }
+
+  /* Sidebar (63vw on Mobile) */
+  #sidebar {
+    top: 60px !important;
+    width: 63vw !important;
+    max-width: 270px !important;
+    border-radius: 0 !important;
+    transform: translateX(-100%) !important;
+    margin-left: 0 !important;
+    transition: transform 0.3s ease !important;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.25) !important;
+  }
+
+  #sidebar.active,
+  #sidebar.mobile-show {
+    transform: translateX(0) !important;
+    margin-left: 0 !important;
+  }
+
+  #sidebar .tabs {
+    padding: 6px 0 !important;
+    margin: 6px !important;
+    gap: 4px !important;
+  }
+
+  #sidebar .tabs a {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+  }
+
+  #sidebar .tabs a img {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  #sidebar .search-box {
+    padding: 0 8px 6px !important;
+  }
+
+  #sidebar .search-txt {
+    height: 32px !important;
+    font-size: 12px !important;
+  }
+
+  #sidebar-links {
+    padding-bottom: 80px !important;
+  }
+
+  /* Content Wrapper */
+  #content {
+    margin-top: 60px !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .content-wrapper {
+    padding: 0 4px !important;
+  }
+
+  /* Sub-nav pills (In Play, Cricket, Soccer, etc.) */
+  .scroll-container {
+    padding: 2px 0 !important;
+  }
+
+  .scrollable-list {
+    padding: 0 4px !important;
+  }
+
+  .list-item {
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+    margin: 4px 2px !important;
+    border-radius: 12px !important;
+  }
+
+  .list-item img {
+    height: 18px !important;
+  }
+
+  /* Welcome Banner */
+  .welcome-image-container {
+    padding: 2px 4px !important;
+  }
+
+  /* Carousel Hero */
+  .special-mq-style {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .slider-img {
+    min-height: 85px !important;
+    max-height: 180px !important;
+    border-radius: 0 !important;
+  }
+
+  /* News Ticker */
+  .news-ticker-container {
+    margin: 4px 4px !important;
+  }
+
+  .news {
+    height: 20px !important;
+    padding: 0 4px !important;
+  }
+
+  .marquee-text {
+    font-size: 11px !important;
+  }
+
+  /* Game Providers: Desktop hide, Mobile show */
+  .casino-header.d-none.d-md-block {
+    display: none !important;
+  }
+
+  .casino-header-mobile.d-block.d-md-none {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .casino-header-mobile .label {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #111111 !important;
+    margin: 0 0 6px 0 !important;
+    padding: 0 !important;
+  }
+
+  .mobile-casino-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px 8px !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .mobile-casino-card {
+    position: relative !important;
+    height: 50px !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-casino-bg {
+    width: 100% !important;
+    height: 50px !important;
+    background-size: cover !important;
+    background-position: center !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+
+  .mobile-casino-text {
+    width: 100% !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    text-align: center !important;
+    padding: 2px 4px !important;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7)) !important;
+  }
+
+  .mobile-casino-border {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 60% !important;
+    height: 2.5px !important;
+    background: #ffc21d !important;
+    border-radius: 10px !important;
+  }
+
+  /* Races Section */
+  .races-topbar {
+    padding: 6px 8px !important;
+  }
+
+  .races-topbar .label {
+    font-size: 13px !important;
+  }
+
+  app-todaysraces .tabs {
+    padding: 4px 6px !important;
+    gap: 6px !important;
+  }
+
+  .race-tab {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .race-tab img {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  app-todaysraces .nav-tabs {
+    padding: 2px 4px !important;
+    gap: 4px !important;
+  }
+
+  .race-region {
+    padding: 3px 6px !important;
+    font-size: 11px !important;
+  }
+
+  /* Upcoming / Inplay Tabs */
+  .inplay_matches_heading {
+    padding: 0 4px !important;
+  }
+
+  .upcoming-tab-items {
+    padding: 4px 6px !important;
+    margin: 4px 0 8px !important;
+  }
+
+  .upcoming-tab-items .menu {
+    font-size: 13px !important;
+  }
+
+  /* Sports Category Pills */
+  .slider-category {
+    padding: 2px 0 6px !important;
+  }
+
+  .category-box {
+    margin-right: 4px !important;
+  }
+
+  .category-item {
+    height: 36px !important;
+    min-width: 76px !important;
+    padding: 2px 6px !important;
+    border-radius: 12px !important;
+  }
+
+  .category-item .title {
+    font-size: 11px !important;
+  }
+
+  .category-item .tag-live {
+    top: -9px !important;
+    right: 2px !important;
+    font-size: 9px !important;
+    height: 14px !important;
+    padding: 1px 4px !important;
+  }
+
+  /* Match Cards */
+  .default-game-box-wrapper {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  .default-game-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 6px 0 !important;
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .default-game-box-left {
+    width: 100% !important;
+  }
+
+  .game-1 {
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .live-badge {
+    width: 42px !important;
+    height: 22px !important;
+    font-size: 10px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .market-name-container {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .def-runners-side {
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+
+  .competition-name {
+    font-size: 9.5px !important;
+    margin-top: 2px !important;
+    color: #666666 !important;
+  }
+
+  .bfm-wrapper {
+    display: none !important;
+  }
+
+  .def-game-box-right {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+  }
+
+  .sp-b {
+    flex: 1 !important;
+    gap: 3px !important;
+  }
+
+  .box.special-a, .box.special-b {
+    width: 100% !important;
+    height: 38px !important;
+    border-radius: 8px !important;
+  }
+
+  .box span {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+  }
+
+  .box .amount-below p {
+    font-size: 8.5px !important;
+  }
+
+  .view-more-wrapper {
+    padding: 8px 0 !important;
+    font-size: 12px !important;
+  }
+
+  /* Footer on Mobile */
+  app-footer {
+    padding: 20px 10px 40px !important;
+  }
+
+  .footer-links {
+    font-size: 11.5px !important;
+  }
+
+  /* Mobile Bottom Navigation Bar (.site_footer) */
+  .site_footer {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 61px !important;
+    z-index: 9998 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border-top-left-radius: 30px !important;
+    border-top-right-radius: 30px !important;
+  }
+
+  .site_footer_inn {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+  }
+
+  .site-ui-inn {
+    list-style: none !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
+    background: #ffc21d !important;
+    height: 61px !important;
+    border-radius: 20px 20px 0 0 !important;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.12) !important;
+    position: relative !important;
+  }
+
+  .nav-bottom-site {
+    display: flex !important;
+    width: 100% !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+
+  .nav-bottom-site li {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    cursor: pointer !important;
+  }
+
+  .nav-bottom-site li a {
+    text-decoration: none !important;
+    color: #111111 !important;
+    font-weight: 600 !important;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    text-align: center !important;
+    letter-spacing: -0.165px !important;
+  }
+
+  .nav-bottom-site .sport {
+    width: 24px !important;
+    height: 24px !important;
+    margin-bottom: 2px !important;
+    object-fit: contain !important;
+  }
+
+  /* WhatsApp Pulse Button */
+  .whatsApp-section {
+    position: relative !important;
+  }
+
+  .whatsApp-section .circle {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: #25D366 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 3px 10px rgba(37, 211, 102, 0.45) !important;
+    position: relative !important;
+    top: -6px !important;
+    cursor: pointer !important;
+  }
+
+  .whatsApp-section .circle:after {
+    content: '' !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border-radius: 50% !important;
+    background: rgba(37, 211, 102, 0.6) !important;
+    z-index: -1 !important;
+    animation: wpPulse 2.5s ease-out infinite !important;
+  }
+
+  @keyframes wpPulse {
+    0% { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  .whatsApp-section .circle img {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  /* Mobile Bottom Menu Popup */
+  .mobile-menu {
+    position: absolute !important;
+    bottom: 65px !important;
+    right: 8px !important;
+    width: 70px !important;
+    background: #2b2b2b !important;
+    border-radius: 10px !important;
+    padding: 6px 0 !important;
+    display: none !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    z-index: 10000 !important;
+  }
+
+  .mobile-menu.open {
+    display: flex !important;
+    animation: menuFadeIn 0.2s ease-out !important;
+  }
+
+  @keyframes menuFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mobile-menu .menu-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 0 !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    text-decoration: none !important;
+  }
+
+  .mobile-menu .menu-item img {
+    width: 24px !important;
+    height: 24px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .mobile-menu .menu-item span {
+    font-size: 9.5px !important;
+    font-weight: 700 !important;
+    color: #ffc21d !important;
+  }
+
+  /* Mobile Bet Slip Drawer */
+  .betslip-drawer {
+    position: fixed !important;
+    bottom: 68px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: calc(100vw - 16px) !important;
+    border-radius: 12px !important;
+    z-index: 10001 !important;
+  }
+}
