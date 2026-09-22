@@ -2782,22 +2782,20 @@
         gap: 12px !important;
         align-items: center !important;
       }
-      .schedule-tab-btn#schedInplay {
-        background: #198754 !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 4px !important;
-        padding: 4px 12px !important;
-        font-size: 13px !important;
-        font-weight: 700 !important;
-      }
-      .schedule-tab-btn#schedUpcoming {
+      .schedule-tab-btn {
         background: transparent !important;
         color: #111111 !important;
         border: none !important;
-        padding: 4px 6px !important;
+        border-radius: 4px !important;
+        padding: 4px 10px !important;
         font-size: 13px !important;
         font-weight: 700 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+      }
+      .schedule-tab-btn.active {
+        background: #198754 !important;
+        color: #ffffff !important;
       }
       .inplay-upcoming-banner > div:last-child {
         display: none !important;
@@ -2985,21 +2983,21 @@
         }
       }
 
-      /* DEDICATED REFERENCE MOBILE MENU DRAWER (app-menuitems) */
+      /* DEDICATED AUTHENTIC MOBILE MENU DRAWER (app-menuitems) */
       .mobile-drawer {
         position: fixed;
         top: 0;
         bottom: 0;
         left: 0;
-        width: min(340px, 86vw);
-        background: #ffffff;
+        width: min(320px, 86vw);
+        background: #f4f0da;
         z-index: 99999;
         transform: translateX(-105%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         display: flex;
         flex-direction: column;
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
-        border-right: 1px solid #e0e0e0;
+        box-shadow: 4px 0 25px rgba(0, 0, 0, 0.45);
+        border-right: 1px solid #dcd3b8;
       }
       .mobile-drawer.show {
         transform: translateX(0);
@@ -3007,38 +3005,26 @@
       .mobile-drawer-header {
         position: sticky;
         top: 0;
-        z-index: 2;
-        background: #ffffff;
-        padding: 10px 14px;
+        z-index: 3;
+        background: #ffc21d;
+        padding: 10px 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid #eeeeee;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
         gap: 8px;
       }
       .mobile-drawer-logo img {
-        height: 32px;
+        height: 30px;
         object-fit: contain;
       }
-      .mobile-drawer-account {
-        display: flex;
-        flex-direction: column;
-        font-size: 10px;
-        color: #555;
-        font-weight: 600;
-        line-height: 1.25;
-      }
-      .mobile-drawer-account span {
-        color: #000;
-        font-weight: 700;
-      }
       .mobile-drawer-deposit {
-        background: #28a745;
+        background: #02a425;
         color: #fff;
         border: none;
-        padding: 6px 10px;
-        border-radius: 6px;
-        font-size: 11px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        font-size: 11.5px;
         font-weight: 700;
         cursor: pointer;
         white-space: nowrap;
@@ -3047,95 +3033,151 @@
         background: none;
         border: none;
         font-size: 26px;
-        color: #888;
+        color: #000;
         cursor: pointer;
         line-height: 1;
         padding: 0 4px;
-      }
-      .mobile-drawer-search {
-        padding: 10px 14px;
-        background: #f8f9fa;
-        border-bottom: 1px solid #ebebeb;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .mobile-drawer-search input {
-        border: 1px solid #d0d0d0;
-        border-radius: 6px;
-        padding: 6px 10px;
-        font-size: 12px;
-        width: 100%;
-        outline: none;
-        background: #ffffff;
-      }
-      .mobile-drawer-scrollable {
-        flex: 1;
-        overflow-y: auto;
-        padding: 10px;
-      }
-      .mobile-drawer-section {
-        background: #ffffff;
-        border: 1px solid #e8e8e8;
-        border-radius: 10px;
-        margin-bottom: 12px;
-        padding: 8px 6px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-      }
-      .mobile-section-title {
-        font-size: 12px;
         font-weight: 700;
-        color: #222;
-        margin: 4px 6px 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
       }
-      .mobile-category-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
+      .mobile-drawer-tabs {
+        display: flex;
+        background: #f4f0da;
+        padding: 8px 10px;
+        gap: 8px;
+        border-bottom: 1px solid #dcd3b8;
       }
-      .mobile-category-card {
+      .mobile-drawer-tab-btn {
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 8px 4px;
+        background: #ffffff;
+        padding: 6px;
         border-radius: 8px;
-        background: #f9f9fb;
-        border: 0.5px solid #e5e5e5;
+        font-size: 12px;
+        font-weight: 700;
+        color: #222;
+        border: 1px solid #e0d8bf;
         cursor: pointer;
-        transition: background 0.15s ease, transform 0.1s ease;
+        gap: 2px;
+      }
+      .mobile-drawer-tab-btn.active {
+        background: #ffc21d;
+        border-color: #ffb400;
+        color: #000;
+      }
+      .mobile-drawer-tab-btn img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+      }
+      .mobile-drawer-search {
+        padding: 8px 10px;
+        background: #f4f0da;
+        border-bottom: 1px solid #dcd3b8;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .mobile-drawer-search input {
+        border: 1px solid #c9be9a;
+        border-radius: 6px;
+        padding: 7px 10px;
+        font-size: 12px;
+        width: 100%;
+        outline: none;
+        background: #ffffff;
+        color: #212529;
+      }
+      .mobile-drawer-scrollable {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px 10px;
+        background: #f4f0da;
+      }
+      .drawer-group-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .drawer-sport-item {
+        background: #ffffff;
+        border: 1px solid #e2dabf;
+        border-radius: 8px;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        font-weight: 700;
+        color: #212529;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .drawer-sport-item:active, .drawer-sport-item.active {
+        background: #fff8e1;
+        border-color: #ffc21d;
+      }
+      .drawer-sport-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .drawer-sport-left .sport-icon {
+        font-size: 16px;
+        width: 20px;
+        display: inline-block;
         text-align: center;
       }
-      .mobile-category-card:active {
-        transform: scale(0.97);
-        background: #fef4d8;
-      }
-      .mobile-cat-icon {
-        font-size: 22px;
-        margin-bottom: 4px;
-      }
-      .mobile-cat-name {
-        font-size: 10px;
-        font-weight: 600;
-        color: #333;
-        white-space: nowrap;
+      .drawer-nested-menu {
+        display: none;
+        flex-direction: column;
+        background: #fdfcf7;
+        border-radius: 0 0 8px 8px;
+        border: 1px solid #e5dcbe;
+        border-top: none;
+        margin-top: -4px;
+        margin-bottom: 6px;
         overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
+      }
+      .drawer-nested-menu.show {
+        display: flex;
+      }
+      .drawer-nested-item {
+        padding: 8px 14px 8px 40px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #444;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #f0ead6;
+        cursor: pointer;
+      }
+      .drawer-nested-item:active {
+        background: #fffae8;
+        color: #000;
+      }
+      .drawer-nested-item:last-child {
+        border-bottom: none;
+      }
+      .drawer-chevron {
+        font-size: 10px;
+        color: #888;
+        transition: transform 0.2s;
       }
       .mobile-drawer-actions {
         display: flex;
         flex-direction: column;
         gap: 8px;
         margin-top: 10px;
-        padding: 0 4px 20px;
+        padding: 4px 0 20px;
       }
       .mobile-drawer-btn {
         width: 100%;
-        padding: 10px;
-        border-radius: 8px;
+        padding: 9px;
+        border-radius: 6px;
         font-size: 12.5px;
         font-weight: 700;
         cursor: pointer;
@@ -3145,13 +3187,109 @@
         border: none;
       }
       .mobile-drawer-btn.download {
-        background: #ffc21d;
+        background: linear-gradient(180deg, #ffdf5e, #ffb800);
         color: #000;
       }
       .mobile-drawer-btn.logout {
-        background: #f0f0f0;
+        background: #ffffff;
         color: #d9534f;
-        border: 1px solid #ddd;
+        border: 1px solid #dcd3b8;
+      }
+
+      /* AUTHENTIC MOBILE SETTINGS BOTTOM SHEET */
+      .mobile-bottom-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border-radius: 18px 18px 0 0;
+        z-index: 100005;
+        box-shadow: 0 -4px 30px rgba(0,0,0,0.35);
+        transform: translateY(105%);
+        transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        display: flex;
+        flex-direction: column;
+        max-height: 80vh;
+      }
+      .mobile-bottom-sheet.show {
+        transform: translateY(0);
+      }
+      .bottom-sheet-header {
+        padding: 12px 16px 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 1px solid #eeeeee;
+      }
+      .sheet-drag-handle {
+        width: 36px;
+        height: 4px;
+        background: #d0d0d0;
+        border-radius: 2px;
+        margin-bottom: 8px;
+      }
+      .sheet-close-btn {
+        background: none;
+        border: none;
+        font-size: 22px;
+        color: #666;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .bottom-sheet-body {
+        padding: 6px 0 24px;
+        overflow-y: auto;
+      }
+      .sheet-menu-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #212529;
+        cursor: pointer;
+        border-bottom: 1px solid #f4f4f4;
+        transition: background 0.15s;
+        gap: 12px;
+      }
+      .sheet-menu-item:active {
+        background: #f8f9fa;
+      }
+      .sheet-item-icon {
+        font-size: 17px;
+        width: 24px;
+        text-align: center;
+      }
+      .sheet-item-text {
+        flex: 1;
+      }
+      .sheet-item-arrow {
+        color: #bbb;
+        font-size: 14px;
+      }
+
+      /* BETSLIP BACKDROP & MOBILE SHEET */
+      .betslip-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 100002;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
+      .betslip-backdrop.show {
+        display: block;
+        opacity: 1;
+      }
+      .mobile-race-pill.active {
+        background: #ffc21d !important;
+        border-color: #e5ab00 !important;
+        color: #000000 !important;
       }
     }
 
@@ -3197,7 +3335,9 @@
       .sidebar-backdrop,
       .mobile-top-modes-bar,
       .mobile-header-login-btn,
-      .mobile-races-layout {
+      .mobile-races-layout,
+      .mobile-bottom-sheet,
+      .betslip-backdrop {
         display: none !important;
       }
     }
@@ -3321,7 +3461,7 @@
       </div>
       <button class="logout-btn" onclick="openGameModal()">Logout</button>
     </div>
-    <button class="mobile-header-login-btn" onclick="openGameModal()">Login</button>
+    <button class="mobile-header-login-btn" onclick="openMobileLogin()">Login</button>
   </header>
 
   <!-- MOBILE TOP MODES NAVIGATION BAR (EXCHANGE, EVOLUTION, VIRTUAL SPORTS...) -->
@@ -5495,6 +5635,19 @@
       document.getElementById('loginModalBackdrop').classList.add('show');
     }
 
+    function openMobileLogin() {
+      const ageModal = document.getElementById('ageModalBackdrop');
+      if (ageModal) {
+        ageModal.classList.add('show');
+      } else {
+        proceedToLoginModal();
+      }
+    }
+
+    function confirmAge() {
+      proceedToLoginModal();
+    }
+
     function closeModals() {
       document.getElementById('ageModalBackdrop').classList.remove('show');
       document.getElementById('loginModalBackdrop').classList.remove('show');
@@ -5544,6 +5697,7 @@
       });
     }
 
+    // AUTHENTIC MOBILE DRAWER CONTROLLER
     function toggleMobileDrawer() {
       const drawer = document.getElementById('mobileDrawer');
       const bd = document.getElementById('sidebarBackdrop');
@@ -5555,7 +5709,9 @@
       const drawer = document.getElementById('mobileDrawer');
       const bd = document.getElementById('sidebarBackdrop');
       if (drawer) drawer.classList.remove('show');
-      if (bd) bd.classList.remove('show');
+      if (bd && !document.getElementById('mobileSettingsSheet')?.classList.contains('show')) {
+        bd.classList.remove('show');
+      }
     }
 
     function toggleMobileSidebar() {
@@ -5566,38 +5722,135 @@
       closeMobileDrawer();
     }
 
+    function switchDrawerMode(mode) {
+      const sportsBtn = document.getElementById('drawerTabSports');
+      const casinoBtn = document.getElementById('drawerTabCasino');
+      const sportsGroup = document.getElementById('drawerSportsGroup');
+      const casinoGroup = document.getElementById('drawerCasinoGroup');
+      if (mode === 'sports') {
+        if (sportsBtn) sportsBtn.classList.add('active');
+        if (casinoBtn) casinoBtn.classList.remove('active');
+        if (sportsGroup) sportsGroup.style.display = 'block';
+        if (casinoGroup) casinoGroup.style.display = 'none';
+      } else {
+        if (sportsBtn) sportsBtn.classList.remove('active');
+        if (casinoBtn) casinoBtn.classList.add('active');
+        if (sportsGroup) sportsGroup.style.display = 'none';
+        if (casinoGroup) casinoGroup.style.display = 'block';
+      }
+    }
+
+    function toggleDrawerAccordion(sportKey) {
+      const nested = document.getElementById('drawerNested-' + sportKey);
+      const chev = document.getElementById('drawerChev-' + sportKey);
+      if (nested) {
+        nested.classList.toggle('show');
+        if (chev) {
+          chev.innerText = nested.classList.contains('show') ? '▲' : '▼';
+        }
+      }
+    }
+
+    function selectSportFixtureAndClose(sportKey, compName) {
+      selectSport(sportKey);
+      if (compName) {
+        renderSportsMatches(compName);
+      }
+      closeMobileDrawer();
+    }
+
     function selectSportAndClose(sport) {
       if (typeof selectSport === 'function') selectSport(sport);
       closeMobileDrawer();
     }
 
-    function switchCasinoTabAndClose(tab) {
-      if (typeof setViewMode === 'function') setViewMode('casino');
-      if (typeof filterCasinoCategory === 'function') filterCasinoCategory(tab);
+    function openCategoryAndClose(categoryKey) {
+      setViewMode('casino');
+      if (typeof openCategoryView === 'function') {
+        openCategoryView(categoryKey);
+      }
       closeMobileDrawer();
+    }
+
+    function filterDrawerItems(query) {
+      query = (query || '').toLowerCase().trim();
+      const isSports = document.getElementById('drawerTabSports')?.classList.contains('active');
+      const group = isSports ? document.getElementById('drawerSportsGroup') : document.getElementById('drawerCasinoGroup');
+      if (!group) return;
+      const items = group.querySelectorAll('.drawer-sport-item, .drawer-nested-item');
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (!query || text.includes(query)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // AUTHENTIC MOBILE SETTINGS BOTTOM SHEET CONTROLLER
+    function openSettingsSheet() {
+      const sheet = document.getElementById('mobileSettingsSheet');
+      const bd = document.getElementById('sidebarBackdrop');
+      if (sheet) sheet.classList.add('show');
+      if (bd) bd.classList.add('show');
+    }
+
+    function closeSettingsSheet() {
+      const sheet = document.getElementById('mobileSettingsSheet');
+      const bd = document.getElementById('sidebarBackdrop');
+      if (sheet) sheet.classList.remove('show');
+      if (bd && !document.getElementById('mobileDrawer')?.classList.contains('show')) {
+        bd.classList.remove('show');
+      }
+    }
+
+    function openPolicyModalAndClose(type) {
+      if (type === 'rules') {
+        openPromoModal('how-to-play');
+      } else {
+        openPolicyModal(type);
+      }
+      closeSettingsSheet();
     }
 
     function openAccountModalAndClose(tab) {
       if (typeof openAccountModal === 'function') openAccountModal(tab);
       closeMobileDrawer();
+      closeSettingsSheet();
     }
 
-    function filterMobileDrawer(query) {
-      query = (query || '').toLowerCase().trim();
-      const cards = document.querySelectorAll('#mobileDrawer .mobile-category-card');
-      cards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        if (!query || text.includes(query)) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
+    // AUTHENTIC MOBILE BOTTOM NAV ACTIONS
     function selectBottomNav(el) {
       document.querySelectorAll('.mobile-bottom-nav .mobile-nav-tab').forEach(t => t.classList.remove('active'));
       if (el) el.classList.add('active');
+    }
+
+    function handleMobileHomeClick(el) {
+      selectBottomNav(el);
+      setViewMode('sports');
+      selectSport('cricket');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleMobileInplayClick(el) {
+      selectBottomNav(el);
+      setViewMode('sports');
+      setScheduleTab('inplay');
+      const matchesSec = document.getElementById('sportsMatchesContainer');
+      if (matchesSec) {
+        matchesSec.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function openWhatsAppChat() {
+      window.open('https://api.whatsapp.com/send?phone=447846062779&text=Hi%2C%20I%20need%20support%20with%20Satsports', '_blank');
+    }
+
+    function filterMobileRaceRegion(el, reg) {
+      if (typeof filterRacesRegion === 'function') {
+        filterRacesRegion(reg);
+      }
     }
 
     // User Profile Dropdown
@@ -5659,7 +5912,7 @@
         matches: [
           { comp: 'Indian Premier League', team1: 'Chennai Super Kings', team2: 'Mumbai Indians', time: 'LIVE', timeTab: 'inplay', back1: '1.85', backSize1: '45k', lay1: '1.87', laySize1: '32k', back2: '2.10', backSize2: '28k', lay2: '2.14', laySize2: '19k' },
           { comp: 'Indian Premier League', team1: 'Royal Challengers Bengaluru', team2: 'Kolkata Knight Riders', time: 'Today 19:30', timeTab: 'today', back1: '1.92', backSize1: '82k', lay1: '1.95', laySize1: '61k', back2: '2.02', backSize2: '14k', lay2: '2.06', laySize2: '19k' },
-          { comp: 'One Day Internationals', team1: 'India', team2: 'Australia', time: 'Tomorrow 14:00', timeTab: 'tomorrow', back1: '1.68', backSize1: '120k', lay1: '1.70', laySize1: '95k', back2: '2.34', backSize2: '50k', lay2: '2.40', laySize2: '41k' },
+          { comp: 'One Day Internationals', team1: 'England', team2: 'Sri Lanka', time: 'Tomorrow 14:00', timeTab: 'tomorrow', back1: '1.68', backSize1: '120k', lay1: '1.70', laySize1: '95k', back2: '2.34', backSize2: '50k', lay2: '2.40', laySize2: '41k' },
           { comp: 'International Twenty20 Matches', team1: 'England', team2: 'South Africa', time: 'Fri 18:00', timeTab: 'upcoming', back1: '1.88', backSize1: '38k', lay1: '1.92', laySize1: '25k', back2: '2.04', backSize2: '22k', lay2: '2.08', laySize2: '15k' }
         ]
       },
@@ -5667,6 +5920,7 @@
         name: 'Soccer',
         icon: '⚽',
         competitions: [
+          { name: 'UEFA Women\'s Champions League', flag: '🇪🇺' },
           { name: 'English Premier League', flag: '🇬🇧' },
           { name: 'UEFA Champions League', flag: '🇪🇺' },
           { name: 'Spanish La Liga', flag: '🇪🇸' },
@@ -5674,7 +5928,8 @@
           { name: 'German Bundesliga', flag: '🇩🇪' }
         ],
         matches: [
-          { comp: 'English Premier League', team1: 'Arsenal', team2: 'Leeds United', time: 'LIVE (64m)', timeTab: 'inplay', back1: '1.36', backSize1: '2.2k', lay1: '1.37', laySize1: '23', back2: '5.60', backSize2: '2', lay2: '5.70', laySize2: '5' },
+          { comp: 'UEFA Women\'s Champions League', team1: 'Inter Milan (W)', team2: 'BK Hacken (W)', time: 'LIVE (58m)', timeTab: 'inplay', back1: '1.42', backSize1: '12.4k', lay1: '1.44', laySize1: '8.1k', back2: '4.80', backSize2: '3.5k', lay2: '5.10', laySize2: '1.2k' },
+          { comp: 'English Premier League', team1: 'Arsenal', team2: 'Leeds United', time: 'Today 20:00', timeTab: 'today', back1: '1.36', backSize1: '2.2k', lay1: '1.37', laySize1: '23', back2: '5.60', backSize2: '2', lay2: '5.70', laySize2: '5' },
           { comp: 'English Premier League', team1: 'Chelsea', team2: 'Bournemouth', time: 'Today 21:00', timeTab: 'today', back1: '1.86', backSize1: '39', lay1: '1.91', laySize1: '83', back2: '4.30', backSize2: '64', lay2: '4.40', laySize2: '15' },
           { comp: 'UEFA Champions League', team1: 'Real Madrid', team2: 'Bayern Munich', time: 'Tomorrow 20:45', timeTab: 'tomorrow', back1: '2.10', backSize1: '52k', lay1: '2.14', laySize1: '41k', back2: '3.40', backSize2: '12k', lay2: '3.50', laySize2: '15k' },
           { comp: 'Spanish La Liga', team1: 'Barcelona', team2: 'Atletico Madrid', time: 'Sun 22:00', timeTab: 'upcoming', back1: '1.75', backSize1: '44k', lay1: '1.78', laySize1: '30k', back2: '4.10', backSize2: '18k', lay2: '4.25', laySize2: '11k' }
@@ -5920,11 +6175,25 @@
       document.getElementById('betslipStakeInput').value = activeBet.stake;
 
       updateBetslipProfit();
-      document.getElementById('betslipDrawer').classList.add('show');
+      const drawer = document.getElementById('betslipDrawer');
+      const backdrop = document.getElementById('betslipBackdrop');
+      if (drawer) drawer.classList.add('show');
+      if (backdrop) backdrop.classList.add('show');
     }
 
     function closeBetslip() {
-      document.getElementById('betslipDrawer').classList.remove('show');
+      const drawer = document.getElementById('betslipDrawer');
+      const backdrop = document.getElementById('betslipBackdrop');
+      if (drawer) drawer.classList.remove('show');
+      if (backdrop) backdrop.classList.remove('show');
+    }
+
+    function stepOdds(delta) {
+      const inp = document.getElementById('betslipOddsInput');
+      let cur = parseFloat(inp.value) || 1.0;
+      cur = Math.max(1.01, +(cur + delta).toFixed(2));
+      inp.value = cur;
+      updateBetslipProfit();
     }
 
     function addBetslipStake(amt) {
@@ -6500,169 +6769,243 @@
       <div class="mobile-drawer-logo">
         <img src="assets/images/logo.png" alt="SATSPORT">
       </div>
-      <div class="mobile-drawer-account">
-        <div>Bal: <span id="mobileDrawerBal">0.00</span></div>
-        <div>Liab: <span id="mobileDrawerLiab">0.00</span></div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="mobile-drawer-deposit" onclick="openPromoModal('deposit')">+ Deposit</button>
+        <button class="mobile-drawer-close" onclick="closeMobileDrawer()">&times;</button>
       </div>
-      <button class="mobile-drawer-deposit" onclick="openPromoModal('deposit')">+ Deposit</button>
-      <button class="mobile-drawer-close" onclick="closeMobileDrawer()">&times;</button>
     </div>
 
+    <!-- Dual Mode Tabs inside Mobile Drawer -->
+    <div class="mobile-drawer-tabs">
+      <button class="mobile-drawer-tab-btn active" id="drawerTabSports" onclick="switchDrawerMode('sports')">
+        <img src="assets/images/sports.webp" alt="Sports">
+        <span>Sports</span>
+      </button>
+      <button class="mobile-drawer-tab-btn" id="drawerTabCasino" onclick="switchDrawerMode('casino')">
+        <img src="assets/images/casinos.webp" alt="Casino">
+        <span>Casino</span>
+      </button>
+    </div>
+
+    <!-- Live Search Input -->
     <div class="mobile-drawer-search">
-      <input type="text" placeholder="Search sports, casino, games..." oninput="filterMobileDrawer(this.value)" id="mobileDrawerSearchInput">
+      <input type="text" placeholder="Search Market..." oninput="filterDrawerItems(this.value)" id="mobileDrawerSearchInput">
     </div>
 
+    <!-- Scrollable Categories & Accordions -->
     <div class="mobile-drawer-scrollable" id="mobileDrawerScrollable">
-      <!-- Sports Section -->
-      <div class="mobile-drawer-section">
-        <div class="mobile-section-title">Sports</div>
-        <div class="mobile-category-grid">
-          <div class="mobile-category-card" onclick="selectSportAndClose('cricket')">
-            <span class="mobile-cat-icon">🏏</span>
-            <span class="mobile-cat-name">Cricket</span>
+      <!-- 1. SPORTS ACCORDION LIST -->
+      <div class="drawer-group-list" id="drawerSportsGroup">
+        <!-- Cricket -->
+        <div class="drawer-sport-item active" onclick="toggleDrawerAccordion('cricket')">
+          <div class="drawer-sport-left">
+            <span class="sport-icon">🏏</span>
+            <span>Cricket</span>
           </div>
-          <div class="mobile-category-card" onclick="selectSportAndClose('football')">
-            <span class="mobile-cat-icon">⚽</span>
-            <span class="mobile-cat-name">Football</span>
+          <span class="drawer-chevron" id="drawerChev-cricket">▲</span>
+        </div>
+        <div class="drawer-nested-menu show" id="drawerNested-cricket">
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'Indian Premier League')">Indian Premier League <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'One Day Internationals')">One Day Internationals <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'International Twenty20 Matches')">T20 Matches <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'ICC Champions Trophy')">ICC Champions Trophy <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'Caribbean Premier League')">Caribbean Premier League <span>›</span></div>
+        </div>
+
+        <!-- Soccer -->
+        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('soccer')">
+          <div class="drawer-sport-left">
+            <span class="sport-icon">⚽</span>
+            <span>Soccer</span>
           </div>
-          <div class="mobile-category-card" onclick="selectSportAndClose('tennis')">
-            <span class="mobile-cat-icon">🎾</span>
-            <span class="mobile-cat-name">Tennis</span>
+          <span class="drawer-chevron" id="drawerChev-soccer">▼</span>
+        </div>
+        <div class="drawer-nested-menu" id="drawerNested-soccer">
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'English Premier League')">English Premier League <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'UEFA Champions League')">UEFA Champions League <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'Spanish La Liga')">Spanish La Liga <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'Italian Serie A')">Italian Serie A <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'German Bundesliga')">German Bundesliga <span>›</span></div>
+        </div>
+
+        <!-- Soccer Fixtures -->
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('soccer', 'English Premier League')">
+          <div class="drawer-sport-left">
+            <span class="sport-icon">📅</span>
+            <span>Soccer Fixtures</span>
           </div>
-          <div class="mobile-category-card" onclick="selectSportAndClose('horse-racing')">
-            <span class="mobile-cat-icon">🏇</span>
-            <span class="mobile-cat-name">Horse Racing</span>
+          <span class="drawer-chevron">›</span>
+        </div>
+
+        <!-- Tennis -->
+        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('tennis')">
+          <div class="drawer-sport-left">
+            <span class="sport-icon">🎾</span>
+            <span>Tennis</span>
           </div>
-          <div class="mobile-category-card" onclick="selectSportAndClose('greyhound')">
-            <span class="mobile-cat-icon">🐕</span>
-            <span class="mobile-cat-name">Greyhound</span>
+          <span class="drawer-chevron" id="drawerChev-tennis">▼</span>
+        </div>
+        <div class="drawer-nested-menu" id="drawerNested-tennis">
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'ATP Masters 1000')">ATP Masters 1000 <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'WTA Premier')">WTA Premier <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'Wimbledon Championships')">Wimbledon <span>›</span></div>
+          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'US Open')">US Open <span>›</span></div>
+        </div>
+
+        <!-- Tennis Fixtures -->
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('tennis', 'ATP Masters 1000')">
+          <div class="drawer-sport-left">
+            <span class="sport-icon">📅</span>
+            <span>Tennis Fixtures</span>
           </div>
-          <div class="mobile-category-card" onclick="selectSportAndClose('kabaddi')">
-            <span class="mobile-cat-icon">🤼</span>
-            <span class="mobile-cat-name">Kabaddi</span>
+          <span class="drawer-chevron">›</span>
+        </div>
+
+        <!-- Horse Racing -->
+        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('horseracing')">
+          <div class="drawer-sport-left">
+            <span class="sport-icon">🐎</span>
+            <span>Horse Racing</span>
           </div>
-          <div class="mobile-category-card" onclick="selectSportAndClose('basketball')">
-            <span class="mobile-cat-icon">🏀</span>
-            <span class="mobile-cat-name">Basketball</span>
+          <span class="drawer-chevron" id="drawerChev-horseracing">▼</span>
+        </div>
+        <div class="drawer-nested-menu" id="drawerNested-horseracing">
+          <div class="drawer-nested-item" onclick="selectSportAndClose('horseracing')">Horse Race Today's Card <span>›</span></div>
+        </div>
+
+        <!-- Greyhound Racing -->
+        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('greyhound')">
+          <div class="drawer-sport-left">
+            <span class="sport-icon">🐕</span>
+            <span>Greyhound Racing</span>
           </div>
-          <div class="mobile-category-card" onclick="selectSportAndClose('table-tennis')">
-            <span class="mobile-cat-icon">🏓</span>
-            <span class="mobile-cat-name">Table Tennis</span>
-          </div>
+          <span class="drawer-chevron" id="drawerChev-greyhound">▼</span>
+        </div>
+        <div class="drawer-nested-menu" id="drawerNested-greyhound">
+          <div class="drawer-nested-item" onclick="selectSportAndClose('greyhound')">Greyhound Today's Card <span>›</span></div>
         </div>
       </div>
 
-      <!-- Live Casino & Games Section -->
-      <div class="mobile-drawer-section">
-        <div class="mobile-section-title">Casino & Games</div>
-        <div class="mobile-category-grid">
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('live')">
-            <span class="mobile-cat-icon">🎰</span>
-            <span class="mobile-cat-name">Live Casino</span>
-          </div>
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('slots')">
-            <span class="mobile-cat-icon">🍒</span>
-            <span class="mobile-cat-name">Slots</span>
-          </div>
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('crash')">
-            <span class="mobile-cat-icon">✈️</span>
-            <span class="mobile-cat-name">Crash</span>
-          </div>
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('virtual')">
-            <span class="mobile-cat-icon">🎮</span>
-            <span class="mobile-cat-name">Virtual</span>
-          </div>
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('lottery')">
-            <span class="mobile-cat-icon">🎱</span>
-            <span class="mobile-cat-name">Lottery</span>
-          </div>
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('table')">
-            <span class="mobile-cat-icon">🃏</span>
-            <span class="mobile-cat-name">Table Games</span>
-          </div>
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('exchange')">
-            <span class="mobile-cat-icon">🔄</span>
-            <span class="mobile-cat-name">Exchange</span>
-          </div>
-          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('all')">
-            <span class="mobile-cat-icon">⭐</span>
-            <span class="mobile-cat-name">All Games</span>
-          </div>
+      <!-- 2. CASINO GROUP LIST -->
+      <div class="drawer-group-list" id="drawerCasinoGroup" style="display: none;">
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('casino')">
+          <div class="drawer-sport-left"><span class="sport-icon">🎰</span><span>All Casinos</span></div>
+          <span class="drawer-chevron">›</span>
         </div>
-      </div>
-
-      <!-- Account & Tools Section -->
-      <div class="mobile-drawer-section">
-        <div class="mobile-section-title">My Account</div>
-        <div class="mobile-category-grid">
-          <div class="mobile-category-card" onclick="openAccountModalAndClose('profile')">
-            <span class="mobile-cat-icon">👤</span>
-            <span class="mobile-cat-name">Profile</span>
-          </div>
-          <div class="mobile-category-card" onclick="openAccountModalAndClose('statement')">
-            <span class="mobile-cat-icon">📄</span>
-            <span class="mobile-cat-name">Statement</span>
-          </div>
-          <div class="mobile-category-card" onclick="openAccountModalAndClose('currentBets')">
-            <span class="mobile-cat-icon">📊</span>
-            <span class="mobile-cat-name">Current Bets</span>
-          </div>
-          <div class="mobile-category-card" onclick="openAccountModalAndClose('activityLog')">
-            <span class="mobile-cat-icon">🕒</span>
-            <span class="mobile-cat-name">Activity Log</span>
-          </div>
-          <div class="mobile-category-card" onclick="openAccountModalAndClose('rules')">
-            <span class="mobile-cat-icon">📜</span>
-            <span class="mobile-cat-name">Rules</span>
-          </div>
-          <div class="mobile-category-card" onclick="openAccountModalAndClose('settings')">
-            <span class="mobile-cat-icon">⚙️</span>
-            <span class="mobile-cat-name">Settings</span>
-          </div>
-          <div class="mobile-category-card" onclick="toggleSupportChat(); closeMobileDrawer();">
-            <span class="mobile-cat-icon">💬</span>
-            <span class="mobile-cat-name">Support</span>
-          </div>
-          <div class="mobile-category-card" onclick="openPromoModal('deposit'); closeMobileDrawer();">
-            <span class="mobile-cat-icon">💳</span>
-            <span class="mobile-cat-name">Deposit</span>
-          </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('live-casino')">
+          <div class="drawer-sport-left"><span class="sport-icon">👩‍💼</span><span>Live Dealer Casino</span></div>
+          <span class="drawer-chevron">›</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('slot')">
+          <div class="drawer-sport-left"><span class="sport-icon">🍒</span><span>Slots</span></div>
+          <span class="drawer-chevron">›</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('crash-games')">
+          <div class="drawer-sport-left"><span class="sport-icon">✈️</span><span>Crash &amp; Aviator</span></div>
+          <span class="drawer-chevron">›</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('indian-casino')">
+          <div class="drawer-sport-left"><span class="sport-icon">🪔</span><span>Indian Casino</span></div>
+          <span class="drawer-chevron">›</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('lottery-games')">
+          <div class="drawer-sport-left"><span class="sport-icon">🎱</span><span>Lottery Games</span></div>
+          <span class="drawer-chevron">›</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('table-games')">
+          <div class="drawer-sport-left"><span class="sport-icon">🃏</span><span>Table Games</span></div>
+          <span class="drawer-chevron">›</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('esports')">
+          <div class="drawer-sport-left"><span class="sport-icon">🎮</span><span>Virtual Sports &amp; Esports</span></div>
+          <span class="drawer-chevron">›</span>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="mobile-drawer-actions">
-        <button class="mobile-drawer-btn download" onclick="window.open('https://satsport.com', '_blank')">
+        <button class="mobile-drawer-btn download" onclick="window.open('https://daba.b-cdn.net/satsport.co.in/apk/Satsport.apk', '_blank')">
           📲 Download Android App
         </button>
-        <button class="mobile-drawer-btn logout" onclick="openGameModal()">
-          🚪 Logout
+        <button class="mobile-drawer-btn logout" onclick="openMobileLogin(); closeMobileDrawer();">
+          🚪 Login / Register
         </button>
       </div>
     </div>
   </aside>
 
+  <!-- AUTHENTIC MOBILE SETTINGS BOTTOM SHEET -->
+  <div class="mobile-bottom-sheet" id="mobileSettingsSheet">
+    <div class="bottom-sheet-header">
+      <div class="sheet-drag-handle"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span style="font-size: 15px; font-weight: 700; color: #111;">Settings &amp; Account</span>
+        <button class="sheet-close-btn" onclick="closeSettingsSheet()">&times;</button>
+      </div>
+    </div>
+    <div class="bottom-sheet-body">
+      <div class="sheet-menu-item" onclick="openAccountModalAndClose('statement')">
+        <span class="sheet-item-icon">📄</span>
+        <span class="sheet-item-text">Account Statement</span>
+        <span class="sheet-item-arrow">›</span>
+      </div>
+      <div class="sheet-menu-item" onclick="openAccountModalAndClose('bets')">
+        <span class="sheet-item-icon">📊</span>
+        <span class="sheet-item-text">Current Bets</span>
+        <span class="sheet-item-arrow">›</span>
+      </div>
+      <div class="sheet-menu-item" onclick="openAccountModalAndClose('results')">
+        <span class="sheet-item-icon">🎰</span>
+        <span class="sheet-item-text">Casino Results</span>
+        <span class="sheet-item-arrow">›</span>
+      </div>
+      <div class="sheet-menu-item" onclick="openAccountModalAndClose('buttons')">
+        <span class="sheet-item-icon">🎯</span>
+        <span class="sheet-item-text">Set Button Stake Values</span>
+        <span class="sheet-item-arrow">›</span>
+      </div>
+      <div class="sheet-menu-item" onclick="openAccountModalAndClose('security')">
+        <span class="sheet-item-icon">🔒</span>
+        <span class="sheet-item-text">Security Auth Verification</span>
+        <span class="sheet-item-arrow">›</span>
+      </div>
+      <div class="sheet-menu-item" onclick="openAccountModalAndClose('password')">
+        <span class="sheet-item-icon">🔑</span>
+        <span class="sheet-item-text">Change Password</span>
+        <span class="sheet-item-arrow">›</span>
+      </div>
+      <div class="sheet-menu-item" onclick="openPolicyModalAndClose('rules')">
+        <span class="sheet-item-icon">📜</span>
+        <span class="sheet-item-text">Rules &amp; Regulations</span>
+        <span class="sheet-item-arrow">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING BETSLIP BACKDROP -->
+  <div class="betslip-backdrop" id="betslipBackdrop" onclick="closeBetslip()"></div>
+
   <!-- Mobile Bottom Navigation (app-sitefooter) -->
   <div class="mobile-bottom-nav">
-    <div class="mobile-nav-tab active" onclick="setViewMode('sports'); selectBottomNav(this);">
+    <div class="mobile-nav-tab active" onclick="handleMobileHomeClick(this);">
       <span class="mobile-nav-icon">
         <img src="https://dabba.b-cdn.net/satsport/home.svg" width="22" height="22" alt="Home">
       </span>
       <span>Home</span>
     </div>
-    <div class="mobile-nav-tab" onclick="setScheduleTab('inplay'); selectBottomNav(this);">
+    <div class="mobile-nav-tab" onclick="handleMobileInplayClick(this);">
       <span class="mobile-nav-icon">
         <img src="https://dabba.b-cdn.net/satsport.xyz/banners/93916.png" width="22" height="22" alt="Inplay">
       </span>
       <span>Inplay</span>
     </div>
-    <div class="mobile-nav-tab" onclick="toggleSupportChat();" style="display:flex; justify-content:center; align-items:center; position:relative;">
+    <div class="mobile-nav-tab" onclick="openWhatsAppChat();" style="display:flex; justify-content:center; align-items:center; position:relative;">
       <div class="mobile-whatsapp-circle" title="WhatsApp Support">
         <div class="ping-wave"></div>
         <img src="https://dabba.b-cdn.net/satsport/whatsApp_footer.svg" width="26" height="26" alt="WhatsApp">
       </div>
     </div>
-    <div class="mobile-nav-tab" onclick="openAccountModal('statement'); selectBottomNav(this);">
+    <div class="mobile-nav-tab" onclick="openSettingsSheet(); selectBottomNav(this);">
       <span class="mobile-nav-icon">
         <img src="https://dabba.b-cdn.net/satsport/setting.svg" width="22" height="22" alt="Settings">
       </span>
@@ -6677,7 +7020,7 @@
   </div>
 
   <!-- Mobile Sidebar Backdrop -->
-  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileDrawer()"></div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileDrawer(); closeSettingsSheet();"></div>
 
 </body>
 </html>
