@@ -2510,7 +2510,7 @@
         display: flex !important;
         overflow-x: auto !important;
         scrollbar-width: none !important;
-        background: #0f0c20 !important;
+        background: #160e29 !important;
         padding: 8px 6px !important;
         gap: 8px !important;
       }
@@ -2528,13 +2528,13 @@
         gap: 6px !important;
       }
       .subnav-item[data-sport="inplay"] {
-        background: linear-gradient(135deg, #443297, #2c1b75) !important;
+        background: linear-gradient(135deg, #4630a3, #2b1c73) !important;
         border-color: rgba(255, 255, 255, 0.25) !important;
         color: #ffffff !important;
       }
       .subnav-item.active {
-        background: rgba(255, 255, 255, 0.15) !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
+        background: rgba(255, 255, 255, 0.18) !important;
+        border-color: rgba(255, 255, 255, 0.35) !important;
         color: #ffffff !important;
       }
 
@@ -2571,29 +2571,46 @@
         width: 100% !important;
         padding-bottom: 75px !important;
       }
-      .hero-carousel-container {
+      .welcome-image-container {
         order: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #000000 !important;
+        height: 28px !important;
+        overflow: hidden !important;
+      }
+      .welcome-image {
+        height: 28px !important;
+        width: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+      }
+      .hero-carousel-container {
+        order: 2 !important;
         margin: 0 !important;
         border-radius: 0 !important;
       }
       .hero-slide img {
         border-radius: 0 !important;
         width: 100% !important;
-        max-height: 180px !important;
+        max-height: 145px !important;
         object-fit: cover !important;
       }
-      .welcome-image-container {
+      .carousel-indicators {
         display: none !important;
       }
       .news-ticker-container {
-        order: 2 !important;
+        order: 3 !important;
         display: flex !important;
         align-items: center !important;
         background: #fab417 !important;
         color: #111111 !important;
         font-weight: 700 !important;
         font-size: 13px !important;
-        height: 28px !important;
+        height: 26px !important;
         padding: 0 10px !important;
         overflow: hidden !important;
         border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
@@ -2769,8 +2786,79 @@
         display: none !important;
       }
       .sport-filter-pills-row {
+        display: flex !important;
         padding: 4px 6px !important;
-        gap: 8px !important;
+        margin: 0 6px 8px !important;
+        gap: 6px !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+        background: transparent !important;
+        border: none !important;
+      }
+      .sport-filter-pills-row::-webkit-scrollbar {
+        display: none !important;
+      }
+      .sport-pill-btn {
+        position: relative !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        padding: 5px 12px !important;
+        border-radius: 20px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        border: none !important;
+        cursor: pointer !important;
+        flex: 0 0 auto !important;
+      }
+      .sport-pill-btn.active {
+        background: #ffc21d !important;
+        color: #111111 !important;
+      }
+      .sport-pill-btn.active::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: -6px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 0 !important;
+        height: 0 !important;
+        border-left: 6px solid transparent !important;
+        border-right: 6px solid transparent !important;
+        border-top: 6px solid #ffc21d !important;
+        z-index: 10 !important;
+      }
+      .sport-pill-btn.dark {
+        background: #252427 !important;
+        color: #ffffff !important;
+      }
+      .sport-pill-btn#sportPill-tennis.dark {
+        background: #2a1f4b !important;
+        color: #ffffff !important;
+      }
+      .sport-badge-live {
+        background: #111111 !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+        padding: 1px 5px !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+      }
+      .sport-badge-upcoming {
+        background: #e6a800 !important;
+        color: #111111 !important;
+        border-radius: 8px !important;
+        padding: 1px 5px !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+        margin-left: 1px !important;
+      }
+      .sport-pill-btn.dark .sport-badge-upcoming {
+        background: #ffc21d !important;
+        color: #111111 !important;
       }
 
       .fixture-market-indicators {
@@ -5023,19 +5111,25 @@
           </div>
         </div>
 
-        <!-- SPORT PILLS (CRICKET, SOCCER, TENNIS WITH ::after DOWNWARD TRIANGLE) -->
+        <!-- SPORT PILLS (CRICKET, SOCCER, TENNIS WITH DUAL BADGES AND DOWNWARD NOTCH) -->
         <div class="sport-filter-pills-row">
           <button class="sport-pill-btn active" id="sportPill-cricket" onclick="selectSport('cricket')">
-            <span>🏏 Cricket</span>
-            <span class="sport-pill-badge">17 | 2</span>
+            <span class="sport-pill-icon">🏏</span>
+            <span class="sport-pill-title">Cricket</span>
+            <span class="sport-badge-live">21</span>
+            <span class="sport-badge-upcoming">5</span>
           </button>
           <button class="sport-pill-btn dark" id="sportPill-soccer" onclick="selectSport('soccer')">
-            <span>⚽ Soccer</span>
-            <span class="sport-pill-badge">346 | 6</span>
+            <span class="sport-pill-icon">⚽</span>
+            <span class="sport-pill-title">Soccer</span>
+            <span class="sport-badge-live">469</span>
+            <span class="sport-badge-upcoming">3</span>
           </button>
           <button class="sport-pill-btn dark" id="sportPill-tennis" onclick="selectSport('tennis')">
-            <span>🎾 Tennis</span>
-            <span class="sport-pill-badge">207 | 19</span>
+            <span class="sport-pill-icon">🎾</span>
+            <span class="sport-pill-title">Tennis</span>
+            <span class="sport-badge-live">198</span>
+            <span class="sport-badge-upcoming">20</span>
           </button>
         </div>
 
@@ -6533,31 +6627,31 @@
   <div class="mobile-bottom-nav">
     <div class="mobile-nav-tab active" onclick="setViewMode('sports'); selectBottomNav(this);">
       <span class="mobile-nav-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007bff"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <img src="https://dabba.b-cdn.net/satsport/home.svg" width="22" height="22" alt="Home">
       </span>
       <span>Home</span>
     </div>
     <div class="mobile-nav-tab" onclick="setScheduleTab('inplay'); selectBottomNav(this);">
       <span class="mobile-nav-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m12 7 3.5 2.5-1.5 4.5h-4L8.5 9.5z"/><path d="m12 2v5"/><path d="m21.5 8.5-6 1"/><path d="m18 20-4-3"/><path d="m6 20 4-3"/><path d="m2.5 8.5 6 1"/></svg>
+        <img src="https://dabba.b-cdn.net/satsport.xyz/banners/93916.png" width="22" height="22" alt="Inplay">
       </span>
       <span>Inplay</span>
     </div>
     <div class="mobile-nav-tab" onclick="toggleSupportChat();" style="display:flex; justify-content:center; align-items:center; position:relative;">
       <div class="mobile-whatsapp-circle" title="WhatsApp Support">
         <div class="ping-wave"></div>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.82 2.791.82 3.181 0 5.767-2.586 5.768-5.766 0-3.18-2.586-5.766-5.768-5.766zm9.969 5.766c0 5.514-4.486 10-10 10-1.824 0-3.535-.49-5.018-1.341l-5.982 1.563 1.59-5.808c-.936-1.547-1.47-3.359-1.47-5.294 0-5.514 4.486-10 10-10s10 4.486 10 10z"/></svg>
+        <img src="https://dabba.b-cdn.net/satsport/whatsApp_footer.svg" width="26" height="26" alt="WhatsApp">
       </div>
     </div>
     <div class="mobile-nav-tab" onclick="openAccountModal('statement'); selectBottomNav(this);">
       <span class="mobile-nav-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007bff"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <img src="https://dabba.b-cdn.net/satsport/setting.svg" width="22" height="22" alt="Settings">
       </span>
       <span>Settings</span>
     </div>
     <div class="mobile-nav-tab" onclick="toggleMobileDrawer(); selectBottomNav(this);">
       <span class="mobile-nav-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2" fill="#00c0f3"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#e91e63"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#ff9800"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#4caf50"/></svg>
+        <img src="https://dabba.b-cdn.net/satsport/Menu.svg" width="20" height="20" alt="Menu">
       </span>
       <span>Menu</span>
     </div>
