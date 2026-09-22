@@ -2450,15 +2450,16 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 9998;
+        background: rgba(0,0,0,0.55);
+        z-index: 99998;
+        backdrop-filter: blur(2px);
       }
       .sidebar-backdrop.show {
         display: block;
       }
       .app-main {
         width: 100%;
-        padding-bottom: 60px;
+        padding-bottom: 75px;
       }
       .fixture-market-indicators {
         display: none;
@@ -2466,47 +2467,276 @@
       .providers-container {
         padding: 10px 8px;
       }
+      .casino-games-showcase,
+      .category-games-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+      }
+      .betslip-drawer {
+        width: 100% !important;
+        bottom: 61px !important;
+        right: 0 !important;
+        left: 0 !important;
+        border-radius: 16px 16px 0 0 !important;
+        max-height: 80vh !important;
+      }
+      .support-chat-window {
+        bottom: 65px !important;
+        right: 10px !important;
+        left: 10px !important;
+        width: auto !important;
+        max-height: 70vh !important;
+      }
+
+      /* Authentic Satsport Mobile Bottom Navigation (app-sitefooter) */
       .mobile-bottom-nav {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 56px;
-        background: #ffc21d;
+        height: 61px;
+        background: linear-gradient(180deg, #181818 0%, #0a0a0a 100%);
         display: flex;
         align-items: center;
         justify-content: space-around;
         z-index: 9990;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -3px 12px rgba(0,0,0,0.3);
+        padding: 0 4px;
       }
       .mobile-nav-tab {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #000;
-        font-size: 11px;
-        font-weight: 700;
+        color: #bbbbbb;
+        font-size: 10px;
+        font-weight: 600;
         cursor: pointer;
         flex: 1;
         text-align: center;
+        transition: color 0.2s ease;
+        position: relative;
+      }
+      .mobile-nav-tab:hover, .mobile-nav-tab.active {
+        color: #ffc21d;
       }
       .mobile-nav-icon {
-        font-size: 18px;
+        font-size: 17px;
         margin-bottom: 2px;
       }
-      .mobile-whatsapp-btn {
+      .mobile-whatsapp-circle {
+        position: absolute;
+        top: -20px;
         width: 44px;
         height: 44px;
-        background: #25d366;
         border-radius: 50%;
+        background: #25d366;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #fff;
+        color: #ffffff;
         font-size: 22px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        margin-top: -16px;
+        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.45);
+        cursor: pointer;
+        z-index: 2;
+      }
+      .mobile-whatsapp-circle .ping-wave {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: rgba(37, 211, 102, 0.6);
+        z-index: -1;
+        animation: fadeCircle 3.9s ease-out infinite;
+      }
+      @keyframes fadeCircle {
+        0% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        100% {
+          transform: scale(2.2);
+          opacity: 0;
+        }
+      }
+
+      /* DEDICATED REFERENCE MOBILE MENU DRAWER (app-menuitems) */
+      .mobile-drawer {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: min(340px, 86vw);
+        background: #ffffff;
+        z-index: 99999;
+        transform: translateX(-105%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+        border-right: 1px solid #e0e0e0;
+      }
+      .mobile-drawer.show {
+        transform: translateX(0);
+      }
+      .mobile-drawer-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #ffffff;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #eeeeee;
+        gap: 8px;
+      }
+      .mobile-drawer-logo img {
+        height: 32px;
+        object-fit: contain;
+      }
+      .mobile-drawer-account {
+        display: flex;
+        flex-direction: column;
+        font-size: 10px;
+        color: #555;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+      .mobile-drawer-account span {
+        color: #000;
+        font-weight: 700;
+      }
+      .mobile-drawer-deposit {
+        background: #28a745;
+        color: #fff;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .mobile-drawer-close {
+        background: none;
+        border: none;
+        font-size: 26px;
+        color: #888;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0 4px;
+      }
+      .mobile-drawer-search {
+        padding: 10px 14px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #ebebeb;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mobile-drawer-search input {
+        border: 1px solid #d0d0d0;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 12px;
+        width: 100%;
+        outline: none;
+        background: #ffffff;
+      }
+      .mobile-drawer-scrollable {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+      }
+      .mobile-drawer-section {
+        background: #ffffff;
+        border: 1px solid #e8e8e8;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        padding: 8px 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      }
+      .mobile-section-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #222;
+        margin: 4px 6px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+      .mobile-category-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .mobile-category-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 4px;
+        border-radius: 8px;
+        background: #f9f9fb;
+        border: 0.5px solid #e5e5e5;
+        cursor: pointer;
+        transition: background 0.15s ease, transform 0.1s ease;
+        text-align: center;
+      }
+      .mobile-category-card:active {
+        transform: scale(0.97);
+        background: #fef4d8;
+      }
+      .mobile-cat-icon {
+        font-size: 22px;
+        margin-bottom: 4px;
+      }
+      .mobile-cat-name {
+        font-size: 10px;
+        font-weight: 600;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      .mobile-drawer-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 0 4px 20px;
+      }
+      .mobile-drawer-btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+      }
+      .mobile-drawer-btn.download {
+        background: #ffc21d;
+        color: #000;
+      }
+      .mobile-drawer-btn.logout {
+        background: #f0f0f0;
+        color: #d9534f;
+        border: 1px solid #ddd;
+      }
+    }
+
+    @media (min-width: 576px) and (max-width: 768px) {
+      .casino-games-showcase,
+      .category-games-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 10px !important;
       }
     }
 
@@ -2532,10 +2762,16 @@
       .deposit-btn span {
         display: none;
       }
+      .header-balance-pill {
+        font-size: 9.5px;
+        padding: 3px 5px;
+      }
     }
 
     @media (min-width: 769px) {
-      .mobile-bottom-nav, .sidebar-backdrop {
+      .mobile-bottom-nav,
+      .mobile-drawer,
+      .sidebar-backdrop {
         display: none !important;
       }
     }
@@ -4820,16 +5056,60 @@
       });
     }
 
-    function toggleMobileSidebar() {
-      const sb = document.getElementById('sidebar');
+    function toggleMobileDrawer() {
+      const drawer = document.getElementById('mobileDrawer');
       const bd = document.getElementById('sidebarBackdrop');
-      if (sb) sb.classList.toggle('show-mobile');
+      if (drawer) drawer.classList.toggle('show');
       if (bd) bd.classList.toggle('show');
     }
 
+    function closeMobileDrawer() {
+      const drawer = document.getElementById('mobileDrawer');
+      const bd = document.getElementById('sidebarBackdrop');
+      if (drawer) drawer.classList.remove('show');
+      if (bd) bd.classList.remove('show');
+    }
+
+    function toggleMobileSidebar() {
+      toggleMobileDrawer();
+    }
+
     function closeMobileSidebar() {
-      document.getElementById('sidebar')?.classList.remove('show-mobile');
-      document.getElementById('sidebarBackdrop')?.classList.remove('show');
+      closeMobileDrawer();
+    }
+
+    function selectSportAndClose(sport) {
+      if (typeof selectSport === 'function') selectSport(sport);
+      closeMobileDrawer();
+    }
+
+    function switchCasinoTabAndClose(tab) {
+      if (typeof setViewMode === 'function') setViewMode('casino');
+      if (typeof filterCasinoCategory === 'function') filterCasinoCategory(tab);
+      closeMobileDrawer();
+    }
+
+    function openAccountModalAndClose(tab) {
+      if (typeof openAccountModal === 'function') openAccountModal(tab);
+      closeMobileDrawer();
+    }
+
+    function filterMobileDrawer(query) {
+      query = (query || '').toLowerCase().trim();
+      const cards = document.querySelectorAll('#mobileDrawer .mobile-category-card');
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (!query || text.includes(query)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function selectBottomNav(el) {
+      document.querySelectorAll('.mobile-bottom-nav .mobile-nav-tab').forEach(t => t.classList.remove('active'));
+      if (el) el.classList.add('active');
     }
 
     // User Profile Dropdown
@@ -5725,31 +6005,182 @@
     </div>
   </div>
 
-  <!-- Mobile Bottom Navigation -->
+  <!-- DEDICATED AUTHENTIC MOBILE DRAWER (app-menuitems) -->
+  <aside class="mobile-drawer" id="mobileDrawer">
+    <div class="mobile-drawer-header">
+      <div class="mobile-drawer-logo">
+        <img src="assets/images/logo.png" alt="SATSPORT">
+      </div>
+      <div class="mobile-drawer-account">
+        <div>Bal: <span id="mobileDrawerBal">0.00</span></div>
+        <div>Liab: <span id="mobileDrawerLiab">0.00</span></div>
+      </div>
+      <button class="mobile-drawer-deposit" onclick="openPromoModal('deposit')">+ Deposit</button>
+      <button class="mobile-drawer-close" onclick="closeMobileDrawer()">&times;</button>
+    </div>
+
+    <div class="mobile-drawer-search">
+      <input type="text" placeholder="Search sports, casino, games..." oninput="filterMobileDrawer(this.value)" id="mobileDrawerSearchInput">
+    </div>
+
+    <div class="mobile-drawer-scrollable" id="mobileDrawerScrollable">
+      <!-- Sports Section -->
+      <div class="mobile-drawer-section">
+        <div class="mobile-section-title">Sports</div>
+        <div class="mobile-category-grid">
+          <div class="mobile-category-card" onclick="selectSportAndClose('cricket')">
+            <span class="mobile-cat-icon">🏏</span>
+            <span class="mobile-cat-name">Cricket</span>
+          </div>
+          <div class="mobile-category-card" onclick="selectSportAndClose('football')">
+            <span class="mobile-cat-icon">⚽</span>
+            <span class="mobile-cat-name">Football</span>
+          </div>
+          <div class="mobile-category-card" onclick="selectSportAndClose('tennis')">
+            <span class="mobile-cat-icon">🎾</span>
+            <span class="mobile-cat-name">Tennis</span>
+          </div>
+          <div class="mobile-category-card" onclick="selectSportAndClose('horse-racing')">
+            <span class="mobile-cat-icon">🏇</span>
+            <span class="mobile-cat-name">Horse Racing</span>
+          </div>
+          <div class="mobile-category-card" onclick="selectSportAndClose('greyhound')">
+            <span class="mobile-cat-icon">🐕</span>
+            <span class="mobile-cat-name">Greyhound</span>
+          </div>
+          <div class="mobile-category-card" onclick="selectSportAndClose('kabaddi')">
+            <span class="mobile-cat-icon">🤼</span>
+            <span class="mobile-cat-name">Kabaddi</span>
+          </div>
+          <div class="mobile-category-card" onclick="selectSportAndClose('basketball')">
+            <span class="mobile-cat-icon">🏀</span>
+            <span class="mobile-cat-name">Basketball</span>
+          </div>
+          <div class="mobile-category-card" onclick="selectSportAndClose('table-tennis')">
+            <span class="mobile-cat-icon">🏓</span>
+            <span class="mobile-cat-name">Table Tennis</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Casino & Games Section -->
+      <div class="mobile-drawer-section">
+        <div class="mobile-section-title">Casino & Games</div>
+        <div class="mobile-category-grid">
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('live')">
+            <span class="mobile-cat-icon">🎰</span>
+            <span class="mobile-cat-name">Live Casino</span>
+          </div>
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('slots')">
+            <span class="mobile-cat-icon">🍒</span>
+            <span class="mobile-cat-name">Slots</span>
+          </div>
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('crash')">
+            <span class="mobile-cat-icon">✈️</span>
+            <span class="mobile-cat-name">Crash</span>
+          </div>
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('virtual')">
+            <span class="mobile-cat-icon">🎮</span>
+            <span class="mobile-cat-name">Virtual</span>
+          </div>
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('lottery')">
+            <span class="mobile-cat-icon">🎱</span>
+            <span class="mobile-cat-name">Lottery</span>
+          </div>
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('table')">
+            <span class="mobile-cat-icon">🃏</span>
+            <span class="mobile-cat-name">Table Games</span>
+          </div>
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('exchange')">
+            <span class="mobile-cat-icon">🔄</span>
+            <span class="mobile-cat-name">Exchange</span>
+          </div>
+          <div class="mobile-category-card" onclick="switchCasinoTabAndClose('all')">
+            <span class="mobile-cat-icon">⭐</span>
+            <span class="mobile-cat-name">All Games</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account & Tools Section -->
+      <div class="mobile-drawer-section">
+        <div class="mobile-section-title">My Account</div>
+        <div class="mobile-category-grid">
+          <div class="mobile-category-card" onclick="openAccountModalAndClose('profile')">
+            <span class="mobile-cat-icon">👤</span>
+            <span class="mobile-cat-name">Profile</span>
+          </div>
+          <div class="mobile-category-card" onclick="openAccountModalAndClose('statement')">
+            <span class="mobile-cat-icon">📄</span>
+            <span class="mobile-cat-name">Statement</span>
+          </div>
+          <div class="mobile-category-card" onclick="openAccountModalAndClose('currentBets')">
+            <span class="mobile-cat-icon">📊</span>
+            <span class="mobile-cat-name">Current Bets</span>
+          </div>
+          <div class="mobile-category-card" onclick="openAccountModalAndClose('activityLog')">
+            <span class="mobile-cat-icon">🕒</span>
+            <span class="mobile-cat-name">Activity Log</span>
+          </div>
+          <div class="mobile-category-card" onclick="openAccountModalAndClose('rules')">
+            <span class="mobile-cat-icon">📜</span>
+            <span class="mobile-cat-name">Rules</span>
+          </div>
+          <div class="mobile-category-card" onclick="openAccountModalAndClose('settings')">
+            <span class="mobile-cat-icon">⚙️</span>
+            <span class="mobile-cat-name">Settings</span>
+          </div>
+          <div class="mobile-category-card" onclick="toggleSupportChat(); closeMobileDrawer();">
+            <span class="mobile-cat-icon">💬</span>
+            <span class="mobile-cat-name">Support</span>
+          </div>
+          <div class="mobile-category-card" onclick="openPromoModal('deposit'); closeMobileDrawer();">
+            <span class="mobile-cat-icon">💳</span>
+            <span class="mobile-cat-name">Deposit</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mobile-drawer-actions">
+        <button class="mobile-drawer-btn download" onclick="window.open('https://satsport.com', '_blank')">
+          📲 Download Android App
+        </button>
+        <button class="mobile-drawer-btn logout" onclick="openGameModal()">
+          🚪 Logout
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile Bottom Navigation (app-sitefooter) -->
   <div class="mobile-bottom-nav">
-    <div class="mobile-nav-tab" onclick="setViewMode('sports');">
+    <div class="mobile-nav-tab active" onclick="setViewMode('sports'); selectBottomNav(this);">
       <span class="mobile-nav-icon">🏠</span>
       <span>Home</span>
     </div>
-    <div class="mobile-nav-tab" onclick="setScheduleTab('inplay');">
+    <div class="mobile-nav-tab" onclick="setScheduleTab('inplay'); selectBottomNav(this);">
       <span class="mobile-nav-icon">⚡</span>
       <span>Inplay</span>
     </div>
-    <div class="mobile-nav-tab" onclick="toggleSupportChat();">
-      <div class="mobile-whatsapp-btn">💬</div>
+    <div class="mobile-nav-tab" onclick="toggleSupportChat();" style="display:flex; justify-content:center; align-items:center; position:relative;">
+      <div class="mobile-whatsapp-circle" title="WhatsApp Support">
+        <div class="ping-wave"></div>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.82 2.791.82 3.181 0 5.767-2.586 5.768-5.766 0-3.18-2.586-5.766-5.768-5.766zm9.969 5.766c0 5.514-4.486 10-10 10-1.824 0-3.535-.49-5.018-1.341l-5.982 1.563 1.59-5.808c-.936-1.547-1.47-3.359-1.47-5.294 0-5.514 4.486-10 10-10s10 4.486 10 10z"/></svg>
+      </div>
     </div>
-    <div class="mobile-nav-tab" onclick="openAccountModal('statement');">
+    <div class="mobile-nav-tab" onclick="openAccountModal('statement'); selectBottomNav(this);">
       <span class="mobile-nav-icon">⚙️</span>
       <span>Settings</span>
     </div>
-    <div class="mobile-nav-tab" onclick="toggleMobileSidebar();">
+    <div class="mobile-nav-tab" onclick="toggleMobileDrawer(); selectBottomNav(this);">
       <span class="mobile-nav-icon">☰</span>
       <span>Menu</span>
     </div>
   </div>
 
   <!-- Mobile Sidebar Backdrop -->
-  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileSidebar()"></div>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileDrawer()"></div>
 
 </body>
 </html>
