@@ -156,6 +156,18 @@
     .nav-item.active {
       color: #000000;
       font-weight: 700;
+      position: relative;
+    }
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #000000;
     }
 
     .nav-item:hover {
@@ -321,7 +333,7 @@
        SPORTS SUB-NAVIGATION BAR
        ========================================================================== */
     .subnav-bar {
-      background: #1e1e1e;
+      background: linear-gradient(90deg, #100a1c, #1a0f30, #0e0a1a);
       height: 38px;
       display: flex;
       align-items: center;
@@ -1873,6 +1885,10 @@
     }
 
     /* Sports Sidebar Hierarchy */
+    #sidebarSportsList {
+      background: #f9f7ea;
+      padding: 10px 8px;
+    }
     .sports-sidebar-group {
       padding: 4px 0;
     }
@@ -1880,21 +1896,24 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 14px;
-      margin: 2px 6px;
-      border-radius: 6px;
+      padding: 9px 14px;
+      margin: 6px 4px;
+      border-radius: 18px;
+      background: #ffffff;
       font-size: 12.5px;
       font-weight: 600;
       color: #333333;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       border-left: 3px solid transparent;
     }
     .sports-sidebar-item:hover, .sports-sidebar-item.active {
-      background: #fbf0d0;
+      background: #ffffff;
       color: #000000;
       font-weight: 700;
       border-left-color: #ffc21d;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
     .sports-sidebar-item .item-left {
       display: flex;
@@ -2521,9 +2540,55 @@
       }
     }
 
+    /* Authentic Satsport Pre-loader */
+    .first-loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      background-color: #383737;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999999;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .first-loader-dots {
+      width: 15px;
+      height: 15px;
+      background-color: rgb(112, 214, 218);
+      border-radius: 50%;
+      margin: 0 5px;
+      animation: unique-loading 1.2s infinite alternate;
+    }
+    .first-loader-dots:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+    .first-loader-dots:nth-child(3) {
+      animation-delay: 0.8s;
+    }
+    @keyframes unique-loading {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(-20px);
+      }
+    }
+
   </style>
 </head>
 <body>
+
+  <!-- Authentic Satsport Pre-loader -->
+  <div class="first-loader" id="satsportLoader">
+    <span class="first-loader-dots"></span>
+    <span class="first-loader-dots"></span>
+    <span class="first-loader-dots"></span>
+  </div>
 
   <!-- TOP HEADER -->
   <header class="top-header">
@@ -5569,6 +5634,19 @@
 
       cont.innerHTML = html;
     };
+
+    // Dismiss authentic Satsport preloader once ready
+    function hideLoader() {
+      const loader = document.getElementById('satsportLoader');
+      if (loader && loader.style.display !== 'none') {
+        loader.style.opacity = '0';
+        setTimeout(function() {
+          loader.style.display = 'none';
+        }, 400);
+      }
+    }
+    window.addEventListener('load', hideLoader);
+    setTimeout(hideLoader, 600);
 
     // Initialize races meetings and cricket matches on load
     renderRacesMeetings();
