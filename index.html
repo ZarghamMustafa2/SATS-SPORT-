@@ -989,9 +989,10 @@
     }
 
     .modal-card {
-      width: 518px;
-      max-width: 94vw;
-      min-height: 440px;
+      width: 370.5px;
+      max-width: calc(100vw - 20px);
+      min-height: 450px;
+      height: 450px;
       border-radius: 4px;
       position: relative;
       overflow: hidden;
@@ -1000,8 +1001,9 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 24px 30px 28px;
+      padding: 14px 14px 20px;
       border: none;
+      box-sizing: border-box;
     }
 
     /* 18+ Underage Modal Styling */
@@ -1017,13 +1019,20 @@
 
     .modal-close-btn {
       position: absolute;
-      top: 14px;
-      right: 18px;
-      font-size: 26px;
-      line-height: 1;
-      color: #ffffff;
+      top: 10px;
+      right: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      color: #000000;
       cursor: pointer;
-      opacity: 0.9;
+      background: none;
+      border: none;
+      padding: 0;
+      z-index: 10;
+      opacity: 0.85;
       transition: opacity 0.2s;
     }
 
@@ -1034,133 +1043,153 @@
     .modal-logo-wrap {
       display: flex;
       justify-content: center;
+      margin-top: 26px;
       margin-bottom: 24px;
     }
 
     .modal-logo-wrap img {
-      height: 40px;
+      height: 30px;
+      object-fit: contain;
     }
 
-    .modal-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: #ffffff;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    .confirm-container {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .modal-sub {
-      font-size: 15px;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 18px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-    }
-
-    .modal-highlight {
-      font-size: 15px;
+    .modal-statement {
+      font-size: 16px;
       font-weight: 700;
       color: #ffffff;
+      text-align: center;
       margin-bottom: 30px;
-      line-height: 1.4;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      line-height: 1.35;
+    }
+
+    .modal-statement:last-child {
+      margin-bottom: 0;
     }
 
     .modal-btn-row {
       display: flex;
-      gap: 16px;
-      margin-top: 10px;
+      gap: 12px;
+      margin-top: auto;
+      padding: 0 4px;
     }
 
     .modal-confirm-btn {
       flex: 1;
-      height: 42px;
-      background: #fbb03b;
-      color: #000000;
+      height: 35px;
+      background: #ffc21d;
+      color: #222222;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 13px;
+      border: 1px solid #ffffff;
       border-radius: 4px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition: background 0.2s;
     }
 
     .modal-confirm-btn:hover {
-      background: #e59d28;
+      background: #e5a400;
     }
 
     .modal-exit-btn {
       flex: 1;
-      height: 42px;
-      background: #ffffff;
-      color: #000000;
+      height: 35px;
+      background: #d1d1d1;
+      color: #222222;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 13px;
+      border: 1px solid #ffffff;
       border-radius: 4px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition: background 0.2s;
     }
 
     .modal-exit-btn:hover {
-      background: #f0f0f0;
+      background: #c0c0c0;
     }
 
     .login-modal-card .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       text-align: left;
     }
 
     .login-modal-card .form-group label {
       display: block;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
       color: #ffffff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
     }
 
     .login-modal-card .modal-input {
       width: 100%;
-      height: 40px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
+      height: 30px;
+      border-radius: 2.5px;
+      border: 1px solid #ced4da;
       background: #ffffff;
-      color: #333333;
-      font-size: 13px;
+      color: #495057;
+      font-size: 14px;
       font-weight: 500;
-      padding: 0 12px;
+      padding: 4px 8px;
       outline: none;
+      box-sizing: border-box;
     }
 
     .login-modal-card .modal-input:focus {
-      border-color: #fbb03b;
-      box-shadow: 0 0 0 2px rgba(251, 176, 59, 0.2);
+      border-color: #ffc21d;
+      box-shadow: 0 0 0 2px rgba(255, 194, 29, 0.25);
     }
 
     .login-modal-card .form-check-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
       color: #ffffff;
       margin-bottom: 14px;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      cursor: pointer;
     }
 
     .login-modal-card .form-check-wrap input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #0066cc;
+      width: 13px;
+      height: 13px;
+      accent-color: #ffc21d;
       cursor: pointer;
+    }
+
+    .login-modal-card .password-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .login-modal-card .password-wrap .modal-input {
+      padding-right: 32px;
     }
 
     .login-modal-card .password-eye {
       position: absolute;
-      right: 12px;
-      top: 31px;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
       cursor: pointer;
-      font-size: 16px;
-      color: #666666;
+      display: flex;
+      align-items: center;
+      color: #333333;
     }
 
 
@@ -2431,16 +2460,17 @@
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background: #ffc21d !important;
+        background: transparent !important;
         color: #000000 !important;
-        border: 1.5px solid #000000 !important;
+        border: 1px solid #000000 !important;
         border-radius: 6px !important;
-        font-size: 15px !important;
-        font-weight: 700 !important;
-        padding: 0 16px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        padding: 6px 10px !important;
         cursor: pointer !important;
-        height: 38px !important;
-        min-width: 76px !important;
+        height: 35px !important;
+        min-width: 60px !important;
+        width: 60px !important;
         margin-left: auto !important;
         letter-spacing: 0.3px !important;
       }
@@ -5354,28 +5384,34 @@
   </div>
 
   <!-- 18+ UNDERAGE VERIFICATION MODAL -->
-  <div class="modal-backdrop" id="ageModalBackdrop">
+  <div class="modal-backdrop" id="ageModalBackdrop" onclick="if(event.target === this) closeModals()">
     <div class="modal-card age-modal-card">
-      <button class="modal-close-btn" onclick="closeModals()">&times;</button>
+      <button class="modal-close-btn" onclick="closeModals()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 352 512" fill="#000000"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/></svg>
+      </button>
       <div class="modal-logo-wrap">
         <img src="assets/images/logo.png" alt="SATSPORT">
       </div>
       <div class="modal-body-content">
-        <h3 class="modal-title">Welcome to Satsports</h3>
-        <p class="modal-sub">Underage gambling is prohibited.</p>
-        <p class="modal-highlight">Please confirm if you are 18 years old and above as of today.</p>
+        <div class="confirm-container">
+          <div class="modal-statement">Welcome to Satsports</div>
+          <div class="modal-statement">Underage gambling is prohibited.</div>
+          <div class="modal-statement">Please confirm if you are 18 years old and above as of today.</div>
+        </div>
         <div class="modal-btn-row">
-          <button class="modal-confirm-btn" id="ageConfirmBtn" onclick="proceedToLoginModal()">Confirm</button>
-          <button class="modal-exit-btn" onclick="closeModals()">Exit</button>
+          <button class="modal-confirm-btn btn-verification btn-confirm" id="ageConfirmBtn" onclick="proceedToLoginModal()">Confirm</button>
+          <button class="modal-exit-btn btn-verification" onclick="closeModals()">Exit</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- AUTHENTIC LOGIN MODAL -->
-  <div class="modal-backdrop" id="loginModalBackdrop">
+  <div class="modal-backdrop" id="loginModalBackdrop" onclick="if(event.target === this) closeModals()">
     <div class="modal-card login-modal-card">
-      <button class="modal-close-btn" onclick="closeModals()">&times;</button>
+      <button class="modal-close-btn" onclick="closeModals()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 352 512" fill="#000000"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/></svg>
+      </button>
       <div class="modal-logo-wrap">
         <img src="assets/images/logo.png" alt="SATSPORT">
       </div>
@@ -5388,14 +5424,18 @@
           <input type="checkbox" id="rememberUser" checked>
           <label for="rememberUser">Remember username</label>
         </div>
-        <div class="form-group" style="position: relative;">
+        <div class="form-group">
           <label>Password</label>
-          <input type="password" placeholder="Password" id="modalPassword" class="modal-input" value="••••••••">
-          <span class="password-eye" onclick="togglePasswordVisibility()">👁</span>
+          <div class="password-wrap" style="position: relative;">
+            <input type="password" placeholder="Password" id="modalPassword" class="modal-input" value="••••••••">
+            <span class="password-eye" onclick="togglePasswordVisibility()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#333333"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </span>
+          </div>
         </div>
         <div class="modal-btn-row">
-          <button class="modal-confirm-btn" onclick="handleModalLogin()">Login</button>
-          <button class="modal-exit-btn" onclick="closeModals()">Exit</button>
+          <button class="modal-confirm-btn btn-verification btn-confirm" onclick="handleModalLogin()">Login</button>
+          <button class="modal-exit-btn btn-verification" onclick="closeModals()">Exit</button>
         </div>
       </div>
     </div>
