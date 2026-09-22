@@ -2405,32 +2405,137 @@
       .header-nav {
         display: none !important;
       }
+      body {
+        background-color: #f5edd8 !important;
+      }
+      .header-logo img {
+        height: 30px;
+        width: auto;
+        display: block;
+      }
+      .header-nav {
+        display: none !important;
+      }
       .header-right {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        flex-shrink: 0;
-      }
-      .header-right .header-action-btn, 
-      .header-right .header-icon-btn,
-      .logout-btn {
         display: none !important;
       }
-      .dw-part {
+      .mobile-header-login-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #ffc21d !important;
+        color: #000000 !important;
+        border: 1.5px solid #000000 !important;
+        border-radius: 6px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        padding: 4px 14px !important;
+        cursor: pointer !important;
+        height: 34px !important;
+        margin-left: auto !important;
+      }
+      .sidebar-toggle-btn {
+        width: 38px !important;
+        height: 38px !important;
+        background: #000000 !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px !important;
+      }
+      .sidebar-toggle-btn .hamburger-bars {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        width: 22px !important;
+        height: 16px !important;
+      }
+      .sidebar-toggle-btn .hamburger-bars span {
+        display: block !important;
+        height: 3px !important;
+        width: 100% !important;
+        background: #ffc21d !important;
+        border-radius: 2px !important;
+      }
+
+      /* Mobile Top Modes Bar (Black with yellow underline) */
+      .mobile-top-modes-bar {
+        display: flex !important;
+        align-items: center !important;
+        background: #000000 !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+        padding: 0 10px !important;
+        height: 42px !important;
+        gap: 20px !important;
+        border-bottom: 1px solid #1a1a1a !important;
+        position: sticky !important;
+        top: 56px !important;
+        z-index: 1000 !important;
+      }
+      .mobile-top-modes-bar::-webkit-scrollbar {
         display: none !important;
       }
-      .header-balance-pill {
-        font-size: 10.5px;
-        padding: 4px 7px;
-        white-space: nowrap;
+      .mobile-mode-tab {
+        color: #ffffff !important;
+        font-size: 14.5px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        position: relative !important;
+        padding: 10px 0 !important;
+        flex: 0 0 auto !important;
+        text-decoration: none !important;
       }
-      .deposit-btn {
-        padding: 5px 8px;
-        font-size: 10.5px;
+      .mobile-mode-tab.active {
+        font-weight: 800 !important;
+        color: #ffffff !important;
       }
-      .user-profile-btn {
-        padding: 5px 7px;
-        font-size: 10.5px;
+      .mobile-mode-tab.active::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 4px !important;
+        background: #ffc21d !important;
+        border-radius: 2px 2px 0 0 !important;
+      }
+
+      /* Mobile Sports Subnav Chips */
+      .subnav-bar {
+        display: flex !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+        background: #0f0c20 !important;
+        padding: 8px 6px !important;
+        gap: 8px !important;
+      }
+      .subnav-item {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+        border-radius: 20px !important;
+        padding: 5px 12px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+      }
+      .subnav-item[data-sport="inplay"] {
+        background: linear-gradient(135deg, #443297, #2c1b75) !important;
+        border-color: rgba(255, 255, 255, 0.25) !important;
+        color: #ffffff !important;
+      }
+      .subnav-item.active {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
       }
 
       .app-sidebar {
@@ -2457,15 +2562,219 @@
       .sidebar-backdrop.show {
         display: block;
       }
+
+      /* Section Re-ordering on Mobile: Banner first, Welcome strip second, Providers third */
       .app-main {
-        width: 100%;
-        padding-bottom: 75px;
+        display: flex !important;
+        flex-direction: column !important;
+        background-color: #f5edd8 !important;
+        width: 100% !important;
+        padding-bottom: 75px !important;
       }
+      .hero-carousel-container {
+        order: 1 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+      }
+      .hero-slide img {
+        border-radius: 0 !important;
+        width: 100% !important;
+        max-height: 180px !important;
+        object-fit: cover !important;
+      }
+      .welcome-image-container {
+        display: none !important;
+      }
+      .news-ticker-container {
+        order: 2 !important;
+        display: flex !important;
+        align-items: center !important;
+        background: #fab417 !important;
+        color: #111111 !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        height: 28px !important;
+        padding: 0 10px !important;
+        overflow: hidden !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+      }
+      .news-ticker-container .marquee-text {
+        color: #111111 !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+      }
+
+      /* Authentic 3-Column Game Providers Grid on Mobile */
+      .providers-container {
+        order: 4 !important;
+        padding: 10px 8px !important;
+        background: transparent !important;
+      }
+      .providers-container .section-headline {
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        color: #111111 !important;
+        margin: 0 0 8px 4px !important;
+      }
+      .prov-scroll-btn {
+        display: none !important;
+      }
+      .providers-slider-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .quick-card {
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 52px !important;
+        margin: 0 !important;
+        border-radius: 12px !important;
+      }
+      .quick-card .inner-content {
+        height: 100% !important;
+        border-radius: 12px !important;
+        background-size: cover !important;
+        background-position: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      .quick-card .category-scroll-slider-name {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        padding: 0 2px !important;
+      }
+      .providers-slider-row .quick-card:nth-child(n+7) {
+        display: none !important;
+      }
+
+      #casinoViewContainer {
+        order: 5 !important;
+      }
+      #sportsViewContainer {
+        order: 6 !important;
+        background: transparent !important;
+      }
+      .site-footer {
+        order: 7 !important;
+      }
+
+      /* Compact 2-Row Mobile Races Section */
+      .races-section-wrapper {
+        margin: 8px 6px !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+      }
+      .races-header-bar {
+        background: #2b080c !important;
+        color: #ffc21d !important;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        border-radius: 10px 10px 0 0 !important;
+      }
+      .mobile-races-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 10px 8px !important;
+        background: #ffffff !important;
+        border-radius: 0 0 10px 10px !important;
+      }
+      .mobile-race-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+      }
+      .race-runner-icon {
+        font-size: 22px !important;
+        flex: 0 0 auto !important;
+        width: 30px !important;
+        text-align: center !important;
+      }
+      .mobile-race-pills-scroll {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+        flex: 1 !important;
+      }
+      .mobile-race-pills-scroll::-webkit-scrollbar {
+        display: none !important;
+      }
+      .mobile-race-pill {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        padding: 4px 7px !important;
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 6px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #212529 !important;
+        cursor: pointer !important;
+        white-space: nowrap !important;
+        flex: 0 0 auto !important;
+      }
+      .mobile-race-pill:active {
+        background: #e9ecef !important;
+      }
+      .races-type-tabs, .races-flags-row, .races-meetings-grid {
+        display: none !important;
+      }
+
+      /* Inplay / Upcoming Banner on Mobile */
+      .inplay-upcoming-banner {
+        background: #eedfad !important;
+        border-radius: 6px !important;
+        padding: 6px 10px !important;
+        margin: 8px 6px 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+      }
+      .schedule-tabs-wrap {
+        display: flex !important;
+        gap: 8px !important;
+        align-items: center !important;
+      }
+      .schedule-tab-btn#schedInplay {
+        background: #198754 !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 4px !important;
+        padding: 4px 10px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+      }
+      .schedule-tab-btn#schedUpcoming {
+        background: transparent !important;
+        color: #212529 !important;
+        border: none !important;
+        padding: 4px 6px !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+      }
+      .inplay-upcoming-banner > div:last-child {
+        display: none !important;
+      }
+      .sport-filter-pills-row {
+        padding: 4px 6px !important;
+        gap: 8px !important;
+      }
+
       .fixture-market-indicators {
         display: none;
-      }
-      .providers-container {
-        padding: 10px 8px;
       }
       .casino-games-showcase,
       .category-games-grid {
@@ -2489,20 +2798,20 @@
         max-height: 70vh !important;
       }
 
-      /* Authentic Satsport Mobile Bottom Navigation (app-sitefooter) */
+      /* Authentic Satsport Mobile Bottom Navigation (Yellow #ffc21d) */
       .mobile-bottom-nav {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         height: 61px;
-        background: linear-gradient(180deg, #181818 0%, #0a0a0a 100%);
+        background: #ffc21d !important;
         display: flex;
         align-items: center;
         justify-content: space-around;
         z-index: 9990;
         border-radius: 20px 20px 0 0;
-        box-shadow: 0 -3px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 -3px 12px rgba(0,0,0,0.25);
         padding: 0 4px;
       }
       .mobile-nav-tab {
@@ -2510,34 +2819,41 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #bbbbbb;
-        font-size: 10px;
-        font-weight: 600;
+        color: #000000 !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
         cursor: pointer;
         flex: 1;
         text-align: center;
-        transition: color 0.2s ease;
+        transition: transform 0.15s ease;
         position: relative;
+        text-decoration: none;
       }
-      .mobile-nav-tab:hover, .mobile-nav-tab.active {
-        color: #ffc21d;
+      .mobile-nav-tab:active {
+        transform: scale(0.95);
+      }
+      .mobile-nav-tab.active {
+        color: #000000 !important;
       }
       .mobile-nav-icon {
-        font-size: 17px;
+        font-size: 18px;
         margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .mobile-whatsapp-circle {
         position: absolute;
         top: -20px;
-        width: 44px;
-        height: 44px;
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
         background: #25d366;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #ffffff;
-        font-size: 22px;
+        font-size: 24px;
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.45);
         cursor: pointer;
         z-index: 2;
@@ -2771,7 +3087,10 @@
     @media (min-width: 769px) {
       .mobile-bottom-nav,
       .mobile-drawer,
-      .sidebar-backdrop {
+      .sidebar-backdrop,
+      .mobile-top-modes-bar,
+      .mobile-header-login-btn,
+      .mobile-races-layout {
         display: none !important;
       }
     }
@@ -2830,10 +3149,11 @@
   <header class="top-header">
     <div class="header-left">
       <a class="sidebar-toggle-btn" id="sidebarCollapse" title="Collapse Menu" href="javascript:void(0);">
-        <label for="check" style="cursor: pointer; margin: 0; display: flex; align-items: center;">
-          <input type="checkbox" id="check">
-          <img src="assets/live/collapse-menu.svg" alt="Collapse Menu">
-        </label>
+        <div class="hamburger-bars">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </a>
       <a href="javascript:void(0);" class="header-logo" onclick="handleNavClick('sports', 'navExchange')">
         <img src="assets/images/logo.png" alt="SATSPORT">
@@ -2894,7 +3214,20 @@
       </div>
       <button class="logout-btn" onclick="openGameModal()">Logout</button>
     </div>
+    <button class="mobile-header-login-btn" onclick="openGameModal()">Login</button>
   </header>
+
+  <!-- MOBILE TOP MODES NAVIGATION BAR (EXCHANGE, EVOLUTION, VIRTUAL SPORTS...) -->
+  <nav class="mobile-top-modes-bar" id="mobileTopModesBar">
+    <div class="mobile-mode-tab active" onclick="handleMobileModeClick(this, 'sports')">Exchange</div>
+    <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'evolution')">Evolution</div>
+    <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'virtual-sports')">Virtual Sports</div>
+    <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'exchange-games')">Exchange Games</div>
+    <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'all-casinos')">All Casinos</div>
+    <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'qtech')">QTECH</div>
+    <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'marble-race')">Marble Race</div>
+    <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'lottery-slots')">LOTTERY &amp; SLOTS</div>
+  </nav>
 
   <!-- SPORTS SUB-NAVIGATION STRIP -->
   <div class="subnav-bar" id="sportsSubnavBar">
@@ -3179,14 +3512,14 @@
       <!-- Hero Carousel Banner -->
       <div class="hero-carousel-container">
         <div class="hero-slide active">
-          <img id="heroBannerImg" src="assets/live/94370.png" alt="Aviator Ride The Rise">
+          <img id="heroBannerImg" src="assets/live/94371.png" alt="India's Biggest Icons Trust Satsport">
         </div>
         <div class="hero-slide">
           <img src="assets/live/ref_asian_games_banner.png" alt="Women's Asian Games 2026">
         </div>
-          <div class="hero-slide">
-            <img src="assets/live/94371.png" alt="India's Biggest Icons Trust Satsport">
-          </div>
+        <div class="hero-slide">
+          <img src="assets/live/94370.png" alt="Aviator Ride The Rise">
+        </div>
           <div class="hero-slide">
             <img src="assets/live/94372.png" alt="Flat 5% Welcome Bonus">
           </div>
@@ -4631,6 +4964,27 @@
             <span id="racesSectionChevron">▲</span>
           </div>
           <div class="races-content-body" id="racesContentBody">
+            <!-- MOBILE COMPACT 2-ROW RACES INTERFACE (AUTHENTIC REFERENCE SCREENSHOT) -->
+            <div class="mobile-races-layout" id="mobileRacesLayout">
+              <div class="mobile-race-row">
+                <span class="race-runner-icon"><img src="https://daba.b-cdn.net/global/horse-racing-new.gif" width="24" height="24" alt="Horse Racing" onerror="this.outerHTML='🏇'"></span>
+                <div class="mobile-race-pills-scroll">
+                  <div class="mobile-race-pill" onclick="filterRacesRegion('ZA')"><img src="assets/flags/za.png" width="18" height="18" style="border-radius: 50%;" alt="ZA"> ZA</div>
+                  <div class="mobile-race-pill" onclick="filterRacesRegion('AU')"><img src="assets/flags/au.png" width="18" height="18" style="border-radius: 50%;" alt="AU"> AU</div>
+                  <div class="mobile-race-pill" onclick="filterRacesRegion('FR')"><img src="assets/flags/fr.png" width="18" height="18" style="border-radius: 50%;" alt="FR"> FR</div>
+                  <div class="mobile-race-pill" onclick="filterRacesRegion('GB')"><img src="assets/flags/gb.png" width="18" height="18" style="border-radius: 50%;" alt="GB"> GB</div>
+                  <div class="mobile-race-pill" onclick="filterRacesRegion('IE')"><img src="assets/flags/ie.png" width="18" height="18" style="border-radius: 50%;" alt="IE"> IE</div>
+                </div>
+              </div>
+              <div class="mobile-race-row">
+                <span class="race-runner-icon"><img src="https://daba.b-cdn.net/global/greyhound-racing.gif" width="24" height="24" alt="Greyhound Racing" onerror="this.outerHTML='🐕'"></span>
+                <div class="mobile-race-pills-scroll">
+                  <div class="mobile-race-pill" onclick="filterRacesRegion('AU')"><img src="assets/flags/au.png" width="18" height="18" style="border-radius: 50%;" alt="AU"> AU</div>
+                  <div class="mobile-race-pill" onclick="filterRacesRegion('GB')"><img src="assets/flags/gb.png" width="18" height="18" style="border-radius: 50%;" alt="GB"> GB</div>
+                </div>
+              </div>
+            </div>
+
             <div class="races-type-tabs">
               <div class="races-type-tab active" id="tabHorseRacing" onclick="selectRaceType('horse')">
                 <span>🐎</span> Today's Horse Racing
@@ -4822,6 +5176,27 @@
       } else if (route === 'marble-race') {
         openCategoryView('crash-games');
       } else if (route === 'lottery-slots') {
+        openCategoryView('slot');
+      }
+    }
+
+    function handleMobileModeClick(el, mode) {
+      document.querySelectorAll('.mobile-top-modes-bar .mobile-mode-tab').forEach(t => t.classList.remove('active'));
+      if (el) el.classList.add('active');
+
+      if (mode === 'sports' || mode === 'exchange-games') {
+        setViewMode('sports');
+      } else if (mode === 'all-casinos') {
+        openCategoryView('casino');
+      } else if (mode === 'evolution') {
+        openCategoryView('live-casino');
+      } else if (mode === 'virtual-sports') {
+        openCategoryView('esports');
+      } else if (mode === 'qtech') {
+        openCategoryView('popular-games');
+      } else if (mode === 'marble-race') {
+        openCategoryView('crash-games');
+      } else if (mode === 'lottery-slots') {
         openCategoryView('slot');
       }
     }
@@ -5264,7 +5639,7 @@
 
       // Update hero banner based on sport
       const heroBanner = document.getElementById('heroBannerImg');
-      if (heroBanner) {
+      if (heroBanner && window.innerWidth > 768) {
         if (sportKey === 'soccer') {
           heroBanner.src = 'assets/images/banners/1.png';
         } else if (sportKey === 'tennis') {
@@ -5925,8 +6300,9 @@
         }, 400);
       }
     }
+    window.addEventListener('DOMContentLoaded', hideLoader);
     window.addEventListener('load', hideLoader);
-    setTimeout(hideLoader, 600);
+    setTimeout(hideLoader, 200);
 
     // Initialize races meetings and cricket matches on load
     renderRacesMeetings();
@@ -6156,25 +6532,33 @@
   <!-- Mobile Bottom Navigation (app-sitefooter) -->
   <div class="mobile-bottom-nav">
     <div class="mobile-nav-tab active" onclick="setViewMode('sports'); selectBottomNav(this);">
-      <span class="mobile-nav-icon">🏠</span>
+      <span class="mobile-nav-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007bff"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </span>
       <span>Home</span>
     </div>
     <div class="mobile-nav-tab" onclick="setScheduleTab('inplay'); selectBottomNav(this);">
-      <span class="mobile-nav-icon">⚡</span>
+      <span class="mobile-nav-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m12 7 3.5 2.5-1.5 4.5h-4L8.5 9.5z"/><path d="m12 2v5"/><path d="m21.5 8.5-6 1"/><path d="m18 20-4-3"/><path d="m6 20 4-3"/><path d="m2.5 8.5 6 1"/></svg>
+      </span>
       <span>Inplay</span>
     </div>
     <div class="mobile-nav-tab" onclick="toggleSupportChat();" style="display:flex; justify-content:center; align-items:center; position:relative;">
       <div class="mobile-whatsapp-circle" title="WhatsApp Support">
         <div class="ping-wave"></div>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.82 2.791.82 3.181 0 5.767-2.586 5.768-5.766 0-3.18-2.586-5.766-5.768-5.766zm9.969 5.766c0 5.514-4.486 10-10 10-1.824 0-3.535-.49-5.018-1.341l-5.982 1.563 1.59-5.808c-.936-1.547-1.47-3.359-1.47-5.294 0-5.514 4.486-10 10-10s10 4.486 10 10z"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.82 2.791.82 3.181 0 5.767-2.586 5.768-5.766 0-3.18-2.586-5.766-5.768-5.766zm9.969 5.766c0 5.514-4.486 10-10 10-1.824 0-3.535-.49-5.018-1.341l-5.982 1.563 1.59-5.808c-.936-1.547-1.47-3.359-1.47-5.294 0-5.514 4.486-10 10-10s10 4.486 10 10z"/></svg>
       </div>
     </div>
     <div class="mobile-nav-tab" onclick="openAccountModal('statement'); selectBottomNav(this);">
-      <span class="mobile-nav-icon">⚙️</span>
+      <span class="mobile-nav-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#007bff"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      </span>
       <span>Settings</span>
     </div>
     <div class="mobile-nav-tab" onclick="toggleMobileDrawer(); selectBottomNav(this);">
-      <span class="mobile-nav-icon">☰</span>
+      <span class="mobile-nav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2" fill="#00c0f3"/><rect x="13" y="3" width="8" height="8" rx="2" fill="#e91e63"/><rect x="3" y="13" width="8" height="8" rx="2" fill="#ff9800"/><rect x="13" y="13" width="8" height="8" rx="2" fill="#4caf50"/></svg>
+      </span>
       <span>Menu</span>
     </div>
   </div>
