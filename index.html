@@ -2568,12 +2568,27 @@
       line-height: 1 !important;
     }
     .sp-b .box.empty-odd {
-      cursor: pointer !important;
+      cursor: default !important;
     }
     .sp-b .box.empty-odd span {
       font-size: 14px !important;
       font-weight: 700 !important;
       color: #333333 !important;
+    }
+    /* Active / Selected state for Odds Buttons (System B) */
+    .sp-b .box.selected-odd.special-a,
+    .sp-b .box.selected-odd.gradient-special-a {
+      outline: 2.5px solid #0056b3 !important;
+      outline-offset: -2.5px !important;
+      box-shadow: 0 0 8px rgba(0, 86, 179, 0.6) !important;
+      transform: scale(0.96) !important;
+    }
+    .sp-b .box.selected-odd.special-b,
+    .sp-b .box.selected-odd.gradient-special-b {
+      outline: 2.5px solid #b71c1c !important;
+      outline-offset: -2.5px !important;
+      box-shadow: 0 0 8px rgba(183, 28, 28, 0.6) !important;
+      transform: scale(0.96) !important;
     }
 
     @media (max-width: 991px) {
@@ -2865,6 +2880,11 @@
     }
     .app-right-sidebar.show {
       display: block !important;
+    }
+    @media (min-width: 1025px) {
+      .app-right-sidebar {
+        display: block !important;
+      }
     }
     .desktop-betslip-card {
       background: #ffffff;
@@ -7143,28 +7163,35 @@
       renderSportsMatches(compName);
     }
 
-    // 4. INTERACTIVE BETSLIP CONTROLLER
-    let activeBet = null;
-
-    // Odds Click Handler: opens match details and populates betslip
-    window.handleOddsClick = function(e, team1, team2, matchTime, b1, l1, b2, l2, runnerName, type, odd) {
+    // ==========================================================================
+    // SYSTEM B: ODDS INTERFACE CONTROLLER (STRICTLY INDEPENDENT FROM SYSTEM A: B/F/M)
+    // ==========================================================================
+    window.handleOddsClick = function(e, btnEl, matchName, runnerName, type, odd) {
       if (e) {
         e.stopPropagation();
         e.preventDefault();
       }
 
-      // 1. If not already inside match details, open match details
-      const details = document.getElementById('matchDetailsContainer');
-      const isDetailsOpen = details && details.classList.contains('show') && details.style.display !== 'none';
-      if (!isDetailsOpen) {
-        window.openMatchDetails(team1, team2, matchTime, 'all', b1, l1, b2, l2);
+      // 1. Placeholder '-' or empty odds are non-interactive
+      if (!odd || odd === '-' || !runnerName) {
+        return;
       }
 
-      // 2. Open betslip with clicked selection (unless empty / '-')
-      if (odd && odd !== '-' && runnerName) {
-        const matchTitle = team2 ? `${team1} vs ${team2}` : team1;
-        openBetslip(null, matchTitle, runnerName, type, odd);
+      // 2. If the clicked button is already selected, deselect it and close betslip
+      if (btnEl && btnEl.classList.contains('selected-odd')) {
+        btnEl.classList.remove('selected-odd');
+        closeBetslip();
+        return;
       }
+
+      // 3. Highlight currently selected odds button with authentic active state
+      document.querySelectorAll('.box.selected-odd').forEach(el => el.classList.remove('selected-odd'));
+      if (btnEl) {
+        btnEl.classList.add('selected-odd');
+      }
+
+      // 4. Directly activate and populate Bet Slip (NEVER calls openMatchDetails / B/F/M interface)
+      openBetslip(null, matchName, runnerName, type, odd);
     };
 
     function openBetslip(e, matchName, runnerName, type, odd) {
@@ -7185,39 +7212,51 @@
       if (stakeInp) stakeInp.value = activeBet.stake;
       updateBetslipProfit();
 
-      // Update Desktop Right Sidebar Bet Slip (matching ref_live_desktop_full.png)
+      // Update Desktop Right Sidebar Bet Slip
       const desktopBetslip = document.getElementById('desktopBetslipBody');
       if (desktopBetslip) {
+        const isBack = (type === 'back');
         desktopBetslip.innerHTML = `
-          <div style="background:#f8f9fa; border:1px solid #e2e8f0; border-radius:6px; padding:10px; margin-bottom:8px;">
-            <div style="font-weight:700; font-size:12px; color:#111; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${matchName}</div>
-            <div style="font-weight:800; font-size:12px; color:${type === 'back' ? '#0d47a1' : '#b71c1c'}; margin-top:3px;">
-              ${type === 'back' ? 'Back' : 'Lay'}: ${runnerName}
+          <div style="background:#ffffff; border:1px solid ${isBack ? '#9ecddf' : '#fbd7e5'}; border-radius:6px; padding:10px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-weight:700; font-size:11.5px; color:#555; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px;" title="${matchName}">${matchName}</div>
+              <button onclick="closeBetslip()" style="background:none; border:none; font-size:16px; font-weight:800; cursor:pointer; color:#888; padding:0 4px;" title="Cancel Bet">&times;</button>
             </div>
-            <div style="display:flex; gap:8px; margin-top:8px;">
+            <div style="font-weight:800; font-size:12.5px; color:#111; margin-top:4px; display:flex; align-items:center; gap:6px;">
+              <span style="background:${isBack ? '#9ecddf' : '#fbd7e5'}; color:#000; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:800; text-transform:uppercase;">${isBack ? 'Back' : 'Lay'}</span>
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${runnerName}</span>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:10px;">
               <div style="flex:1;">
-                <label style="font-size:10px; font-weight:700; color:#666;">Odds</label>
-                <input type="number" step="0.01" id="desktopOddsInput" value="${activeBet.odd}" oninput="updateDesktopProfit()" style="width:100%; padding:4px 6px; border:1px solid #ccc; border-radius:4px; font-weight:700; font-size:12px; box-sizing:border-box;">
+                <label style="font-size:10px; font-weight:700; color:#666; display:block; margin-bottom:2px;">Odds</label>
+                <div style="display:flex; align-items:center;">
+                  <button type="button" onclick="stepDesktopOdds(-0.01)" style="width:24px; height:28px; background:#e8e8e8; border:1px solid #ccc; border-radius:4px 0 0 4px; font-weight:700; cursor:pointer;">-</button>
+                  <input type="number" step="0.01" id="desktopOddsInput" value="${activeBet.odd}" oninput="updateDesktopProfit()" style="width:100%; height:28px; padding:2px 4px; border:1px solid #ccc; border-left:none; border-right:none; font-weight:700; font-size:12px; text-align:center; box-sizing:border-box;">
+                  <button type="button" onclick="stepDesktopOdds(0.01)" style="width:24px; height:28px; background:#e8e8e8; border:1px solid #ccc; border-radius:0 4px 4px 0; font-weight:700; cursor:pointer;">+</button>
+                </div>
               </div>
               <div style="flex:1;">
-                <label style="font-size:10px; font-weight:700; color:#666;">Stake (₹)</label>
-                <input type="number" step="10" id="desktopStakeInput" value="${activeBet.stake}" oninput="updateDesktopProfit()" style="width:100%; padding:4px 6px; border:1px solid #ccc; border-radius:4px; font-weight:700; font-size:12px; box-sizing:border-box;">
+                <label style="font-size:10px; font-weight:700; color:#666; display:block; margin-bottom:2px;">Stake (₹)</label>
+                <input type="number" step="10" id="desktopStakeInput" value="${activeBet.stake}" oninput="updateDesktopProfit()" style="width:100%; height:28px; padding:2px 6px; border:1px solid #ccc; border-radius:4px; font-weight:700; font-size:12px; text-align:center; box-sizing:border-box;">
               </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:11.5px; font-weight:700;">
+            <!-- Quick Stake Pills -->
+            <div style="display:flex; gap:4px; margin-top:8px;">
+              <button type="button" onclick="addDesktopStake(100)" style="flex:1; background:#f0f0f0; border:1px solid #ddd; border-radius:4px; padding:3px 0; font-size:10.5px; font-weight:700; cursor:pointer;">+100</button>
+              <button type="button" onclick="addDesktopStake(500)" style="flex:1; background:#f0f0f0; border:1px solid #ddd; border-radius:4px; padding:3px 0; font-size:10.5px; font-weight:700; cursor:pointer;">+500</button>
+              <button type="button" onclick="addDesktopStake(1000)" style="flex:1; background:#f0f0f0; border:1px solid #ddd; border-radius:4px; padding:3px 0; font-size:10.5px; font-weight:700; cursor:pointer;">+1K</button>
+              <button type="button" onclick="addDesktopStake(5000)" style="flex:1; background:#f0f0f0; border:1px solid #ddd; border-radius:4px; padding:3px 0; font-size:10.5px; font-weight:700; cursor:pointer;">+5K</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:11.5px; font-weight:700; padding:4px 0; border-top:1px dashed #e0e0e0;">
               <span>Potential Profit:</span>
-              <span id="desktopProfitVal" style="color:#28a745;">₹ ${(activeBet.stake * (activeBet.odd - 1)).toFixed(2)}</span>
+              <span id="desktopProfitVal" style="color:#28a745; font-size:12px;">₹ ${(activeBet.stake * (activeBet.odd - 1)).toFixed(2)}</span>
             </div>
-            <button onclick="placeBet()" style="width:100%; margin-top:10px; background:#ffc11c; border:none; border-radius:4px; padding:7px; font-weight:800; font-size:12px; cursor:pointer;">Place Bet</button>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+              <button type="button" onclick="closeBetslip()" style="flex:1; background:#f0f0f0; border:1px solid #ccc; border-radius:4px; padding:7px; font-weight:700; font-size:11.5px; cursor:pointer;">Cancel</button>
+              <button type="button" onclick="placeBet()" style="flex:2; background:#ffc11c; border:none; border-radius:4px; padding:7px; font-weight:800; font-size:12px; cursor:pointer;">Place Bet</button>
+            </div>
           </div>
         `;
-      }
-
-      // If desktop, ensure Right Sidebar is visible and active
-      const rightSidebar = document.getElementById('appRightSidebar');
-      if (window.innerWidth > 1024 && rightSidebar) {
-        rightSidebar.classList.add('show');
-        rightSidebar.style.display = 'block';
       }
 
       // If mobile/tablet, open drawer
@@ -7229,24 +7268,42 @@
       }
     }
 
-    window.updateDesktopProfit = function() {
-      const odd = parseFloat(document.getElementById('desktopOddsInput')?.value) || 1;
-      const stake = parseFloat(document.getElementById('desktopStakeInput')?.value) || 0;
-      const profit = stake * (odd - 1);
-      const valEl = document.getElementById('desktopProfitVal');
-      if (valEl) valEl.innerText = '₹ ' + profit.toFixed(2);
-    };
-
     function closeBetslip() {
+      // Clear active selection on buttons
+      document.querySelectorAll('.box.selected-odd').forEach(el => el.classList.remove('selected-odd'));
+      activeBet = null;
+
+      // Close mobile drawer
       const drawer = document.getElementById('betslipDrawer');
       const backdrop = document.getElementById('betslipBackdrop');
       if (drawer) drawer.classList.remove('show');
       if (backdrop) backdrop.classList.remove('show');
+
+      // Reset desktop betslip body to default state
       const desktopBetslip = document.getElementById('desktopBetslipBody');
       if (desktopBetslip) {
         desktopBetslip.innerHTML = `<p style="font-size:12.5px; color:#555; margin:16px 0; text-align:center;">Click on the odds to add selections to the Bet Slip.</p>`;
       }
     }
+
+    window.stepDesktopOdds = function(delta) {
+      const inp = document.getElementById('desktopOddsInput');
+      if (inp) {
+        let cur = parseFloat(inp.value) || 1.0;
+        cur = Math.max(1.01, +(cur + delta).toFixed(2));
+        inp.value = cur;
+        updateDesktopProfit();
+      }
+    };
+
+    window.addDesktopStake = function(amt) {
+      const inp = document.getElementById('desktopStakeInput');
+      if (inp) {
+        let cur = parseFloat(inp.value) || 0;
+        inp.value = cur + amt;
+        updateDesktopProfit();
+      }
+    };
 
     function stepOdds(delta) {
       const inp = document.getElementById('betslipOddsInput');
@@ -7689,15 +7746,19 @@
               </div>
             ` : ''}
 
-            <!-- Right Odds Side: 3 Pairs of Back/Lay Odds Capsules (.sp-b) matching Live Reference -->
+            <!-- Right Odds Side: 3 Pairs of Back/Lay Odds Capsules (.sp-b) - SYSTEM B: ODDS INTERFACE -->
             <div class="def-game-box-right" tabindex="0">
               <!-- Pair 1: Team 1 Back / Lay -->
               <div class="sp-b">
-                <div class="box special-a gradient-special-a ${m.b1 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team1}', 'back', '${m.b1 || ''}')" title="Back ${m.team1}">
+                <div class="box special-a gradient-special-a ${m.b1 && m.b1 !== '-' ? '' : 'empty-odd'}" 
+                     onclick="handleOddsClick(event, this, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team1}', 'back', '${m.b1 || ''}')" 
+                     title="Back ${m.team1} at ${m.b1 || '-'}">
                   <span>${m.b1 || '-'}</span>
                   ${m.bS1 ? `<div class="amount-below"><p>${m.bS1}</p></div>` : ''}
                 </div>
-                <div class="box special-b gradient-special-b ${m.l1 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team1}', 'lay', '${m.l1 || ''}')" title="Lay ${m.team1}">
+                <div class="box special-b gradient-special-b ${m.l1 && m.l1 !== '-' ? '' : 'empty-odd'}" 
+                     onclick="handleOddsClick(event, this, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team1}', 'lay', '${m.l1 || ''}')" 
+                     title="Lay ${m.team1} at ${m.l1 || '-'}">
                   <span>${m.l1 || '-'}</span>
                   ${m.lS1 ? `<div class="amount-below"><p>${m.lS1}</p></div>` : ''}
                 </div>
@@ -7705,11 +7766,15 @@
 
               <!-- Pair 2: Draw / Empty -->
               <div class="sp-b">
-                <div class="box special-a gradient-special-a ${m.b2Draw && m.b2Draw !== '-' ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', 'The Draw', 'back', '${m.b2Draw || '-'}')" title="Back Draw">
+                <div class="box special-a gradient-special-a ${m.b2Draw && m.b2Draw !== '-' ? '' : 'empty-odd'}" 
+                     onclick="handleOddsClick(event, this, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', 'The Draw', 'back', '${m.b2Draw || ''}')" 
+                     title="${m.b2Draw && m.b2Draw !== '-' ? 'Back Draw at ' + m.b2Draw : 'No Draw Odds'}">
                   <span>${m.b2Draw || '-'}</span>
                   ${m.bS2Draw ? `<div class="amount-below"><p>${m.bS2Draw}</p></div>` : ''}
                 </div>
-                <div class="box special-b gradient-special-b ${m.l2Draw && m.l2Draw !== '-' ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', 'The Draw', 'lay', '${m.l2Draw || '-'}')" title="Lay Draw">
+                <div class="box special-b gradient-special-b ${m.l2Draw && m.l2Draw !== '-' ? '' : 'empty-odd'}" 
+                     onclick="handleOddsClick(event, this, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', 'The Draw', 'lay', '${m.l2Draw || ''}')" 
+                     title="${m.l2Draw && m.l2Draw !== '-' ? 'Lay Draw at ' + m.l2Draw : 'No Draw Odds'}">
                   <span>${m.l2Draw || '-'}</span>
                   ${m.lS2Draw ? `<div class="amount-below"><p>${m.lS2Draw}</p></div>` : ''}
                 </div>
@@ -7717,11 +7782,15 @@
 
               <!-- Pair 3: Team 2 Back / Lay -->
               <div class="sp-b">
-                <div class="box special-a gradient-special-a ${m.b2 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team2 || m.team1}', 'back', '${m.b2 || ''}')" title="Back ${m.team2 || m.team1}">
+                <div class="box special-a gradient-special-a ${m.b2 && m.b2 !== '-' ? '' : 'empty-odd'}" 
+                     onclick="handleOddsClick(event, this, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team2 || m.team1}', 'back', '${m.b2 || ''}')" 
+                     title="Back ${m.team2 || m.team1} at ${m.b2 || '-'}">
                   <span>${m.b2 || '-'}</span>
                   ${m.bS2 ? `<div class="amount-below"><p>${m.bS2}</p></div>` : ''}
                 </div>
-                <div class="box special-b gradient-special-b ${m.l2 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team2 || m.team1}', 'lay', '${m.l2 || ''}')" title="Lay ${m.team2 || m.team1}">
+                <div class="box special-b gradient-special-b ${m.l2 && m.l2 !== '-' ? '' : 'empty-odd'}" 
+                     onclick="handleOddsClick(event, this, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team2 || m.team1}', 'lay', '${m.l2 || ''}')" 
+                     title="Lay ${m.team2 || m.team1} at ${m.l2 || '-'}">
                   <span>${m.l2 || '-'}</span>
                   ${m.lS2 ? `<div class="amount-below"><p>${m.lS2}</p></div>` : ''}
                 </div>
