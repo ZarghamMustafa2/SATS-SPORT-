@@ -2477,6 +2477,156 @@
       line-height: 1 !important;
     }
 
+    /* ==========================================================================
+       AUTHENTIC SATSPORT ODDS CAPSULES & BUTTONS (.sp-b, .box.special-a, .box.special-b)
+       Extracted forensically from live reference https://www.satsport.co.in/sports
+       ========================================================================== */
+    .inplay-match-card.default-game-box {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      box-sizing: border-box !important;
+    }
+    .default-game-box-left {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex: 1 !important;
+      min-width: 0 !important;
+      margin-right: 8px !important;
+    }
+    .def-game-box-right {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 6px !important;
+      flex-shrink: 0 !important;
+    }
+    .sp-b {
+      background: rgb(241, 241, 241) !important;
+      border: 1px solid rgb(240, 240, 240) !important;
+      border-radius: 10px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0px !important;
+      margin: 0px !important;
+      height: 48px !important;
+      box-sizing: border-box !important;
+    }
+    .sp-b .box {
+      width: 50px !important;
+      height: 42px !important;
+      border-radius: 10px !important;
+      margin: 2px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      border: 0px none !important;
+      font-family: 'Poppins', sans-serif !important;
+      user-select: none !important;
+      transition: opacity 0.15s ease, transform 0.1s ease !important;
+      box-sizing: border-box !important;
+      text-decoration: none !important;
+    }
+    .sp-b .box:hover {
+      opacity: 0.88 !important;
+    }
+    .sp-b .box:active {
+      transform: scale(0.96) !important;
+    }
+    .sp-b .box.special-a,
+    .sp-b .box.gradient-special-a {
+      background: rgb(158, 205, 223) !important; /* Back Blue */
+      color: rgb(0, 0, 0) !important;
+    }
+    .sp-b .box.special-b,
+    .sp-b .box.gradient-special-b {
+      background: rgb(251, 215, 229) !important; /* Lay Pink */
+      color: rgb(0, 0, 0) !important;
+    }
+    .sp-b .box > span {
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      color: #000000 !important;
+      line-height: 1.1 !important;
+      display: block !important;
+    }
+    .sp-b .box .amount-below {
+      display: block !important;
+      margin-top: 1px !important;
+      line-height: 1 !important;
+    }
+    .sp-b .box .amount-below p {
+      font-size: 11px !important;
+      font-weight: 400 !important;
+      color: rgb(0, 0, 0) !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      line-height: 1 !important;
+    }
+    .sp-b .box.empty-odd {
+      cursor: pointer !important;
+    }
+    .sp-b .box.empty-odd span {
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      color: #333333 !important;
+    }
+
+    @media (max-width: 991px) {
+      .inplay-match-card.default-game-box {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 6px !important;
+      }
+      .default-game-box-left {
+        width: 100% !important;
+        margin-right: 0 !important;
+      }
+      .def-game-box-right {
+        width: 100% !important;
+        justify-content: flex-end !important;
+        gap: 4px !important;
+      }
+      .sp-b {
+        height: 40px !important;
+        border-radius: 8px !important;
+      }
+      .sp-b .box {
+        width: 46px !important;
+        height: 34px !important;
+        border-radius: 8px !important;
+        margin: 1.5px !important;
+      }
+      .sp-b .box > span {
+        font-size: 11px !important;
+      }
+      .sp-b .box .amount-below p {
+        font-size: 9.5px !important;
+      }
+    }
+    @media (max-width: 480px) {
+      .sp-b {
+        height: 36px !important;
+        border-radius: 8px !important;
+      }
+      .sp-b .box {
+        width: 40px !important;
+        height: 30px !important;
+        border-radius: 6px !important;
+        margin: 1px !important;
+      }
+      .sp-b .box > span {
+        font-size: 10.5px !important;
+      }
+      .sp-b .box .amount-below p {
+        font-size: 8.5px !important;
+      }
+    }
+
     /* Authentic Match Details Page Styles (Global Desktop & Responsive) */
     .match-details-view {
       display: none;
@@ -6995,6 +7145,28 @@
 
     // 4. INTERACTIVE BETSLIP CONTROLLER
     let activeBet = null;
+
+    // Odds Click Handler: opens match details and populates betslip
+    window.handleOddsClick = function(e, team1, team2, matchTime, b1, l1, b2, l2, runnerName, type, odd) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+
+      // 1. If not already inside match details, open match details
+      const details = document.getElementById('matchDetailsContainer');
+      const isDetailsOpen = details && details.classList.contains('show') && details.style.display !== 'none';
+      if (!isDetailsOpen) {
+        window.openMatchDetails(team1, team2, matchTime, 'all', b1, l1, b2, l2);
+      }
+
+      // 2. Open betslip with clicked selection (unless empty / '-')
+      if (odd && odd !== '-' && runnerName) {
+        const matchTitle = team2 ? `${team1} vs ${team2}` : team1;
+        openBetslip(null, matchTitle, runnerName, type, odd);
+      }
+    };
+
     function openBetslip(e, matchName, runnerName, type, odd) {
       if (e) e.stopPropagation();
       activeBet = { matchName, runnerName, type, odd: parseFloat(odd) || 1.85, stake: 500 };
@@ -7041,6 +7213,13 @@
         `;
       }
 
+      // If desktop, ensure Right Sidebar is visible and active
+      const rightSidebar = document.getElementById('appRightSidebar');
+      if (window.innerWidth > 1024 && rightSidebar) {
+        rightSidebar.classList.add('show');
+        rightSidebar.style.display = 'block';
+      }
+
       // If mobile/tablet, open drawer
       if (window.innerWidth <= 1024) {
         const drawer = document.getElementById('betslipDrawer');
@@ -7063,6 +7242,10 @@
       const backdrop = document.getElementById('betslipBackdrop');
       if (drawer) drawer.classList.remove('show');
       if (backdrop) backdrop.classList.remove('show');
+      const desktopBetslip = document.getElementById('desktopBetslipBody');
+      if (desktopBetslip) {
+        desktopBetslip.innerHTML = `<p style="font-size:12.5px; color:#555; margin:16px 0; text-align:center;">Click on the odds to add selections to the Bet Slip.</p>`;
+      }
     }
 
     function stepOdds(delta) {
@@ -7088,7 +7271,9 @@
     }
 
     function placeBet() {
-      const stake = document.getElementById('betslipStakeInput').value;
+      const deskStakeInp = document.getElementById('desktopStakeInput');
+      const mobStakeInp = document.getElementById('betslipStakeInput');
+      const stake = (deskStakeInp && deskStakeInp.value) ? deskStakeInp.value : (mobStakeInp ? mobStakeInp.value : 500);
       const refId = '#SB-' + Math.floor(100000 + Math.random() * 900000);
       showToast('Bet placed successfully for ₹ ' + stake + '! Ref: ' + refId);
       closeBetslip();
@@ -7470,14 +7655,14 @@
         const rowBg = isOdd ? '#ffffff' : '#fcf4d9';
         const matchTitle = m.team2 ? `${m.team1} vs ${m.team2}` : m.team1;
         return `
-          <div class="inplay-match-card" style="background:${rowBg}; border-radius:10px; padding:8px 10px; margin:6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
-            <!-- Row 1: Status/Date, Teams/Tourney, BFM Pin Badges -->
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-              <div onclick="openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'all', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')" style="display:flex; align-items:center; gap:6px; min-width:0; flex:1; overflow:hidden; cursor:pointer;" title="Click to view match details">
-                ${m.isLive ? '<span style="background:#4cd964; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>' : `<span style="background:#ececec; color:#333333; font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:6px; flex-shrink:0;">${m.time || 'Upcoming'}</span>`}
-                <div style="font-size:11.5px; font-weight:600; color:#111111; display:flex; align-items:center; gap:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                  <span>${m.team1}</span>
-                  ${m.team2 ? `<span style="font-size:9px; font-weight:800; color:#b8860b; background:#f5e29f; padding:1px 3px; border-radius:3px;">Vs</span><span>${m.team2}</span>` : ''}
+          <div class="inplay-match-card default-game-box sport-event-card" style="background:${rowBg}; border-radius:10px; padding:8px 12px; margin:6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
+            <!-- Left Side: Status/Date, Teams/Tourney, BFM Pin Badges -->
+            <div class="default-game-box-left">
+              <div onclick="openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'all', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; overflow:hidden; cursor:pointer;" title="Click to view match details">
+                ${m.isLive ? '<span class="live-badge" style="background:#4cd964; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>' : `<span style="background:#ececec; color:#333333; font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:6px; flex-shrink:0;">${m.time || 'Upcoming'}</span>`}
+                <div class="def-runners-side" style="font-size:12px; font-weight:600; color:#111111; display:flex; align-items:center; gap:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  <span class="def-runner-team">${m.team1}</span>
+                  ${m.team2 ? `<span class="vs-badge" style="font-size:9.5px; font-weight:800; color:#b8860b; background:#f5e29f; padding:1px 4px; border-radius:3px;">Vs</span><span class="def-runner-team">${m.team2}</span>` : ''}
                 </div>
               </div>
 
@@ -7504,32 +7689,42 @@
               </div>
             ` : ''}
 
-            <!-- Row 2: 3 Pairs of Back/Lay Odds Boxes (6 boxes) -->
-            <div style="display:flex; gap:4px; align-items:center; justify-content:flex-end;">
+            <!-- Right Odds Side: 3 Pairs of Back/Lay Odds Capsules (.sp-b) matching Live Reference -->
+            <div class="def-game-box-right" tabindex="0">
               <!-- Pair 1: Team 1 Back / Lay -->
-              <div class="inplay-odd-btn back" onclick="openBetslip(event, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team1}', 'back', '${m.b1 || ''}')" style="flex:1; max-width:54px; height:38px; border-radius:6px; background:#a5d8f3; color:#000000; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;">
-                <span style="font-size:12px; font-weight:700; line-height:1.1;">${m.b1 || ''}</span>
-                <span style="font-size:8.5px; font-weight:500; color:#333333; line-height:1;">${m.bS1 || ''}</span>
+              <div class="sp-b">
+                <div class="box special-a gradient-special-a ${m.b1 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team1}', 'back', '${m.b1 || ''}')" title="Back ${m.team1}">
+                  <span>${m.b1 || '-'}</span>
+                  ${m.bS1 ? `<div class="amount-below"><p>${m.bS1}</p></div>` : ''}
+                </div>
+                <div class="box special-b gradient-special-b ${m.l1 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team1}', 'lay', '${m.l1 || ''}')" title="Lay ${m.team1}">
+                  <span>${m.l1 || '-'}</span>
+                  ${m.lS1 ? `<div class="amount-below"><p>${m.lS1}</p></div>` : ''}
+                </div>
               </div>
-              <div class="inplay-odd-btn lay" onclick="openBetslip(event, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team1}', 'lay', '${m.l1 || ''}')" style="flex:1; max-width:54px; height:38px; border-radius:6px; background:#fcd3e1; color:#000000; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;">
-                <span style="font-size:12px; font-weight:700; line-height:1.1;">${m.l1 || ''}</span>
-                <span style="font-size:8.5px; font-weight:500; color:#333333; line-height:1;">${m.lS1 || ''}</span>
-              </div>
+
               <!-- Pair 2: Draw / Empty -->
-              <div class="inplay-odd-btn back ${m.b2Draw ? '' : 'empty'}" ${m.b2Draw ? `onclick="openBetslip(event, '${m.team1} vs ${m.team2}', 'The Draw', 'back', '${m.b2Draw}')"` : ''} style="flex:1; max-width:54px; height:38px; border-radius:6px; background:#a5d8f3; color:${m.b2Draw ? '#000000' : '#555555'}; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:${m.b2Draw ? '12px' : '14px'}; font-weight:700; cursor:${m.b2Draw ? 'pointer' : 'default'};">
-                ${m.b2Draw ? `<span>${m.b2Draw}</span><span style="font-size:8.5px; font-weight:500; color:#333333;">${m.bS2Draw || ''}</span>` : '-'}
+              <div class="sp-b">
+                <div class="box special-a gradient-special-a ${m.b2Draw && m.b2Draw !== '-' ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', 'The Draw', 'back', '${m.b2Draw || '-'}')" title="Back Draw">
+                  <span>${m.b2Draw || '-'}</span>
+                  ${m.bS2Draw ? `<div class="amount-below"><p>${m.bS2Draw}</p></div>` : ''}
+                </div>
+                <div class="box special-b gradient-special-b ${m.l2Draw && m.l2Draw !== '-' ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', 'The Draw', 'lay', '${m.l2Draw || '-'}')" title="Lay Draw">
+                  <span>${m.l2Draw || '-'}</span>
+                  ${m.lS2Draw ? `<div class="amount-below"><p>${m.lS2Draw}</p></div>` : ''}
+                </div>
               </div>
-              <div class="inplay-odd-btn lay ${m.l2Draw ? '' : 'empty'}" ${m.l2Draw ? `onclick="openBetslip(event, '${m.team1} vs ${m.team2}', 'The Draw', 'lay', '${m.l2Draw}')"` : ''} style="flex:1; max-width:54px; height:38px; border-radius:6px; background:#fcd3e1; color:${m.l2Draw ? '#000000' : '#555555'}; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:${m.l2Draw ? '12px' : '14px'}; font-weight:700; cursor:${m.l2Draw ? 'pointer' : 'default'};">
-                ${m.l2Draw ? `<span>${m.l2Draw}</span><span style="font-size:8.5px; font-weight:500; color:#333333;">${m.lS2Draw || ''}</span>` : '-'}
-              </div>
+
               <!-- Pair 3: Team 2 Back / Lay -->
-              <div class="inplay-odd-btn back" onclick="openBetslip(event, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team2 || m.team1}', 'back', '${m.b2 || ''}')" style="flex:1; max-width:54px; height:38px; border-radius:6px; background:#a5d8f3; color:#000000; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;">
-                <span style="font-size:12px; font-weight:700; line-height:1.1;">${m.b2 || ''}</span>
-                <span style="font-size:8.5px; font-weight:500; color:#333333; line-height:1;">${m.bS2 || ''}</span>
-              </div>
-              <div class="inplay-odd-btn lay" onclick="openBetslip(event, '${m.team1} ${m.team2 ? 'vs ' + m.team2 : ''}', '${m.team2 || m.team1}', 'lay', '${m.l2 || ''}')" style="flex:1; max-width:54px; height:38px; border-radius:6px; background:#fcd3e1; color:#000000; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;">
-                <span style="font-size:12px; font-weight:700; line-height:1.1;">${m.l2 || ''}</span>
-                <span style="font-size:8.5px; font-weight:500; color:#333333; line-height:1;">${m.lS2 || ''}</span>
+              <div class="sp-b">
+                <div class="box special-a gradient-special-a ${m.b2 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team2 || m.team1}', 'back', '${m.b2 || ''}')" title="Back ${m.team2 || m.team1}">
+                  <span>${m.b2 || '-'}</span>
+                  ${m.bS2 ? `<div class="amount-below"><p>${m.bS2}</p></div>` : ''}
+                </div>
+                <div class="box special-b gradient-special-b ${m.l2 ? '' : 'empty-odd'}" onclick="handleOddsClick(event, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team2 || m.team1}', 'lay', '${m.l2 || ''}')" title="Lay ${m.team2 || m.team1}">
+                  <span>${m.l2 || '-'}</span>
+                  ${m.lS2 ? `<div class="amount-below"><p>${m.lS2}</p></div>` : ''}
+                </div>
               </div>
             </div>
           </div>
@@ -7591,16 +7786,16 @@
         if (inplayNavTab) inplayNavTab.classList.add('active');
 
         const cricketMatches = [
-          { isLive: true, team1: 'Bahamas', team2: 'Bermuda', b1: '3.25', bS1: '4', l1: '4.3', lS1: '2', b2: '1.31', bS2: '6', l2: '1.44', lS2: '8' },
-          { isLive: true, team1: 'Rourkela Steelers', team2: 'Kataka Panthers', b1: '1.37', bS1: '2', l1: '2.54', lS1: '2', b2: '1.66', bS2: '1', l2: '4.6', lS2: '1' },
-          { isLive: true, team1: 'Puri Titans', team2: 'Keonjhar Miners', b1: '1.52', bS1: '68', l1: '1.64', lS1: '42', b2: '2.58', bS2: '21', l2: '2.92', lS2: '1' },
-          { isLive: true, team1: 'Rishikesh River Kings', team2: 'Dehradun Warriors', b1: '', bS1: '', l1: '1.02', lS1: '150', b2: '120', bS2: '3', l2: '750', lS2: '0.03' },
-          { isLive: true, team1: 'Titans', team2: 'Western Province', b1: '2.4', bS1: '69', l1: '2.46', lS1: '180', b2: '1.69', bS2: '263', l2: '1.7', lS2: '1' }
+          { isLive: true, team1: 'Keonjhar Miners', team2: 'Kataka Panthers', b1: '1.55', bS1: '93.21', l1: '1.58', lS1: '136.79', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '2.74', bS2: '1.49', l2: '2.82', lS2: '51.23' },
+          { isLive: true, team1: 'Rourkela Steelers', team2: 'Puri Titans', b1: '1.37', bS1: '2.4K', l1: '2.54', lS1: '1.8K', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.66', bS2: '1.1K', l2: '4.6', lS2: '890' },
+          { isLive: true, team1: 'Bahamas', team2: 'Bermuda', b1: '3.25', bS1: '400', l1: '4.3', lS1: '250', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.31', bS2: '6.2K', l2: '1.44', lS2: '8.1K' },
+          { isLive: true, team1: 'Rishikesh River Kings', team2: 'Dehradun Warriors', b1: '1.55', bS1: '80', l1: '3.8', lS1: '10', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.36', bS2: '20', l2: '2.8', lS2: '10' },
+          { isLive: true, team1: 'Titans', team2: 'Western Province', b1: '2.4', bS1: '69', l1: '2.46', lS1: '180', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.69', bS2: '263', l2: '1.7', lS2: '100' }
         ];
 
         const soccerMatches = [
-          { isLive: true, team1: 'Arsenal', team2: 'Chelsea', b1: '2.14', bS1: '12k', l1: '2.18', lS1: '8k', b2: '3.40', bS2: '5k', l2: '3.55', lS2: '3k' },
-          { isLive: true, team1: 'Real Madrid', team2: 'Barcelona', b1: '2.05', bS1: '45k', l1: '2.08', lS1: '33k', b2: '3.60', bS2: '15k', l2: '3.75', lS2: '10k' }
+          { isLive: true, team1: 'Arsenal', team2: 'Chelsea', b1: '2.14', bS1: '12k', l1: '2.18', lS1: '8k', b2Draw: '3.40', bS2Draw: '5k', l2Draw: '3.55', lS2Draw: '3k', b2: '3.10', bS2: '4k', l2: '3.25', lS2: '2k' },
+          { isLive: true, team1: 'Real Madrid', team2: 'Barcelona', b1: '2.05', bS1: '45k', l1: '2.08', lS1: '33k', b2Draw: '3.60', bS2Draw: '15k', l2Draw: '3.75', lS2Draw: '10k', b2: '3.30', bS2: '12k', l2: '3.45', lS2: '8k' }
         ];
 
         let inplayHtml = blackAnnouncement + fraudStrip + `
