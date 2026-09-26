@@ -2430,6 +2430,11 @@
       flex-shrink: 0 !important;
       margin-left: 6px !important;
     }
+    @media (max-width: 768px) {
+      .bfm-wrapper {
+        display: none !important;
+      }
+    }
     .bfm-item {
       display: flex !important;
       flex-direction: column !important;
@@ -2881,9 +2886,10 @@
     .app-right-sidebar.show {
       display: block !important;
     }
-    @media (min-width: 1025px) {
-      .app-right-sidebar {
-        display: block !important;
+    @media (max-width: 1024px) {
+      .app-right-sidebar,
+      .app-right-sidebar.show {
+        display: none !important;
       }
     }
     .desktop-betslip-card {
@@ -7259,6 +7265,12 @@
         `;
       }
 
+      // If desktop, show Right Sidebar
+      if (window.innerWidth > 1024) {
+        const rightSidebar = document.getElementById('appRightSidebar');
+        if (rightSidebar) rightSidebar.classList.add('show');
+      }
+
       // If mobile/tablet, open drawer
       if (window.innerWidth <= 1024) {
         const drawer = document.getElementById('betslipDrawer');
@@ -7283,6 +7295,13 @@
       const desktopBetslip = document.getElementById('desktopBetslipBody');
       if (desktopBetslip) {
         desktopBetslip.innerHTML = `<p style="font-size:12.5px; color:#555; margin:16px 0; text-align:center;">Click on the odds to add selections to the Bet Slip.</p>`;
+      }
+
+      // If match details is not open, hide right sidebar on desktop
+      const details = document.getElementById('matchDetailsContainer');
+      const rightSidebar = document.getElementById('appRightSidebar');
+      if (rightSidebar && (!details || !details.classList.contains('show'))) {
+        rightSidebar.classList.remove('show');
       }
     }
 
@@ -8061,6 +8080,40 @@
       const t2 = team2 || 'Team B';
       const activeTab = initialTab || 'all';
 
+      // Update Left Sidebar with Active Match Hierarchy (matching live reference)
+      const sideList = document.getElementById('sidebarSportsList');
+      if (sideList) {
+        if (!window._origSidebarHtml) {
+          window._origSidebarHtml = sideList.innerHTML;
+        }
+        sideList.innerHTML = `
+          <div style="padding: 6px 10px;">
+            <div style="background:#ffc11c; color:#000; font-weight:800; font-size:12px; padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+              <span>🏏</span>
+              <span>Cricket</span>
+            </div>
+            <div style="background:#111; color:#fff; font-weight:700; font-size:11.5px; padding:7px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span>Uttarakhand Premier League</span>
+              <span style="font-size:10px;">&gt;</span>
+            </div>
+            <div style="font-size:11.5px; font-weight:700; color:#111; padding:6px 4px; border-bottom:1px solid #eee;">
+              ${matchTitle}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px; margin-top:6px; font-size:11px; color:#333; font-weight:600;">
+              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px; background:#f5f5f5;">
+                <span style="color:#28a745; font-weight:900;">✔</span> Match Odds
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px;">
+                <span style="color:#28a745; font-weight:900;">✔</span> Tied Match
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px;">
+                <span style="color:#28a745; font-weight:900;">✔</span> Completed Match
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       // Live odds default fallbacks matching reference
       const oddsB1 = b1 || '1.88';
       const oddsL1 = l1 || '2.54';
@@ -8092,10 +8145,9 @@
 
         <!-- Authentic Filter Tabs Bar matching reference (.filterContainer) -->
         <div class="match-tabs-bar">
-          <button id="tabBtn-all" class="match-tab-btn ${activeTab === 'all' ? 'active' : ''}" onclick="switchMatchTab('all')">All</button>
+          <button id="tabBtn-all" class="match-tab-btn ${activeTab === 'all' || activeTab === 'match' ? 'active' : ''}" onclick="switchMatchTab('all')">All</button>
           <button id="tabBtn-bookmaker" class="match-tab-btn ${activeTab === 'bookmaker' ? 'active' : ''}" onclick="switchMatchTab('bookmaker')">Manual Odds</button>
           <button id="tabBtn-fancy" class="match-tab-btn ${activeTab === 'fancy' ? 'active' : ''}" onclick="switchMatchTab('fancy')">Fancy Markets</button>
-          <button id="tabBtn-match" class="match-tab-btn ${activeTab === 'match' ? 'active' : ''}" onclick="switchMatchTab('match')">Match Odds</button>
         </div>
 
         <!-- SECTION 1: MATCH ODDS (AUTHENTIC BETFAIR 6-COL DEPTH ON DESKTOP, 2-COL ON MOBILE) -->
@@ -8453,6 +8505,15 @@
       document.querySelector('.hero-carousel-container')?.classList.remove('hidden-inplay');
       document.querySelector('.providers-container')?.classList.remove('hidden-inplay');
       document.querySelector('.welcome-image-container')?.classList.remove('hidden-inplay');
+
+      // Restore original sidebar HTML if modified
+      if (window._origSidebarHtml) {
+        const sideList = document.getElementById('sidebarSportsList');
+        if (sideList) {
+          sideList.innerHTML = window._origSidebarHtml;
+          window._origSidebarHtml = null;
+        }
+      }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
