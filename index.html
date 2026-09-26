@@ -2405,9 +2405,395 @@
       background: #ffc21d;
     }
 
+    /* ==========================================================================
+       AUTHENTIC SATSPORT GLOBAL VISIBILITY & UTILITIES (DESKTOP & MOBILE PARITY)
+       ========================================================================== */
+    .hidden-inplay,
+    .welcome-image-container.hidden-inplay,
+    .welcome-strip.hidden-inplay,
+    .hero-carousel-container.hidden-inplay,
+    .providers-container.hidden-inplay,
+    .races-section-wrapper.hidden-inplay,
+    .inplay-upcoming-banner.hidden-inplay,
+    .sport-filter-pills-row.hidden-inplay,
+    .news-ticker-container.hidden-inplay,
+    .view-more-wrap.hidden-inplay,
+    .site-footer.hidden-inplay {
+      display: none !important;
+    }
+
+    /* Authentic Satsport B / F / M Pin Badges (Global) */
+    .bfm-wrapper {
+      display: flex !important;
+      gap: 6px !important;
+      align-items: center !important;
+      flex-shrink: 0 !important;
+      margin-left: 6px !important;
+    }
+    .bfm-item {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      cursor: pointer !important;
+      position: relative !important;
+      user-select: none !important;
+    }
+    .bfm-pin-badge {
+      background: #ffc11c !important;
+      color: #222222 !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      border-radius: 5px !important;
+      padding: 2.5px 5.5px !important;
+      min-width: 14px !important;
+      text-align: center !important;
+      line-height: 1.1 !important;
+      position: relative !important;
+      transition: transform 0.15s ease !important;
+    }
+    .bfm-item:hover .bfm-pin-badge,
+    .bfm-item:active .bfm-pin-badge {
+      transform: scale(1.1) !important;
+    }
+    .bfm-pin-badge::after {
+      content: '' !important;
+      position: absolute !important;
+      bottom: -6px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 0 !important;
+      height: 0 !important;
+      border-top: 6px solid #ffc11c !important;
+      border-left: 3px solid transparent !important;
+      border-right: 3px solid transparent !important;
+    }
+    .bfm-letter-label {
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      color: #000000 !important;
+      margin-top: 7px !important;
+      text-align: center !important;
+      line-height: 1 !important;
+    }
+
+    /* Authentic Match Details Page Styles (Global Desktop & Responsive) */
+    .match-details-view {
+      display: none;
+      width: 100%;
+      min-height: 80vh;
+      background: #f5edd8;
+      padding-bottom: 70px;
+      box-sizing: border-box;
+    }
+    .match-details-view.show {
+      display: block !important;
+    }
+    .match-details-topbar {
+      background: #111111;
+      color: #ffffff;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+    .match-back-btn {
+      background: #ffc11c;
+      color: #000000;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s ease;
+      white-space: nowrap !important;
+    }
+    .match-back-btn:active {
+      transform: scale(0.96);
+    }
+    .match-ticker-strip {
+      background: #ffc21d;
+      color: #000000;
+      font-size: 11.5px;
+      font-weight: 700;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .match-tabs-bar {
+      background: #ffc11c;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 4px;
+      overflow-x: auto;
+      border-bottom: 2px solid #e2a808;
+    }
+    .match-tab-btn {
+      background: transparent;
+      color: #111111;
+      border: none;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      white-space: nowrap !important;
+      transition: background 0.15s, color 0.15s;
+    }
+    .match-tab-btn.active {
+      background: #1f1f1f !important;
+      color: #ffffff !important;
+    }
+    .match-card-sec {
+      background: #ffffff;
+      margin: 10px 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #e8e8e8;
+    }
+    .match-sec-header {
+      background: #1f1f1f;
+      color: #ffc11c;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .match-sec-substrip {
+      background: #ffffff;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 12px;
+      font-weight: 600;
+      color: #444;
+    }
+    .match-table-cols {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 16px;
+      background: #f8f8f8;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #555;
+      border-bottom: 1px solid #eee;
+    }
+    .match-runner-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      border-bottom: 1px solid #f2f2f2;
+      background: #ffffff;
+    }
+    .match-runner-row:last-child {
+      border-bottom: none;
+    }
+    .match-odds-box-back {
+      background: #a5d8f3;
+      border: 1px solid #84c4e8;
+      border-radius: 4px;
+      width: 52px;
+      min-width: 52px;
+      height: 38px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, background 0.15s;
+    }
+    .match-odds-box-back:hover {
+      background: #89cbf1;
+    }
+    .match-odds-box-back:active {
+      transform: scale(0.96);
+    }
+    .match-odds-box-lay {
+      background: #fcd3e1;
+      border: 1px solid #f5b0c5;
+      border-radius: 4px;
+      width: 52px;
+      min-width: 52px;
+      height: 38px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, background 0.15s;
+    }
+    .match-odds-box-lay:hover {
+      background: #f8b8cc;
+    }
+    .match-odds-box-lay:active {
+      transform: scale(0.96);
+    }
+    .odds-depth-cell {
+      width: 52px;
+      min-width: 52px;
+      height: 38px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      border: 1px solid #e8e8e8;
+      background: #ffffff;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .odds-depth-cell:hover {
+      background: #f5f5f5;
+    }
+    .odds-header-cell {
+      width: 52px;
+      min-width: 52px;
+      text-align: center;
+      white-space: nowrap !important;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+    .odds-header-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      white-space: nowrap !important;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .odds-header-back-wrap {
+      width: 164px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #0275d8;
+      font-weight: 800;
+      white-space: nowrap !important;
+      font-size: 12px;
+    }
+    .odds-header-lay-wrap {
+      width: 164px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #d9534f;
+      font-weight: 800;
+      white-space: nowrap !important;
+      font-size: 12px;
+    }
+
+    /* Desktop Right Sidebar (Bet Slip & My Bets matching reference ref_live_desktop_full.png) */
+    .app-right-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+      background: #f5edd8;
+      padding: 12px 10px;
+      box-sizing: border-box;
+      display: none;
+    }
+    .app-right-sidebar.show {
+      display: block !important;
+    }
+    .desktop-betslip-card {
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 12px;
+    }
+    .desktop-betslip-header {
+      background: #ffc11c;
+      color: #000000;
+      padding: 10px 14px;
+      font-weight: 800;
+      font-size: 13.5px;
+    }
+    .desktop-betslip-body {
+      padding: 14px;
+      min-height: 80px;
+    }
+    .desktop-mybets-card {
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .desktop-mybets-header {
+      background: #1f1f1f;
+      color: #ffffff;
+      padding: 10px 14px;
+      font-weight: 800;
+      font-size: 13.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .desktop-toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+    }
+    .desktop-toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .desktop-toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 20px;
+    }
+    .desktop-toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .desktop-toggle-slider {
+      background-color: #ffc11c;
+    }
+    input:checked + .desktop-toggle-slider:before {
+      transform: translateX(16px);
+    }
+
     /* Responsive Mobile & Tablet Parity */
     @media (max-width: 1024px) {
       .header-nav {
+        display: none !important;
+      }
+      .app-right-sidebar,
+      .app-right-sidebar.show {
         display: none !important;
       }
     }
@@ -2593,194 +2979,24 @@
         z-index: 10 !important;
       }
 
-      /* Authentic Satsport B / F / M Pin Badges with downward triangle beak matching media_1790413567537.png */
-      .bfm-wrapper {
-        display: flex !important;
-        gap: 6px !important;
-        align-items: center !important;
-        flex-shrink: 0 !important;
-        margin-left: 6px !important;
+      /* Responsive Match Details Overrides for Mobile (<= 768px) */
+      .odds-depth-cell {
+        display: none !important;
       }
-      .bfm-item {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        cursor: pointer !important;
-        position: relative !important;
-        user-select: none !important;
+      .match-odds-box-back,
+      .match-odds-box-lay {
+        width: 50px !important;
+        min-width: 50px !important;
+        height: 36px !important;
       }
-      .bfm-pin-badge {
-        background: #ffc11c !important;
-        color: #222222 !important;
-        font-family: 'Poppins', sans-serif !important;
-        font-size: 10px !important;
-        font-weight: 700 !important;
-        border-radius: 5px !important;
-        padding: 2.5px 5.5px !important;
-        min-width: 14px !important;
-        text-align: center !important;
-        line-height: 1.1 !important;
-        position: relative !important;
-        transition: transform 0.15s ease !important;
-      }
-      .bfm-item:hover .bfm-pin-badge,
-      .bfm-item:active .bfm-pin-badge {
-        transform: scale(1.1) !important;
-      }
-      .bfm-pin-badge::after {
-        content: '' !important;
-        position: absolute !important;
-        bottom: -6px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 0 !important;
-        height: 0 !important;
-        border-top: 6px solid #ffc11c !important;
-        border-left: 3px solid transparent !important;
-        border-right: 3px solid transparent !important;
-      }
-      .bfm-letter-label {
-        font-size: 10px !important;
-        font-weight: 800 !important;
-        color: #000000 !important;
-        margin-top: 7px !important;
-        text-align: center !important;
-        line-height: 1 !important;
-      }
-
-      /* Authentic Match Details Page Styles */
-      .match-details-view {
-        display: none;
-        width: 100%;
-        min-height: 100vh;
-        background: #f5edd8;
-        padding-bottom: 70px;
-        box-sizing: border-box;
-      }
-      .match-details-view.show {
-        display: block !important;
-      }
-      .match-details-topbar {
-        background: #111111;
-        color: #ffffff;
-        padding: 8px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-      }
-      .match-back-btn {
-        background: #ffc11c;
-        color: #000000;
-        border: none;
-        border-radius: 6px;
-        padding: 5px 12px;
-        font-weight: 700;
-        font-size: 12px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        transition: transform 0.1s ease;
-      }
-      .match-back-btn:active {
-        transform: scale(0.96);
-      }
-      .match-tabs-bar {
-        background: #ffc11c;
-        display: flex;
-        align-items: center;
-        padding: 0 8px;
-        gap: 2px;
-        overflow-x: auto;
-        border-bottom: 2px solid #e2a808;
-      }
-      .match-tab-btn {
-        background: transparent;
-        color: #111111;
-        border: none;
-        padding: 8px 14px;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        border-radius: 6px 6px 0 0;
-        white-space: nowrap;
-      }
-      .match-tab-btn.active {
-        background: #111111 !important;
-        color: #ffffff !important;
+      .odds-header-back-wrap,
+      .odds-header-lay-wrap {
+        width: 50px !important;
       }
       .match-card-sec {
-        background: #ffffff;
-        margin: 8px 10px;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        margin: 8px 10px !important;
       }
-      .match-sec-header {
-        background: #1f1f1f;
-        color: #ffc11c;
-        padding: 8px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-weight: 700;
-        font-size: 13px;
-      }
-      .match-sec-substrip {
-        background: #ffffff;
-        padding: 6px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #f0f0f0;
-        font-size: 11.5px;
-        font-weight: 600;
-        color: #444;
-      }
-      .match-table-cols {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 4px 12px;
-        background: #f8f8f8;
-        font-size: 11px;
-        font-weight: 700;
-        color: #555;
-        border-bottom: 1px solid #eee;
-      }
-      .match-runner-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 12px;
-        border-bottom: 1px solid #f2f2f2;
-        background: #ffffff;
-      }
-      .match-odds-box-back {
-        background: #a5d8f3;
-        border: 1px solid #84c4e8;
-        border-radius: 4px;
-        min-width: 50px;
-        height: 36px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-      }
-      .match-odds-box-lay {
-        background: #fcd3e1;
-        border: 1px solid #f5b0c5;
-        border-radius: 4px;
-        min-width: 50px;
-        height: 36px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-      }
+
 
       .app-sidebar {
         position: fixed !important;
@@ -3049,19 +3265,6 @@
         fill: #0d1b3e !important;
       }
 
-      .hidden-inplay,
-      .welcome-image-container.hidden-inplay,
-      .welcome-strip.hidden-inplay,
-      .hero-carousel-container.hidden-inplay,
-      .providers-container.hidden-inplay,
-      .races-section-wrapper.hidden-inplay,
-      .inplay-upcoming-banner.hidden-inplay,
-      .sport-filter-pills-row.hidden-inplay,
-      .news-ticker-container.hidden-inplay,
-      .view-more-wrap.hidden-inplay,
-      .site-footer.hidden-inplay {
-        display: none !important;
-      }
 
       /* Authentic 3-Column Game Providers Grid on Mobile */
       .providers-container {
@@ -5801,6 +6004,45 @@
 
     </main>
 
+    <!-- AUTHENTIC DESKTOP RIGHT SIDEBAR (MATCHING ref_live_desktop_full.png) -->
+    <aside class="app-right-sidebar" id="appRightSidebar">
+      <!-- Bet Slip Card -->
+      <div class="desktop-betslip-card">
+        <div class="desktop-betslip-header">Bet slip</div>
+        <div class="desktop-betslip-body" id="desktopBetslipBody">
+          <p style="font-size:12.5px; color:#555; margin:16px 0; text-align:center;">Click on the odds to add selections to the Bet Slip.</p>
+        </div>
+      </div>
+
+      <!-- My Bets Card -->
+      <div class="desktop-mybets-card">
+        <div class="desktop-mybets-header">
+          <span>My Bets</span>
+          <span style="cursor:pointer;" onclick="alert('Bets refreshed');" title="Refresh Bets">&#x21bb;</span>
+        </div>
+        <div class="desktop-mybets-body">
+          <div style="font-size:12px; font-weight:700; color:#111; text-align:center; padding:10px 0; border-bottom:1px solid #eee;">
+            <span id="myBetsSportTitle">Cricket</span><br>
+            <span id="myBetsMatchTitle" style="font-size:11px; color:#666; font-weight:600;">Match Selections</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid #eee; font-size:12px; font-weight:700; color:#333;">
+            <span>Matched Bets</span>
+            <label class="desktop-toggle-switch">
+              <input type="checkbox" checked>
+              <span class="desktop-toggle-slider"></span>
+            </label>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; font-size:12px; font-weight:700; color:#333;">
+            <span>Unmatched Bets</span>
+            <label class="desktop-toggle-switch">
+              <input type="checkbox" checked>
+              <span class="desktop-toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </aside>
+
   </div>
 
   <!-- FLOATING CHAT BUTTON -->
@@ -6757,20 +6999,64 @@
       if (e) e.stopPropagation();
       activeBet = { matchName, runnerName, type, odd: parseFloat(odd) || 1.85, stake: 500 };
 
-      document.getElementById('betslipEventTitle').innerText = matchName;
+      // Update mobile floating betslip
+      const evTitle = document.getElementById('betslipEventTitle');
+      if (evTitle) evTitle.innerText = matchName;
       const tag = document.getElementById('betslipSelectionTag');
-      tag.className = 'betslip-selection-tag ' + type;
-      tag.innerText = (type === 'back' ? 'Back: ' : 'Lay: ') + runnerName;
-
-      document.getElementById('betslipOddsInput').value = activeBet.odd;
-      document.getElementById('betslipStakeInput').value = activeBet.stake;
-
+      if (tag) {
+        tag.className = 'betslip-selection-tag ' + type;
+        tag.innerText = (type === 'back' ? 'Back: ' : 'Lay: ') + runnerName;
+      }
+      const oddsInp = document.getElementById('betslipOddsInput');
+      if (oddsInp) oddsInp.value = activeBet.odd;
+      const stakeInp = document.getElementById('betslipStakeInput');
+      if (stakeInp) stakeInp.value = activeBet.stake;
       updateBetslipProfit();
-      const drawer = document.getElementById('betslipDrawer');
-      const backdrop = document.getElementById('betslipBackdrop');
-      if (drawer) drawer.classList.add('show');
-      if (backdrop) backdrop.classList.add('show');
+
+      // Update Desktop Right Sidebar Bet Slip (matching ref_live_desktop_full.png)
+      const desktopBetslip = document.getElementById('desktopBetslipBody');
+      if (desktopBetslip) {
+        desktopBetslip.innerHTML = `
+          <div style="background:#f8f9fa; border:1px solid #e2e8f0; border-radius:6px; padding:10px; margin-bottom:8px;">
+            <div style="font-weight:700; font-size:12px; color:#111; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${matchName}</div>
+            <div style="font-weight:800; font-size:12px; color:${type === 'back' ? '#0d47a1' : '#b71c1c'}; margin-top:3px;">
+              ${type === 'back' ? 'Back' : 'Lay'}: ${runnerName}
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <div style="flex:1;">
+                <label style="font-size:10px; font-weight:700; color:#666;">Odds</label>
+                <input type="number" step="0.01" id="desktopOddsInput" value="${activeBet.odd}" oninput="updateDesktopProfit()" style="width:100%; padding:4px 6px; border:1px solid #ccc; border-radius:4px; font-weight:700; font-size:12px; box-sizing:border-box;">
+              </div>
+              <div style="flex:1;">
+                <label style="font-size:10px; font-weight:700; color:#666;">Stake (₹)</label>
+                <input type="number" step="10" id="desktopStakeInput" value="${activeBet.stake}" oninput="updateDesktopProfit()" style="width:100%; padding:4px 6px; border:1px solid #ccc; border-radius:4px; font-weight:700; font-size:12px; box-sizing:border-box;">
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:11.5px; font-weight:700;">
+              <span>Potential Profit:</span>
+              <span id="desktopProfitVal" style="color:#28a745;">₹ ${(activeBet.stake * (activeBet.odd - 1)).toFixed(2)}</span>
+            </div>
+            <button onclick="placeBet()" style="width:100%; margin-top:10px; background:#ffc11c; border:none; border-radius:4px; padding:7px; font-weight:800; font-size:12px; cursor:pointer;">Place Bet</button>
+          </div>
+        `;
+      }
+
+      // If mobile/tablet, open drawer
+      if (window.innerWidth <= 1024) {
+        const drawer = document.getElementById('betslipDrawer');
+        const backdrop = document.getElementById('betslipBackdrop');
+        if (drawer) drawer.classList.add('show');
+        if (backdrop) backdrop.classList.add('show');
+      }
     }
+
+    window.updateDesktopProfit = function() {
+      const odd = parseFloat(document.getElementById('desktopOddsInput')?.value) || 1;
+      const stake = parseFloat(document.getElementById('desktopStakeInput')?.value) || 0;
+      const profit = stake * (odd - 1);
+      const valEl = document.getElementById('desktopProfitVal');
+      if (valEl) valEl.innerText = '₹ ' + profit.toFixed(2);
+    };
 
     function closeBetslip() {
       const drawer = document.getElementById('betslipDrawer');
@@ -7481,12 +7767,30 @@
       const details = document.getElementById('matchDetailsContainer');
       const matches = document.getElementById('sportsMatchesContainer');
       const viewMore = document.querySelector('.view-more-wrap');
+      const rightSidebar = document.getElementById('appRightSidebar');
       if (!details) return;
+
+      // SYSTEMIC FIX: Hide feed / hero / providers / races on BOTH desktop and mobile
+      document.querySelectorAll('.welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
+        el.classList.add('hidden-inplay');
+      });
 
       if (matches) matches.style.display = 'none';
       if (viewMore) viewMore.style.display = 'none';
       details.classList.add('show');
       details.style.display = 'block';
+
+      // Show Desktop Right Sidebar on Desktop (matching ref_live_desktop_full.png)
+      if (rightSidebar && window.innerWidth > 1024) {
+        rightSidebar.classList.add('show');
+        const matchTitleText = team2 ? `${team1} vs ${team2}` : team1;
+        const myBetsTitle = document.getElementById('myBetsMatchTitle');
+        if (myBetsTitle) myBetsTitle.innerText = matchTitleText;
+        const myBetsSport = document.getElementById('myBetsSportTitle');
+        if (myBetsSport && typeof currentSelectedSport !== 'undefined') {
+          myBetsSport.innerText = currentSelectedSport ? (currentSelectedSport.charAt(0).toUpperCase() + currentSelectedSport.slice(1)) : 'Cricket';
+        }
+      }
 
       const matchTitle = team2 ? `${team1} vs ${team2}` : team1;
       const t1 = team1 || 'Team A';
@@ -7498,6 +7802,11 @@
       const oddsL1 = l1 || '2.54';
       const oddsB2 = b2 || '1.70';
       const oddsL2 = l2 || '2.30';
+
+      const ob1_val = parseFloat(oddsB1) || 1.88;
+      const ol1_val = parseFloat(oddsL1) || 2.54;
+      const ob2_val = parseFloat(oddsB2) || 1.70;
+      const ol2_val = parseFloat(oddsL2) || 2.30;
 
       details.innerHTML = `
         <!-- Match Details Top Navigation Bar -->
@@ -7513,7 +7822,7 @@
         </div>
 
         <!-- Authentic News Ticker Strip -->
-        <div style="background:#ffc21d; color:#000000; font-size:11px; font-weight:700; height:22px; display:flex; align-items:center; padding:0 12px; overflow:hidden; white-space:nowrap;">
+        <div class="match-ticker-strip">
           Welcome to exchange
         </div>
 
@@ -7525,11 +7834,11 @@
           <button id="tabBtn-match" class="match-tab-btn ${activeTab === 'match' ? 'active' : ''}" onclick="switchMatchTab('match')">Match Odds</button>
         </div>
 
-        <!-- SECTION 1: MATCH ODDS -->
+        <!-- SECTION 1: MATCH ODDS (AUTHENTIC BETFAIR 6-COL DEPTH ON DESKTOP, 2-COL ON MOBILE) -->
         <div id="matchSection-match" class="match-card-sec" style="${activeTab === 'bookmaker' || activeTab === 'fancy' ? 'display:none;' : 'display:block;'}">
           <div class="match-sec-header">
             <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13px; color:#ffc11c; font-weight:700;">Match Odds</span>
+              <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Match Odds</span>
               <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">i</span>
               <span style="background:#ff9800; color:#000; font-size:10px; font-weight:800; padding:1px 6px; border-radius:3px;">Cashout</span>
             </div>
@@ -7537,84 +7846,204 @@
           </div>
 
           <div class="match-sec-substrip">
-            <span>Matched: <strong style="color:#111;">629.22</strong></span>
-            <button onclick="alert('Match Odds Rules: Standard Betfair Exchange Settlement Rules apply.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:2px 8px; font-size:10.5px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
+            <span>Matched: <strong style="color:#111;">342,056.33</strong></span>
+            <button onclick="alert('Match Odds Rules: Standard Betfair Exchange Settlement Rules apply.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
           </div>
 
           <div class="match-table-cols">
             <span>2 selections</span>
-            <div style="display:flex; gap:6px; min-width:110px; justify-content:center;">
-              <span style="width:52px; text-align:center; color:#0275d8;">Back {L}</span>
-              <span style="width:52px; text-align:center; color:#d9534f;">Lay {K}</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-header-back-wrap">Back {L}</div>
+              <div class="odds-header-lay-wrap">Lay {K}</div>
             </div>
           </div>
 
           <!-- Runner 1 -->
           <div class="match-runner-row">
-            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0;">
-              <span style="color:#777; font-size:11px;">&#128202;</span>
-              <span style="font-size:12.5px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t1}</span>
+            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+              <span style="color:#666; font-size:12px;">&#128202;</span>
+              <span style="font-size:13px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t1}</span>
             </div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="display:flex; gap:4px; align-items:center;">
+              <!-- 3 Back Boxes -->
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'back', '${(ob1_val * 0.94).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ob1_val * 0.94).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#888;">24</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'back', '${(ob1_val * 0.97).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ob1_val * 0.97).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#777;">319</span>
+              </div>
               <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'back', '${oddsB1}')">
                 <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${oddsB1}</span>
-                <span style="font-size:9.5px; color:#555;">10</span>
+                <span style="font-size:9.5px; color:#555;">39</span>
               </div>
+
+              <!-- 3 Lay Boxes -->
               <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'lay', '${oddsL1}')">
                 <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${oddsL1}</span>
-                <span style="font-size:9.5px; color:#555;">30</span>
+                <span style="font-size:9.5px; color:#555;">85.85K</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'lay', '${(ol1_val * 1.02).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ol1_val * 1.02).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#777;">2.58K</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'lay', '${(ol1_val * 1.06).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ol1_val * 1.06).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#888;">276</span>
               </div>
             </div>
           </div>
 
           <!-- Runner 2 -->
           <div class="match-runner-row">
-            <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0;">
-              <span style="color:#777; font-size:11px;">&#128202;</span>
-              <span style="font-size:12.5px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t2}</span>
+            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+              <span style="color:#666; font-size:12px;">&#128202;</span>
+              <span style="font-size:13px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t2}</span>
             </div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="display:flex; gap:4px; align-items:center;">
+              <!-- 3 Back Boxes -->
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'back', '${(ob2_val * 0.94).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ob2_val * 0.94).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#888;">18</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'back', '${(ob2_val * 0.97).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ob2_val * 0.97).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#777;">142</span>
+              </div>
               <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'back', '${oddsB2}')">
                 <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${oddsB2}</span>
-                <span style="font-size:9.5px; color:#555;">10</span>
+                <span style="font-size:9.5px; color:#555;">52</span>
               </div>
+
+              <!-- 3 Lay Boxes -->
               <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'lay', '${oddsL2}')">
                 <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${oddsL2}</span>
-                <span style="font-size:9.5px; color:#555;">998</span>
+                <span style="font-size:9.5px; color:#555;">12.4K</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'lay', '${(ol2_val * 1.02).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ol2_val * 1.02).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#777;">1.15K</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'lay', '${(ol2_val * 1.06).toFixed(2)}')">
+                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ol2_val * 1.06).toFixed(2)}</span>
+                <span style="font-size:9.5px; color:#888;">510</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- SECTION 2: BOOKMAKER / MANUAL ODDS -->
-        <div id="matchSection-bookmaker" class="match-card-sec" style="${activeTab === 'fancy' || activeTab === 'match' ? 'display:none;' : 'display:block;'}">
-          <!-- Bookmaker 1 & Bookmaker 2 sub-tabs -->
-          <div style="display:flex; border-bottom:1px solid #ddd; background:#f0f0f0;">
-            <div style="padding:6px 14px; background:#111; color:#fff; font-size:11.5px; font-weight:700; border-top:2px solid #ffc11c; cursor:pointer;">Bookmaker 1</div>
-            <div style="padding:6px 14px; background:#e8e8e8; color:#333; font-size:11.5px; font-weight:600; cursor:pointer;">Bookmaker 2</div>
+        <!-- SECTION 2: COMPLETED MATCH (MATCHING LIVE REFERENCE ref_live_desktop_full.png) -->
+        <div id="matchSection-completed" class="match-card-sec" style="${activeTab === 'bookmaker' || activeTab === 'fancy' ? 'display:none;' : 'display:block;'}">
+          <div class="match-sec-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Completed Match</span>
+              <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">i</span>
+            </div>
+            <span style="color:#ffc11c; font-size:12px;">&#x25bc;</span>
           </div>
 
-          <div style="background:#ffffff; color:#000; padding:8px 12px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13px; font-weight:800; color:#111;">BOOKMAKER</span>
-              <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-              <span style="background:#ff9800; color:#000; font-size:10px; font-weight:800; padding:1px 6px; border-radius:3px;">Cashout</span>
-            </div>
-            <button onclick="alert('Bookmaker Rules apply: Zero commission betting.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:2px 8px; font-size:10.5px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
+          <div class="match-sec-substrip">
+            <span>Matched: <strong style="color:#111;">249</strong></span>
+            <button onclick="alert('Completed Match Rules apply.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
           </div>
 
           <div class="match-table-cols">
             <span>2 selections</span>
-            <div style="display:flex; gap:6px; min-width:110px; justify-content:center;">
-              <span style="width:52px; text-align:center; color:#0275d8;">Back {L}</span>
-              <span style="width:52px; text-align:center; color:#d9534f;">Lay {K}</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-header-back-wrap">Back {L}</div>
+              <div class="odds-header-lay-wrap">Lay {K}</div>
+            </div>
+          </div>
+
+          <!-- Runner: Yes -->
+          <div class="match-runner-row">
+            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+              <span style="color:#666; font-size:12px;">&#128202;</span>
+              <span style="font-size:13px; font-weight:700; color:#111;">Yes</span>
+            </div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
+              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'back', '1.14')">
+                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">1.14</span>
+                <span style="font-size:9.5px; color:#555;">210</span>
+              </div>
+              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'lay', '1.17')">
+                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">1.17</span>
+                <span style="font-size:9.5px; color:#555;">42</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'lay', '1.22')">
+                <span style="font-weight:700; font-size:11.5px; color:#333;">1.22</span>
+                <span style="font-size:9.5px; color:#777;">21</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'lay', '2.00')">
+                <span style="font-weight:700; font-size:11.5px; color:#555;">2.00</span>
+                <span style="font-size:9.5px; color:#888;">108</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Runner: No -->
+          <div class="match-runner-row">
+            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+              <span style="color:#666; font-size:12px;">&#128202;</span>
+              <span style="font-size:13px; font-weight:700; color:#111;">No</span>
+            </div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'back', '1.04')">
+                <span style="font-weight:700; font-size:11.5px; color:#555;">1.04</span>
+                <span style="font-size:9.5px; color:#888;">62</span>
+              </div>
+              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'back', '1.05')">
+                <span style="font-weight:700; font-size:11.5px; color:#333;">1.05</span>
+                <span style="font-size:9.5px; color:#777;">52</span>
+              </div>
+              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'back', '1.10')">
+                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">1.10</span>
+                <span style="font-size:9.5px; color:#555;">26</span>
+              </div>
+              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'lay', '1.15')">
+                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">1.15</span>
+                <span style="font-size:9.5px; color:#555;">80</span>
+              </div>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: BOOKMAKER / MANUAL ODDS -->
+        <div id="matchSection-bookmaker" class="match-card-sec" style="${activeTab === 'fancy' || activeTab === 'match' ? 'display:none;' : 'display:block;'}">
+          <!-- Bookmaker 1 & Bookmaker 2 sub-tabs -->
+          <div style="display:flex; border-bottom:1px solid #ddd; background:#f0f0f0;">
+            <div style="padding:7px 16px; background:#111; color:#fff; font-size:12px; font-weight:700; border-top:2px solid #ffc11c; cursor:pointer;">Bookmaker 1</div>
+            <div style="padding:7px 16px; background:#e8e8e8; color:#333; font-size:12px; font-weight:600; cursor:pointer;">Bookmaker 2</div>
+          </div>
+
+          <div style="background:#ffffff; color:#000; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:13.5px; font-weight:800; color:#111;">BOOKMAKER</span>
+              <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
+              <span style="background:#ff9800; color:#000; font-size:10px; font-weight:800; padding:1px 6px; border-radius:3px;">Cashout</span>
+            </div>
+            <button onclick="alert('Bookmaker Rules apply: Zero commission betting.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
+          </div>
+
+          <div class="match-table-cols">
+            <span>2 selections</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-header-back-wrap">Back {L}</div>
+              <div class="odds-header-lay-wrap">Lay {K}</div>
             </div>
           </div>
 
           <!-- Bookmaker Runner 1 -->
           <div class="match-runner-row">
-            <div style="font-size:12.5px; font-weight:700; color:#111;">${t1}</div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="font-size:13px; font-weight:700; color:#111;">${t1}</div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
               <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle} [BM]', '${t1}', 'back', '1.85')">
                 <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">1.85</span>
                 <span style="font-size:9.5px; color:#555;">100k</span>
@@ -7623,13 +8052,17 @@
                 <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">1.87</span>
                 <span style="font-size:9.5px; color:#555;">100k</span>
               </div>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
             </div>
           </div>
 
           <!-- Bookmaker Runner 2 -->
           <div class="match-runner-row">
-            <div style="font-size:12.5px; font-weight:700; color:#111;">${t2}</div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="font-size:13px; font-weight:700; color:#111;">${t2}</div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
               <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle} [BM]', '${t2}', 'back', '2.15')">
                 <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">2.15</span>
                 <span style="font-size:9.5px; color:#555;">100k</span>
@@ -7638,15 +8071,17 @@
                 <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">2.18</span>
                 <span style="font-size:9.5px; color:#555;">100k</span>
               </div>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
             </div>
           </div>
         </div>
 
-        <!-- SECTION 3: FANCY MARKETS -->
+        <!-- SECTION 4: FANCY MARKETS -->
         <div id="matchSection-fancy" class="match-card-sec" style="${activeTab === 'bookmaker' || activeTab === 'match' ? 'display:none;' : 'display:block;'}">
           <div class="match-sec-header">
             <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13px; color:#ffc11c; font-weight:700;">Fancy Markets (Normal)</span>
+              <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Fancy Markets (Normal)</span>
               <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
             </div>
             <span style="color:#ffc11c; font-size:12px;">&#x25bc;</span>
@@ -7654,16 +8089,18 @@
 
           <div class="match-table-cols">
             <span>Market</span>
-            <div style="display:flex; gap:6px; min-width:110px; justify-content:center;">
-              <span style="width:52px; text-align:center; color:#d9534f;">No {Back}</span>
-              <span style="width:52px; text-align:center; color:#0275d8;">Yes {Lay}</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-header-back-wrap" style="color:#d9534f;">No {Back}</div>
+              <div class="odds-header-lay-wrap" style="color:#0275d8;">Yes {Lay}</div>
             </div>
           </div>
 
           <!-- Fancy 1 -->
           <div class="match-runner-row">
-            <div style="font-size:12px; font-weight:700; color:#111;">6 Over Total Runs</div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="font-size:12.5px; font-weight:700; color:#111;">6 Over Total Runs</div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
               <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '6 Over Runs - NO', 'lay', '48')">
                 <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">48</span>
                 <span style="font-size:9.5px; color:#555;">100</span>
@@ -7672,13 +8109,17 @@
                 <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">50</span>
                 <span style="font-size:9.5px; color:#555;">100</span>
               </div>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
             </div>
           </div>
 
           <!-- Fancy 2 -->
           <div class="match-runner-row">
-            <div style="font-size:12px; font-weight:700; color:#111;">10 Over Total Runs</div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="font-size:12.5px; font-weight:700; color:#111;">10 Over Total Runs</div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
               <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '10 Over Runs - NO', 'lay', '79')">
                 <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">79</span>
                 <span style="font-size:9.5px; color:#555;">100</span>
@@ -7687,13 +8128,17 @@
                 <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">81</span>
                 <span style="font-size:9.5px; color:#555;">100</span>
               </div>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
             </div>
           </div>
 
           <!-- Fancy 3 -->
           <div class="match-runner-row">
-            <div style="font-size:12px; font-weight:700; color:#111;">Fall of 1st Wicket</div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="font-size:12.5px; font-weight:700; color:#111;">Fall of 1st Wicket</div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
               <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', 'Fall 1st Wkt - NO', 'lay', '24')">
                 <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">24</span>
                 <span style="font-size:9.5px; color:#555;">100</span>
@@ -7702,6 +8147,8 @@
                 <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">26</span>
                 <span style="font-size:9.5px; color:#555;">100</span>
               </div>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
             </div>
           </div>
         </div>
@@ -7714,12 +8161,35 @@
       const details = document.getElementById('matchDetailsContainer');
       const matches = document.getElementById('sportsMatchesContainer');
       const viewMore = document.querySelector('.view-more-wrap');
+      const rightSidebar = document.getElementById('appRightSidebar');
+
       if (details) {
         details.classList.remove('show');
         details.style.display = 'none';
       }
+      if (rightSidebar) {
+        rightSidebar.classList.remove('show');
+      }
+
       if (matches) matches.style.display = 'block';
       if (viewMore) viewMore.style.display = 'block';
+
+      // Restore widgets according to currentSelectedSport
+      if (typeof currentSelectedSport !== 'undefined' && currentSelectedSport === 'inplay') {
+        document.querySelector('.races-section-wrapper')?.classList.add('hidden-inplay');
+        document.querySelector('.inplay-upcoming-banner')?.classList.add('hidden-inplay');
+        document.querySelector('.sport-filter-pills-row')?.classList.add('hidden-inplay');
+      } else {
+        document.querySelector('.races-section-wrapper')?.classList.remove('hidden-inplay');
+        document.querySelector('.inplay-upcoming-banner')?.classList.remove('hidden-inplay');
+        document.querySelector('.sport-filter-pills-row')?.classList.remove('hidden-inplay');
+      }
+
+      // Restore hero carousel and providers if in sports view
+      document.querySelector('.hero-carousel-container')?.classList.remove('hidden-inplay');
+      document.querySelector('.providers-container')?.classList.remove('hidden-inplay');
+      document.querySelector('.welcome-image-container')?.classList.remove('hidden-inplay');
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
