@@ -17,8 +17,13 @@ try {
     config = { ...config, ...loaded };
   }
 } catch (e) {
-  console.log('Using default config fallback');
+  // Graceful fallback to env vars or defaults
 }
+
+// Environment variables take top precedence
+if (process.env.SPORTBEX_API_KEY) config.apiKey = process.env.SPORTBEX_API_KEY;
+if (process.env.SPORTBEX_BASE_URL) config.baseUrl = process.env.SPORTBEX_BASE_URL;
+if (process.env.PORT) config.port = parseInt(process.env.PORT, 10);
 
 let cachedLiveData = null;
 let lastCacheTime = 0;
@@ -51,7 +56,7 @@ async function fetchSportbexLiveCricket() {
     // 1. Fetch live matches
     let liveMatches = [];
     try {
-      const liveScoreRes = await fetch(`${config.baseUrl}/live-score/match/live`, { headers });
+      const liveScoreRes = await fetch(`${config.baseUrl}/live-score/match/live`, { headers, signal: AbortSignal.timeout(6000) });
       const liveScoreJson = await liveScoreRes.json();
       liveMatches = liveScoreJson.data || [];
     } catch (e) {
@@ -61,7 +66,7 @@ async function fetchSportbexLiveCricket() {
     // 2. Fetch cricket competitions
     let competitions = [];
     try {
-      const compRes = await fetch(`${config.baseUrl}/betfair/competition-list/4`, { headers });
+      const compRes = await fetch(`${config.baseUrl}/betfair/competition-list/4`, { headers, signal: AbortSignal.timeout(6000) });
       competitions = await compRes.json();
       if (!Array.isArray(competitions)) competitions = [];
     } catch (e) {
@@ -72,7 +77,7 @@ async function fetchSportbexLiveCricket() {
     const topComps = competitions.slice(0, 8);
     const eventPromises = topComps.map(async c => {
       try {
-        const evRes = await fetch(`${config.baseUrl}/betfair/event-list/4/${c.competition.id}`, { headers });
+        const evRes = await fetch(`${config.baseUrl}/betfair/event-list/4/${c.competition.id}`, { headers, signal: AbortSignal.timeout(6000) });
         const evJson = await evRes.json();
         return Array.isArray(evJson) ? evJson.map(e => ({ ...e, competitionName: c.competition.name })) : [];
       } catch {
@@ -87,7 +92,7 @@ async function fetchSportbexLiveCricket() {
     const targetEvents = allEvents.slice(0, 8);
     const marketPromises = targetEvents.map(async ev => {
       try {
-        const mRes = await fetch(`${config.baseUrl}/betfair/market-all-list/${ev.event.id}`, { headers });
+        const mRes = await fetch(`${config.baseUrl}/betfair/market-all-list/${ev.event.id}`, { headers, signal: AbortSignal.timeout(6000) });
         const mJson = await mRes.json();
         const matchOdds = Array.isArray(mJson) ? (mJson.find(m => m.marketName === 'Match Odds') || mJson[0]) : null;
         return { event: ev, market: matchOdds };
@@ -107,7 +112,8 @@ async function fetchSportbexLiveCricket() {
         const oddsRes = await fetch(`${config.baseUrl}/betfair/listMarketBook`, {
           method: 'POST',
           headers,
-          body: JSON.stringify({ marketIds })
+          body: JSON.stringify({ marketIds }),
+          signal: AbortSignal.timeout(6000)
         });
         const oddsJson = await oddsRes.json();
         const oddsList = oddsJson.data || (Array.isArray(oddsJson) ? oddsJson : []);
