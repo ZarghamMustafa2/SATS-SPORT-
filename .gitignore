@@ -18,5 +18,7 @@ scratch/
 test-results/
 .system_generated/
 
-# Environment
+# Environment & Credentials
 .env*
+sportbex_config.json
+*.key

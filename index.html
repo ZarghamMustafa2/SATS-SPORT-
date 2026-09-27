@@ -8126,13 +8126,17 @@
         const inplayNavTab = document.querySelectorAll('.mobile-bottom-nav .mobile-nav-tab')[1];
         if (inplayNavTab) inplayNavTab.classList.add('active');
 
-        const cricketMatches = [
+        const defaultCricketMatches = [
           { isLive: true, team1: 'Keonjhar Miners', team2: 'Kataka Panthers', b1: '1.55', bS1: '93.21', l1: '1.58', lS1: '136.79', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '2.74', bS2: '1.49', l2: '2.82', lS2: '51.23' },
           { isLive: true, team1: 'Rourkela Steelers', team2: 'Puri Titans', b1: '1.37', bS1: '2.4K', l1: '2.54', lS1: '1.8K', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.66', bS2: '1.1K', l2: '4.6', lS2: '890' },
           { isLive: true, team1: 'Bahamas', team2: 'Bermuda', b1: '3.25', bS1: '400', l1: '4.3', lS1: '250', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.31', bS2: '6.2K', l2: '1.44', lS2: '8.1K' },
           { isLive: true, team1: 'Rishikesh River Kings', team2: 'Dehradun Warriors', b1: '1.55', bS1: '80', l1: '3.8', lS1: '10', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.36', bS2: '20', l2: '2.8', lS2: '10' },
           { isLive: true, team1: 'Titans', team2: 'Western Province', b1: '2.4', bS1: '69', l1: '2.46', lS1: '180', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.69', bS2: '263', l2: '1.7', lS2: '100' }
         ];
+
+        const cricketMatches = (window.liveSportbexCricketMatches && window.liveSportbexCricketMatches.length > 0)
+          ? window.liveSportbexCricketMatches
+          : defaultCricketMatches;
 
         const soccerMatches = [
           { isLive: true, team1: 'Arsenal', team2: 'Chelsea', b1: '2.14', bS1: '12k', l1: '2.18', lS1: '8k', b2Draw: '3.40', bS2Draw: '5k', l2Draw: '3.55', lS2Draw: '3k', b2: '3.10', bS2: '4k', l2: '3.25', lS2: '2k' },
@@ -8177,11 +8181,17 @@
           { time: 'Mon, Mar 1 06:00 am', team1: 'Indian Premier League', marketLabel: 'Tournament Winner Market', b1: '6.4', bS1: '3', l1: '9.4', lS1: '2', b2: '3.8', bS2: '2', l2: '4.7', lS2: '2' }
         ];
 
-        const odiMatches = [
+        const defaultOdiMatches = [
           { time: 'Tomorrow 01:00 am', team1: 'South Africa', team2: 'Australia', b1: '2.24', bS1: '466', l1: '2.26', lS1: '11', b2: '1.79', bS2: '200', l2: '1.8', lS2: '571' },
           { time: 'Tomorrow 01:30 am', team1: 'India', team2: 'West Indies', b1: '1.13', bS1: '26.1K', l1: '1.14', lS1: '21.17K', b2: '8.2', bS2: '22', l2: '8.8', lS2: '3.38K' },
           { time: 'Tomorrow 02:30 am', team1: 'England', team2: 'Sri Lanka', b1: '1.18', bS1: '13.19K', l1: '1.19', lS1: '193', b2: '6.2', bS2: '220', l2: '6.4', lS2: '28' }
         ];
+
+        const liveCricketList = window.liveSportbexCricketMatches || [];
+        const liveOdi = liveCricketList.filter(m => (m.competition || '').toLowerCase().includes('one day') || (m.competition || '').toLowerCase().includes('international'));
+        const liveCounty = liveCricketList.filter(m => (m.competition || '').toLowerCase().includes('county'));
+
+        const odiMatches = liveOdi.length > 0 ? liveOdi : defaultOdiMatches;
 
         const t20Matches = [
           { time: 'Starting In 18m', team1: 'Sierra Leone', team2: 'Nigeria A', b1: '7.6', bS1: '3', l1: '8.2', lS1: '2', b2: '1.14', bS2: '14', l2: '1.15', lS2: '18' },
@@ -8196,6 +8206,9 @@
         let html = blackAnnouncement + heroBanner + fraudStrip + newsTickerStrip;
         html += buildSportAccordion('ipl', 'Indian Premier League', 'https://daba.b-cdn.net/flags/in.svg', iplMatches);
         html += buildSportAccordion('odi', 'One Day Internationals', 'https://daba.b-cdn.net/flags/gb.svg', odiMatches);
+        if (liveCounty.length > 0) {
+          html += buildSportAccordion('county', 'County Championship', 'https://daba.b-cdn.net/flags/gb.svg', liveCounty);
+        }
         html += buildSportAccordion('t20', 'International Twenty20 Matches', '', t20Matches);
         html += buildSportAccordion('ncl', 'Australia NCL Women', 'https://daba.b-cdn.net/flags/au.svg', ausNclMatches);
         cont.innerHTML = html;
@@ -8899,11 +8912,27 @@
         `;
       }
 
-      // Live odds default fallbacks
-      const ob1 = b1 || '1.55';
-      const ol1 = l1 || '1.58';
-      const ob2 = b2 || '2.74';
-      const ol2 = l2 || '2.82';
+      // Find real match in Sportbex live matches if present
+      const liveMatch = (window.liveSportbexCricketMatches || []).find(m => 
+        (m.team1 && t1 && (m.team1.toLowerCase().includes(t1.toLowerCase()) || t1.toLowerCase().includes(m.team1.toLowerCase()))) || 
+        (m.team2 && t2 && (m.team2.toLowerCase().includes(t2.toLowerCase()) || t2.toLowerCase().includes(m.team2.toLowerCase())))
+      );
+
+      const r1Meta = liveMatch?.runners?.[0];
+      const r2Meta = liveMatch?.runners?.[1];
+
+      // Live odds default fallbacks or live real odds
+      const ob1 = (liveMatch && liveMatch.b1 && liveMatch.b1 !== '-') ? liveMatch.b1 : (b1 || '1.55');
+      const obS1 = (liveMatch && liveMatch.bS1) ? liveMatch.bS1 : '93.21';
+      const ol1 = (liveMatch && liveMatch.l1 && liveMatch.l1 !== '-') ? liveMatch.l1 : (l1 || '1.58');
+      const olS1 = (liveMatch && liveMatch.lS1) ? liveMatch.lS1 : '136.79';
+
+      const ob2 = (liveMatch && liveMatch.b2 && liveMatch.b2 !== '-') ? liveMatch.b2 : (b2 || '2.74');
+      const obS2 = (liveMatch && liveMatch.bS2) ? liveMatch.bS2 : '1.49';
+      const ol2 = (liveMatch && liveMatch.l2 && liveMatch.l2 !== '-') ? liveMatch.l2 : (l2 || '2.82');
+      const olS2 = (liveMatch && liveMatch.lS2) ? liveMatch.lS2 : '51.23';
+
+      const totalMatchedStr = (liveMatch && liveMatch.totalMatched) ? liveMatch.totalMatched : '40,359,276.13';
 
       // Full HTML for System B container matching media_1790500056271.png
       container.innerHTML = `
@@ -8916,7 +8945,7 @@
             <span style="background:#4cd964; color:#fff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>
             <span style="font-size:13px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${matchTitle}</span>
           </div>
-          <button onclick="alert('Odds market data refreshed');" style="background:#222; border:1px solid #444; color:#ffc11c; border-radius:4px; padding:4px 8px; font-size:12px; cursor:pointer;" title="Refresh Market">&#x21bb;</button>
+          <button onclick="if(typeof initSportbexLiveIntegration==='function')initSportbexLiveIntegration(); alert('Odds market data refreshed');" style="background:#222; border:1px solid #444; color:#ffc11c; border-radius:4px; padding:4px 8px; font-size:12px; cursor:pointer;" title="Refresh Market">&#x21bb;</button>
         </div>
 
         <!-- Ticker Strip -->
@@ -8943,7 +8972,7 @@
           </div>
           <div id="omBody-matchOdds">
             <div class="om-sec-substrip">
-              <span>Matched: <strong style="color:#111;">40,359,276.13</strong></span>
+              <span>Matched: <strong style="color:#111;">${totalMatchedStr}</strong></span>
               <button class="om-rules-btn" onclick="alert('Match Odds Rules: Betfair standard settlement rules apply.');">Rules</button>
             </div>
             <div class="om-table-cols">
@@ -8960,18 +8989,18 @@
                 <span>${t1}</span>
               </div>
               <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">1.53</span><span style="font-size:9.5px; color:#666;">24.5K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">1.54</span><span style="font-size:9.5px; color:#666;">18.2K</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.back?.[1]?.price || '1.53'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.back?.[1]?.size ? (r1Meta.back[1].size >= 1000 ? (r1Meta.back[1].size/1000).toFixed(1)+'K' : r1Meta.back[1].size) : '24.5K'}</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.back?.[2]?.price || '1.54'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.back?.[2]?.size ? (r1Meta.back[2].size >= 1000 ? (r1Meta.back[2].size/1000).toFixed(1)+'K' : r1Meta.back[2].size) : '18.2K'}</span></div>
                 <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', '${t1}', 'back', '${ob1}')">
                   <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${ob1}</span>
-                  <span style="font-size:9.5px; color:#555;">93.21</span>
+                  <span style="font-size:9.5px; color:#555;">${obS1}</span>
                 </div>
                 <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', '${t1}', 'lay', '${ol1}')">
                   <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${ol1}</span>
-                  <span style="font-size:9.5px; color:#555;">136.79</span>
+                  <span style="font-size:9.5px; color:#555;">${olS1}</span>
                 </div>
-                <div class="om-depth-cell"><span style="font-weight:700;">1.59</span><span style="font-size:9.5px; color:#666;">5.1K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">1.60</span><span style="font-size:9.5px; color:#666;">12K</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.lay?.[1]?.price || '1.59'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.lay?.[1]?.size ? (r1Meta.lay[1].size >= 1000 ? (r1Meta.lay[1].size/1000).toFixed(1)+'K' : r1Meta.lay[1].size) : '5.1K'}</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.lay?.[2]?.price || '1.60'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.lay?.[2]?.size ? (r1Meta.lay[2].size >= 1000 ? (r1Meta.lay[2].size/1000).toFixed(1)+'K' : r1Meta.lay[2].size) : '12K'}</span></div>
               </div>
             </div>
             <!-- Runner 2 -->
@@ -8981,18 +9010,18 @@
                 <span>${t2}</span>
               </div>
               <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">2.70</span><span style="font-size:9.5px; color:#666;">8.2K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">2.72</span><span style="font-size:9.5px; color:#666;">14.1K</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.back?.[1]?.price || '2.70'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.back?.[1]?.size ? (r2Meta.back[1].size >= 1000 ? (r2Meta.back[1].size/1000).toFixed(1)+'K' : r2Meta.back[1].size) : '8.2K'}</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.back?.[2]?.price || '2.72'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.back?.[2]?.size ? (r2Meta.back[2].size >= 1000 ? (r2Meta.back[2].size/1000).toFixed(1)+'K' : r2Meta.back[2].size) : '14.1K'}</span></div>
                 <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', '${t2}', 'back', '${ob2}')">
                   <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${ob2}</span>
-                  <span style="font-size:9.5px; color:#555;">1.49</span>
+                  <span style="font-size:9.5px; color:#555;">${obS2}</span>
                 </div>
                 <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', '${t2}', 'lay', '${ol2}')">
                   <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${ol2}</span>
-                  <span style="font-size:9.5px; color:#555;">51.23</span>
+                  <span style="font-size:9.5px; color:#555;">${olS2}</span>
                 </div>
-                <div class="om-depth-cell"><span style="font-weight:700;">2.84</span><span style="font-size:9.5px; color:#666;">6.8K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">2.86</span><span style="font-size:9.5px; color:#666;">9.4K</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.lay?.[1]?.price || '2.84'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.lay?.[1]?.size ? (r2Meta.lay[1].size >= 1000 ? (r2Meta.lay[1].size/1000).toFixed(1)+'K' : r2Meta.lay[1].size) : '6.8K'}</span></div>
+                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.lay?.[2]?.price || '2.86'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.lay?.[2]?.size ? (r2Meta.lay[2].size >= 1000 ? (r2Meta.lay[2].size/1000).toFixed(1)+'K' : r2Meta.lay[2].size) : '9.4K'}</span></div>
               </div>
             </div>
           </div>
@@ -9528,11 +9557,38 @@
     window.addEventListener('load', hideLoader);
     setTimeout(hideLoader, 100);
 
+    // Live Sportbex Cricket API Integration Loader
+    window.initSportbexLiveIntegration = function() {
+      function refreshLiveFeed() {
+        fetch('/api/sportbex/cricket/live')
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+              window.liveSportbexCricketMatches = data.matches;
+              if (typeof currentSelectedSport !== 'undefined' && (currentSelectedSport === 'inplay' || currentSelectedSport === 'cricket')) {
+                const cont = document.getElementById('sportsMatchesContainer');
+                if (cont && cont.style.display !== 'none' && typeof renderSportsMatches === 'function') {
+                  renderSportsMatches();
+                }
+              }
+            }
+          })
+          .catch(err => {
+            console.warn('Sportbex live cricket feed gentle fallback:', err.message);
+          });
+      }
+      refreshLiveFeed();
+      if (!window._sportbexPollTimer) {
+        window._sportbexPollTimer = setInterval(refreshLiveFeed, 25000);
+      }
+    };
+
     // Initialize races meetings and inplay matches on load
     document.addEventListener('DOMContentLoaded', function() {
       hideLoader();
       if (typeof renderRacesMeetings === 'function') renderRacesMeetings();
       if (typeof selectSport === 'function') selectSport('inplay');
+      if (typeof initSportbexLiveIntegration === 'function') initSportbexLiveIntegration();
     });
 
   </script>
