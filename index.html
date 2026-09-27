@@ -864,8 +864,8 @@
       .category-games-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* Dedicated 1:1 Evolution Provider Styles */
-    .evolution-breadcrumb-bar {
+    /* Dedicated 1:1 Evolution & QTech Provider Styles */
+    .evolution-breadcrumb-bar, .qtech-breadcrumb-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -878,47 +878,47 @@
       margin-bottom: 16px;
       border-radius: 4px;
     }
-    .evolution-breadcrumb-bar .crumb-link {
+    .evolution-breadcrumb-bar .crumb-link, .qtech-breadcrumb-bar .crumb-link {
       color: #555;
       cursor: pointer;
       text-decoration: none;
       transition: color 0.15s;
     }
-    .evolution-breadcrumb-bar .crumb-link:hover {
+    .evolution-breadcrumb-bar .crumb-link:hover, .qtech-breadcrumb-bar .crumb-link:hover {
       color: #000;
       text-decoration: underline;
     }
-    .evolution-breadcrumb-bar .crumb-sep {
+    .evolution-breadcrumb-bar .crumb-sep, .qtech-breadcrumb-bar .crumb-sep {
       margin: 0 6px;
       color: #999;
     }
-    .evolution-breadcrumb-bar .crumb-active {
+    .evolution-breadcrumb-bar .crumb-active, .qtech-breadcrumb-bar .crumb-active {
       color: #111;
       font-weight: 700;
     }
-    .evolution-breadcrumb-bar .breadcrumb-right {
+    .evolution-breadcrumb-bar .breadcrumb-right, .qtech-breadcrumb-bar .breadcrumb-right {
       color: #555;
       font-weight: 600;
       font-size: 13px;
     }
-    .evolution-games-grid {
+    .evolution-games-grid, .qtech-games-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 14px;
       padding-bottom: 24px;
     }
     @media (max-width: 1200px) {
-      .evolution-games-grid { grid-template-columns: repeat(4, 1fr); }
+      .evolution-games-grid, .qtech-games-grid { grid-template-columns: repeat(4, 1fr); }
     }
     @media (max-width: 900px) {
-      .evolution-games-grid { grid-template-columns: repeat(3, 1fr); }
+      .evolution-games-grid, .qtech-games-grid { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 600px) {
-      .evolution-games-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .evolution-breadcrumb-bar { padding: 8px 10px; font-size: 11px; }
-      .evolution-breadcrumb-bar .breadcrumb-right { font-size: 11px; }
+      .evolution-games-grid, .qtech-games-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .evolution-breadcrumb-bar, .qtech-breadcrumb-bar { padding: 8px 10px; font-size: 11px; }
+      .evolution-breadcrumb-bar .breadcrumb-right, .qtech-breadcrumb-bar .breadcrumb-right { font-size: 11px; }
     }
-    .evolution-game-card {
+    .evolution-game-card, .qtech-game-card {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -927,10 +927,10 @@
       background: transparent;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .evolution-game-card:hover {
+    .evolution-game-card:hover, .qtech-game-card:hover {
       transform: translateY(-3px);
     }
-    .evolution-card-thumb {
+    .evolution-card-thumb, .qtech-card-thumb {
       position: relative;
       width: 100%;
       aspect-ratio: 4 / 3;
@@ -939,7 +939,7 @@
       background: #1e1e1e;
       box-shadow: 0 2px 6px rgba(0,0,0,0.12);
     }
-    .evolution-card-thumb img {
+    .evolution-card-thumb img, .qtech-card-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -947,10 +947,11 @@
       border-radius: 15px;
       transition: transform 0.3s;
     }
-    .evolution-game-card:hover .evolution-card-thumb img {
+    .evolution-game-card:hover .evolution-card-thumb img,
+    .qtech-game-card:hover .qtech-card-thumb img {
       transform: scale(1.04);
     }
-    .evolution-card-thumb .card-overlay {
+    .evolution-card-thumb .card-overlay, .qtech-card-thumb .card-overlay {
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.45);
@@ -961,10 +962,11 @@
       transition: opacity 0.2s;
       border-radius: 15px;
     }
-    .evolution-game-card:hover .card-overlay {
+    .evolution-game-card:hover .card-overlay,
+    .qtech-game-card:hover .card-overlay {
       opacity: 1;
     }
-    .evolution-card-thumb .play-btn {
+    .evolution-card-thumb .play-btn, .qtech-card-thumb .play-btn {
       background: #ffb80c;
       color: #111;
       font-weight: 700;
@@ -976,7 +978,7 @@
       letter-spacing: 0.5px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-    .evolution-game-title {
+    .evolution-game-title, .qtech-game-title {
       margin-top: 8px;
       font-size: 13px;
       font-weight: 600;
@@ -5068,7 +5070,7 @@
         <div class="bottom-border"></div>
       </div>
 
-      <div class="quick-card" onclick="openCategoryView('popular-games')">
+      <div class="quick-card" onclick="openQTechView()">
         <div class="inner-content" style="background-image: url('assets/casino/providers/provider_8.jpg');">
           <div class="category-scroll-slider-name"><span class="label">QTech</span></div>
         </div>
@@ -6706,7 +6708,7 @@
       } else if (route === 'exchange-games') {
         setViewMode('sports');
       } else if (route === 'qtech') {
-        openCategoryView('slot');
+        openQTechView();
       } else if (route === 'marble-race') {
         openCategoryView('crash-games');
       } else if (route === 'lottery-slots') {
@@ -6729,7 +6731,7 @@
       } else if (mode === 'virtual-sports') {
         openCategoryView('esports');
       } else if (mode === 'qtech') {
-        openCategoryView('popular-games');
+        openQTechView();
       } else if (mode === 'marble-race') {
         openCategoryView('crash-games');
       } else if (mode === 'lottery-slots') {
@@ -6815,6 +6817,10 @@
 
       if (catKey === 'evolution') {
         openEvolutionView();
+        return;
+      }
+      if (catKey === 'qtech') {
+        openQTechView();
         return;
       }
 
@@ -7079,6 +7085,165 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ==========================================================================
+    // AUTHENTIC 1:1 Q TECH (QTC) CASINO GAMES CATALOG (56 AUTHENTIC GAMES)
+    // ==========================================================================
+    const verifiedQTechGames = [
+      { name: "The Greatest Card Show Live", img: "assets/casino/qtech/the_greatest_card_show_live.webp", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Sexybcrt/tgc.webp", provider: "Playtech L", category: "New Releases" },
+      { name: "Win Escalator", img: "assets/casino/qtech/win_escalator.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/RedTiger/2965.png", provider: "Red Tiger", category: "Popular Games" },
+      { name: "Cash Truck", img: "assets/casino/qtech/cash_truck.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=QS-cashtruck_en_US&type=banner&version=3292880859965&showIco", provider: "Quickspin", category: "Popular Games" },
+      { name: "Aviatrix", img: "assets/casino/qtech/aviatrix.jpg", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Aviatrix.jpg", provider: "Aviatrix", category: "Popular Games" },
+      { name: "Maverick", img: "assets/casino/qtech/maverick.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/ADL-maverick.png", provider: "AD LUNAM", category: "Popular Games" },
+      { name: "Pilot", img: "assets/casino/qtech/pilot.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/GZX-pilot.png", provider: "Gamzix", category: "Popular Games" },
+      { name: "Book of Keno", img: "assets/casino/qtech/book_of_keno.webp", cdnImg: "https://dabba.b-cdn.net/CasinoImages/EvoPlay/361.webp", provider: "Evoplay", category: "Popular Games" },
+      { name: "Second Chance", img: "assets/casino/qtech/second_chance.png", cdnImg: "https://client.qtlauncher.com/images/?id=AVX-secondchance_en_US&type=logo-square&version=17743844716", provider: "Aviatrix", category: "Popular Games" },
+      { name: "Hot Fire Fruits", img: "assets/casino/qtech/hot_fire_fruits.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=BNG-hotfirefruits_en_US&type=banner&version=3292880859965&sh", provider: "Booongo", category: "Popular Games" },
+      { name: "Bombay Blackjack", img: "assets/casino/qtech/bombay_blackjack.webp", cdnImg: "https://dabba.b-cdn.net/CasinoImages/OneTouch/6510.webp", provider: "OneTouch", category: "Popular Games" },
+      { name: "Green Hat Magic", img: "assets/casino/qtech/green_hat_magic.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=SLO-greenhatmagic_en_US&type=banner&version=3292880859965&sh", provider: "Slotopia", category: "Popular Games" },
+      { name: "Green Hat Tale", img: "assets/casino/qtech/green_hat_tale.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=SLO-greenhattale_en_US&type=banner&version=3292880859965&sho", provider: "Slotopia", category: "Popular Games" },
+      { name: "Super Baccarat", img: "assets/casino/qtech/super_baccarat.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=TPG-superbaccarat_en_US&type=banner&version=3292880859965&sh", provider: "Triple PG", category: "Popular Games" },
+      { name: "Keno Rush", img: "assets/casino/qtech/keno_rush.webp", cdnImg: "https://dabba.b-cdn.net/CasinoImages/OneTouch/1534.webp", provider: "OneTouch", category: "Popular Games" },
+      { name: "Andar Bahar", img: "assets/casino/qtech/andar_bahar.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=TPG-andarbahar_en_US&type=banner&version=3292880859965&showI", provider: "Triple PG", category: "Popular Games" },
+      { name: "Plinko", img: "assets/casino/qtech/plinko.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=HAK-plinko_en_US&type=banner&version=3292880859965&showIcon=", provider: "Hacksaw Gaming", category: "Popular Games" },
+      { name: "Dragon Tiger", img: "assets/casino/qtech/dragon_tiger.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=IML-dragontiger_en_US&type=banner&version=3292880859965&show", provider: "ImagineLive", category: "Popular Games" },
+      { name: "Teen Patti", img: "assets/casino/qtech/teen_patti.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=IML-teenpatti_en_US&type=banner&version=3292880859965&showIc", provider: "ImagineLive", category: "Popular Games" },
+      { name: "Tombstone RIP", img: "assets/casino/qtech/tombstone_rip.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=NLC-tombstonerip_en_US&type=banner&version=3292880859965&sho", provider: "Nolimit City", category: "Popular Games" },
+      { name: "xWays Hoarder xSplit", img: "assets/casino/qtech/xways_hoarder_xsplit.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=NLC-xwayshoarderxsplit_en_US&type=banner&version=32928808599", provider: "Nolimit City", category: "Popular Games" },
+      { name: "Teen Patti 20-20", img: "assets/casino/qtech/teen_patti_20_20.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=KAG-teenpatti2020_en_US&type=banner&version=3292880859965&sh", provider: "KA Gaming", category: "Popular Games" },
+      { name: "Fortune Globe", img: "assets/casino/qtech/fortune_globe.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=BNG-fortuneglobe_en_US&type=banner&version=3292880859965&sho", provider: "Booongo", category: "Popular Games" },
+      { name: "3X3: Hell Spin", img: "assets/casino/qtech/3x3_hell_spin.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=GZX-3x3hellspin_en_US&type=banner&version=3292880859965&show", provider: "Gamzix", category: "Popular Games" },
+      { name: "3X3: 27 Ways", img: "assets/casino/qtech/3x3_27_ways.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=GZX-3x327ways_en_US&type=banner&version=3292880859965&showIc", provider: "Gamzix", category: "Popular Games" },
+      { name: "Fortune Lions", img: "assets/casino/qtech/fortune_lions.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=TPG-fortunelions_en_US&type=banner&version=3292880859965&sho", provider: "Triple PG", category: "Popular Games" },
+      { name: "Champions of Rome", img: "assets/casino/qtech/champions_of_rome.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=YGG-championsofrome_en_US&type=banner&version=3292880859965&", provider: "Yggdrasil", category: "Popular Games" },
+      { name: "Juicy Triple Bonus", img: "assets/casino/qtech/juicy_triple_bonus.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=SLO-juicytriplebonus_en_US&type=banner&version=3292880859965", provider: "Slotopia", category: "Popular Games" },
+      { name: "88FA", img: "assets/casino/qtech/88fa.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=MNP-88fa_en_US&type=banner&version=3292880859965&showIcon=tr", provider: "MANNA PLAY", category: "Popular Games" },
+      { name: "Fruit Fantasy 100", img: "assets/casino/qtech/fruit_fantasy_100.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=SLO-fruitfantasy100_en_US&type=banner&version=3292880859965&", provider: "Slotopia", category: "Popular Games" },
+      { name: "Fruit Fantasy 40", img: "assets/casino/qtech/fruit_fantasy_40.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=SLO-fruitfantasy40_en_US&type=banner&version=3292880859965&s", provider: "Slotopia", category: "Popular Games" },
+      { name: "Pilot Cup", img: "assets/casino/qtech/pilot_cup.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=GZX-pilotcup_en_US&type=banner&version=3292880859965&showIco", provider: "Gamzix", category: "Popular Games" },
+      { name: "Jump! 2", img: "assets/casino/qtech/jump_2.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=HAB-jump2_en_US&type=banner&version=3292880859965&showIcon=t", provider: "Habanero", category: "Popular Games" },
+      { name: "Good Luck Spell", img: "assets/casino/qtech/good_luck_spell.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=EVP-goodluckspell_en_US&type=banner&version=3292880859965&sh", provider: "Evoplay", category: "Popular Games" },
+      { name: "JuicyPop", img: "assets/casino/qtech/juicypop.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=AUX-juicypop_en_US&type=banner&version=3292880859965&showIco", provider: "AVATAR UX", category: "Popular Games" },
+      { name: "Esqueleto Explosivo", img: "assets/casino/qtech/esqueleto_explosivo.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=TK-esqueletoexplosivo_en_US&type=banner&version=329288085996", provider: "Thunderkick", category: "Popular Games" },
+      { name: "Greedy Greenskins Rockways", img: "assets/casino/qtech/greedy_greenskins_rockways.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=MSG-greedygreenskinsrockways_en_US&type=banner&version=32928", provider: "Mascot Gam", category: "Popular Games" },
+      { name: "San Quentin 2: Death Row", img: "assets/casino/qtech/san_quentin_2_death_row.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/NLC-sanquentin2deathrow.png", provider: "Nolimit City", category: "Popular Games" },
+      { name: "Baron Bloodmore And The Crimson Castle", img: "assets/casino/qtech/baron_bloodmore_and_the_crimson_castle.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=TK-baronbloodmore_en_US&type=banner&version=3292880859965&sh", provider: "Thunderkick", category: "Popular Games" },
+      { name: "1429 Uncharted Seas", img: "assets/casino/qtech/1429_uncharted_seas.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=TK-1429unchartedseas_en_US&type=banner&version=3292880859965", provider: "Thunderkick", category: "Popular Games" },
+      { name: "American Roulette", img: "assets/casino/qtech/american_roulette.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=NE-americanroulette_en_US&type=banner&version=3292880859965&", provider: "NetEnt", category: "Popular Games" },
+      { name: "Arcane: Reel Chaos", img: "assets/casino/qtech/arcane_reel_chaos.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=NE-arcanereelchaos_en_US&type=banner&version=3292880859965&s", provider: "NetEnt", category: "Popular Games" },
+      { name: "Archangels Salvation", img: "assets/casino/qtech/archangels_salvation.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=NE-archangelssalvation_en_US&type=banner&version=32928808599", provider: "NetEnt", category: "Popular Games" },
+      { name: "French Roulette", img: "assets/casino/qtech/french_roulette.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=NE-frenchroulette_en_US&type=banner&version=3292880859965&showIcon=true&width=450&theme=dark", provider: "NetEnt", category: "Popular Games" },
+      { name: "Apollo Pays", img: "assets/casino/qtech/apollo_pays.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/BTG/BTG-apollopays.png", provider: "Big Time G", category: "Popular Games" },
+      { name: "Get Money", img: "assets/casino/qtech/get_money.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=DS-getmoney_en_US&type=banner&version=3292880859965&showIcon", provider: "DragonSoft", category: "Popular Games" },
+      { name: "Fire in the Hole 2", img: "assets/casino/qtech/fire_in_the_hole_2.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=NLC-fireinthehole2_en_US&type=banner&version=3292880859965&s", provider: "Nolimit City", category: "Popular Games" },
+      { name: "Age of Empires", img: "assets/casino/qtech/age_of_empires.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-ageofempires_en_US&type=banner&version=1677592959935&wid", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "Call of Duty", img: "assets/casino/qtech/call_of_duty.webp", cdnImg: "https://dabba.b-cdn.net/CasinoImages/callofduty.webp", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "Counter-Strike 2 Duels", img: "assets/casino/qtech/counter_strike_2_duels.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-cs2duels_en_US&type=banner&version=3292880859965&showIco", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "CS Go", img: "assets/casino/qtech/cs_go.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-csgo_en_US&type=banner&version=1677592959935&width=450&t", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "Dota 2", img: "assets/casino/qtech/dota_2.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-dota2_en_US&type=banner&version=1677592959935&width=450&", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "Rocket League", img: "assets/casino/qtech/rocket_league.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-rocketleague_en_US&type=banner&version=1677592959935&wid", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "Halo", img: "assets/casino/qtech/halo.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-halo_en_US&type=banner&version=1677592959935&width=450&t", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "eCricket", img: "assets/casino/qtech/ecricket.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-ecricket_en_US&type=banner&version=3292880859965&showIco", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "eFootball", img: "assets/casino/qtech/efootball.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=FLA-efootball_en_US&type=banner&version=3292880859965&showIc", provider: "FullA.Bet", category: "Popular Games" },
+      { name: "Esqueleto Explosivo 2", img: "assets/casino/qtech/esqueleto_explosivo_2.png", cdnImg: "https://lobby.qtlauncher.com/images/?id=TK-esqueletoexplosivo2_en_US&type=banner&version=32928808599", provider: "Thunderkick", category: "Popular Games" }
+    ];
+
+    function renderQTechGameCards(games) {
+      return games.map(g => `
+        <div class="qtech-game-card" onclick="openGameModal('${g.name.replace(/'/g, "\\'")}')">
+          <div class="qtech-card-thumb">
+            <img src="${g.img}" alt="${g.name}" loading="eager" onerror="if(this.src!=='${g.cdnImg}')this.src='${g.cdnImg}';">
+            <div class="card-overlay">
+              <button class="play-btn">PLAY</button>
+            </div>
+          </div>
+          <div class="qtech-game-title">${g.name}</div>
+        </div>
+      `).join('');
+    }
+
+    function openQTechView() {
+      setViewMode('casino');
+
+      // 1. Hide promotional hero banner and game providers row
+      const welcomeCont = document.querySelector('.welcome-image-container');
+      const heroCont = document.querySelector('.hero-carousel-container');
+      const provCont = document.querySelector('.providers-container');
+      if (welcomeCont) welcomeCont.classList.add('hidden-inplay');
+      if (heroCont) heroCont.classList.add('hidden-inplay');
+      if (provCont) provCont.classList.add('hidden-inplay');
+
+      // 2. Ensure mobile drawer, settings sheet, modals are closed
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeModals === 'function') closeModals();
+
+      // 3. Header desktop nav active state
+      document.querySelectorAll('.header-nav .nav-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('navQtech')?.classList.add('active');
+
+      // 4. Mobile top modes bar active state
+      document.querySelectorAll('.mobile-top-modes-bar .mobile-mode-tab').forEach(t => {
+        const text = t.innerText.trim().toLowerCase();
+        if (text === 'q tech' || text === 'qtech') {
+          t.classList.add('active');
+          t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          t.classList.remove('active');
+        }
+      });
+
+      // 5. Update sidebar active state
+      document.querySelectorAll('.sidebar-item').forEach(item => {
+        const text = item.querySelector('.sidebar-text')?.innerText?.trim()?.toLowerCase() || '';
+        const cat = item.getAttribute('data-cat') || '';
+        if (text === 'providers' || text.includes('qtech') || cat === 'qtech' || text.includes('q tech')) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // 6. Update casino filter bar pills
+      document.querySelectorAll('.casino-cat-pill').forEach(pill => {
+        const text = pill.innerText?.trim()?.toLowerCase() || '';
+        const cat = pill.getAttribute('data-cat') || '';
+        if (text === 'qtech' || cat === 'qtech' || text === 'q tech') {
+          pill.classList.add('active');
+          pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          pill.classList.remove('active');
+        }
+      });
+
+      // 7. Render QTech provider breadcrumb and 56 authentic game cards
+      const allSec = document.getElementById('allSectionsContainer');
+      const catGrid = document.getElementById('categoryGridContainer');
+      if (allSec) allSec.style.display = 'none';
+      if (catGrid) {
+        catGrid.style.display = 'block';
+        catGrid.innerHTML = `
+          <div class="qtech-breadcrumb-bar">
+            <div class="breadcrumb-left">
+              <span class="crumb-link" onclick="openCategoryView('casino')">Home</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-link" onclick="openCategoryView('casino')">All Casino</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-active">Qtech</span>
+            </div>
+            <div class="breadcrumb-right">
+              Total: <span id="qtechGamesCount">${verifiedQTechGames.length}</span> Games
+            </div>
+          </div>
+          <div class="qtech-games-grid" id="qtechGamesGrid">
+            ${renderQTechGameCards(verifiedQTechGames)}
+          </div>
+        `;
+      }
+
+      document.title = 'Satsports | QTech Casino Games';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     // Modal Handlers
     function openGameModal(gameName) {
       document.getElementById('ageModalBackdrop').classList.add('show');
@@ -7150,6 +7315,22 @@
         const cntEl = document.getElementById('evolutionGamesCount');
         if (cntEl && document.getElementById('evolutionGamesGrid')) {
           cntEl.innerText = evoVisibleCount;
+        }
+
+        // Filter QTech games if active
+        let qtechVisibleCount = 0;
+        document.querySelectorAll('#qtechGamesGrid .qtech-game-card').forEach(card => {
+          const title = card.querySelector('.qtech-game-title')?.innerText.toLowerCase() || '';
+          if (query === '' || title.includes(query)) {
+            card.style.display = 'flex';
+            qtechVisibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        const qtechCntEl = document.getElementById('qtechGamesCount');
+        if (qtechCntEl && document.getElementById('qtechGamesGrid')) {
+          qtechCntEl.innerText = qtechVisibleCount;
         }
       });
     }
