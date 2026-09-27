@@ -864,6 +864,128 @@
       .category-games-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
+    /* Dedicated 1:1 Evolution Provider Styles */
+    .evolution-breadcrumb-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #faf8ea;
+      border-bottom: 1px solid #e8e3c5;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      border-radius: 4px;
+    }
+    .evolution-breadcrumb-bar .crumb-link {
+      color: #555;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .evolution-breadcrumb-bar .crumb-link:hover {
+      color: #000;
+      text-decoration: underline;
+    }
+    .evolution-breadcrumb-bar .crumb-sep {
+      margin: 0 6px;
+      color: #999;
+    }
+    .evolution-breadcrumb-bar .crumb-active {
+      color: #111;
+      font-weight: 700;
+    }
+    .evolution-breadcrumb-bar .breadcrumb-right {
+      color: #555;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .evolution-games-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      padding-bottom: 24px;
+    }
+    @media (max-width: 1200px) {
+      .evolution-games-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .evolution-games-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .evolution-games-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .evolution-breadcrumb-bar { padding: 8px 10px; font-size: 11px; }
+      .evolution-breadcrumb-bar .breadcrumb-right { font-size: 11px; }
+    }
+    .evolution-game-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 15px;
+      background: transparent;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .evolution-game-card:hover {
+      transform: translateY(-3px);
+    }
+    .evolution-card-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 15px;
+      overflow: hidden;
+      background: #1e1e1e;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .evolution-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 15px;
+      transition: transform 0.3s;
+    }
+    .evolution-game-card:hover .evolution-card-thumb img {
+      transform: scale(1.04);
+    }
+    .evolution-card-thumb .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: 15px;
+    }
+    .evolution-game-card:hover .card-overlay {
+      opacity: 1;
+    }
+    .evolution-card-thumb .play-btn {
+      background: #ffb80c;
+      color: #111;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 8px 22px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .evolution-game-title {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #212529;
+      text-align: center;
+      line-height: 1.3;
+      padding: 0 4px;
+    }
+
     .casino-game-card {
       display: flex;
       flex-direction: column;
@@ -4897,7 +5019,7 @@
         <div class="bottom-border"></div>
       </div>
 
-      <div class="quick-card" onclick="openCategoryView('live-casino')">
+      <div class="quick-card" onclick="openEvolutionView()">
         <div class="inner-content" style="background-image: url('assets/casino/providers/provider_1.png');">
           <div class="category-scroll-slider-name"><span class="label">Evolution</span></div>
         </div>
@@ -5003,6 +5125,10 @@
 
       <div class="casino-cat-pill " data-cat="lightning" onclick="openCategoryView('lightning')">
         <span>Lightning</span>
+      </div>
+
+      <div class="casino-cat-pill" data-cat="evolution" onclick="openEvolutionView()">
+        <span>Evolution</span>
       </div>
         </div>
 
@@ -6574,7 +6700,7 @@
       } else if (route === 'all-casinos') {
         openCategoryView('casino');
       } else if (route === 'evolution') {
-        openCategoryView('live-casino');
+        openEvolutionView();
       } else if (route === 'virtual-sports') {
         openCategoryView('esports');
       } else if (route === 'exchange-games') {
@@ -6589,6 +6715,8 @@
     }
 
     function handleMobileModeClick(el, mode) {
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
       document.querySelectorAll('.mobile-top-modes-bar .mobile-mode-tab').forEach(t => t.classList.remove('active'));
       if (el) el.classList.add('active');
 
@@ -6597,7 +6725,7 @@
       } else if (mode === 'all-casinos') {
         openCategoryView('casino');
       } else if (mode === 'evolution') {
-        openCategoryView('live-casino');
+        openEvolutionView();
       } else if (mode === 'virtual-sports') {
         openCategoryView('esports');
       } else if (mode === 'qtech') {
@@ -6685,17 +6813,39 @@
         }
       });
 
+      if (catKey === 'evolution') {
+        openEvolutionView();
+        return;
+      }
+
       const allSec = document.getElementById('allSectionsContainer');
       const catGrid = document.getElementById('categoryGridContainer');
-      const gridTitle = document.getElementById('gridCategoryTitle');
-      const gridCards = document.getElementById('gridCardsContainer');
 
       if (catKey === 'casino' || catKey === 'all') {
-        allSec.style.display = 'block';
-        catGrid.style.display = 'none';
+        const welcomeCont = document.querySelector('.welcome-image-container');
+        const heroCont = document.querySelector('.hero-carousel-container');
+        const provCont = document.querySelector('.providers-container');
+        if (welcomeCont) welcomeCont.classList.remove('hidden-inplay');
+        if (heroCont) heroCont.classList.remove('hidden-inplay');
+        if (provCont) provCont.classList.remove('hidden-inplay');
+        if (allSec) allSec.style.display = 'block';
+        if (catGrid) catGrid.style.display = 'none';
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
+
+      // Restore categoryGridContainer inner structure if it was replaced by Evolution view
+      if (catGrid && !document.getElementById('gridCategoryTitle')) {
+        catGrid.innerHTML = `
+          <div class="category-grid-header">
+            <h2 class="category-grid-title" id="gridCategoryTitle">Category Games</h2>
+            <button class="section-see-all-btn" onclick="openCategoryView('casino')">← Back to All Casinos</button>
+          </div>
+          <div class="category-games-grid" id="gridCardsContainer"></div>
+        `;
+      }
+      const gridTitle = document.getElementById('gridCategoryTitle');
+      const gridCards = document.getElementById('gridCardsContainer');
 
       // Find matching section in allSectionsData
       if (catKey === 'indian-casino') {
@@ -6789,6 +6939,146 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ==========================================
+    // AUTHENTIC EVOLUTION PROVIDER IMPLEMENTATION (1:1 PARITY)
+    // ==========================================
+    const verifiedEvolutionGames = [
+      { name: "Super Sic Bo", img: "assets/casino/evolution/super_sic_bo.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/super_sicbo.png", category: "Popular" },
+      { name: "Teen Patti", img: "assets/casino/evolution/teen_patti.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/teen_patti.png", category: "Popular" },
+      { name: "Speed Super Sic Bo", img: "assets/casino/evolution/speed_super_sic_bo.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/speed_super_sic_bo.png", category: "Popular" },
+      { name: "Caribbean Stud Poker", img: "assets/casino/evolution/caribbean_stud_poker.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/caribbean_stud_poker.png", category: "Popular" },
+      { name: "Three Card Poker", img: "assets/casino/evolution/three_card_poker.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Three Card Poker.png", category: "Popular" },
+      { name: "Classic Speed Blackjack 1", img: "assets/casino/evolution/classic_speed_blackjack_1.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Classic Speed Blackjack 1.png", category: "Blackjack" },
+      { name: "First Person XXXtreme Lightning Baccarat", img: "assets/casino/evolution/first_person_xxxtreme_lightning_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person XXXtreme Lightning Baccarat.png", category: "Baccarat" },
+      { name: "Texas Hold'em Bonus Poker", img: "assets/casino/evolution/texas_hold_em_bonus_poker.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/texas_hold_em_bonus_poker.png", category: "Poker" },
+      { name: "First Person Dragon Tiger", img: "assets/casino/evolution/first_person_dragon_tiger.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person Dragon Tiger.png", category: "Dragon Tiger" },
+      { name: "Baccarat A", img: "assets/casino/evolution/baccarat_a.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Baccarat A.png", category: "Baccarat" },
+      { name: "First Person Lightning Baccarat", img: "assets/casino/evolution/first_person_lightning_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person Lightning Baccarat.png", category: "Baccarat" },
+      { name: "Video Poker", img: "assets/casino/evolution/video_poker.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Ezugi/Videopok.png", category: "Poker" },
+      { name: "Triple Card Poker", img: "assets/casino/evolution/triple_card_poker.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Triple Card Poker.png", category: "Poker" },
+      { name: "Ice Fishing", img: "assets/casino/evolution/ice_fishing.webp", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Ezugi/ice_fishing.webp", category: "Table Games" },
+      { name: "Super Andar Bahar", img: "assets/casino/evolution/super_andar_bahar.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Super Andar Bahar.png", category: "Andar Bahar" },
+      { name: "Hindi Speed Baccarat A", img: "assets/casino/evolution/hindi_speed_baccarat_a.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Hindi Speed Baccarat A.png", category: "Baccarat" },
+      { name: "First Person Golden Wealth Baccarat", img: "assets/casino/evolution/first_person_golden_wealth_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person Golden Wealth Baccarat.png", category: "Baccarat" },
+      { name: "Baccarat B", img: "assets/casino/evolution/baccarat_b.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Baccarat B.png", category: "Baccarat" },
+      { name: "Baccarat C", img: "assets/casino/evolution/baccarat_c.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Baccarat C.png", category: "Baccarat" },
+      { name: "Baccarat Control Squeeze", img: "assets/casino/evolution/baccarat_control_squeeze.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Baccarat Control Squeeze.png", category: "Baccarat" },
+      { name: "Baccarat Squeeze", img: "assets/casino/evolution/baccarat_squeeze.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Baccarat Squeeze.png", category: "Baccarat" },
+      { name: "First Person Baccarat", img: "assets/casino/evolution/first_person_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person Baccarat.png", category: "Baccarat" },
+      { name: "First Person Prosperity Tree Baccarat", img: "assets/casino/evolution/first_person_prosperity_tree_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person Prosperity Tree Baccarat.png", category: "Baccarat" },
+      { name: "Golden Wealth Baccarat", img: "assets/casino/evolution/golden_wealth_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Golden Wealth Baccarat.png", category: "Baccarat" },
+      { name: "No Commission Baccarat", img: "assets/casino/evolution/no_commission_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/No Commission Baccarat.png", category: "Baccarat" },
+      { name: "Lightning Roulette", img: "assets/casino/evolution/lightning_roulette.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Lightning Roulette.png", category: "Roulette" },
+      { name: "Auto Lightning Roulette", img: "assets/casino/evolution/auto_lightning_roulette.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Auto Lightning Roulette.png", category: "Roulette" },
+      { name: "Instant Roulette", img: "assets/casino/evolution/instant_roulette.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Instant Roulette.png", category: "Roulette" },
+      { name: "Immersive Roulette", img: "assets/casino/evolution/immersive_roulette.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Immersive Roulette.png", category: "Roulette" },
+      { name: "Lightning Baccarat", img: "assets/casino/evolution/lightning_baccarat.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Lightning Baccarat.png", category: "Baccarat" },
+      { name: "Lightning Dice", img: "assets/casino/evolution/lightning_dice.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Lightning Dice.png", category: "Dice" },
+      { name: "Lightning Storm", img: "assets/casino/evolution/lightning_storm.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Lightning Storm.png", category: "Live" },
+      { name: "Funky Time", img: "assets/casino/evolution/funky_time.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Funky Time.png", category: "Live" },
+      { name: "Infinite Blackjack", img: "assets/casino/evolution/infinite_blackjack.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Infinite Blackjack.png", category: "Blackjack" },
+      { name: "Free Bet Blackjack", img: "assets/casino/evolution/free_bet_blackjack.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Free Bet Blackjack.png", category: "Blackjack" },
+      { name: "Power Blackjack", img: "assets/casino/evolution/power_blackjack.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Power Blackjack.png", category: "Blackjack" },
+      { name: "Lightning Blackjack", img: "assets/casino/evolution/lightning_blackjack.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Lightning Blackjack.png", category: "Blackjack" },
+      { name: "Speed Blackjack D", img: "assets/casino/evolution/speed_blackjack_d.png", cdnImg: "https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Speed Blackjack D.png", category: "Blackjack" }
+    ];
+
+    function renderEvolutionGameCards(games) {
+      return games.map(g => `
+        <div class="evolution-game-card" onclick="openGameModal('${g.name.replace(/'/g, "\\'")}')">
+          <div class="evolution-card-thumb">
+            <img src="${g.img}" alt="${g.name}" loading="eager" onerror="if(this.src!=='${g.cdnImg}')this.src='${g.cdnImg}';">
+            <div class="card-overlay">
+              <button class="play-btn">PLAY</button>
+            </div>
+          </div>
+          <div class="evolution-game-title">${g.name}</div>
+        </div>
+      `).join('');
+    }
+
+    function openEvolutionView() {
+      setViewMode('casino');
+
+      // 1. Hide promotional hero banner and game providers row
+      const welcomeCont = document.querySelector('.welcome-image-container');
+      const heroCont = document.querySelector('.hero-carousel-container');
+      const provCont = document.querySelector('.providers-container');
+      if (welcomeCont) welcomeCont.classList.add('hidden-inplay');
+      if (heroCont) heroCont.classList.add('hidden-inplay');
+      if (provCont) provCont.classList.add('hidden-inplay');
+
+      // 2. Ensure mobile drawer, settings sheet, modals are closed
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeModals === 'function') closeModals();
+
+      // 3. Header desktop nav active state
+      document.querySelectorAll('.header-nav .nav-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('navEvolution')?.classList.add('active');
+
+      // 4. Mobile top modes bar active state
+      document.querySelectorAll('.mobile-top-modes-bar .mobile-mode-tab').forEach(t => {
+        if (t.innerText.trim().toLowerCase() === 'evolution') {
+          t.classList.add('active');
+          t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          t.classList.remove('active');
+        }
+      });
+
+      // 5. Update sidebar active state
+      document.querySelectorAll('.sidebar-item').forEach(item => {
+        const text = item.querySelector('.sidebar-text')?.innerText?.trim()?.toLowerCase() || '';
+        const cat = item.getAttribute('data-cat') || '';
+        if (text === 'providers' || text.includes('evolution') || cat === 'evolution' || cat === 'live-casino') {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // 6. Update casino filter bar pills
+      document.querySelectorAll('.casino-cat-pill').forEach(pill => {
+        const text = pill.innerText?.trim()?.toLowerCase() || '';
+        const cat = pill.getAttribute('data-cat') || '';
+        if (text === 'evolution' || cat === 'evolution') {
+          pill.classList.add('active');
+          pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          pill.classList.remove('active');
+        }
+      });
+
+      // 7. Render Evolution provider breadcrumb and 38 authentic game cards
+      const allSec = document.getElementById('allSectionsContainer');
+      const catGrid = document.getElementById('categoryGridContainer');
+      if (allSec) allSec.style.display = 'none';
+      if (catGrid) {
+        catGrid.style.display = 'block';
+        catGrid.innerHTML = `
+          <div class="evolution-breadcrumb-bar">
+            <div class="breadcrumb-left">
+              <span class="crumb-link" onclick="openCategoryView('casino')">Home</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-link" onclick="openCategoryView('casino')">All Casino</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-active">Evolution</span>
+            </div>
+            <div class="breadcrumb-right">
+              Total: <span id="evolutionGamesCount">${verifiedEvolutionGames.length}</span> Games
+            </div>
+          </div>
+          <div class="evolution-games-grid" id="evolutionGamesGrid">
+            ${renderEvolutionGameCards(verifiedEvolutionGames)}
+          </div>
+        `;
+      }
+
+      document.title = 'Satsports | Evolution Gaming Casino Games';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     // Modal Handlers
     function openGameModal(gameName) {
       document.getElementById('ageModalBackdrop').classList.add('show');
@@ -6845,6 +7135,22 @@
           });
           sec.style.display = anyVisible ? 'block' : 'none';
         });
+
+        // Filter Evolution games if active
+        let evoVisibleCount = 0;
+        document.querySelectorAll('#evolutionGamesGrid .evolution-game-card').forEach(card => {
+          const title = card.querySelector('.evolution-game-title')?.innerText.toLowerCase() || '';
+          if (query === '' || title.includes(query)) {
+            card.style.display = 'flex';
+            evoVisibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        const cntEl = document.getElementById('evolutionGamesCount');
+        if (cntEl && document.getElementById('evolutionGamesGrid')) {
+          cntEl.innerText = evoVisibleCount;
+        }
       });
     }
 
