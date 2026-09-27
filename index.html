@@ -217,6 +217,28 @@
       color: #212529;
     }
 
+    .auth-btn.login-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      color: #000000;
+      border: 1px solid #000000;
+      border-radius: 6px;
+      font-family: Poppins, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 6px 22px;
+      height: 38px;
+      min-width: 89px;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: background 0.2s;
+    }
+    .auth-btn.login-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
     .header-action-btn {
       background: #ffcb40;
       border: 1px solid rgba(0,0,0,0.15);
@@ -337,9 +359,30 @@
       height: 38px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       padding: 0 16px;
       gap: 12px;
       overflow-x: auto;
+    }
+
+    .subnav-items-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .subnav-welcome-gif {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .subnav-welcome-gif {
+        display: none !important;
+      }
     }
 
     .subnav-item {
@@ -576,6 +619,12 @@
       pointer-events: none;
     }
 
+    @media (min-width: 1025px) {
+      .welcome-image-container {
+        display: none !important;
+      }
+    }
+
     .hero-carousel-container {
       position: relative;
       width: 100%;
@@ -626,20 +675,25 @@
     }
 
     .news-ticker-container {
-      background: #ffc21d;
-      color: #000;
-      height: 28px;
+      background: transparent;
+      color: #212529;
+      height: 21px;
       display: flex;
       align-items: center;
       overflow: hidden;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 0 16px;
+      font-size: 10px;
+      font-weight: 400;
+      font-family: Poppins, sans-serif;
+      margin: 10px 0 0;
+      padding: 0;
     }
 
     .marquee-text {
       display: inline-block;
       white-space: nowrap;
+      color: #212529;
+      font-size: 10px;
+      font-weight: 400;
       animation: marqueeAnim 20s linear infinite;
     }
 
@@ -3629,20 +3683,21 @@
         order: 3 !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
-        background: #000000 !important;
-        color: #ffc21d !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-        height: 26px !important;
-        padding: 0 10px !important;
+        justify-content: flex-start !important;
+        background: transparent !important;
+        color: #212529 !important;
+        font-weight: 400 !important;
+        font-size: 10px !important;
+        height: 18px !important;
+        margin: 6px 0 0 !important;
+        padding: 0 4px !important;
         overflow: hidden !important;
-        letter-spacing: 0.8px !important;
+        letter-spacing: normal !important;
       }
       .news-ticker-container .marquee-text {
-        color: #ffc21d !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
+        color: #212529 !important;
+        font-weight: 400 !important;
+        font-size: 10px !important;
         white-space: nowrap !important;
       }
 
@@ -4638,48 +4693,55 @@
     </div>
 
     <div class="header-right">
-      <div class="header-balance-pill">
-        <span class="balance-label">Bal: </span><span class="balance-val">0.00</span><span class="dw-part"> | <span class="dw-label">Available D-W: </span><span class="dw-val">0.00</span></span>
-      </div>
-      <div style="position: relative;">
-        <button class="header-icon-btn" title="Notifications" onclick="toggleNotificationsPopover(event)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 7.36 6 9.92 6 13v5l-2 2v1h16v-1l-2-2z"/>
-          </svg>
-        </button>
-        <div class="notif-popover" id="notificationsPopover">
-          <div class="notif-header">
-            <span>Notifications</span>
-            <span style="font-size: 11px; color: #888; cursor: pointer;" onclick="clearNotifs()">Mark all read</span>
-          </div>
-          <div class="notif-body">
-            No new notifications. You're all caught up!
-          </div>
+      <div id="desktopLoggedOut" class="user-section">
+        <div class="auth-buttons mx-1">
+          <button class="auth-btn login-btn" onclick="openGameModal()">Login</button>
         </div>
       </div>
-      <button class="deposit-btn" onclick="openPromoModal('deposit')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        <span>Deposit</span>
-      </button>
-      <button class="header-action-btn" onclick="openAccountModal('bets')">My Markets</button>
-      <div style="position: relative;">
-        <button class="user-profile-btn" id="userProfileBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-          </svg>
-          <span class="user-name-label">dineshk01</span>
-          <span style="font-size: 10px;">▾</span>
-        </button>
-        <div class="user-dropdown-menu" id="userProfileDropdown">
-          <div class="dropdown-item" onclick="openAccountModal('statement')">Account Statement</div>
-          <div class="dropdown-item" onclick="openAccountModal('bets')">Current Bets</div>
-          <div class="dropdown-item" onclick="openAccountModal('results')">Casino Results</div>
-          <div class="dropdown-item" onclick="openAccountModal('buttons')">Set Button Values</div>
-          <div class="dropdown-item" onclick="openAccountModal('security')">Security Auth Verification</div>
-          <div class="dropdown-item" onclick="openAccountModal('password')">Change Password</div>
+      <div id="desktopLoggedIn" class="user-section-logged" style="display: none; align-items: center; gap: 8px;">
+        <div class="header-balance-pill">
+          <span class="balance-label">Bal: </span><span class="balance-val">0.00</span><span class="dw-part"> | <span class="dw-label">Available D-W: </span><span class="dw-val">0.00</span></span>
         </div>
+        <div style="position: relative;">
+          <button class="header-icon-btn" title="Notifications" onclick="toggleNotificationsPopover(event)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 7.36 6 9.92 6 13v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+          </button>
+          <div class="notif-popover" id="notificationsPopover">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <span style="font-size: 11px; color: #888; cursor: pointer;" onclick="clearNotifs()">Mark all read</span>
+            </div>
+            <div class="notif-body">
+              No new notifications. You're all caught up!
+            </div>
+          </div>
+        </div>
+        <button class="deposit-btn" onclick="openPromoModal('deposit')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          <span>Deposit</span>
+        </button>
+        <button class="header-action-btn" onclick="openAccountModal('bets')">My Markets</button>
+        <div style="position: relative;">
+          <button class="user-profile-btn" id="userProfileBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span class="user-name-label">dineshk01</span>
+            <span style="font-size: 10px;">▾</span>
+          </button>
+          <div class="user-dropdown-menu" id="userProfileDropdown">
+            <div class="dropdown-item" onclick="openAccountModal('statement')">Account Statement</div>
+            <div class="dropdown-item" onclick="openAccountModal('bets')">Current Bets</div>
+            <div class="dropdown-item" onclick="openAccountModal('results')">Casino Results</div>
+            <div class="dropdown-item" onclick="openAccountModal('buttons')">Set Button Values</div>
+            <div class="dropdown-item" onclick="openAccountModal('security')">Security Auth Verification</div>
+            <div class="dropdown-item" onclick="openAccountModal('password')">Change Password</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="openGameModal()">Logout</button>
       </div>
-      <button class="logout-btn" onclick="openGameModal()">Logout</button>
     </div>
     <button class="mobile-header-login-btn" onclick="openMobileLogin()">Login</button>
   </header>
@@ -4695,16 +4757,6 @@
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'marble-race')">Marble Race</div>
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'lottery-slots')">LOTTERY &amp; SLOTS</div>
   </nav>
-
-  <!-- SPORTS SUB-NAVIGATION STRIP -->
-  <div class="subnav-bar" id="sportsSubnavBar">
-    <div class="subnav-item active" data-sport="inplay" onclick="selectSport('inplay')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94402.png" height="20" alt="In Play" style="vertical-align:middle;margin-right:4px;">In Play</div>
-    <div class="subnav-item" data-sport="cricket" onclick="selectSport('cricket')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94401.png" height="20" alt="Cricket" style="vertical-align:middle;margin-right:4px;">Cricket</div>
-    <div class="subnav-item" data-sport="soccer" onclick="selectSport('soccer')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94400.png" height="20" alt="Soccer" style="vertical-align:middle;margin-right:4px;">Soccer</div>
-    <div class="subnav-item" data-sport="tennis" onclick="selectSport('tennis')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94399.png" height="20" alt="Tennis" style="vertical-align:middle;margin-right:4px;">Tennis</div>
-    <div class="subnav-item" data-sport="horseracing" onclick="selectSport('horseracing')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94398.png" height="20" alt="Horse Racing" style="vertical-align:middle;margin-right:4px;">Horse Racing</div>
-    <div class="subnav-item" data-sport="greyhound" onclick="selectSport('greyhound')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94397.png" height="20" alt="Greyhound Racing" style="vertical-align:middle;margin-right:4px;">Greyhound Racing</div>
-  </div>
 
   <!-- APP CONTAINER -->
   <div class="app-container">
@@ -4971,13 +5023,28 @@
     <!-- MAIN CONTENT -->
     <main class="app-main">
 
+      <!-- SPORTS SUB-NAVIGATION STRIP -->
+      <div class="subnav-bar" id="sportsSubnavBar">
+        <div class="subnav-items-wrap">
+          <div class="subnav-item active" data-sport="inplay" onclick="selectSport('inplay')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94402.png" height="20" alt="In Play" style="vertical-align:middle;margin-right:4px;">In Play</div>
+          <div class="subnav-item" data-sport="cricket" onclick="selectSport('cricket')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94401.png" height="20" alt="Cricket" style="vertical-align:middle;margin-right:4px;">Cricket</div>
+          <div class="subnav-item" data-sport="soccer" onclick="selectSport('soccer')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94400.png" height="20" alt="Soccer" style="vertical-align:middle;margin-right:4px;">Soccer</div>
+          <div class="subnav-item" data-sport="tennis" onclick="selectSport('tennis')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94399.png" height="20" alt="Tennis" style="vertical-align:middle;margin-right:4px;">Tennis</div>
+          <div class="subnav-item" data-sport="horseracing" onclick="selectSport('horseracing')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94398.png" height="20" alt="Horse Racing" style="vertical-align:middle;margin-right:4px;">Horse Racing</div>
+          <div class="subnav-item" data-sport="greyhound" onclick="selectSport('greyhound')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94397.png" height="20" alt="Greyhound Racing" style="vertical-align:middle;margin-right:4px;">Greyhound Racing</div>
+        </div>
+        <div class="subnav-welcome-gif">
+          <img src="assets/images/finalwelcomegif.gif" alt="Welcome to Satsport" height="30" style="vertical-align:middle; max-width:480px;">
+        </div>
+      </div>
+
       <!-- Welcome Strip -->
-      <div class="welcome-image-container hidden-inplay">
+      <div class="welcome-image-container">
         <img class="welcome-image" src="assets/images/finalwelcomegif.gif" title="Welcome to Satsport" alt="Welcome to Satsport">
       </div>
 
       <!-- Hero Carousel Banner -->
-      <div class="hero-carousel-container hidden-inplay">
+      <div class="hero-carousel-container">
         <div class="hero-slide active">
           <img id="heroBannerImg" src="assets/live/94370.png" alt="Aviator Ride The Rise">
         </div>
@@ -5008,7 +5075,7 @@
         </div>
 
         <!-- Game Providers Slider -->
-        <div class="providers-container hidden-inplay">
+        <div class="providers-container">
           <div class="section-headline">Game Providers</div>
           <div class="providers-container-wrap">
             <button class="prov-scroll-btn left" onclick="scrollProviders(-220)" title="Scroll Left">‹</button>
@@ -6429,7 +6496,7 @@
       <div id="sportsViewContainer" style="display: block;">
         
         <!-- RACES SECTION (AUTHENTIC REFERENCE PARITY) -->
-        <div class="races-section-wrapper hidden-inplay">
+        <div class="races-section-wrapper">
           <div class="races-header-bar" onclick="toggleRacesSection()">
             <span>🏇 Races</span>
             <span id="racesSectionChevron">▲</span>
@@ -6484,7 +6551,7 @@
         </div>
 
         <!-- INPLAY / UPCOMING BANNER STRIP & SPORT PILLS -->
-        <div class="inplay-upcoming-banner hidden-inplay">
+        <div class="inplay-upcoming-banner">
           <div class="schedule-tabs-wrap">
             <button class="schedule-tab-btn active" id="schedInplay" onclick="setScheduleTab('inplay')">Inplay</button>
             <button class="schedule-tab-btn" id="schedUpcoming" onclick="setScheduleTab('upcoming')">Upcoming</button>
@@ -6495,7 +6562,7 @@
         </div>
 
         <!-- SPORT PILLS (CRICKET, SOCCER, TENNIS WITH DUAL BADGES AND DOWNWARD NOTCH) -->
-        <div class="sport-filter-pills-row hidden-inplay">
+        <div class="sport-filter-pills-row">
           <button class="sport-pill-btn active" id="sportPill-cricket" onclick="selectSport('cricket')">
             <span class="sport-pill-icon">🏏</span>
             <span class="sport-pill-title">Cricket</span>
@@ -6751,12 +6818,21 @@
       const heroCont = document.querySelector('.hero-carousel-container');
       const provCont = document.querySelector('.providers-container');
 
+      const subnavBar = document.getElementById('sportsSubnavBar');
+
       if (mode === 'sports') {
+        if (subnavBar) subnavBar.style.display = 'flex';
         if (casinoCont) casinoCont.style.display = 'none';
         if (sportsCont) sportsCont.style.display = 'block';
-        if (welcomeCont) welcomeCont.classList.add('hidden-inplay');
-        if (heroCont) heroCont.classList.add('hidden-inplay');
-        if (provCont) provCont.classList.add('hidden-inplay');
+        if (welcomeCont) welcomeCont.classList.remove('hidden-inplay');
+        if (heroCont) heroCont.classList.remove('hidden-inplay');
+        if (provCont) provCont.classList.remove('hidden-inplay');
+        const racesCont = document.querySelector('.races-section-wrapper');
+        const inplayBanner = document.querySelector('.inplay-upcoming-banner');
+        const sportPills = document.querySelector('.sport-filter-pills-row');
+        if (racesCont) racesCont.classList.remove('hidden-inplay');
+        if (inplayBanner) inplayBanner.classList.remove('hidden-inplay');
+        if (sportPills) sportPills.classList.remove('hidden-inplay');
         if (sideCasino) sideCasino.style.display = 'none';
         if (sideSports) sideSports.style.display = 'block';
         if (btnCasino) btnCasino.classList.remove('active');
@@ -6770,6 +6846,7 @@
         }
         document.title = 'Your Ultimate Casino & Sports Exchange Destination | Satsports';
       } else {
+        if (subnavBar) subnavBar.style.display = 'none';
         if (casinoCont) casinoCont.style.display = 'block';
         if (sportsCont) sportsCont.style.display = 'none';
         if (welcomeCont) welcomeCont.classList.remove('hidden-inplay');
@@ -7728,13 +7805,16 @@
 
     // 3. RENDER SPORTS MATCHES WITH ACCORDIONS
     function renderSportsMatches(filterComp) {
+      if (typeof window.renderAuthenticSportsMatches === 'function') {
+        return window.renderAuthenticSportsMatches(filterComp);
+      }
       const cont = document.getElementById('sportsMatchesContainer');
       if (!cont) return;
 
       if (currentSelectedSport === 'inplay') {
-        document.querySelector('.races-section-wrapper')?.classList.add('hidden-inplay');
-        document.querySelector('.inplay-upcoming-banner')?.classList.add('hidden-inplay');
-        document.querySelector('.sport-filter-pills-row')?.classList.add('hidden-inplay');
+        document.querySelector('.races-section-wrapper')?.classList.remove('hidden-inplay');
+        document.querySelector('.inplay-upcoming-banner')?.classList.remove('hidden-inplay');
+        document.querySelector('.sport-filter-pills-row')?.classList.remove('hidden-inplay');
 
         const matches = [
           { team1: 'Chennai Super Kings', team2: 'Mumbai Indians', back1: '1.85', backSize1: '45k', lay1: '1.87', laySize1: '32k', back2: '2.10', backSize2: '28k', lay2: '2.14', laySize2: '19k' },
@@ -8450,20 +8530,29 @@
     }
 
     // OVERRIDE renderSportsMatches with authentic interface matching real reference website across all sports
-    renderSportsMatches = function(filterComp) {
+    window.renderAuthenticSportsMatches = function(filterComp) {
       const cont = document.getElementById('sportsMatchesContainer');
       if (!cont) return;
 
-      // Always hide background elements when in sports subnav view
-      document.querySelector('.races-section-wrapper')?.classList.add('hidden-inplay');
-      document.querySelector('.inplay-upcoming-banner')?.classList.add('hidden-inplay');
-      document.querySelector('.sport-filter-pills-row')?.classList.add('hidden-inplay');
-      document.querySelector('.welcome-image-container')?.classList.add('hidden-inplay');
-      document.querySelector('.hero-carousel-container')?.classList.add('hidden-inplay');
-      document.querySelector('.providers-container')?.classList.add('hidden-inplay');
-      document.querySelectorAll('.news-ticker-container').forEach(el => el.classList.add('hidden-inplay'));
-      document.querySelector('.view-more-wrap')?.classList.add('hidden-inplay');
-      document.querySelector('.site-footer')?.classList.add('hidden-inplay');
+      // On main sports feed, keep widgets visible matching live reference
+      const sportsCont = document.getElementById('sportsViewContainer');
+      const isSportsVisible = sportsCont && sportsCont.style.display !== 'none';
+      const isFilteredMatchView = Boolean(filterComp && filterComp !== 'all');
+      if (isFilteredMatchView) {
+        document.querySelector('.subnav-bar')?.classList.add('hidden-inplay');
+        document.querySelector('.races-section-wrapper')?.classList.add('hidden-inplay');
+        document.querySelector('.welcome-image-container')?.classList.add('hidden-inplay');
+        document.querySelector('.hero-carousel-container')?.classList.add('hidden-inplay');
+        document.querySelector('.providers-container')?.classList.add('hidden-inplay');
+      } else if (isSportsVisible) {
+        document.querySelector('.subnav-bar')?.classList.remove('hidden-inplay');
+        document.querySelector('.races-section-wrapper')?.classList.remove('hidden-inplay');
+        document.querySelector('.inplay-upcoming-banner')?.classList.remove('hidden-inplay');
+        document.querySelector('.sport-filter-pills-row')?.classList.remove('hidden-inplay');
+        document.querySelector('.welcome-image-container')?.classList.remove('hidden-inplay');
+        document.querySelector('.hero-carousel-container')?.classList.remove('hidden-inplay');
+        document.querySelector('.providers-container')?.classList.remove('hidden-inplay');
+      }
 
       // Helper to build 2-row match card matching reference DOM
       function buildMatchRow(m, idx) {
@@ -8630,7 +8719,7 @@
           { isLive: true, team1: 'Real Madrid', team2: 'Barcelona', b1: '2.05', bS1: '45k', l1: '2.08', lS1: '33k', b2Draw: '3.60', bS2Draw: '15k', l2Draw: '3.75', lS2Draw: '10k', b2: '3.30', bS2: '12k', l2: '3.45', lS2: '8k' }
         ];
 
-        let inplayHtml = blackAnnouncement + fraudStrip + `
+        let inplayHtml = `
           <!-- In-Play Matches Heading Card -->
           <div class="inplay-heading-card" style="background:#ffffff; height:38px; border-radius:8px; display:flex; align-items:center; padding:0 12px; margin:8px 10px 6px 10px; position:relative; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
             <div class="yellow-accent-bar" style="position:absolute; left:0; top:0; bottom:0; width:6px; background:#ffc21d; border-top-left-radius:8px; border-bottom-left-radius:8px;"></div>
@@ -8690,7 +8779,7 @@
           { time: 'Mon 09:00 pm', team1: 'Victoria W', team2: 'South Australia W', b1: '1.4', bS1: '11', l1: '3.45', lS1: '2', b2: '1.4', bS2: '11', l2: '3.45', lS2: '2' }
         ];
 
-        let html = blackAnnouncement + heroBanner + fraudStrip + newsTickerStrip;
+        let html = heroBanner;
         html += buildSportAccordion('ipl', 'Indian Premier League', 'https://daba.b-cdn.net/flags/in.svg', iplMatches);
         html += buildSportAccordion('odi', 'One Day Internationals', 'https://daba.b-cdn.net/flags/gb.svg', odiMatches);
         if (liveCounty.length > 0) {
@@ -8722,7 +8811,7 @@
           { time: 'Tomorrow 10:00 pm', team1: 'Manchester City', team2: 'Liverpool', b1: '2.05', bS1: '62K', l1: '2.08', lS1: '48K', b2Draw: '3.6', bS2Draw: '24K', l2Draw: '3.7', lS2Draw: '16K', b2: '3.5', bS2: '31K', l2: '3.6', lS2: '20K' }
         ];
 
-        let html = blackAnnouncement + heroBanner + fraudStrip + newsTickerStrip;
+        let html = heroBanner;
         html += buildSportAccordion('uefa-nations', 'UEFA Nations League', 'https://daba.b-cdn.net/flags/eu.svg', uefaNationsMatches);
         html += buildSportAccordion('uefa-u21', 'UEFA U21 Euro Qualifiers', 'https://daba.b-cdn.net/flags/eu.svg', uefaU21Matches);
         html += buildSportAccordion('epl', 'English Premier League', 'https://daba.b-cdn.net/flags/gb.svg', eplMatches);
@@ -8744,7 +8833,7 @@
           { time: 'Tomorrow 01:00 pm', team1: 'Marin Cilic', team2: 'Yasutaka Uchiyama', b1: '1.45', bS1: '7.6K', l1: '1.48', lS1: '5.1K', b2: '2.92', bS2: '680', l2: '3.05', lS2: '340' }
         ];
 
-        let html = blackAnnouncement + heroBanner + fraudStrip + newsTickerStrip;
+        let html = heroBanner;
         html += buildSportAccordion('chengdu', 'ATP Chengdu 2026', '', chengduMatches);
         html += buildSportAccordion('hangzhou', 'ATP Hangzhou 2026', '', hangzhouMatches);
         cont.innerHTML = html;
@@ -8766,7 +8855,7 @@
           { track: 'Wentworth Park', country: 'AU', times: ['11:15', '11:35', '11:55', '12:15'] }
         ];
 
-        let raceHtml = blackAnnouncement + fraudStrip + `
+        let raceHtml = `
           <div style="background:#ffffff; border-radius:10px; margin:8px 10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
             <!-- Today Yellow Button Bar -->
             <div style="display:flex; align-items:center; gap:8px; border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:8px;">
@@ -8797,6 +8886,10 @@
         return;
       }
     };
+    renderSportsMatches = window.renderAuthenticSportsMatches;
+    if (typeof renderSportsMatches === 'function') {
+      renderSportsMatches();
+    }
 
     // AUTHENTIC MATCH DETAILS LOGIC (TRIGGERED BY B, F, M BADGES AND MATCH CARDS)
     window.openMatchDetails = function(team1, team2, matchTime, initialTab, b1, l1, b2, l2) {
@@ -8807,7 +8900,7 @@
       if (!details) return;
 
       // SYSTEMIC FIX: Hide feed / hero / providers / races on BOTH desktop and mobile
-      document.querySelectorAll('.welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
+      document.querySelectorAll('.subnav-bar, .welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
         el.classList.add('hidden-inplay');
       });
 
@@ -9243,18 +9336,13 @@
       if (matches) matches.style.display = 'block';
       if (viewMore) viewMore.style.display = 'block';
 
-      // Restore widgets according to currentSelectedSport
-      if (typeof currentSelectedSport !== 'undefined' && currentSelectedSport === 'inplay') {
-        document.querySelector('.races-section-wrapper')?.classList.add('hidden-inplay');
-        document.querySelector('.inplay-upcoming-banner')?.classList.add('hidden-inplay');
-        document.querySelector('.sport-filter-pills-row')?.classList.add('hidden-inplay');
-      } else {
-        document.querySelector('.races-section-wrapper')?.classList.remove('hidden-inplay');
-        document.querySelector('.inplay-upcoming-banner')?.classList.remove('hidden-inplay');
-        document.querySelector('.sport-filter-pills-row')?.classList.remove('hidden-inplay');
-      }
+      // Restore widgets
+      document.querySelector('.races-section-wrapper')?.classList.remove('hidden-inplay');
+      document.querySelector('.inplay-upcoming-banner')?.classList.remove('hidden-inplay');
+      document.querySelector('.sport-filter-pills-row')?.classList.remove('hidden-inplay');
 
       // Restore hero carousel and providers if in sports view
+      document.querySelector('.subnav-bar')?.classList.remove('hidden-inplay');
       document.querySelector('.hero-carousel-container')?.classList.remove('hidden-inplay');
       document.querySelector('.providers-container')?.classList.remove('hidden-inplay');
       document.querySelector('.welcome-image-container')?.classList.remove('hidden-inplay');
@@ -9312,7 +9400,7 @@
       if (!container) return;
 
       // Hide sports feed widgets on both desktop and mobile
-      document.querySelectorAll('.welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
+      document.querySelectorAll('.subnav-bar, .welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
         el.classList.add('hidden-inplay');
       });
 
@@ -9898,7 +9986,7 @@
       if (viewMore) viewMore.style.display = 'block';
 
       // Restore widgets
-      document.querySelectorAll('.welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
+      document.querySelectorAll('.subnav-bar, .welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
         el.classList.remove('hidden-inplay');
       });
 
@@ -10053,8 +10141,10 @@
             if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
               window.liveSportbexCricketMatches = data.matches;
               if (typeof currentSelectedSport !== 'undefined' && (currentSelectedSport === 'inplay' || currentSelectedSport === 'cricket')) {
+                const sportsCont = document.getElementById('sportsViewContainer');
+                const isSportsVisible = sportsCont && sportsCont.style.display !== 'none';
                 const cont = document.getElementById('sportsMatchesContainer');
-                if (cont && cont.style.display !== 'none' && typeof renderSportsMatches === 'function') {
+                if (isSportsVisible && cont && cont.style.display !== 'none' && typeof renderSportsMatches === 'function') {
                   renderSportsMatches();
                 }
               }
