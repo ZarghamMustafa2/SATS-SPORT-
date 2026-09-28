@@ -1,4 +1,15 @@
 {
   "version": 2,
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin/:match*", "destination": "/admin.html" },
+    { "source": "/Users/:match*", "destination": "/admin.html" },
+    { "source": "/Accounts/:match*", "destination": "/admin.html" },
+    { "source": "/accounts/:match*", "destination": "/admin.html" },
+    { "source": "/Reports/:match*", "destination": "/admin.html" },
+    { "source": "/Markets/:match*", "destination": "/admin.html" },
+    { "source": "/Common/:match*", "destination": "/admin.html" },
+    { "source": "/Customer/:match*", "destination": "/admin.html" }
+  ]
 }

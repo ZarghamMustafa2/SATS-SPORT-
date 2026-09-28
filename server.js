@@ -316,9 +316,15 @@ const server = http.createServer(async (req, res) => {
     pathname === '/admin' ||
     pathname === '/admin/' ||
     pathname === '/admin.html' ||
-    pathname === '/Users/Login' ||
-    pathname === '/Accounts/Chart' ||
-    pathname === '/Reports/BookDetail'
+    pathname.startsWith('/admin/') ||
+    pathname === '/index' ||
+    pathname.startsWith('/Users/') ||
+    pathname.startsWith('/Accounts/') ||
+    pathname.startsWith('/accounts/') ||
+    pathname.startsWith('/Reports/') ||
+    pathname.startsWith('/Markets/') ||
+    pathname.startsWith('/Common/') ||
+    pathname.startsWith('/Customer/')
   ) {
     const adminPath = path.join(__dirname, 'admin.html');
     res.writeHead(200, { 'Content-Type': 'text/html' });
