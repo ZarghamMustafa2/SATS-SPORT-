@@ -683,7 +683,7 @@
       background-color: #000000;
       height: 33px;
       width: 100%;
-      display: flex;
+      display: flex !important;
       align-items: center;
       justify-content: center;
       overflow: hidden;
@@ -693,17 +693,60 @@
 
     .welcome-image {
       height: 33px;
-      width: auto;
+      width: 50%;
       max-width: 580px;
-      object-fit: contain;
-      display: block;
+      object-fit: fill;
+      display: block !important;
       pointer-events: none;
     }
 
-    @media (min-width: 1025px) {
+    @media (max-width: 768px) {
       .welcome-image-container {
-        display: none !important;
+        height: 39px;
       }
+      .welcome-image {
+        width: 100% !important;
+        height: 39px !important;
+        max-width: none !important;
+        transform: translate(-1%);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .welcome-image-container {
+        height: 30px;
+      }
+      .welcome-image {
+        width: 100% !important;
+        height: 30px !important;
+        max-width: none !important;
+        transform: translate(-1%);
+      }
+    }
+
+    @keyframes chevMoveLeft {
+      0%, 100% { transform: translateX(0); opacity: 0.7; }
+      50% { transform: translateX(-4px); opacity: 1; }
+    }
+    @keyframes chevMoveRight {
+      0%, 100% { transform: translateX(0); opacity: 0.7; }
+      50% { transform: translateX(4px); opacity: 1; }
+    }
+    @keyframes welcomeTextPulse {
+      0%, 100% { opacity: 0.88; filter: brightness(1); }
+      50% { opacity: 1; filter: brightness(1.2) drop-shadow(0 0 3px rgba(255,184,0,0.6)); }
+    }
+    .inplay-announcement-strip .chev-left {
+      display: inline-block;
+      animation: chevMoveLeft 1s ease-in-out infinite;
+    }
+    .inplay-announcement-strip .chev-right {
+      display: inline-block;
+      animation: chevMoveRight 1s ease-in-out infinite;
+    }
+    .inplay-announcement-strip .welcome-text-animated {
+      display: inline-block;
+      animation: welcomeTextPulse 1.5s ease-in-out infinite;
     }
 
     .hero-carousel-container {
@@ -7917,9 +7960,9 @@
         ];
 
         let inplayHtml = `
-          <!-- Announcement News Ticker Strip -->
-          <div class="news-ticker-container" style="background:#000000; height:33px; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <span class="news-ticker-text" style="color:#ffc21d; font-size:13px; font-weight:700; letter-spacing:1px; white-space:nowrap;"><<<<<<<< WELCOME TO SATSPORT >>>>>>>>></span>
+          <!-- Authentic Animated Welcome Banner Strip -->
+          <div class="welcome-image-container" style="background:#000000; height:33px; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+            <img class="welcome-image" src="assets/images/finalwelcomegif.gif" title="Welcome to Satsport" alt="Welcome to Satsport">
           </div>
 
           <!-- Fraud Warning Strip -->
@@ -9041,10 +9084,8 @@
 
       // Shared header strips
       const blackAnnouncement = `
-        <div class="inplay-announcement-strip" style="background:#000000; height:32px; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-          <span style="color:#ffffff; font-weight:800; font-size:14px; margin-right:8px; letter-spacing:1px;">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span>
-          <span style="color:#ffb800; font-size:13.5px; font-weight:800; letter-spacing:1px;">WELCOME TO SATSPORT</span>
-          <span style="color:#ffffff; font-weight:800; font-size:14px; margin-left:8px; letter-spacing:1px;">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>
+        <div class="welcome-image-container" style="background:#000000; height:33px; width:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img class="welcome-image" src="assets/images/finalwelcomegif.gif" title="Welcome to Satsport" alt="Welcome to Satsport">
         </div>
       `;
       const fraudStrip = `
