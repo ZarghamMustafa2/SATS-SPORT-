@@ -548,76 +548,102 @@
     }
 
     /* ==========================================================================
-       SPORTS SUB-NAVIGATION BAR
+       SPORTS SUB-NAVIGATION BAR (AUTHENTIC LIVE REFERENCE)
        ========================================================================== */
     .subnav-bar {
-      background: linear-gradient(90deg, #100a1c, #1a0f30, #0e0a1a);
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      gap: 12px;
-      overflow-x: auto;
+      background: url("https://dabba.b-cdn.net/satsports/topbarbg_1.webp") repeat scroll 0% 0% / auto padding-box border-box !important;
+      height: 52px !important;
+      min-height: 52px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      padding: 0 8px !important;
+      box-sizing: border-box !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      scrollbar-width: none !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+      border: none !important;
+      margin: 0 !important;
+    }
+
+    .subnav-bar::-webkit-scrollbar {
+      display: none !important;
+      height: 0 !important;
+      width: 0 !important;
     }
 
     .subnav-items-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-shrink: 0;
+      display: inline-flex !important;
+      align-items: center !important;
+      height: 52px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      gap: 0 !important;
+      flex-shrink: 0 !important;
     }
 
     .subnav-welcome-gif {
-      display: flex;
-      align-items: center;
-      margin-left: auto;
-      flex-shrink: 0;
-    }
-
-    @media (max-width: 1024px) {
-      .subnav-welcome-gif {
-        display: none !important;
-      }
+      display: none !important;
     }
 
     .subnav-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: #ffffff;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 0 12px;
-      height: 34px;
-      border-radius: 15px;
-      background: #1e1e1e;
-      white-space: nowrap;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.15s ease;
-      border: none;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      color: #ffffff !important;
+      font-family: 'Poppins', sans-serif !important;
+      font-size: 13.5px !important;
+      font-weight: 500 !important;
+      padding: 2px 10px !important;
+      margin: 6px 4px 8px !important;
+      height: 38px !important;
+      border-radius: 15px !important;
+      background: linear-gradient(180deg, rgb(42, 42, 42), rgb(21, 21, 21)) !important;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 0px !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      position: relative !important;
+      transition: all 0.2s ease !important;
+      border: none !important;
+      flex-shrink: 0 !important;
+      user-select: none !important;
+      box-sizing: border-box !important;
+      text-decoration: none !important;
     }
 
-    .subnav-item:hover, .subnav-item.active {
-      background: #ffc21d !important;
+    .subnav-item:hover:not(.active) {
+      background: linear-gradient(180deg, rgb(58, 58, 58), rgb(32, 32, 32)) !important;
+      color: #ffffff !important;
+    }
+
+    .subnav-item.active {
+      background: linear-gradient(180deg, rgb(255, 223, 94), rgb(255, 184, 0)) !important;
       color: #000000 !important;
-      box-shadow: 0px 1px 10px 0px #ffc21d !important;
-      font-weight: 700 !important;
+      font-weight: 600 !important;
+      box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 6px 0px !important;
     }
 
-    .subnav-item.active::after {
-      content: '';
-      position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 6px solid #ffc21d;
-      z-index: 10;
+    /* Vertical Divider between items */
+    .subnav-item:not(:last-child)::after {
+      content: "" !important;
+      position: absolute !important;
+      right: -5px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 1px !important;
+      height: 32px !important;
+      background: rgb(75, 75, 75) !important;
+      pointer-events: none !important;
+    }
+
+    .subnav-item .nav-icon {
+      vertical-align: middle !important;
+      object-fit: contain !important;
+      flex-shrink: 0 !important;
+      display: inline-block !important;
     }
 
     /* ==========================================================================
@@ -4128,26 +4154,34 @@
         border-radius: 2px 2px 0 0 !important;
       }
 
-      /* Mobile Sports Subnav Chips */
+      /* Mobile Sports Subnav Bar (Cosmic Nebula Background) */
       .subnav-bar {
+        order: 0 !important;
         display: flex !important;
         overflow-x: auto !important;
+        overflow-y: hidden !important;
         scrollbar-width: none !important;
-        background: #160e29 !important;
-        padding: 8px 8px !important;
-        gap: 8px !important;
-        height: 50px !important;
+        -webkit-overflow-scrolling: touch !important;
+        background: url("https://dabba.b-cdn.net/satsports/topbarbg_1.webp") repeat scroll 0% 0% / auto padding-box border-box !important;
+        padding: 0 4px !important;
+        height: 52px !important;
+        min-height: 52px !important;
         box-sizing: border-box !important;
       }
+      .subnav-bar::-webkit-scrollbar {
+        display: none !important;
+      }
       .subnav-item {
-        background: #1e1e1e !important;
+        background: linear-gradient(180deg, rgb(42, 42, 42), rgb(21, 21, 21)) !important;
         border: none !important;
         color: #ffffff !important;
+        font-family: 'Poppins', sans-serif !important;
         border-radius: 15px !important;
-        padding: 0 12px !important;
-        height: 34px !important;
-        font-size: 13px !important;
-        font-weight: 600 !important;
+        padding: 2px 10px !important;
+        margin: 6px 4px 8px !important;
+        height: 38px !important;
+        font-size: 13.5px !important;
+        font-weight: 500 !important;
         white-space: nowrap !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -4155,26 +4189,25 @@
         box-sizing: border-box !important;
         position: relative !important;
         cursor: pointer !important;
-        transition: all 0.15s ease !important;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 0px !important;
+        transition: all 0.2s ease !important;
       }
       .subnav-item.active {
-        background: #ffc21d !important;
+        background: linear-gradient(180deg, rgb(255, 223, 94), rgb(255, 184, 0)) !important;
         color: #000000 !important;
-        box-shadow: 0px 1px 10px 0px #ffc21d !important;
-        font-weight: 700 !important;
+        font-weight: 600 !important;
+        box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 6px 0px !important;
       }
-      .subnav-item.active::after {
-        content: '' !important;
+      .subnav-item:not(:last-child)::after {
+        content: "" !important;
         position: absolute !important;
-        bottom: -6px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 0 !important;
-        height: 0 !important;
-        border-left: 5px solid transparent !important;
-        border-right: 5px solid transparent !important;
-        border-top: 6px solid #ffc21d !important;
-        z-index: 10 !important;
+        right: -5px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 1px !important;
+        height: 32px !important;
+        background: rgb(75, 75, 75) !important;
+        pointer-events: none !important;
       }
 
       /* Responsive Match Details Overrides for Mobile (<= 768px) */
@@ -5646,26 +5679,32 @@
     <!-- MAIN CONTENT -->
     <main class="app-main">
 
-      <!-- SPORTS SUB-NAVIGATION STRIP -->
+      <!-- SPORTS SUB-NAVIGATION STRIP (AUTHENTIC LIVE REFERENCE) -->
       <div class="subnav-bar" id="sportsSubnavBar">
         <div class="subnav-items-wrap">
-          <div class="subnav-item active" data-sport="inplay" onclick="selectSport('inplay')">
-            <img src="assets/icons/inplay.png" height="20" alt="In Play" style="vertical-align:middle;margin-right:4px;">In Play
+          <div class="subnav-item active pointer" data-sport="inplay" onclick="selectSport('inplay')">
+            <img class="nav-icon" src="https://dabba.b-cdn.net/satsport.co.in/banners/94402.png" width="34" height="34" alt="In Play_Satsport">
+            <span>In Play</span>
           </div>
-          <div class="subnav-item" data-sport="cricket" onclick="selectSport('cricket')">
-            <img src="assets/icons/cricket.png" height="20" alt="Cricket" style="vertical-align:middle;margin-right:4px;">Cricket
+          <div class="subnav-item pointer" data-sport="cricket" onclick="selectSport('cricket')">
+            <img class="nav-icon" src="https://dabba.b-cdn.net/satsport.co.in/banners/94401.png" width="34" height="34" alt="Cricket_Satsport">
+            <span>Cricket</span>
           </div>
-          <div class="subnav-item" data-sport="soccer" onclick="selectSport('soccer')">
-            <img src="assets/icons/soccer.png" height="20" alt="Soccer" style="vertical-align:middle;margin-right:4px;">Soccer
+          <div class="subnav-item pointer" data-sport="soccer" onclick="selectSport('soccer')">
+            <img class="nav-icon" src="https://dabba.b-cdn.net/satsport.co.in/banners/94400.png" width="34" height="34" alt="Soccer_Satsport">
+            <span>Soccer</span>
           </div>
-          <div class="subnav-item" data-sport="tennis" onclick="selectSport('tennis')">
-            <img src="assets/icons/tennis.png" height="20" alt="Tennis" style="vertical-align:middle;margin-right:4px;">Tennis
+          <div class="subnav-item pointer" data-sport="tennis" onclick="selectSport('tennis')">
+            <img class="nav-icon" src="https://dabba.b-cdn.net/satsport.co.in/banners/94399.png" width="34" height="34" alt="Tennis_Satsport">
+            <span>Tennis</span>
           </div>
-          <div class="subnav-item" data-sport="horseracing" onclick="selectSport('horseracing')">
-            <img src="assets/icons/horseracing.png" height="20" alt="Horse Racing" style="vertical-align:middle;margin-right:4px;">Horse Racing
+          <div class="subnav-item pointer" data-sport="horseracing" onclick="selectSport('horseracing')">
+            <img class="nav-icon" src="https://dabba.b-cdn.net/satsport.co.in/banners/94398.png" width="34" height="34" alt="Horse Racing_Satsport">
+            <span>Horse Racing</span>
           </div>
-          <div class="subnav-item" data-sport="greyhound" onclick="selectSport('greyhound')">
-            <img src="assets/icons/greyhound.png" height="20" alt="Greyhound Racing" style="vertical-align:middle;margin-right:4px;">Greyhound Racing
+          <div class="subnav-item pointer" data-sport="greyhound" onclick="selectSport('greyhound')">
+            <img class="nav-icon" src="https://dabba.b-cdn.net/satsport.co.in/banners/94403.png" width="32" height="29" alt="Greyhound Racing_Satsport">
+            <span>Greyhound Racing</span>
           </div>
         </div>
       </div>
@@ -7652,7 +7691,10 @@
         }
         document.title = 'Your Ultimate Casino & Sports Exchange Destination | Satsports';
       } else {
-        if (subnavBar) subnavBar.style.display = 'none';
+        if (subnavBar) {
+          subnavBar.style.display = 'flex';
+          subnavBar.classList.remove('hidden-inplay');
+        }
         if (casinoCont) casinoCont.style.display = 'block';
         if (sportsCont) sportsCont.style.display = 'none';
         if (welcomeCont) welcomeCont.classList.remove('hidden-inplay');
@@ -10210,9 +10252,9 @@
       const isSportsVisible = sportsCont && sportsCont.style.display !== 'none';
       const isFilteredMatchView = Boolean(filterComp && filterComp !== 'all');
       if (isFilteredMatchView) {
-        document.querySelector('.subnav-bar')?.classList.add('hidden-inplay');
+        document.querySelector('.subnav-bar')?.classList.remove('hidden-inplay');
+        document.querySelector('.welcome-image-container')?.classList.remove('hidden-inplay');
         document.querySelector('.races-section-wrapper')?.classList.add('hidden-inplay');
-        document.querySelector('.welcome-image-container')?.classList.add('hidden-inplay');
         document.querySelector('.hero-carousel-container')?.classList.add('hidden-inplay');
         document.querySelector('.providers-container')?.classList.add('hidden-inplay');
       } else if (isSportsVisible) {
