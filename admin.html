@@ -1261,6 +1261,60 @@
              VIEW 2: USERS / DOWNLINE (/Accounts/Chart)
              ========================================== -->
         <div id="viewUsers" class="admin-view-section" style="display: none;">
+          <!-- Search-Users Card (Exact Reference #Usersearchcustom) -->
+          <div class="admin-card" id="Usersearchcustom" style="margin-bottom: 12px;">
+            <div class="admin-card-header">
+              <i class="fa fa-filter mr-1"></i>
+              <strong>Search-Users</strong>
+            </div>
+            <div class="admin-card-body" style="padding:12px 16px;">
+              <form autocomplete="off" onsubmit="event.preventDefault(); filterUserTable(document.getElementById('myInput').value);" style="display:flex; gap:8px; align-items:center;">
+                <div class="input-group" style="max-width:320px; display:flex;">
+                  <input type="search" placeholder="Username" id="myInput" class="form-control" oninput="filterUserTable(this.value)" style="border-radius:4px 0 0 4px;">
+                  <button id="myBtn" type="button" class="btn btn-primary" onclick="filterUserTable(document.getElementById('myInput').value)" style="border-radius:0 4px 4px 0;">
+                    <i class="fa fa-search mr-1"></i> Search
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Summary Balances Table (Exact Reference #Tabletoreplace) -->
+          <div id="Tabletoreplace" class="admin-card" style="margin-bottom: 12px;">
+            <div class="admin-card-body" style="padding:0;">
+              <div class="table-responsive">
+                <table class="admin-table" style="text-align:center; font-size:13px; margin:0; width:100%;">
+                  <tbody>
+                    <tr style="background:#f0f3f5; font-weight:700;">
+                      <th style="padding:8px; text-align:center;">Credit Remaining</th>
+                      <th style="padding:8px; text-align:center;">Cash</th>
+                      <th style="padding:8px; text-align:center;">P/L Downline</th>
+                      <th style="padding:8px; text-align:center;">Users</th>
+                    </tr>
+                    <tr>
+                      <th style="padding:8px; text-align:center;">
+                        <a href="/accounts/ledger?accountId=9611025" onclick="show_popup('/accounts/ledger?accountId=9611025', 'Credit Remaining Ledger', event); return false;" style="color:#00b181; text-decoration:none;">
+                          <span class="position-plus" id="sumCreditRemaining">0</span>
+                        </a>
+                      </th>
+                      <th style="padding:8px; text-align:center;">
+                        <a href="/accounts/ledger?accountId=9611026" onclick="show_popup('/accounts/ledger?accountId=9611026', 'Cash Ledger', event); return false;" style="color:#00b181; text-decoration:none;">
+                          <span class="position-plus" id="sumCash">0</span>
+                        </a>
+                      </th>
+                      <th style="padding:8px; text-align:center;">
+                        <a href="/accounts/ledger?accountId=9611024" onclick="show_popup('/accounts/ledger?accountId=9611024', 'P/L Downline Ledger', event); return false;" style="color:#00b181; text-decoration:none;">
+                          <span class="position-plus" id="sumPLDownline">0</span>
+                        </a>
+                      </th>
+                      <th style="padding:8px; text-align:center;" id="sumUsersCount">2</th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
           <!-- Top Action Bar (Reference-First) -->
           <div class="admin-card" style="margin-bottom: 12px;">
             <div class="admin-card-body" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 16px;">
@@ -2110,7 +2164,8 @@
             <div class="admin-card">
               <div class="admin-card-header">
                 <span>Final Settlement Sheet - Ahmii9090x</span>
-                <div style="display:flex; gap:6px;">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button class="btn btn-sm btn-outline-primary" onclick="toggleZeroAccounts()"><i class="fas fa-eye-slash mr-1"></i> Toggle Zero Accounts</button>
                   <button class="btn btn-sm btn-secondary" onclick="window.print()">Print</button>
                   <button class="btn btn-sm btn-secondary" onclick="showToast('Excel downloaded.')">Excel</button>
                   <button class="btn btn-sm btn-secondary" onclick="showToast('PDF downloaded.')">PDF</button>
@@ -2216,13 +2271,43 @@
                   <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-cricket')">
                   <span>Cricket</span>
                 </label>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
                   <label><input type="checkbox" checked class="cb-cricket"> Figure</label>
                   <label><input type="checkbox" checked class="cb-cricket"> Fancy</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Meter</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Odd Even</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Khado</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Test Session</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Live Session</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> BookMaker</label>
                   <label><input type="checkbox" checked class="cb-cricket"> Match Odds</label>
-                  <label><input type="checkbox" checked class="cb-cricket"> Even / Odd</label>
-                  <label><input type="checkbox" checked class="cb-cricket"> Toss</label>
-                  <label><input type="checkbox" checked class="cb-cricket"> Cup Winner</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Tied Match</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Completed Match</label>
+                </div>
+              </div>
+              <hr style="border-color:#e4e7ea; margin:16px 0;">
+
+              <!-- Soccer -->
+              <div style="margin-bottom:16px;">
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-soccer')">
+                  <span>Soccer</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-soccer"> Match Odds</label>
+                  <label><input type="checkbox" checked class="cb-soccer"> Over/Under</label>
+                </div>
+              </div>
+              <hr style="border-color:#e4e7ea; margin:16px 0;">
+
+              <!-- Tennis -->
+              <div style="margin-bottom:16px;">
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-tennis')">
+                  <span>Tennis</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-tennis"> Match Odds</label>
                 </div>
               </div>
               <hr style="border-color:#e4e7ea; margin:16px 0;">
@@ -2398,7 +2483,7 @@
               <div class="admin-card" style="margin-bottom:12px;">
                 <div class="admin-card-body" style="padding:10px; display:flex; gap:8px;">
                   <div style="position:relative;">
-                    <button class="btn btn-sm btn-primary" onclick="toggleBetLockDropdown(event)">Bet Lock <i class="fas fa-caret-down ml-1"></i></button>
+                    <button class="btn btn-sm btn-primary bet-lock-toggle-btn" onclick="toggleBetLockDropdown(event)">Bet Lock <i class="fas fa-caret-down ml-1"></i></button>
                     <div id="betLockMenu" style="display:none; position:absolute; top:100%; left:0; background:#fff; border:1px solid #c2cfd6; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:10; min-width:140px;">
                       <a href="#" style="display:block; padding:6px 12px; color:#23282c; font-size:12px;" onclick="showToast('Match Odds locked!'); return false;">Match Odds</a>
                       <a href="#" style="display:block; padding:6px 12px; color:#23282c; font-size:12px;" onclick="showToast('Other Markets locked!'); return false;">Other Markets</a>
@@ -2635,6 +2720,7 @@
     function toggleSidebar() {
       if (window.innerWidth < 992) {
         document.body.classList.toggle('sidebar-open');
+        document.querySelector('.app-sidebar')?.classList.toggle('sidebar-open');
       } else {
         document.body.classList.toggle('sidebar-collapsed');
       }
@@ -2642,6 +2728,7 @@
 
     function closeSidebarMobile() {
       document.body.classList.remove('sidebar-open');
+      document.querySelector('.app-sidebar')?.classList.remove('sidebar-open');
     }
 
     function toggleSidebarAccordion(accordionId) {
@@ -2671,7 +2758,7 @@
       if (!e.target.closest('.user-dropdown-wrap')) {
         closeUserDropdown();
       }
-      if (!e.target.closest('#betLockMenu') && !e.target.closest('button:has-text("Bet Lock")')) {
+      if (!e.target.closest('#betLockMenu') && !e.target.closest('.bet-lock-toggle-btn')) {
         const bl = document.getElementById('betLockMenu');
         if (bl) bl.style.display = 'none';
       }
@@ -2845,12 +2932,12 @@
       setTimeout(() => {
         if (gif) gif.style.display = 'none';
         document.querySelectorAll('#adminUsersTableBody tr').forEach(row => {
-          const c = row.querySelector('.credit-cell'); if (c) c.innerText = '0';
-          const b = row.querySelector('.balance-cell'); if (b) b.innerText = '0';
-          const p = row.querySelector('.pl-cell'); if (p) p.innerText = '0';
+          const c = row.querySelector('.credit-cell'); if (c) c.innerText = '0 Rs.';
+          const b = row.querySelector('.balance-cell'); if (b) b.innerText = '0 Rs.';
+          const p = row.querySelector('.pl-cell'); if (p) p.innerText = '0 Rs.';
           const s = row.querySelector('.share-cell'); if (s) s.innerText = '0%';
-          const ex = row.querySelector('.exp-cell'); if (ex) ex.innerText = '0';
-          const av = row.querySelector('.avail-cell'); if (av) av.innerText = '0';
+          const ex = row.querySelector('.exp-cell'); if (ex) ex.innerText = '0 Rs.';
+          const av = row.querySelector('.avail-cell'); if (av) av.innerText = '0 Rs.';
         });
         showToast('Balances loaded successfully.');
       }, 600);
@@ -3229,6 +3316,23 @@
 
     function refreshSportHighlights() {
       showToast('Sport highlights refreshed!');
+    }
+
+    function toggleZeroAccounts() {
+      const rows = document.querySelectorAll('#repSubViewFinalSheet table tbody tr');
+      let hidden = false;
+      rows.forEach(r => {
+        const balCell = r.cells[r.cells.length - 1];
+        if (balCell && (balCell.innerText.trim() === '0' || balCell.innerText.trim() === '0.00')) {
+          if (r.style.display === 'none') {
+            r.style.display = '';
+          } else {
+            r.style.display = 'none';
+            hidden = true;
+          }
+        }
+      });
+      showToast(hidden ? 'Zero balance accounts hidden.' : 'Showing all accounts.');
     }
 
     // Toast helper
