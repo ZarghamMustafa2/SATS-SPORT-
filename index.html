@@ -4103,7 +4103,11 @@
         margin-left: auto !important;
         letter-spacing: 0.3px !important;
       }
-      body {
+      html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        position: relative !important;
         background-color: #f5edd8 !important;
       }
 
@@ -4254,13 +4258,47 @@
         display: block;
       }
 
-      /* Section Re-ordering on Mobile: Banner first, Welcome strip second, Providers third */
+      /* Section Re-ordering and Width Containment on Mobile */
+      .app-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        position: relative !important;
+      }
       .app-main {
         display: flex !important;
         flex-direction: column !important;
         background-color: #f5edd8 !important;
         width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
         padding-bottom: 75px !important;
+      }
+      #categoryGridContainer {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 10px 8px !important;
+      }
+      .evolution-games-grid, .qtech-games-grid {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .promo-cards-row {
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 12px 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .promo-feature-card {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        height: auto !important;
+        min-height: 72px !important;
+        padding: 10px 14px !important;
       }
       .welcome-image-container {
         order: 1 !important;
@@ -7717,9 +7755,23 @@
     const switchMode = setViewMode;
     window.switchMode = setViewMode;
 
+    // Safe horizontal scrolling for container pills/tabs (prevents window horizontal displacement)
+    function safeScrollElementIntoContainer(childEl, parentSelector) {
+      if (!childEl) return;
+      const parent = parentSelector ? childEl.closest(parentSelector) : childEl.parentElement;
+      if (!parent) return;
+      const childRect = childEl.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+      const scrollOffset = (childRect.left - parentRect.left) + parent.scrollLeft - (parentRect.width / 2) + (childRect.width / 2);
+      parent.scrollTo({ left: Math.max(0, scrollOffset), behavior: 'smooth' });
+    }
+    window.safeScrollElementIntoContainer = safeScrollElementIntoContainer;
+
     // Category Grid vs All Showcases Switcher
     function openCategoryView(catKey) {
       setViewMode('casino');
+      if (document.documentElement) document.documentElement.scrollLeft = 0;
+      if (document.body) document.body.scrollLeft = 0;
 
       const sbCont = document.getElementById('sportsBookViewContainer');
       const blogCont = document.getElementById('blogViewContainer');
@@ -7730,7 +7782,7 @@
       document.querySelectorAll('.casino-cat-pill').forEach(pill => {
         if (pill.getAttribute('data-cat') === catKey) {
           pill.classList.add('active');
-          pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          safeScrollElementIntoContainer(pill, '.casino-filter-bar');
         } else {
           pill.classList.remove('active');
         }
@@ -7960,6 +8012,8 @@
 
     function openEvolutionView() {
       setViewMode('casino');
+      if (document.documentElement) document.documentElement.scrollLeft = 0;
+      if (document.body) document.body.scrollLeft = 0;
 
       // 1. Hide promotional hero banner and game providers row
       const welcomeCont = document.querySelector('.welcome-image-container');
@@ -7982,7 +8036,7 @@
       document.querySelectorAll('.mobile-top-modes-bar .mobile-mode-tab').forEach(t => {
         if (t.innerText.trim().toLowerCase() === 'evolution') {
           t.classList.add('active');
-          t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          safeScrollElementIntoContainer(t, '.mobile-top-modes-bar');
         } else {
           t.classList.remove('active');
         }
@@ -8005,7 +8059,7 @@
         const cat = pill.getAttribute('data-cat') || '';
         if (text === 'evolution' || cat === 'evolution') {
           pill.classList.add('active');
-          pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          safeScrollElementIntoContainer(pill, '.casino-filter-bar');
         } else {
           pill.classList.remove('active');
         }
@@ -8037,7 +8091,7 @@
       }
 
       document.title = 'Satsports | Evolution Gaming Casino Games';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
 
     // ==========================================================================
@@ -8119,6 +8173,9 @@
     function openQTechView() {
       setViewMode('casino');
 
+      if (document.documentElement) document.documentElement.scrollLeft = 0;
+      if (document.body) document.body.scrollLeft = 0;
+
       // 1. Hide promotional hero banner and game providers row
       const welcomeCont = document.querySelector('.welcome-image-container');
       const heroCont = document.querySelector('.hero-carousel-container');
@@ -8141,7 +8198,7 @@
         const text = t.innerText.trim().toLowerCase();
         if (text === 'q tech' || text === 'qtech') {
           t.classList.add('active');
-          t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          safeScrollElementIntoContainer(t, '.mobile-top-modes-bar');
         } else {
           t.classList.remove('active');
         }
@@ -8164,7 +8221,7 @@
         const cat = pill.getAttribute('data-cat') || '';
         if (text === 'qtech' || cat === 'qtech' || text === 'q tech') {
           pill.classList.add('active');
-          pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          safeScrollElementIntoContainer(pill, '.casino-filter-bar');
         } else {
           pill.classList.remove('active');
         }
@@ -8196,7 +8253,7 @@
       }
 
       document.title = 'Satsports | QTech Casino Games';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
 
     // ==========================================================================
@@ -8222,6 +8279,11 @@
 
     function openRVGamingView() {
       setViewMode('casino');
+      if (document.documentElement) document.documentElement.scrollLeft = 0;
+      if (document.body) document.body.scrollLeft = 0;
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeModals === 'function') closeModals();
 
       const welcomeCont = document.querySelector('.welcome-image-container');
       const heroCont = document.querySelector('.hero-carousel-container');
@@ -8276,7 +8338,7 @@
       }
 
       document.title = 'Satsports | RV Gaming Crash Games';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
     window.openRVGamingView = openRVGamingView;
 
@@ -8298,6 +8360,11 @@
 
     function openVirtualSportsView() {
       setViewMode('casino');
+      if (document.documentElement) document.documentElement.scrollLeft = 0;
+      if (document.body) document.body.scrollLeft = 0;
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeModals === 'function') closeModals();
 
       const welcomeCont = document.querySelector('.welcome-image-container');
       const heroCont = document.querySelector('.hero-carousel-container');
@@ -8354,7 +8421,7 @@
       }
 
       document.title = 'Satsports | Virtual Sports & Esports';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
     window.openVirtualSportsView = openVirtualSportsView;
 
@@ -8451,6 +8518,12 @@
     ];
 
     function openSportsBookView() {
+      if (document.documentElement) document.documentElement.scrollLeft = 0;
+      if (document.body) document.body.scrollLeft = 0;
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeModals === 'function') closeModals();
+
       const sportsCont = document.getElementById('sportsViewContainer');
       const casinoCont = document.getElementById('casinoViewContainer');
       const blogCont = document.getElementById('blogViewContainer');
@@ -8476,7 +8549,7 @@
       renderSportsBookFixtures('all');
 
       document.title = 'Satsports | Bollytech Sports Book';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
     window.openSportsBookView = openSportsBookView;
 
@@ -8639,6 +8712,12 @@
     ];
 
     function openBlogView() {
+      if (document.documentElement) document.documentElement.scrollLeft = 0;
+      if (document.body) document.body.scrollLeft = 0;
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeModals === 'function') closeModals();
+
       const sportsCont = document.getElementById('sportsViewContainer');
       const casinoCont = document.getElementById('casinoViewContainer');
       const blogCont = document.getElementById('blogViewContainer');
@@ -8669,7 +8748,7 @@
       renderBlogArticles('all');
 
       document.title = 'Satsports | Official Blog & Betting Insights';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
     window.openBlogView = openBlogView;
 
