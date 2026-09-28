@@ -311,6 +311,21 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Admin Portal Routes
+  if (
+    pathname === '/admin' ||
+    pathname === '/admin/' ||
+    pathname === '/admin.html' ||
+    pathname === '/Users/Login' ||
+    pathname === '/Accounts/Chart' ||
+    pathname === '/Reports/BookDetail'
+  ) {
+    const adminPath = path.join(__dirname, 'admin.html');
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    fs.createReadStream(adminPath).pipe(res);
+    return;
+  }
+
   // Static file serving
   let filePath = pathname === '/' ? '/index.html' : pathname;
   filePath = path.join(__dirname, filePath);

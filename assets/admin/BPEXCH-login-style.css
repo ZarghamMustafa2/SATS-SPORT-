@@ -1,0 +1,38 @@
+/*LOGIN PAGE CHANGES*/
+.LG_FT_Line {
+    background-color: #254465 !important;
+}
+
+.wrap-login100 {
+    background: -webkit-linear-gradient(top, #3e6d8d, #121d30) !important;
+    background: -o-linear-gradient(top, #3e6d8d, #121d30) !important;
+    background: -moz-linear-gradient(top, #3e6d8d, #121d30) !important;
+    background: linear-gradient(top, #3e6d8d, #121d30) !important;
+    background-image: linear-gradient(#3e6d8d, #121d30) !important;
+}
+
+.login100-form-logo {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.LG_Logo {
+    content: url('v3/images/icons/b2.png') !important;
+    max-width: 120px !important;
+}
+
+.login100-form-btn {
+    color: rgba(255,255,255,0.9);
+    background: #9152f8;
+    background: -webkit-linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    background: -o-linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    background: -moz-linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    background: linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.60);
+}
+
+    .login100-form-btn::before {
+        background-image: linear-gradient(#87bbdd, #072336);
+    }

@@ -1,0 +1,126 @@
+.green-logo-text {
+    color: #00b181;
+}
+
+body {
+    font-size: 1rem;
+}
+
+.form-control {
+    font-size: 1rem;
+}
+
+.bg-primary {
+    background-color: #00b181 !important;
+}
+
+.btn-primary {
+    background-color: #00b181;
+    border-color: #00b181;
+}
+
+    .btn-primary:hover {
+        color: #fff;
+        background-color: #4dbd74;
+        border-color: #4dbd74;
+    }
+
+.page-item.active .page-link {
+    background-color: #00b181;
+    border-color: #00b181;
+}
+
+.text-primary {
+    color: #00b181 !important;
+}
+
+a {
+    color: #00b181;
+}
+
+    a:hover {
+        color: #4dbd74;
+    }
+
+.fa-basketball-ball {
+    color: white;
+}
+
+.timelineNS {
+    background: #303030;
+    height: 32px;
+    position: relative;
+}
+
+/*NEW color-profile */
+
+:root {
+    --gray: #254465;
+}
+
+#sidebar, .header {
+    background-color: #254465;
+}
+
+.Bl_NT_SF, .RM_In_Markets, .bets > strong {
+    background-color: #254465 !important;
+}
+
+.table-box-header, .market-overarround, .market-name-badge {
+    background-color: #254465 !important;
+}
+
+.Bl_NT_DB {
+    background-color: #3d6b8b !important;
+}
+
+.bg-gray, .Bl_NT_DB_LITE, .table-box-body, tabcontent {
+    background-color: #e6f2fc !important;
+}
+
+.games_slider_container {
+    background-color: #e6f2fc !important;
+}
+
+.img-thumbnail {
+    border: hidden;
+}
+
+/*LOGIN PAGE CHANGES*/
+.LG_FT_Line {
+    background-color: #254465 !important;
+}
+
+.wrap-login100 {
+    background: -webkit-linear-gradient(top, #3e6d8d, #121d30) !important;
+    background: -o-linear-gradient(top, #3e6d8d, #121d30) !important;
+    background: -moz-linear-gradient(top, #3e6d8d, #121d30) !important;
+    background: linear-gradient(top, #3e6d8d, #121d30) !important;
+    background-image: linear-gradient(#3e6d8d, #121d30) !important;
+}
+
+.login100-form-logo {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.LG_Logo {
+    content: url('v3/images/icons/b2.png') !important;
+    max-width: 120px !important;
+}
+
+.login100-form-btn {
+    color: rgba(255,255,255,0.9);
+    background: #9152f8;
+    background: -webkit-linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    background: -o-linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    background: -moz-linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    background: linear-gradient(bottom, #3e6d8d, #121d30) !important;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.60);
+}
+
+    .login100-form-btn::before {
+        background-image: linear-gradient(#87bbdd, #072336);
+    }
