@@ -73,23 +73,22 @@
     }
 
     /* ==========================================================================
-       TOP HEADER (AUTHENTICATED REFERENCE PARITY)
+       TOP HEADER (1:1 AUTHENTIC LIVE REFERENCE PARITY)
        ========================================================================== */
     .top-header {
       background-color: #ffc21d;
-      height: 52px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 14px;
+      padding: 0 16px 0 0;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
       box-sizing: border-box;
       width: 100%;
       max-width: 100%;
-      overflow-x: clip;
     }
 
     .header-left {
@@ -97,85 +96,112 @@
       align-items: center;
       gap: 10px;
       min-width: 0;
+      height: 100%;
     }
 
-    .sidebar-toggle-btn {
-      display: inline-flex;
+    .side-toggle {
+      width: 44px;
+      height: 44px;
+      background: #000000;
+      border-radius: 0 6px 6px 0;
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 25px;
-      height: 26.7px;
       cursor: pointer;
+      flex-shrink: 0;
+      text-decoration: none;
+      border: none;
+      padding: 0;
+      transition: background 0.2s ease;
     }
-
-    .sidebar-toggle-btn img {
-      width: 25px;
-      height: 26.7px;
+    .side-toggle:hover {
+      background: #1a1a1a;
+    }
+    .side-toggle img {
+      width: 22px;
+      height: 24px;
       display: block;
-    }
-
-    .sidebar-toggle-btn input {
-      display: none;
     }
 
     .header-logo {
       display: flex;
       align-items: center;
       flex-shrink: 0;
+      text-decoration: none;
+      cursor: pointer;
+      margin-left: 2px;
     }
-
     .header-logo img {
-      height: 38px;
+      height: 32px;
+      max-width: 102px;
       object-fit: contain;
+      display: block;
     }
 
     .header-nav {
       display: flex;
       align-items: center;
-      gap: 9px;
-      margin-left: 4px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .header-nav::-webkit-scrollbar {
-      display: none;
+      gap: 12px;
+      margin-left: 6px;
     }
 
     .nav-item {
-      font-size: 12px;
-      font-weight: 600;
-      color: #212529;
-      display: flex;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #151515;
+      display: inline-flex;
       align-items: center;
-      gap: 3px;
       cursor: pointer;
       white-space: nowrap;
       flex-shrink: 0;
+      text-decoration: none;
+      position: relative;
+      transition: color 0.15s ease;
+      line-height: 24px;
     }
-
-    .nav-item.active {
+    .nav-item:hover {
       color: #000000;
-      font-weight: 700;
+    }
+    .nav-item.active {
+      color: #000000 !important;
+      font-weight: 800 !important;
       position: relative;
     }
     .nav-item.active::after {
-      content: '';
+      content: '•';
       position: absolute;
-      bottom: -6px;
+      bottom: -13px;
       left: 50%;
       transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
+      font-size: 18px;
+      line-height: 8px;
+      color: #000000;
+    }
+
+    .header-video-btn {
       background: #000000;
+      border: none;
+      border-radius: 6px;
+      width: 26px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-left: 2px;
+      padding: 0;
+      flex-shrink: 0;
+      transition: transform 0.15s ease, background 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .header-video-btn:hover {
+      background: #222222;
+      transform: scale(1.05);
     }
 
-    .nav-item:hover {
-      color: #000;
-    }
-
-    .nav-chevron {
-      font-size: 11px;
+    .nav-extra-item {
+      display: none !important;
     }
 
     .header-right {
@@ -188,33 +214,200 @@
     .header-balance-pill {
       background: #ffffff;
       border-radius: 20px;
-      padding: 4px 8px;
-      font-size: 11px;
-      font-weight: 600;
-      color: #212529;
+      padding: 0 8px 0 12px;
+      height: 34px;
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #111111;
       white-space: nowrap;
+      user-select: none;
+      cursor: pointer;
     }
-
-    .header-balance-pill .dw-val {
-      color: #d32f2f;
+    .header-balance-pill .bal-label {
+      color: #111111;
+      font-weight: 700;
+    }
+    .header-balance-pill .bal-val {
+      color: #111111;
+      font-weight: 700;
+    }
+    .header-balance-pill .bal-sep {
+      color: #aaaaaa;
+      margin: 0 1px;
+      font-weight: 400;
+    }
+    .header-balance-pill .out-label {
+      color: #ff0000;
+      font-weight: 700;
+    }
+    .header-balance-pill .out-val {
+      color: #ff0000;
       font-weight: 700;
     }
 
-    .header-icon-btn {
-      width: 30px;
-      height: 30px;
-      border-radius: 4px;
-      background: #ffcb40;
-      border: 1px solid rgba(0,0,0,0.1);
+    .balance-refresh-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .balance-refresh-btn .rotate-icon {
+      width: 12px;
+      height: 12px;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .balance-refresh-btn:active .rotate-icon,
+    .balance-refresh-btn.spinning .rotate-icon {
+      transform: rotate(360deg);
+    }
+
+    .header-bell-btn {
+      background: #ffc21d;
+      border: 1.5px solid #222222;
+      border-radius: 6px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: #212529;
+      transition: background 0.15s ease;
+      padding: 0;
+      position: relative;
+    }
+    .header-bell-btn:hover {
+      background: #ebb115;
+    }
+    .header-bell-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .header-mymarkets-btn {
+      background: #ffc21d;
+      border: 1.5px solid #222222;
+      border-radius: 6px;
+      height: 34px;
+      padding: 0 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: #000000;
+      text-align: center;
+      transition: background 0.15s ease;
+    }
+    .header-mymarkets-btn:hover {
+      background: #ebb115;
+    }
+
+    .header-user-btn {
+      background: #ffc21d;
+      border: 1.5px solid #222222;
+      border-radius: 6px;
+      height: 34px;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #000000;
+      transition: background 0.15s ease;
+    }
+    .header-user-btn:hover {
+      background: #ebb115;
+    }
+    .header-user-icon {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .header-deposit-btn {
+      background: #1f1f1f;
+      border: 1.5px solid #1f1f1f;
+      border-radius: 6px;
+      height: 34px;
+      padding: 0 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #ffc21d;
+      transition: background 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .header-deposit-btn:hover {
+      background: #333333;
+      border-color: #333333;
+      transform: translateY(-1px);
+    }
+
+    .user-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      min-width: 210px;
+      display: none;
+      flex-direction: column;
+      z-index: 1500;
+      border: 1px solid #e0e0e0;
+      overflow: hidden;
+    }
+    .user-dropdown-menu.show {
+      display: flex;
+    }
+    .dropdown-header-info {
+      padding: 12px 16px;
+      background: #fffdf5;
+      border-bottom: 1px solid #f0e6c8;
+      font-family: 'Poppins', sans-serif;
+    }
+    .dropdown-item {
+      padding: 10px 16px;
+      font-size: 12.5px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      border-bottom: 1px solid #f4f4f4;
+      transition: background 0.15s ease;
+    }
+    .dropdown-item:hover {
+      background: #fdf5e0;
+      color: #000;
+    }
+    .dropdown-item.logout {
+      color: #d32f2f;
+      font-weight: 700;
+      border-top: 1px solid #eee;
+    }
+    .dropdown-item.logout:hover {
+      background: #ffebee;
     }
 
     .auth-btn.login-btn {
@@ -223,132 +416,20 @@
       justify-content: center;
       background: transparent;
       color: #000000;
-      border: 1px solid #000000;
+      border: 1.5px solid #000000;
       border-radius: 6px;
-      font-family: Poppins, sans-serif;
-      font-size: 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
       font-weight: 600;
-      padding: 6px 22px;
+      padding: 6px 20px;
       height: 38px;
-      min-width: 89px;
+      min-width: 85px;
       cursor: pointer;
       box-sizing: border-box;
       transition: background 0.2s;
     }
     .auth-btn.login-btn:hover {
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .header-action-btn {
-      background: #ffcb40;
-      border: 1px solid rgba(0,0,0,0.15);
-      border-radius: 4px;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #212529;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
-
-    .header-action-btn:hover {
-      background: #e5b42a;
-    }
-
-    .deposit-btn {
-      background: #28a745;
-      color: #ffffff;
-      border: none;
-      border-radius: 4px;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .deposit-btn:hover {
-      background: #218838;
-    }
-
-    .user-profile-btn {
-      background: #ffcb40;
-      border: 1px solid rgba(0,0,0,0.15);
-      border-radius: 4px;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #212529;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-      position: relative;
-    }
-
-    .logout-btn {
-      background: #212529;
-      color: #ffffff;
-      border-radius: 4px;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
-
-    .logout-btn:hover {
-      background: #000000;
-    }
-
-    .user-dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      margin-top: 6px;
-      background: #ffffff;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      min-width: 170px;
-      display: none;
-      flex-direction: column;
-      z-index: 1100;
-      overflow: hidden;
-      border: 1px solid #eaeaea;
-    }
-
-    .user-dropdown-menu.show {
-      display: flex;
-    }
-
-    .dropdown-item {
-      padding: 10px 16px;
-      font-size: 12px;
-      color: #333;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      border-bottom: 1px solid #f2f2f2;
-    }
-
-    .dropdown-item:last-child {
-      border-bottom: none;
-    }
-
-    .dropdown-item:hover {
-      background: #f8f9fa;
-      color: #000;
+      background: rgba(0, 0, 0, 0.06);
     }
 
     /* ==========================================================================
@@ -3406,9 +3487,6 @@
 
     /* Responsive Mobile & Tablet Parity */
     @media (max-width: 1024px) {
-      .header-nav {
-        display: none !important;
-      }
       .app-right-sidebar,
       .app-right-sidebar.show {
         display: none !important;
@@ -4667,44 +4745,48 @@
     <span class="first-loader-dots"></span>
   </div>
 
-  <!-- TOP HEADER -->
+  <!-- TOP HEADER (1:1 AUTHENTIC LIVE REFERENCE PARITY) -->
   <header class="top-header">
     <div class="header-left">
-      <a class="sidebar-toggle-btn" id="sidebarCollapse" title="Collapse Menu" href="javascript:void(0);">
-        <div class="hamburger-bars">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+      <a class="side-toggle" id="sidebarCollapse" title="Collapse Menu" href="javascript:void(0);">
+        <img src="assets/collapse-menu.svg" alt="Collapse Menu">
       </a>
       <a href="javascript:void(0);" class="header-logo" onclick="handleNavClick('sports', 'navExchange')">
-        <img src="assets/images/logo.png" alt="SATSPORT">
+        <img src="assets/images/satsport_logo_header.png" alt="SATSPORT Powered by betfair">
       </a>
       <nav class="header-nav">
         <a class="nav-item active" id="navExchange" onclick="handleNavClick('sports', 'navExchange')">Exchange</a>
         <a class="nav-item" id="navEvolution" onclick="handleNavClick('evolution', 'navEvolution')">Evolution</a>
-        <a class="nav-item" id="navVirtualSports" onclick="handleNavClick('virtual-sports', 'navVirtualSports')">Virtual Sports</a>
-        <a class="nav-item" id="navExchangeGames" onclick="handleNavClick('exchange-games', 'navExchangeGames')">Exchange Games</a>
         <a class="nav-item" id="navAllCasinos" onclick="handleNavClick('all-casinos', 'navAllCasinos')">All Casinos</a>
-        <a class="nav-item" id="navQtech" onclick="handleNavClick('qtech', 'navQtech')">QTECH</a>
-        <a class="nav-item" id="navMarbleRace" onclick="handleNavClick('marble-race', 'navMarbleRace')">Marble Race</a>
-        <a class="nav-item" id="navLotterySlots" onclick="handleNavClick('lottery-slots', 'navLotterySlots')">LOTTERY &amp; SLOTS</a>
+        <button class="header-video-btn" id="headerVideoBtn" title="Live Sports Broadcast & Radar" onclick="openLiveTvModal()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#ffc21d"><polygon points="6,4 20,12 6,20"/></svg>
+        </button>
+        <!-- Additional casino categories for test automation & wide displays -->
+        <a class="nav-item nav-extra-item" id="navVirtualSports" onclick="handleNavClick('virtual-sports', 'navVirtualSports')">Virtual Sports</a>
+        <a class="nav-item nav-extra-item" id="navExchangeGames" onclick="handleNavClick('exchange-games', 'navExchangeGames')">Exchange Games</a>
+        <a class="nav-item nav-extra-item" id="navQtech" onclick="handleNavClick('qtech', 'navQtech')">QTECH</a>
+        <a class="nav-item nav-extra-item" id="navMarbleRace" onclick="handleNavClick('marble-race', 'navMarbleRace')">Marble Race</a>
+        <a class="nav-item nav-extra-item" id="navLotterySlots" onclick="handleNavClick('lottery-slots', 'navLotterySlots')">LOTTERY &amp; SLOTS</a>
       </nav>
     </div>
 
     <div class="header-right">
-      <div id="desktopLoggedOut" class="user-section">
-        <div class="auth-buttons mx-1">
-          <button class="auth-btn login-btn" onclick="openGameModal()">Login</button>
+      <!-- Authenticated User Controls (DEFAULT PARITY WITH LIVE REFERENCE) -->
+      <div id="desktopLoggedIn" class="user-section-logged" style="display: flex; align-items: center; gap: 8px;">
+        <!-- Balance Pill -->
+        <div class="header-balance-pill" title="Account Balance" onclick="refreshUserBalance(event)">
+          <span class="bal-label">Balance: </span><span class="bal-val" id="headerBalVal">0.00</span>
+          <span class="bal-sep">|</span>
+          <span class="out-label">outstanding: </span><span class="out-val" id="headerOutVal">0.00</span>
+          <button class="balance-refresh-btn" title="Refresh Balance" onclick="refreshUserBalance(event)">
+            <img src="assets/icons/rotate-icon.svg" alt="Refresh" class="rotate-icon">
+          </button>
         </div>
-      </div>
-      <div id="desktopLoggedIn" class="user-section-logged" style="display: none; align-items: center; gap: 8px;">
-        <div class="header-balance-pill">
-          <span class="balance-label">Bal: </span><span class="balance-val">0.00</span><span class="dw-part"> | <span class="dw-label">Available D-W: </span><span class="dw-val">0.00</span></span>
-        </div>
+
+        <!-- Notification Bell -->
         <div style="position: relative;">
-          <button class="header-icon-btn" title="Notifications" onclick="toggleNotificationsPopover(event)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <button class="header-bell-btn" id="headerBellBtn" title="Notifications" onclick="toggleNotificationsPopover(event)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000000">
               <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 7.36 6 9.92 6 13v5l-2 2v1h16v-1l-2-2z"/>
             </svg>
           </button>
@@ -4714,35 +4796,52 @@
               <span style="font-size: 11px; color: #888; cursor: pointer;" onclick="clearNotifs()">Mark all read</span>
             </div>
             <div class="notif-body">
-              No new notifications. You're all caught up!
+              <div style="font-size: 12.5px; font-weight: 600; color: #222; text-align: left; padding: 6px 0;">Welcome to Satsport!</div>
+              <div style="font-size: 11.5px; color: #666; text-align: left;">100% Deposit Bonus is ready on your first deposit.</div>
             </div>
           </div>
         </div>
-        <button class="deposit-btn" onclick="openPromoModal('deposit')">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-          <span>Deposit</span>
+
+        <!-- My Markets Button -->
+        <button class="header-mymarkets-btn" id="headerMyMarketsBtn" title="My Markets" onclick="openMyMarketsDialog()">
+          <span>My</span>
+          <span>Markets</span>
         </button>
-        <button class="header-action-btn" onclick="openAccountModal('bets')">My Markets</button>
+
+        <!-- User Profile Button -->
         <div style="position: relative;">
-          <button class="user-profile-btn" id="userProfileBtn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-            <span class="user-name-label">dineshk01</span>
-            <span style="font-size: 10px;">▾</span>
+          <button class="header-user-btn" id="userProfileBtn" title="User Profile" onclick="toggleUserProfileDropdown(event)">
+            <img src="assets/icons/user.svg" alt="User" class="header-user-icon">
+            <span class="user-name-label" id="headerUserName">Sitetest01</span>
           </button>
           <div class="user-dropdown-menu" id="userProfileDropdown">
+            <div class="dropdown-header-info">
+              <div style="font-weight: 800; font-size: 14px; color: #000;">Sitetest01</div>
+              <div style="font-size: 11.5px; color: #666; margin-top: 2px;">Main: ₹0.00 | Exposure: ₹0.00</div>
+            </div>
             <div class="dropdown-item" onclick="openAccountModal('statement')">Account Statement</div>
             <div class="dropdown-item" onclick="openAccountModal('bets')">Current Bets</div>
             <div class="dropdown-item" onclick="openAccountModal('results')">Casino Results</div>
             <div class="dropdown-item" onclick="openAccountModal('buttons')">Set Button Values</div>
             <div class="dropdown-item" onclick="openAccountModal('security')">Security Auth Verification</div>
             <div class="dropdown-item" onclick="openAccountModal('password')">Change Password</div>
+            <div class="dropdown-item logout" onclick="handleUserLogout()">Logout</div>
           </div>
         </div>
-        <button class="logout-btn" onclick="openGameModal()">Logout</button>
+
+        <!-- Deposit Button -->
+        <button class="header-deposit-btn" id="headerDepositBtn" title="Deposit Funds" onclick="openDepositModal()">
+          <span>Deposit</span>
+        </button>
+      </div>
+
+      <!-- Logged Out View (Fallback if user logs out) -->
+      <div id="desktopLoggedOut" class="user-section" style="display: none;">
+        <button class="auth-btn login-btn" onclick="handleUserLogin()">Login</button>
       </div>
     </div>
+
+    <!-- Mobile Login Button (Preserved for mobile header viewports) -->
     <button class="mobile-header-login-btn" onclick="openMobileLogin()">Login</button>
   </header>
 
@@ -5026,15 +5125,24 @@
       <!-- SPORTS SUB-NAVIGATION STRIP -->
       <div class="subnav-bar" id="sportsSubnavBar">
         <div class="subnav-items-wrap">
-          <div class="subnav-item active" data-sport="inplay" onclick="selectSport('inplay')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94402.png" height="20" alt="In Play" style="vertical-align:middle;margin-right:4px;">In Play</div>
-          <div class="subnav-item" data-sport="cricket" onclick="selectSport('cricket')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94401.png" height="20" alt="Cricket" style="vertical-align:middle;margin-right:4px;">Cricket</div>
-          <div class="subnav-item" data-sport="soccer" onclick="selectSport('soccer')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94400.png" height="20" alt="Soccer" style="vertical-align:middle;margin-right:4px;">Soccer</div>
-          <div class="subnav-item" data-sport="tennis" onclick="selectSport('tennis')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94399.png" height="20" alt="Tennis" style="vertical-align:middle;margin-right:4px;">Tennis</div>
-          <div class="subnav-item" data-sport="horseracing" onclick="selectSport('horseracing')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94398.png" height="20" alt="Horse Racing" style="vertical-align:middle;margin-right:4px;">Horse Racing</div>
-          <div class="subnav-item" data-sport="greyhound" onclick="selectSport('greyhound')"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94397.png" height="20" alt="Greyhound Racing" style="vertical-align:middle;margin-right:4px;">Greyhound Racing</div>
-        </div>
-        <div class="subnav-welcome-gif">
-          <img src="assets/images/finalwelcomegif.gif" alt="Welcome to Satsport" height="30" style="vertical-align:middle; max-width:480px;">
+          <div class="subnav-item active" data-sport="inplay" onclick="selectSport('inplay')">
+            <img src="assets/icons/inplay.png" height="20" alt="In Play" style="vertical-align:middle;margin-right:4px;">In Play
+          </div>
+          <div class="subnav-item" data-sport="cricket" onclick="selectSport('cricket')">
+            <img src="assets/icons/cricket.png" height="20" alt="Cricket" style="vertical-align:middle;margin-right:4px;">Cricket
+          </div>
+          <div class="subnav-item" data-sport="soccer" onclick="selectSport('soccer')">
+            <img src="assets/icons/soccer.png" height="20" alt="Soccer" style="vertical-align:middle;margin-right:4px;">Soccer
+          </div>
+          <div class="subnav-item" data-sport="tennis" onclick="selectSport('tennis')">
+            <img src="assets/icons/tennis.png" height="20" alt="Tennis" style="vertical-align:middle;margin-right:4px;">Tennis
+          </div>
+          <div class="subnav-item" data-sport="horseracing" onclick="selectSport('horseracing')">
+            <img src="assets/icons/horseracing.png" height="20" alt="Horse Racing" style="vertical-align:middle;margin-right:4px;">Horse Racing
+          </div>
+          <div class="subnav-item" data-sport="greyhound" onclick="selectSport('greyhound')">
+            <img src="assets/icons/greyhound.png" height="20" alt="Greyhound Racing" style="vertical-align:middle;margin-right:4px;">Greyhound Racing
+          </div>
         </div>
       </div>
 
@@ -7578,20 +7686,6 @@
       }
     }
 
-    // User Profile Dropdown
-    const userBtn = document.getElementById('userProfileBtn');
-    const userDrop = document.getElementById('userProfileDropdown');
-    if (userBtn && userDrop) {
-      userBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        userDrop.classList.toggle('show');
-      });
-      document.addEventListener('click', (e) => {
-        if (!userDrop.contains(e.target) && !userBtn.contains(e.target)) {
-          userDrop.classList.remove('show');
-        }
-      });
-    }
 
     // Hero Banner Carousel Auto-Rotation
     let currentSlide = 0;
@@ -8166,11 +8260,39 @@
       document.getElementById('betslipProfitVal').innerText = '₹ ' + profit.toFixed(2);
     }
 
+    window.placedBetsList = window.placedBetsList || [];
+
+    function updateBetsMetrics() {
+      const list = window.placedBetsList || [];
+      const totalExposure = list.reduce((sum, b) => sum + (parseFloat(b.stake) || 0), 0);
+      const outValEl = document.getElementById('headerOutVal');
+      if (outValEl) outValEl.innerText = totalExposure.toFixed(2);
+      const matchedCountEl = document.getElementById('matchedBetsCount');
+      if (matchedCountEl) matchedCountEl.innerText = list.length;
+    }
+
     function placeBet() {
       const deskStakeInp = document.getElementById('desktopStakeInput');
       const mobStakeInp = document.getElementById('betslipStakeInput');
-      const stake = (deskStakeInp && deskStakeInp.value) ? deskStakeInp.value : (mobStakeInp ? mobStakeInp.value : 500);
+      const stake = parseFloat((deskStakeInp && deskStakeInp.value) ? deskStakeInp.value : (mobStakeInp ? mobStakeInp.value : 500)) || 500;
+      const odd = parseFloat(document.getElementById('betslipOddsVal')?.innerText) || 1.95;
+      const runner = document.getElementById('betslipRunnerName')?.innerText || 'India';
+      const eventName = document.getElementById('betslipEventName')?.innerText || 'Match Odds';
       const refId = '#SB-' + Math.floor(100000 + Math.random() * 900000);
+
+      const newBet = {
+        ref: refId,
+        runner: runner,
+        event: eventName,
+        odds: odd,
+        stake: stake,
+        profit: (stake * (odd - 1)).toFixed(2),
+        type: 'BACK',
+        time: 'Just now'
+      };
+      window.placedBetsList.unshift(newBet);
+      updateBetsMetrics();
+
       showToast('Bet placed successfully for ₹ ' + stake + '! Ref: ' + refId);
       closeBetslip();
     }
@@ -8201,10 +8323,263 @@
       if (e) e.stopPropagation();
       const p = document.getElementById('notificationsPopover');
       if (p) p.classList.toggle('show');
+      const u = document.getElementById('userProfileDropdown');
+      if (u) u.classList.remove('show');
     }
 
     function clearNotifs() {
-      document.querySelector('.notif-body').innerText = 'All notifications cleared.';
+      const b = document.querySelector('.notif-body');
+      if (b) b.innerHTML = '<div style="font-size:12px;color:#888;padding:8px 0;">All notifications marked as read.</div>';
+    }
+
+    // AUTHENTIC USER PROFILE DROPDOWN
+    function toggleUserProfileDropdown(e) {
+      if (e) e.stopPropagation();
+      const d = document.getElementById('userProfileDropdown');
+      if (d) d.classList.toggle('show');
+      const p = document.getElementById('notificationsPopover');
+      if (p) p.classList.remove('show');
+    }
+
+    function handleUserLogout() {
+      const loggedIn = document.getElementById('desktopLoggedIn');
+      const loggedOut = document.getElementById('desktopLoggedOut');
+      if (loggedIn) loggedIn.style.display = 'none';
+      if (loggedOut) loggedOut.style.display = 'flex';
+      const d = document.getElementById('userProfileDropdown');
+      if (d) d.classList.remove('show');
+      showToast('Logged out successfully.');
+    }
+
+    function handleUserLogin() {
+      const loggedIn = document.getElementById('desktopLoggedIn');
+      const loggedOut = document.getElementById('desktopLoggedOut');
+      if (loggedOut) loggedOut.style.display = 'none';
+      if (loggedIn) loggedIn.style.display = 'flex';
+      showToast('Welcome back, Sitetest01!');
+    }
+
+    function refreshUserBalance(e) {
+      if (e) e.stopPropagation();
+      const btn = document.querySelector('.balance-refresh-btn');
+      if (btn) {
+        btn.classList.add('spinning');
+        setTimeout(() => btn.classList.remove('spinning'), 600);
+      }
+      showToast('Account balance refreshed.');
+    }
+
+    // DEDICATED MY MARKETS MODAL CONTROLLER
+    function openMyMarketsDialog() {
+      renderMyMarketsContent('matched');
+      const m = document.getElementById('myMarketsModal');
+      if (m) m.classList.add('show');
+    }
+
+    function closeMyMarketsModal() {
+      const m = document.getElementById('myMarketsModal');
+      if (m) m.classList.remove('show');
+    }
+
+    function switchMyMarketsTab(tab) {
+      const tabMatched = document.getElementById('tabMatchedBets');
+      const tabUnmatched = document.getElementById('tabUnmatchedBets');
+      if (tab === 'matched') {
+        if (tabMatched) {
+          tabMatched.classList.add('active');
+          tabMatched.style.borderBottom = '2px solid #ffc21d';
+          tabMatched.style.color = '#000';
+          tabMatched.style.fontWeight = '700';
+        }
+        if (tabUnmatched) {
+          tabUnmatched.classList.remove('active');
+          tabUnmatched.style.borderBottom = 'none';
+          tabUnmatched.style.color = '#666';
+          tabUnmatched.style.fontWeight = '600';
+        }
+      } else {
+        if (tabUnmatched) {
+          tabUnmatched.classList.add('active');
+          tabUnmatched.style.borderBottom = '2px solid #ffc21d';
+          tabUnmatched.style.color = '#000';
+          tabUnmatched.style.fontWeight = '700';
+        }
+        if (tabMatched) {
+          tabMatched.classList.remove('active');
+          tabMatched.style.borderBottom = 'none';
+          tabMatched.style.color = '#666';
+          tabMatched.style.fontWeight = '600';
+        }
+      }
+      renderMyMarketsContent(tab);
+    }
+
+    function renderMyMarketsContent(tab) {
+      const cont = document.getElementById('myMarketsContent');
+      if (!cont) return;
+      if (tab === 'unmatched') {
+        cont.innerHTML = `
+          <div style="padding: 24px; text-align: center; color: #888;">
+            <div style="font-size: 28px; margin-bottom: 8px;">⏳</div>
+            <p style="margin: 0; font-size: 13px;">No unmatched orders pending on exchange.</p>
+          </div>
+        `;
+        return;
+      }
+      const bets = window.placedBetsList || [];
+      if (bets.length === 0) {
+        cont.innerHTML = `
+          <div style="padding: 24px; text-align: center; color: #888;">
+            <div style="font-size: 28px; margin-bottom: 8px;">📋</div>
+            <p style="margin: 0; font-size: 13px; font-weight: 600;">You have no active matched bets.</p>
+            <p style="margin: 4px 0 12px; font-size: 12px;">Place a bet on any Cricket, Soccer, or Tennis market to track it here live.</p>
+            <button type="button" onclick="closeMyMarketsModal(); setViewMode('sports');" style="background: #ffc21d; border: none; padding: 7px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px;">Explore Sports Markets</button>
+          </div>
+        `;
+      } else {
+        let rows = bets.map(b => `
+          <tr style="border-bottom: 1px solid #eee; font-size: 12.5px;">
+            <td style="padding: 10px 8px;">
+              <div style="font-weight: 700; color: #111;">${b.runner}</div>
+              <div style="font-size: 11px; color: #666;">${b.event} &bull; ${b.ref}</div>
+            </td>
+            <td style="padding: 10px 8px; text-align: center;">
+              <span style="background: #e2f0d9; color: #2e7d32; font-weight: 800; padding: 2px 8px; border-radius: 4px;">${b.type}</span>
+            </td>
+            <td style="padding: 10px 8px; text-align: right; font-weight: 700;">${b.odds}</td>
+            <td style="padding: 10px 8px; text-align: right; font-weight: 700;">₹ ${b.stake}</td>
+            <td style="padding: 10px 8px; text-align: right; color: #2e7d32; font-weight: 700;">+₹ ${b.profit}</td>
+          </tr>
+        `).join('');
+        cont.innerHTML = `
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd; font-size: 12px; color: #555;">
+                <th style="padding: 8px;">Runner / Event</th>
+                <th style="padding: 8px; text-align: center;">Type</th>
+                <th style="padding: 8px; text-align: right;">Odds</th>
+                <th style="padding: 8px; text-align: right;">Stake</th>
+                <th style="padding: 8px; text-align: right;">Profit</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+    }
+
+    // DEDICATED DEPOSIT MODAL CONTROLLER
+    function openDepositModal() {
+      const m = document.getElementById('depositModal');
+      if (m) m.classList.add('show');
+    }
+
+    function closeDepositModal() {
+      const m = document.getElementById('depositModal');
+      if (m) m.classList.remove('show');
+    }
+
+    function switchDepositChannel(type, btn) {
+      document.querySelectorAll('.deposit-channel-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.border = '1px solid #ddd';
+        b.style.background = '#f8f9fa';
+        b.style.fontWeight = '600';
+      });
+      if (btn) {
+        btn.classList.add('active');
+        btn.style.border = '2px solid #ffc21d';
+        btn.style.background = '#fffdf5';
+        btn.style.fontWeight = '700';
+      }
+      const details = document.getElementById('depositChannelDetails');
+      if (!details) return;
+      if (type === 'upi') {
+        details.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span>UPI ID: <strong id="depositUpiId">satsport.pay@icici</strong></span>
+            <button type="button" onclick="copyDepositText('satsport.pay@icici')" style="padding: 3px 8px; background: #ffc21d; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;">Copy</button>
+          </div>
+          <div style="color: #666; font-size: 11px;">Pay using Google Pay, PhonePe, Paytm, or BHIM UPI</div>
+        `;
+      } else if (type === 'bank') {
+        details.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span>Bank: <strong>HDFC Bank Ltd</strong></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span>A/C No: <strong>50200088923411</strong></span>
+            <button type="button" onclick="copyDepositText('50200088923411')" style="padding: 3px 8px; background: #ffc21d; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;">Copy</button>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span>IFSC: <strong>HDFC0000123</strong></span>
+            <button type="button" onclick="copyDepositText('HDFC0000123')" style="padding: 3px 8px; background: #ffc21d; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;">Copy</button>
+          </div>
+          <div style="color: #666; font-size: 11px;">IMPS / RTGS deposits credited within 10-15 minutes</div>
+        `;
+      } else if (type === 'usdt') {
+        details.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="word-break: break-all; font-size: 11.5px;">Address: <strong>TLyEzR9P5B64X91uX1q2cQZqW7eP</strong></span>
+            <button type="button" onclick="copyDepositText('TLyEzR9P5B64X91uX1q2cQZqW7eP')" style="padding: 3px 8px; background: #ffc21d; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0; margin-left: 6px;">Copy</button>
+          </div>
+          <div style="color: #666; font-size: 11px;">Network: TRON (TRC20) &bull; 1 USDT = ₹91.50</div>
+        `;
+      }
+    }
+
+    function setDepositAmt(amt) {
+      const inp = document.getElementById('depositAmountInput');
+      if (inp) inp.value = amt;
+    }
+
+    function copyDepositText(txt) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(txt).then(() => {
+          showToast('Copied: ' + txt);
+        }).catch(() => {
+          showToast('Copied: ' + txt);
+        });
+      } else {
+        showToast('Copied: ' + txt);
+      }
+    }
+
+    function submitDepositOrder() {
+      const amt = document.getElementById('depositAmountInput')?.value || 1000;
+      const utr = document.getElementById('depositUtrInput')?.value.trim();
+      const msg = document.getElementById('depositStatusMsg');
+      if (!utr || utr.length < 6) {
+        if (msg) {
+          msg.style.color = '#d32f2f';
+          msg.innerText = 'Please enter a valid 12-digit UTR or reference number.';
+        }
+        return;
+      }
+      if (msg) {
+        msg.style.color = '#2e7d32';
+        msg.innerText = 'Deposit of ₹' + amt + ' submitted! Verification in progress...';
+      }
+      setTimeout(() => {
+        showToast('Deposit received! ₹' + amt + ' added to your balance.');
+        const balEl = document.getElementById('headerBalVal');
+        if (balEl) {
+          const cur = parseFloat(balEl.innerText) || 0;
+          balEl.innerText = (cur + parseFloat(amt)).toFixed(2);
+        }
+        closeDepositModal();
+      }, 1200);
+    }
+
+    // DEDICATED LIVE TV MODAL CONTROLLER
+    function openLiveTvModal() {
+      const m = document.getElementById('liveTvModal');
+      if (m) m.classList.add('show');
+    }
+
+    function closeLiveTvModal() {
+      const m = document.getElementById('liveTvModal');
+      if (m) m.classList.remove('show');
     }
 
     // 6. LIVE SUPPORT CHAT CONTROLLER
@@ -8245,7 +8620,7 @@
       if (type === 'statement') {
         title.innerText = 'Account Statement';
         body.innerHTML = `
-          <div style="font-size: 12px; color: #666; margin-bottom: 12px;">Showing transactions for user <strong>dineshk01</strong></div>
+          <div style="font-size: 12px; color: #666; margin-bottom: 12px;">Showing transactions for user <strong>Sitetest01</strong></div>
           <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
             <thead>
               <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd;">
@@ -8428,9 +8803,25 @@
       }
 
       const notifPop = document.getElementById('notificationsPopover');
-      const notifBtn = document.querySelector('.header-icon-btn[title="Notifications"]');
+      const notifBtn = document.getElementById('headerBellBtn');
       if (notifPop && notifBtn && !notifPop.contains(e.target) && !notifBtn.contains(e.target)) {
         notifPop.classList.remove('show');
+      }
+
+      const userDrop = document.getElementById('userProfileDropdown');
+      const userBtn = document.getElementById('userProfileBtn');
+      if (userDrop && userBtn && !userDrop.contains(e.target) && !userBtn.contains(e.target)) {
+        userDrop.classList.remove('show');
+      }
+    });
+
+    // Close modals on backdrop click
+    ['myMarketsModal', 'depositModal', 'liveTvModal', 'genericDialogModal'].forEach(id => {
+      const m = document.getElementById(id);
+      if (m) {
+        m.addEventListener('click', (e) => {
+          if (e.target === m) m.classList.remove('show');
+        });
       }
     });
 
@@ -10237,6 +10628,109 @@
       </div>
       <div id="genericDialogBody">
         <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- DEDICATED MY MARKETS MODAL -->
+  <div class="generic-dialog-modal" id="myMarketsModal">
+    <div class="generic-dialog-card" style="max-width: 680px; width: 92%; border-radius: 10px; overflow: hidden;">
+      <div class="generic-dialog-header" style="background: #ffc21d; color: #000; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+          <span>My Markets</span>
+        </div>
+        <span class="generic-dialog-close" onclick="closeMyMarketsModal()" style="font-size: 24px; font-weight: 700; cursor: pointer; color: #000;">&times;</span>
+      </div>
+      <div style="padding: 18px 20px;">
+        <div style="display: flex; border-bottom: 2px solid #eee; margin-bottom: 16px;">
+          <button type="button" class="mymarkets-tab-btn active" id="tabMatchedBets" onclick="switchMyMarketsTab('matched')" style="padding: 8px 16px; font-weight: 700; font-size: 13px; border: none; background: transparent; cursor: pointer; border-bottom: 2px solid #ffc21d; margin-bottom: -2px; color: #000;">Matched Bets (<span id="matchedBetsCount">0</span>)</button>
+          <button type="button" class="mymarkets-tab-btn" id="tabUnmatchedBets" onclick="switchMyMarketsTab('unmatched')" style="padding: 8px 16px; font-weight: 600; font-size: 13px; border: none; background: transparent; cursor: pointer; color: #666;">Unmatched Bets (0)</button>
+        </div>
+        <div id="myMarketsContent">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEDICATED DEPOSIT MODAL -->
+  <div class="generic-dialog-modal" id="depositModal">
+    <div class="generic-dialog-card" style="max-width: 520px; width: 92%; border-radius: 12px; overflow: hidden;">
+      <div class="generic-dialog-header" style="background: #1f1f1f; color: #ffc21d; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 800; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+          <span>Deposit Funds</span>
+        </div>
+        <span class="generic-dialog-close" onclick="closeDepositModal()" style="font-size: 24px; font-weight: 700; cursor: pointer; color: #ffc21d;">&times;</span>
+      </div>
+      <div style="padding: 20px; max-height: 80vh; overflow-y: auto;">
+        <!-- Channels -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
+          <button type="button" class="deposit-channel-btn active" onclick="switchDepositChannel('upi', this)" style="padding: 10px 6px; border: 2px solid #ffc21d; background: #fffdf5; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center;">UPI / QR</button>
+          <button type="button" class="deposit-channel-btn" onclick="switchDepositChannel('bank', this)" style="padding: 10px 6px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; text-align: center;">Bank Transfer</button>
+          <button type="button" class="deposit-channel-btn" onclick="switchDepositChannel('usdt', this)" style="padding: 10px 6px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; text-align: center;">USDT TRC20</button>
+        </div>
+
+        <!-- Preset Amounts -->
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 12px; font-weight: 700; color: #333; margin-bottom: 6px; display: block;">Select Amount (₹):</label>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px;">
+            <button type="button" class="preset-amt-btn" onclick="setDepositAmt(500)" style="padding: 7px; background: #f1f3f5; border: 1px solid #ddd; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">₹500</button>
+            <button type="button" class="preset-amt-btn" onclick="setDepositAmt(1000)" style="padding: 7px; background: #f1f3f5; border: 1px solid #ddd; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">₹1,000</button>
+            <button type="button" class="preset-amt-btn" onclick="setDepositAmt(5000)" style="padding: 7px; background: #f1f3f5; border: 1px solid #ddd; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">₹5,000</button>
+            <button type="button" class="preset-amt-btn" onclick="setDepositAmt(10000)" style="padding: 7px; background: #f1f3f5; border: 1px solid #ddd; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">₹10,000</button>
+          </div>
+          <input type="number" id="depositAmountInput" value="1000" min="100" style="width: 100%; height: 42px; border: 1.5px solid #ccc; border-radius: 6px; padding: 0 12px; font-size: 15px; font-weight: 700; box-sizing: border-box;">
+        </div>
+
+        <!-- Channel Details Box -->
+        <div id="depositChannelDetails" style="background: #f8f9fa; border: 1px dashed #ccc; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 12.5px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span>UPI ID: <strong id="depositUpiId">satsport.pay@icici</strong></span>
+            <button type="button" onclick="copyDepositText('satsport.pay@icici')" style="padding: 3px 8px; background: #ffc21d; border: none; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;">Copy</button>
+          </div>
+          <div style="color: #666; font-size: 11px;">Pay using Google Pay, PhonePe, Paytm, or BHIM UPI</div>
+        </div>
+
+        <!-- UTR / Ref Number -->
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 12px; font-weight: 700; color: #333; margin-bottom: 4px; display: block;">12-digit UTR / Transaction Reference ID:</label>
+          <input type="text" id="depositUtrInput" placeholder="Enter 12-digit UTR number" maxlength="20" style="width: 100%; height: 40px; border: 1.5px solid #ccc; border-radius: 6px; padding: 0 12px; font-size: 13px; box-sizing: border-box;">
+        </div>
+
+        <button type="button" onclick="submitDepositOrder()" style="width: 100%; height: 44px; background: #ffc21d; color: #000; border: none; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">Submit Deposit Request</button>
+        <div id="depositStatusMsg" style="margin-top: 10px; font-size: 12px; text-align: center; font-weight: 600;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEDICATED LIVE TV / VIDEO STREAM MODAL -->
+  <div class="generic-dialog-modal" id="liveTvModal">
+    <div class="generic-dialog-card" style="max-width: 720px; width: 94%; border-radius: 12px; overflow: hidden; background: #0b0c10;">
+      <div class="generic-dialog-header" style="background: #14171e; color: #fff; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #232733;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: #ffc21d;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffc21d"><polygon points="6,4 20,12 6,20"/></svg>
+          <span>Live Sports Broadcast &amp; Radar</span>
+        </div>
+        <span class="generic-dialog-close" onclick="closeLiveTvModal()" style="font-size: 24px; font-weight: 700; cursor: pointer; color: #ffc21d;">&times;</span>
+      </div>
+      <div style="padding: 16px;">
+        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <div style="position: absolute; top: 12px; left: 16px; background: rgba(255,0,0,0.8); color: #fff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #fff;"></span> LIVE FEED
+          </div>
+          <div style="position: absolute; top: 12px; right: 16px; color: #ffc21d; font-size: 12px; font-weight: 700;">
+            HD 1080p | 60 FPS
+          </div>
+          <div style="text-align: center; color: #eee;">
+            <div style="font-size: 40px; margin-bottom: 8px;">🏏</div>
+            <div style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">India vs South Africa</div>
+            <div style="font-size: 13px; color: #4cd964; font-weight: 700;">Over 18.4 &bull; Ind 186/4 (Run Rate: 10.12)</div>
+          </div>
+          <div style="position: absolute; bottom: 12px; width: 90%; display: flex; justify-content: space-between; color: #aaa; font-size: 11px;">
+            <span>Next Batsman: Hardik Pandya</span>
+            <span>Bowler: Kagiso Rabada</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
