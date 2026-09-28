@@ -219,6 +219,106 @@
       display: block;
     }
 
+    /* PLAY BUTTON MENU (1:1 LIVE REFERENCE OPTIONS + INTERACTIONS) */
+    .header-play-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .play-button-menu {
+      display: none;
+      position: absolute;
+      top: 36px;
+      left: -20px;
+      background: #18191c;
+      border: 1px solid rgba(255, 194, 29, 0.45);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0, 0, 0, 0.5);
+      padding: 6px 12px;
+      z-index: 2000;
+      white-space: nowrap;
+      align-items: center;
+      gap: 8px;
+      animation: playMenuFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .play-button-menu.show {
+      display: flex;
+    }
+    @keyframes playMenuFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .play-menu-item {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #d1d5db;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 5px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+    .play-menu-item:hover {
+      color: #ffc21d;
+      background: rgba(255, 194, 29, 0.12);
+    }
+    .play-menu-item.active {
+      color: #000000 !important;
+      background: #ffc21d !important;
+      font-weight: 700;
+    }
+    .play-menu-sep {
+      color: #4b5563;
+      font-size: 12px;
+      user-select: none;
+      padding: 0 1px;
+    }
+
+    @media (max-width: 1024px) {
+      .play-button-menu {
+        left: auto;
+        right: 0;
+        max-width: 90vw;
+        overflow-x: auto;
+        scrollbar-width: thin;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-play-wrap {
+        display: inline-flex !important;
+        margin-left: auto !important;
+        margin-right: 8px !important;
+      }
+      .header-video-btn {
+        display: inline-flex !important;
+        width: 26px !important;
+        height: 26px !important;
+      }
+      .play-button-menu {
+        position: fixed !important;
+        top: 54px !important;
+        left: 8px !important;
+        right: 8px !important;
+        width: calc(100vw - 16px) !important;
+        max-width: calc(100vw - 16px) !important;
+        box-sizing: border-box !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        justify-content: flex-start !important;
+        padding: 8px 10px !important;
+      }
+      .play-menu-item {
+        font-size: 11.5px !important;
+        padding: 5px 8px !important;
+      }
+    }
+
     .header-right {
       display: flex;
       align-items: center;
@@ -1179,6 +1279,342 @@
       text-align: center;
       line-height: 1.3;
       padding: 0 4px;
+    }
+
+    /* BOLLEYTECH SPORTS BOOK STYLES (1:1 PARITY) */
+    #sportsBookViewContainer {
+      padding: 16px 20px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .sportsbook-header-banner {
+      background: linear-gradient(135deg, #1b1e23 0%, #111317 100%);
+      border: 1px solid rgba(255, 194, 29, 0.3);
+      border-radius: 8px;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .sportsbook-header-info h2 {
+      margin: 0 0 6px 0;
+      color: #ffc21d;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .sportsbook-header-info p {
+      margin: 0;
+      color: #9ca3af;
+      font-size: 13px;
+    }
+    .sportsbook-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .sportsbook-back-btn, .blog-back-btn {
+      background: #ffc21d;
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .sportsbook-back-btn:hover, .blog-back-btn:hover {
+      background: #e5ac15;
+      transform: translateY(-1px);
+    }
+    .sportsbook-back-btn.outline, .blog-back-btn.outline {
+      background: transparent;
+      color: #ffc21d;
+      border: 1px solid #ffc21d;
+    }
+    .sportsbook-back-btn.outline:hover, .blog-back-btn.outline:hover {
+      background: rgba(255, 194, 29, 0.15);
+    }
+    .sportsbook-filter-tabs, .blog-category-filter {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .sb-tab, .blog-cat-pill {
+      background: #24272e;
+      color: #d1d5db;
+      border: 1px solid #374151;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .sb-tab:hover, .blog-cat-pill:hover {
+      border-color: #ffc21d;
+      color: #ffc21d;
+    }
+    .sb-tab.active, .blog-cat-pill.active {
+      background: #ffc21d;
+      color: #000000;
+      border-color: #ffc21d;
+      font-weight: 700;
+    }
+    .sportsbook-fixtures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+    .sb-fixture-card {
+      background: #1c1e22;
+      border: 1px solid #2d3139;
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s;
+    }
+    .sb-fixture-card:hover {
+      border-color: rgba(255, 194, 29, 0.4);
+    }
+    .sb-fixture-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: #9ca3af;
+      border-bottom: 1px solid #282b33;
+      padding-bottom: 8px;
+    }
+    .sb-sport-tag {
+      font-weight: 700;
+      color: #ffc21d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .sb-status-live {
+      color: #ef4444;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .sb-teams-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sb-team-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+    .sb-odds-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .sb-odd-cell {
+      background: #252830;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .sb-odd-cell:hover {
+      background: #ffc21d;
+      border-color: #ffc21d;
+    }
+    .sb-odd-cell:hover .sb-odd-label,
+    .sb-odd-cell:hover .sb-odd-val {
+      color: #000000;
+    }
+    .sb-odd-label {
+      font-size: 10.5px;
+      color: #9ca3af;
+      font-weight: 600;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+    .sb-odd-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffc21d;
+    }
+
+    /* BLOG VIEW STYLES */
+    #blogViewContainer {
+      padding: 16px 20px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .blog-hero-banner {
+      background: linear-gradient(135deg, #181a1f 0%, #0d0f12 100%);
+      border: 1px solid rgba(255, 194, 29, 0.25);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .blog-hero-text h2 {
+      margin: 0 0 8px 0;
+      color: #ffc21d;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .blog-hero-text p {
+      margin: 0;
+      color: #9ca3af;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .blog-articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+    .blog-article-card {
+      background: #1c1e22;
+      border: 1px solid #2d3139;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .blog-article-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 194, 29, 0.45);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .blog-article-thumb {
+      width: 100%;
+      height: 190px;
+      position: relative;
+      background: #2b2e36;
+      overflow: hidden;
+    }
+    .blog-article-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .blog-article-card:hover .blog-article-thumb img {
+      transform: scale(1.04);
+    }
+    .blog-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: #ffc21d;
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .blog-article-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .blog-meta-row {
+      display: flex;
+      justify-content: space-between;
+      color: #9ca3af;
+      font-size: 11.5px;
+      margin-bottom: 10px;
+    }
+    .blog-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 10px 0;
+      line-height: 1.4;
+    }
+    .blog-excerpt {
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+    .blog-read-more-btn {
+      color: #ffc21d;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    .blog-reader-view {
+      background: #1c1e22;
+      border: 1px solid #2d3139;
+      border-radius: 10px;
+      padding: 30px;
+      margin-top: 10px;
+      color: #d1d5db;
+    }
+    .blog-reader-view h1 {
+      color: #ffc21d;
+      font-size: 26px;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+    .blog-reader-meta {
+      display: flex;
+      gap: 16px;
+      color: #9ca3af;
+      font-size: 13px;
+      border-bottom: 1px solid #2d3139;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .blog-reader-body p {
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .blog-reader-body h3 {
+      color: #ffffff;
+      font-size: 18px;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+    .blog-reader-takeaways {
+      background: #252830;
+      border-left: 4px solid #ffc21d;
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
     }
 
     .casino-game-card {
@@ -3609,9 +4045,16 @@
         display: block !important;
       }
       .header-nav,
-      .header-nav-wrapper,
-      .header-video-btn {
+      .header-nav-wrapper {
         display: none !important;
+      }
+      .header-play-wrap {
+        display: inline-flex !important;
+        margin-left: auto !important;
+        margin-right: 8px !important;
+      }
+      .header-video-btn {
+        display: inline-flex !important;
       }
       .header-right {
         display: none !important;
@@ -4819,18 +5262,31 @@
           <a class="nav-item active" id="navExchange" onclick="handleNavClick('sports', 'navExchange')">Exchange</a>
           <a class="nav-item" id="navEvolution" onclick="handleNavClick('evolution', 'navEvolution')">Evolution</a>
           <a class="nav-item" id="navAllCasinos" onclick="handleNavClick('all-casinos', 'navAllCasinos')">All Casinos</a>
-          <a class="nav-item" id="navVirtualSports" onclick="handleNavClick('virtual-sports', 'navVirtualSports')">Virtual Sports</a>
-          <a class="nav-item" id="navExchangeGames" onclick="handleNavClick('exchange-games', 'navExchangeGames')">Exchange Games</a>
-          <a class="nav-item" id="navQtech" onclick="handleNavClick('qtech', 'navQtech')">QTECH</a>
-          <a class="nav-item" id="navMarbleRace" onclick="handleNavClick('marble-race', 'navMarbleRace')">Marble Race</a>
-          <a class="nav-item" id="navLotterySlots" onclick="handleNavClick('lottery-slots', 'navLotterySlots')">LOTTERY &amp; SLOTS</a>
         </nav>
       </div>
-      <button class="header-video-btn" id="headerVideoBtn" title="Scroll Navigation" onclick="toggleNavScroll(event)">
-        <svg id="headerNavCaretSvg" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 640 640" fill="#000000">
-          <path id="headerNavCaretPath" d="M544 160C544 124.7 515.3 96 480 96L160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160zM416 320C416 326.7 413.2 333 408.3 337.6L296.3 441.6C289.3 448.1 279.1 449.8 270.4 446C261.7 442.2 256 433.5 256 424L256 216C256 206.5 261.7 197.8 270.4 194C279.1 190.2 289.3 191.9 296.3 198.4L408.3 302.4C413.2 306.9 416 313.3 416 320z"/>
-        </svg>
-      </button>
+      <div class="header-play-wrap" style="position: relative; display: inline-flex; align-items: center;">
+        <button class="header-video-btn" id="headerVideoBtn" title="Play Button Menu" onclick="togglePlayButtonMenu(event)">
+          <svg id="headerNavCaretSvg" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 640 640" fill="#000000">
+            <path id="headerNavCaretPath" d="M544 160C544 124.7 515.3 96 480 96L160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160zM416 320C416 326.7 413.2 333 408.3 337.6L296.3 441.6C289.3 448.1 279.1 449.8 270.4 446C261.7 442.2 256 433.5 256 424L256 216C256 206.5 261.7 197.8 270.4 194C279.1 190.2 289.3 191.9 296.3 198.4L408.3 302.4C413.2 306.9 416 313.3 416 320z"/>
+          </svg>
+        </button>
+        <!-- PLAY BUTTON MENU (1:1 LIVE REFERENCE OPTIONS + INTERACTIONS) -->
+        <div class="play-button-menu" id="playButtonMenu">
+          <a class="play-menu-item active" id="playMenuAllCasinos" onclick="handlePlayMenuClick('all-casinos', 'playMenuAllCasinos')">All Casinos</a>
+          <span class="play-menu-sep">|</span>
+          <a class="play-menu-item" id="playMenuQTech" onclick="handlePlayMenuClick('qtech', 'playMenuQTech')">QTech</a>
+          <span class="play-menu-sep">|</span>
+          <a class="play-menu-item" id="playMenuLotterySlots" onclick="handlePlayMenuClick('lottery-slots', 'playMenuLotterySlots')">Lottery &amp; Slots</a>
+          <span class="play-menu-sep">|</span>
+          <a class="play-menu-item" id="playMenuRVGaming" onclick="handlePlayMenuClick('rv-gaming', 'playMenuRVGaming')">RV Gaming</a>
+          <span class="play-menu-sep">|</span>
+          <a class="play-menu-item" id="playMenuVirtualSports" onclick="handlePlayMenuClick('virtual-sports', 'playMenuVirtualSports')">Virtual Sports</a>
+          <span class="play-menu-sep">|</span>
+          <a class="play-menu-item" id="playMenuSportsBook" onclick="handlePlayMenuClick('sports-book', 'playMenuSportsBook')">Sports Book</a>
+          <span class="play-menu-sep">|</span>
+          <a class="play-menu-item" id="playMenuBlog" onclick="handlePlayMenuClick('blog', 'playMenuBlog')">Blog</a>
+        </div>
+      </div>
     </div>
 
     <div class="header-right">
@@ -4915,6 +5371,11 @@
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'virtual-sports')">Virtual Sports</div>
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'exchange-games')">Exchange Games</div>
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'all-casinos')">All Casinos</div>
+    <button class="mobile-mode-tab mobile-play-trigger" title="Play Button Menu" onclick="togglePlayButtonMenu(event)" style="background:transparent; border:none; padding:4px 6px; display:inline-flex; align-items:center; cursor:pointer;">
+      <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 640 640" fill="#ffc21d">
+        <path d="M544 160C544 124.7 515.3 96 480 96L160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160zM416 320C416 326.7 413.2 333 408.3 337.6L296.3 441.6C289.3 448.1 279.1 449.8 270.4 446C261.7 442.2 256 433.5 256 424L256 216C256 206.5 261.7 197.8 270.4 194C279.1 190.2 289.3 191.9 296.3 198.4L408.3 302.4C413.2 306.9 416 313.3 416 320z"/>
+      </svg>
+    </button>
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'qtech')">QTECH</div>
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'marble-race')">Marble Race</div>
     <div class="mobile-mode-tab" onclick="handleMobileModeClick(this, 'lottery-slots')">LOTTERY &amp; SLOTS</div>
@@ -6771,6 +7232,75 @@
         </div>
       </div>
 
+      <!-- BOLLYTECH SPORTS BOOK VIEW CONTAINER (1:1 PARITY) -->
+      <div id="sportsBookViewContainer" style="display: none;">
+        <div class="evolution-breadcrumb-bar">
+          <div class="breadcrumb-left">
+            <span class="crumb-link" onclick="handleNavClick('sports', 'navExchange')">Home</span>
+            <span class="crumb-sep">&gt;</span>
+            <span class="crumb-link" onclick="openCategoryView('casino')">All Casino</span>
+            <span class="crumb-sep">&gt;</span>
+            <span class="crumb-active">Bollytech AG Sports</span>
+          </div>
+          <div class="breadcrumb-right">
+            <span style="color:#ffc21d; font-weight:700;">● LIVE MARKETS</span>
+          </div>
+        </div>
+
+        <div class="sportsbook-header-banner">
+          <div class="sportsbook-header-info">
+            <h2>Bollytech Sports Book</h2>
+            <p>Real-Time In-Play Betting, Fixed Odds Bookmaker Markets &amp; Instant Betslip Placement</p>
+          </div>
+          <div class="sportsbook-actions">
+            <button class="sportsbook-back-btn" onclick="handleNavClick('sports', 'navExchange')">← Back to Exchange</button>
+            <button class="sportsbook-back-btn outline" onclick="openCategoryView('casino')">← Back to All Casinos</button>
+          </div>
+        </div>
+
+        <div class="sportsbook-filter-tabs">
+          <button class="sb-tab active" onclick="switchSportsBookTab('all', this)">All Sports Book</button>
+          <button class="sb-tab" onclick="switchSportsBookTab('cricket', this)">🏏 Cricket</button>
+          <button class="sb-tab" onclick="switchSportsBookTab('soccer', this)">⚽ Soccer</button>
+          <button class="sb-tab" onclick="switchSportsBookTab('tennis', this)">🎾 Tennis</button>
+        </div>
+
+        <div class="sportsbook-fixtures-grid" id="sportsBookFixturesList"></div>
+      </div>
+
+      <!-- SATSPORT BLOG VIEW CONTAINER (1:1 PARITY) -->
+      <div id="blogViewContainer" style="display: none;">
+        <div class="evolution-breadcrumb-bar">
+          <div class="breadcrumb-left">
+            <span class="crumb-link" onclick="handleNavClick('sports', 'navExchange')">Home</span>
+            <span class="crumb-sep">&gt;</span>
+            <span class="crumb-active">Satsport Blog</span>
+          </div>
+          <div class="breadcrumb-right">
+            <button class="blog-back-btn outline" style="padding:4px 10px; font-size:12px;" onclick="handleNavClick('sports', 'navExchange')">← Back to Exchange</button>
+          </div>
+        </div>
+
+        <div class="blog-hero-banner">
+          <div class="blog-hero-text">
+            <h2>Satsport Official Blog &amp; Betting Insights</h2>
+            <p>Expert match previews, exchange trading tutorials, casino game strategies, and responsible gaming guides.</p>
+          </div>
+        </div>
+
+        <div class="blog-category-filter">
+          <button class="blog-cat-pill active" onclick="filterBlogCategory('all', this)">All Articles</button>
+          <button class="blog-cat-pill" onclick="filterBlogCategory('cricket', this)">Cricket Insights</button>
+          <button class="blog-cat-pill" onclick="filterBlogCategory('exchange', this)">Exchange Guides</button>
+          <button class="blog-cat-pill" onclick="filterBlogCategory('football', this)">Football Tips</button>
+          <button class="blog-cat-pill" onclick="filterBlogCategory('casino', this)">Casino Tactics</button>
+          <button class="blog-cat-pill" onclick="filterBlogCategory('safety', this)">Responsible Gaming</button>
+        </div>
+
+        <div class="blog-articles-grid" id="blogArticlesGrid"></div>
+        <div id="blogReaderContainer" style="display: none;" class="blog-reader-view"></div>
+      </div>
+
       <!-- FOOTER -->
       <footer class="site-footer">
         <div class="footer-logo">
@@ -6959,6 +7489,69 @@
     }
     initHeaderNavScrollListener();
 
+    // ==========================================================================
+    // PLAY BUTTON MENU CONTROLLER (1:1 LIVE REFERENCE PARITY)
+    // ==========================================================================
+    function togglePlayButtonMenu(e) {
+      if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+      const menu = document.getElementById('playButtonMenu');
+      if (menu) {
+        menu.classList.toggle('show');
+      }
+    }
+    window.togglePlayButtonMenu = togglePlayButtonMenu;
+
+    // Dismiss Play Button Menu on click outside
+    document.addEventListener('click', function(e) {
+      const playWrap = e.target.closest('.header-play-wrap') || e.target.closest('.mobile-play-trigger');
+      if (!playWrap) {
+        const menu = document.getElementById('playButtonMenu');
+        if (menu && menu.classList.contains('show')) {
+          menu.classList.remove('show');
+        }
+      }
+    });
+
+    // Handle Click on Play Button Menu Items (7 Exact Live Reference Options)
+    function handlePlayMenuClick(route, itemId) {
+      // 1. Close the Play button menu
+      const menu = document.getElementById('playButtonMenu');
+      if (menu) menu.classList.remove('show');
+
+      // 2. Update active item in play button menu
+      document.querySelectorAll('.play-menu-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      const targetItem = document.getElementById(itemId);
+      if (targetItem) targetItem.classList.add('active');
+
+      // 3. Close drawers, sheets, modals
+      if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+      if (typeof closeSettingsSheet === 'function') closeSettingsSheet();
+      if (typeof closeModals === 'function') closeModals();
+
+      // 4. Dispatch to destination
+      if (route === 'all-casinos') {
+        openCategoryView('casino');
+      } else if (route === 'qtech') {
+        openQTechView();
+      } else if (route === 'lottery-slots') {
+        openCategoryView('slot');
+      } else if (route === 'rv-gaming') {
+        openRVGamingView();
+      } else if (route === 'virtual-sports') {
+        openVirtualSportsView();
+      } else if (route === 'sports-book') {
+        openSportsBookView();
+      } else if (route === 'blog') {
+        openBlogView();
+      }
+    }
+    window.handlePlayMenuClick = handlePlayMenuClick;
+
     // Top Header Navigation Router
     function handleNavClick(route, navId) {
       document.querySelectorAll('.header-nav .nav-item').forEach(item => {
@@ -6979,13 +7572,13 @@
       } else if (route === 'evolution') {
         openEvolutionView();
       } else if (route === 'virtual-sports') {
-        openCategoryView('esports');
+        openVirtualSportsView();
       } else if (route === 'exchange-games') {
         setViewMode('sports');
       } else if (route === 'qtech') {
         openQTechView();
       } else if (route === 'marble-race') {
-        openCategoryView('crash-games');
+        openRVGamingView();
       } else if (route === 'lottery-slots') {
         openCategoryView('slot');
       }
@@ -7004,11 +7597,11 @@
       } else if (mode === 'evolution') {
         openEvolutionView();
       } else if (mode === 'virtual-sports') {
-        openCategoryView('esports');
+        openVirtualSportsView();
       } else if (mode === 'qtech') {
         openQTechView();
       } else if (mode === 'marble-race') {
-        openCategoryView('crash-games');
+        openRVGamingView();
       } else if (mode === 'lottery-slots') {
         openCategoryView('slot');
       }
@@ -7018,6 +7611,8 @@
     function setViewMode(mode) {
       const casinoCont = document.getElementById('casinoViewContainer');
       const sportsCont = document.getElementById('sportsViewContainer');
+      const sbCont = document.getElementById('sportsBookViewContainer');
+      const blogCont = document.getElementById('blogViewContainer');
       const btnCasino = document.getElementById('btnSideCasino');
       const btnSports = document.getElementById('btnSideSports');
       const sideCasino = document.getElementById('sidebarCasinoList');
@@ -7027,6 +7622,9 @@
       const provCont = document.querySelector('.providers-container');
 
       const subnavBar = document.getElementById('sportsSubnavBar');
+
+      if (sbCont) sbCont.style.display = 'none';
+      if (blogCont) blogCont.style.display = 'none';
 
       if (mode === 'sports') {
         if (subnavBar) subnavBar.style.display = 'flex';
@@ -7081,6 +7679,11 @@
     function openCategoryView(catKey) {
       setViewMode('casino');
 
+      const sbCont = document.getElementById('sportsBookViewContainer');
+      const blogCont = document.getElementById('blogViewContainer');
+      if (sbCont) sbCont.style.display = 'none';
+      if (blogCont) blogCont.style.display = 'none';
+
       // Update pills active state
       document.querySelectorAll('.casino-cat-pill').forEach(pill => {
         if (pill.getAttribute('data-cat') === catKey) {
@@ -7107,6 +7710,31 @@
       if (catKey === 'qtech') {
         openQTechView();
         return;
+      }
+      if (catKey === 'rv-gaming' || catKey === 'crash-games') {
+        openRVGamingView();
+        return;
+      }
+      if (catKey === 'virtual-sports' || catKey === 'esports') {
+        openVirtualSportsView();
+        return;
+      }
+      if (catKey === 'sports-book') {
+        openSportsBookView();
+        return;
+      }
+      if (catKey === 'blog') {
+        openBlogView();
+        return;
+      }
+
+      // Update Play Button Menu active item
+      if (catKey === 'casino' || catKey === 'all') {
+        document.querySelectorAll('.play-menu-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('playMenuAllCasinos')?.classList.add('active');
+      } else if (catKey === 'slot') {
+        document.querySelectorAll('.play-menu-item').forEach(i => i.classList.remove('active'));
+        document.getElementById('playMenuLotterySlots')?.classList.add('active');
       }
 
       const allSec = document.getElementById('allSectionsContainer');
@@ -7528,6 +8156,558 @@
       document.title = 'Satsports | QTech Casino Games';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // ==========================================================================
+    // 1:1 AUTHENTIC RV GAMING (CRASH & ARCADE GAMES) CONTROLLER
+    // ==========================================================================
+    const verifiedRVGamingGames = [
+      { name: "Aviator", img: "assets/casino/games/aviator_26.jpg", type: "Crash", mult: "1000x" },
+      { name: "JetX", img: "assets/casino/games/jetx_1.webp", type: "Crash", mult: "500x" },
+      { name: "Aviatrix", img: "assets/casino/games/aviatrix_27.jpg", type: "NFT Crash", mult: "10000x" },
+      { name: "AviaStar", img: "assets/casino/games/aviastar_0.webp", type: "Crash", mult: "800x" },
+      { name: "Sugar Daddy", img: "assets/casino/games/sugar_2.webp", type: "Arcade", mult: "250x" },
+      { name: "Chicken Highway", img: "assets/casino/games/chickenhighway_3.webp", type: "Run & Win", mult: "100x" },
+      { name: "Space XY", img: "assets/casino/games/jetx_1.webp", type: "Crash", mult: "1000x" },
+      { name: "Spaceman", img: "assets/casino/games/aviator_26.jpg", type: "Live Crash", mult: "5000x" },
+      { name: "Cash or Crash", img: "assets/casino/games/aviastar_0.webp", type: "Ladder", mult: "50000x" },
+      { name: "Pilot", img: "assets/casino/games/aviatrix_27.jpg", type: "Crash", mult: "1000x" },
+      { name: "Magnify Man", img: "assets/casino/games/sugar_2.webp", type: "Crash", mult: "10000x" },
+      { name: "Cricket Crash", img: "assets/casino/games/chickenhighway_3.webp", type: "Sport Crash", mult: "1000x" },
+      { name: "Football X", img: "assets/casino/games/jetx_1.webp", type: "Arcade", mult: "100x" },
+      { name: "Mines", img: "assets/casino/games/aviastar_0.webp", type: "Minesweeper", mult: "10000x" },
+      { name: "Plinko", img: "assets/casino/games/aviator_26.jpg", type: "Plinko Drop", mult: "1000x" }
+    ];
+
+    function openRVGamingView() {
+      setViewMode('casino');
+
+      const welcomeCont = document.querySelector('.welcome-image-container');
+      const heroCont = document.querySelector('.hero-carousel-container');
+      const provCont = document.querySelector('.providers-container');
+      if (welcomeCont) welcomeCont.classList.add('hidden-inplay');
+      if (heroCont) heroCont.classList.add('hidden-inplay');
+      if (provCont) provCont.classList.add('hidden-inplay');
+
+      document.querySelectorAll('.casino-cat-pill').forEach(pill => pill.classList.remove('active'));
+      document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+
+      document.querySelectorAll('.play-menu-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('playMenuRVGaming')?.classList.add('active');
+
+      const allSec = document.getElementById('allSectionsContainer');
+      const catGrid = document.getElementById('categoryGridContainer');
+      if (allSec) allSec.style.display = 'none';
+      if (catGrid) {
+        catGrid.style.display = 'block';
+        catGrid.innerHTML = `
+          <div class="evolution-breadcrumb-bar">
+            <div class="breadcrumb-left">
+              <span class="crumb-link" onclick="handleNavClick('sports', 'navExchange')">Home</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-link" onclick="openCategoryView('casino')">All Casino</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-active">RV Gaming (Crash Games)</span>
+            </div>
+            <div class="breadcrumb-right">
+              Total: <span>${verifiedRVGamingGames.length}</span> Games
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: 18px; font-weight: 700; color: #111;">RV Gaming - High Multiplier Crash &amp; Instant Games</div>
+            <button class="section-see-all-btn" onclick="openCategoryView('casino')">← Back to All Casinos</button>
+          </div>
+          <div class="evolution-games-grid">
+            ${verifiedRVGamingGames.map(g => `
+              <div class="evolution-game-card" onclick="openGameModal('${g.name}')">
+                <div class="evolution-card-thumb">
+                  <img src="${g.img}" alt="${g.name}">
+                  <div class="card-overlay">
+                    <button class="play-btn">PLAY</button>
+                  </div>
+                  <div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.75); color: #ffc21d; font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,194,29,0.3);">${g.mult}</div>
+                </div>
+                <div class="evolution-game-title">${g.name}</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      document.title = 'Satsports | RV Gaming Crash Games';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.openRVGamingView = openRVGamingView;
+
+    // ==========================================================================
+    // 1:1 AUTHENTIC VIRTUAL SPORTS & ESPORTS CONTROLLER
+    // ==========================================================================
+    const verifiedVirtualSportsGames = [
+      { name: "Rocket League", img: "assets/casino/games/rocket_league_65.webp", cat: "Virtual Esports" },
+      { name: "Halo", img: "assets/casino/games/halo_66.webp", cat: "Virtual Esports" },
+      { name: "eFootball", img: "assets/casino/games/efootball_67.webp", cat: "Virtual Soccer" },
+      { name: "Call of Duty", img: "assets/casino/games/call_of_duty_68.webp", cat: "Virtual Combat" },
+      { name: "Age of Empires", img: "assets/casino/games/age_of_empires_69.webp", cat: "Strategy Esports" },
+      { name: "eCricket", img: "assets/casino/games/ecricket_70.webp", cat: "Virtual Cricket" },
+      { name: "Virtual Tennis Open", img: "assets/casino/games/ez_dealer_roulette_english_38.png", cat: "Virtual Tennis" },
+      { name: "Virtual Horse Champions", img: "assets/casino/games/football_auto_roulette_39.png", cat: "Virtual Racing" },
+      { name: "Virtual Basketball League", img: "assets/casino/games/cricket_auto_roulette_40.png", cat: "Virtual Hoops" },
+      { name: "Virtual Greyhound Derby", img: "assets/casino/games/prestige_auto_roulette_41.png", cat: "Virtual Racing" }
+    ];
+
+    function openVirtualSportsView() {
+      setViewMode('casino');
+
+      const welcomeCont = document.querySelector('.welcome-image-container');
+      const heroCont = document.querySelector('.hero-carousel-container');
+      const provCont = document.querySelector('.providers-container');
+      if (welcomeCont) welcomeCont.classList.add('hidden-inplay');
+      if (heroCont) heroCont.classList.add('hidden-inplay');
+      if (provCont) provCont.classList.add('hidden-inplay');
+
+      document.querySelectorAll('.casino-cat-pill').forEach(pill => {
+        if (pill.getAttribute('data-cat') === 'esports') pill.classList.add('active');
+        else pill.classList.remove('active');
+      });
+
+      document.querySelectorAll('.play-menu-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('playMenuVirtualSports')?.classList.add('active');
+
+      const allSec = document.getElementById('allSectionsContainer');
+      const catGrid = document.getElementById('categoryGridContainer');
+      if (allSec) allSec.style.display = 'none';
+      if (catGrid) {
+        catGrid.style.display = 'block';
+        catGrid.innerHTML = `
+          <div class="evolution-breadcrumb-bar">
+            <div class="breadcrumb-left">
+              <span class="crumb-link" onclick="handleNavClick('sports', 'navExchange')">Home</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-link" onclick="openCategoryView('casino')">All Casino</span>
+              <span class="crumb-sep">&gt;</span>
+              <span class="crumb-active">Virtual Sports &amp; Esports</span>
+            </div>
+            <div class="breadcrumb-right">
+              Total: <span>${verifiedVirtualSportsGames.length}</span> Games
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: 18px; font-weight: 700; color: #111;">Virtual Sports &amp; Esports Lobby</div>
+            <button class="section-see-all-btn" onclick="openCategoryView('casino')">← Back to All Casinos</button>
+          </div>
+          <div class="evolution-games-grid">
+            ${verifiedVirtualSportsGames.map(g => `
+              <div class="evolution-game-card" onclick="openGameModal('${g.name}')">
+                <div class="evolution-card-thumb">
+                  <img src="${g.img}" alt="${g.name}">
+                  <div class="card-overlay">
+                    <button class="play-btn">PLAY</button>
+                  </div>
+                  <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.75); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;">${g.cat}</div>
+                </div>
+                <div class="evolution-game-title">${g.name}</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      document.title = 'Satsports | Virtual Sports & Esports';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.openVirtualSportsView = openVirtualSportsView;
+
+    // ==========================================================================
+    // 1:1 AUTHENTIC BOLLYTECH SPORTS BOOK CONTROLLER
+    // ==========================================================================
+    const verifiedSportsBookFixtures = [
+      {
+        id: "sb-1",
+        sport: "cricket",
+        sportLabel: "🏏 Cricket - One Day International",
+        status: "LIVE 38.4 Ov",
+        isLive: true,
+        team1: "India",
+        team2: "West Indies",
+        score: "IND 242/4 (38.4) | WI yet to bat",
+        odds: [
+          { label: "1 (India)", runner: "India", val: "1.15" },
+          { label: "2 (West Indies)", runner: "West Indies", val: "8.50" }
+        ]
+      },
+      {
+        id: "sb-2",
+        sport: "cricket",
+        sportLabel: "🏏 Cricket - One Day International",
+        status: "Starts in 45m",
+        isLive: false,
+        team1: "South Africa",
+        team2: "Australia",
+        score: "Match starts 04:30 AM",
+        odds: [
+          { label: "1 (SA)", runner: "South Africa", val: "2.10" },
+          { label: "2 (AUS)", runner: "Australia", val: "1.82" }
+        ]
+      },
+      {
+        id: "sb-3",
+        sport: "soccer",
+        sportLabel: "⚽ Soccer - Premier League",
+        status: "LIVE 68'",
+        isLive: true,
+        team1: "Manchester City",
+        team2: "Arsenal",
+        score: "MCI 2 - 1 ARS",
+        odds: [
+          { label: "1", runner: "Manchester City", val: "1.95" },
+          { label: "X", runner: "Draw", val: "3.40" },
+          { label: "2", runner: "Arsenal", val: "4.10" }
+        ]
+      },
+      {
+        id: "sb-4",
+        sport: "soccer",
+        sportLabel: "⚽ Soccer - La Liga",
+        status: "Today 20:45",
+        isLive: false,
+        team1: "Real Madrid",
+        team2: "Barcelona",
+        score: "El Clasico Super Match",
+        odds: [
+          { label: "1", runner: "Real Madrid", val: "2.25" },
+          { label: "X", runner: "Draw", val: "3.50" },
+          { label: "2", runner: "Barcelona", val: "3.05" }
+        ]
+      },
+      {
+        id: "sb-5",
+        sport: "tennis",
+        sportLabel: "🎾 Tennis - ATP Finals",
+        status: "LIVE Set 2",
+        isLive: true,
+        team1: "Novak Djokovic",
+        team2: "Carlos Alcaraz",
+        score: "6-4, 3-4 (30-15)",
+        odds: [
+          { label: "1", runner: "Novak Djokovic", val: "1.72" },
+          { label: "2", runner: "Carlos Alcaraz", val: "2.15" }
+        ]
+      },
+      {
+        id: "sb-6",
+        sport: "tennis",
+        sportLabel: "🎾 Tennis - US Open",
+        status: "Today 18:30",
+        isLive: false,
+        team1: "Jannik Sinner",
+        team2: "Daniil Medvedev",
+        score: "Quarter Final Center Court",
+        odds: [
+          { label: "1", runner: "Jannik Sinner", val: "1.65" },
+          { label: "2", runner: "Daniil Medvedev", val: "2.30" }
+        ]
+      }
+    ];
+
+    function openSportsBookView() {
+      const sportsCont = document.getElementById('sportsViewContainer');
+      const casinoCont = document.getElementById('casinoViewContainer');
+      const blogCont = document.getElementById('blogViewContainer');
+      const sbCont = document.getElementById('sportsBookViewContainer');
+      const subnavBar = document.getElementById('sportsSubnavBar');
+      const welcomeCont = document.querySelector('.welcome-image-container');
+      const heroCont = document.querySelector('.hero-carousel-container');
+      const provCont = document.querySelector('.providers-container');
+
+      if (sportsCont) sportsCont.style.display = 'none';
+      if (casinoCont) casinoCont.style.display = 'none';
+      if (blogCont) blogCont.style.display = 'none';
+      if (subnavBar) subnavBar.style.display = 'none';
+      if (welcomeCont) welcomeCont.classList.add('hidden-inplay');
+      if (heroCont) heroCont.classList.add('hidden-inplay');
+      if (provCont) provCont.classList.add('hidden-inplay');
+
+      if (sbCont) sbCont.style.display = 'block';
+
+      document.querySelectorAll('.play-menu-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('playMenuSportsBook')?.classList.add('active');
+
+      renderSportsBookFixtures('all');
+
+      document.title = 'Satsports | Bollytech Sports Book';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.openSportsBookView = openSportsBookView;
+
+    function switchSportsBookTab(sport, btn) {
+      document.querySelectorAll('.sb-tab').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderSportsBookFixtures(sport);
+    }
+    window.switchSportsBookTab = switchSportsBookTab;
+
+    function renderSportsBookFixtures(filter) {
+      const container = document.getElementById('sportsBookFixturesList');
+      if (!container) return;
+      const list = filter === 'all' 
+        ? verifiedSportsBookFixtures 
+        : verifiedSportsBookFixtures.filter(f => f.sport === filter);
+
+      container.innerHTML = list.map(m => `
+        <div class="sb-fixture-card">
+          <div class="sb-fixture-head">
+            <span class="sb-sport-tag">${m.sportLabel}</span>
+            ${m.isLive ? `<span class="sb-status-live">● ${m.status}</span>` : `<span>${m.status}</span>`}
+          </div>
+          <div class="sb-teams-wrap">
+            <div class="sb-team-name">${m.team1} vs ${m.team2}</div>
+            <div style="font-size: 12px; color: #a1a1aa;">${m.score}</div>
+          </div>
+          <div class="sb-odds-row">
+            ${m.odds.map(o => `
+              <div class="sb-odd-cell" onclick="openBetslip(event, '${m.team1} vs ${m.team2}', '${o.runner}', 'back', '${o.val}')">
+                <span class="sb-odd-label">${o.label}</span>
+                <span class="sb-odd-val">${o.val}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==========================================================================
+    // 1:1 AUTHENTIC SATSPORT OFFICIAL BLOG CONTROLLER
+    // ==========================================================================
+    const verifiedBlogArticles = [
+      {
+        id: "blog-1",
+        category: "cricket",
+        categoryLabel: "Cricket Insights",
+        readTime: "5 min read",
+        date: "Sept 26, 2026",
+        author: "Satsport Analytics",
+        title: "IPL 2026: Comprehensive Betting Strategy & High-Value In-Play Insights",
+        img: "assets/casino/games/cricket_auto_roulette_40.png",
+        excerpt: "Master live over-by-over runs markets, boundary predictions, and player performance handicaps with statistical depth.",
+        content: `
+          <p>The Indian Premier League continues to dominate modern sports trading with unprecedented volatility and market liquidity. In this comprehensive guide, Satsport analysts dissect the critical moments that define in-play cricket betting success.</p>
+          <h3>1. Powerplay Overs Analysis (1 - 6)</h3>
+          <p>Historical data indicates that teams scoring above 54 runs in the powerplay have a 68% higher probability of victory on flat decks. Watching ball-by-ball movement during early overs provides superior entry points for Match Winner Back positions before bookmaker algorithms adjust.</p>
+          <h3>2. Middle Overs Strategy &amp; Spin Squeeze</h3>
+          <p>Middle overs (7 to 15) present high-value Session and Fancy market opportunities. When quality spinners operate in tandem, 'Under' runs on 10-Over and 15-Over lines consistently yield positive expected value against overly aggressive opening odds.</p>
+          <div class="blog-reader-takeaways">
+            <strong>Key Betting Takeaway:</strong> Always leverage Satsport's real-time Ball-by-Ball live odds to execute hedging trades when a major wicket falls in middle overs.
+          </div>
+        `
+      },
+      {
+        id: "blog-2",
+        category: "exchange",
+        categoryLabel: "Exchange Guides",
+        readTime: "7 min read",
+        date: "Sept 25, 2026",
+        author: "Trading Desk",
+        title: "Exchange Betting vs Fixed-Odds: How to Maximize Returns with Back and Lay",
+        img: "assets/casino/games/open_teen_patti_19.webp",
+        excerpt: "Understand the core mathematical difference between betting against a bookmaker versus trading directly against peers.",
+        content: `
+          <p>Betting exchanges revolutionized wagering by allowing bettors to act as the bookmaker through 'Lay' betting. Understanding how Lay liability functions is the bedrock of profitable sports trading.</p>
+          <h3>What Is Lay Betting?</h3>
+          <p>When you Lay a selection, you are betting that it will NOT happen. If you lay India at 1.50 for ₹1,000, your liability is ₹500, while your potential profit is ₹1,000 if West Indies win or tie.</p>
+          <h3>Green-Booking (Equalizing Profits)</h3>
+          <p>By backing high and laying low as match momentum fluctuates, traders achieve a 'Green Book' where profit is locked in regardless of the final outcome.</p>
+          <div class="blog-reader-takeaways">
+            <strong>Key Trading Rule:</strong> Never risk more than 3% of your portfolio on a single Lay liability trade.
+          </div>
+        `
+      },
+      {
+        id: "blog-3",
+        category: "football",
+        categoryLabel: "Football Tips",
+        readTime: "6 min read",
+        date: "Sept 24, 2026",
+        author: "Soccer Desk",
+        title: "Top Football Betting Systems: In-Play Match Momentum and Hedging Explained",
+        img: "assets/casino/games/football_auto_roulette_39.png",
+        excerpt: "Discover why tracking Expected Goals (xG) and second-half substitutes can generate consistent edges in live 1X2 and Over/Under markets.",
+        content: `
+          <p>Modern soccer wagering requires real-time tactical awareness. Learn how to capitalize on dynamic momentum swings across the English Premier League, UEFA Champions League, and La Liga.</p>
+          <h3>The 70-Minute Over/Under Window</h3>
+          <p>Between minutes 70 and 85, fatigue creates defensive gaps that standard Poisson distribution models frequently underestimate. Identifying aggressive manager substitutions unlocks lucrative Late Goal markets.</p>
+          <div class="blog-reader-takeaways">
+            <strong>Key Takeaway:</strong> Combine Satsport Live Match Statistics with in-play odds shifts for optimal timing on Over 2.5 goals.
+          </div>
+        `
+      },
+      {
+        id: "blog-4",
+        category: "casino",
+        categoryLabel: "Casino Tactics",
+        readTime: "8 min read",
+        date: "Sept 23, 2026",
+        author: "Gaming Specialist",
+        title: "Mastering Indian Casino Classics: Teen Patti 20-20 and Andar Bahar Probabilities",
+        img: "assets/casino/games/andar_bahar_7.png",
+        excerpt: "Statistical breakdown of side bets, card frequencies, and house edges in popular Indian live dealer games.",
+        content: `
+          <p>Andar Bahar and Teen Patti 20-20 are cultural cornerstones of Indian live gaming. Understanding card distributions and side-bet payout ratios gives smart players the ultimate advantage.</p>
+          <h3>Andar Bahar First-Card Bias</h3>
+          <p>Because Andar receives the first dealt card after the Joker, it mathematically possesses a 51.5% edge over Bahar across an infinite sample of single-deck shoes.</p>
+          <div class="blog-reader-takeaways">
+            <strong>Pro Tip:</strong> Stick to standard Andar/Bahar main bets to preserve optimal 97.8% RTP rather than volatile exotic side bets.
+          </div>
+        `
+      },
+      {
+        id: "blog-5",
+        category: "tennis",
+        categoryLabel: "Tennis Tactics",
+        readTime: "5 min read",
+        date: "Sept 22, 2026",
+        author: "Tennis Insights",
+        title: "Grand Slam Tennis Betting: Evaluating Surface Dynamics and Break Point Conversions",
+        img: "assets/casino/games/super_ace_30.webp",
+        excerpt: "Why clay court rallies favor baseline grinders while grass courts reward explosive first-serve percentages.",
+        content: `
+          <p>Tennis match betting turns rapidly on a single break of serve. Understanding player return statistics against first and second serves gives sharp bettors unmatched advantages during Grand Slam tournaments.</p>
+          <div class="blog-reader-takeaways">
+            <strong>Key Stat:</strong> Players winning over 55% of second-serve return points win 82% of three-set matches.
+          </div>
+        `
+      },
+      {
+        id: "blog-6",
+        category: "safety",
+        categoryLabel: "Responsible Gaming",
+        readTime: "4 min read",
+        date: "Sept 21, 2026",
+        author: "Compliance Team",
+        title: "Player Safety & Responsible Gaming: Best Practices for Sustainable Sports Entertainment",
+        img: "assets/casino/games/fortune_coins_53.webp",
+        excerpt: "Essential guidelines, bankroll allocation formulas, and deposit limit features designed to keep sports betting enjoyable and safe.",
+        content: `
+          <p>At Satsport, player entertainment and well-being are paramount. Gambling should always be treated as recreation rather than an income source.</p>
+          <h3>Responsible Gaming Pillars</h3>
+          <p>Set daily time limits, establish hard loss thresholds before starting a session, and never chase losses with larger wagers.</p>
+          <div class="blog-reader-takeaways">
+            <strong>Safety Reminder:</strong> 24/7 self-exclusion and timeout features are available in your account settings.
+          </div>
+        `
+      }
+    ];
+
+    function openBlogView() {
+      const sportsCont = document.getElementById('sportsViewContainer');
+      const casinoCont = document.getElementById('casinoViewContainer');
+      const blogCont = document.getElementById('blogViewContainer');
+      const sbCont = document.getElementById('sportsBookViewContainer');
+      const subnavBar = document.getElementById('sportsSubnavBar');
+      const welcomeCont = document.querySelector('.welcome-image-container');
+      const heroCont = document.querySelector('.hero-carousel-container');
+      const provCont = document.querySelector('.providers-container');
+
+      if (sportsCont) sportsCont.style.display = 'none';
+      if (casinoCont) casinoCont.style.display = 'none';
+      if (sbCont) sbCont.style.display = 'none';
+      if (subnavBar) subnavBar.style.display = 'none';
+      if (welcomeCont) welcomeCont.classList.add('hidden-inplay');
+      if (heroCont) heroCont.classList.add('hidden-inplay');
+      if (provCont) provCont.classList.add('hidden-inplay');
+
+      if (blogCont) blogCont.style.display = 'block';
+
+      const reader = document.getElementById('blogReaderContainer');
+      const grid = document.getElementById('blogArticlesGrid');
+      if (reader) reader.style.display = 'none';
+      if (grid) grid.style.display = 'grid';
+
+      document.querySelectorAll('.play-menu-item').forEach(i => i.classList.remove('active'));
+      document.getElementById('playMenuBlog')?.classList.add('active');
+
+      renderBlogArticles('all');
+
+      document.title = 'Satsports | Official Blog & Betting Insights';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.openBlogView = openBlogView;
+
+    function filterBlogCategory(cat, btn) {
+      document.querySelectorAll('.blog-cat-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderBlogArticles(cat);
+    }
+    window.filterBlogCategory = filterBlogCategory;
+
+    function renderBlogArticles(category) {
+      const grid = document.getElementById('blogArticlesGrid');
+      const reader = document.getElementById('blogReaderContainer');
+      if (reader) reader.style.display = 'none';
+      if (grid) grid.style.display = 'grid';
+
+      const articles = category === 'all'
+        ? verifiedBlogArticles
+        : verifiedBlogArticles.filter(a => a.category === category);
+
+      if (grid) {
+        grid.innerHTML = articles.map(a => `
+          <div class="blog-article-card" onclick="openBlogReader('${a.id}')">
+            <div class="blog-article-thumb">
+              <img src="${a.img}" alt="${a.title}">
+              <span class="blog-badge">${a.categoryLabel}</span>
+            </div>
+            <div class="blog-article-body">
+              <div class="blog-meta-row">
+                <span>By ${a.author}</span>
+                <span>${a.readTime} • ${a.date}</span>
+              </div>
+              <h3 class="blog-title">${a.title}</h3>
+              <p class="blog-excerpt">${a.excerpt}</p>
+              <button class="blog-read-more-btn">Read Article →</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function openBlogReader(articleId) {
+      const article = verifiedBlogArticles.find(a => a.id === articleId);
+      if (!article) return;
+
+      const grid = document.getElementById('blogArticlesGrid');
+      const reader = document.getElementById('blogReaderContainer');
+      if (grid) grid.style.display = 'none';
+      if (reader) {
+        reader.style.display = 'block';
+        reader.innerHTML = `
+          <button class="blog-back-btn outline" style="margin-bottom: 20px;" onclick="closeBlogReader()">← Back to All Articles</button>
+          <h1 style="color:#ffc21d; font-size:24px; margin-top:0;">${article.title}</h1>
+          <div class="blog-reader-meta">
+            <span><strong>Author:</strong> ${article.author}</span>
+            <span><strong>Category:</strong> ${article.categoryLabel}</span>
+            <span><strong>Published:</strong> ${article.date}</span>
+            <span><strong>Reading Time:</strong> ${article.readTime}</span>
+          </div>
+          <div class="blog-reader-body">
+            ${article.content}
+          </div>
+          <div style="margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <button class="blog-back-btn" onclick="closeBlogReader()">← Back to Articles</button>
+            <button class="blog-back-btn outline" onclick="handleNavClick('sports', 'navExchange')">Go to Sports Exchange</button>
+          </div>
+        `;
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.openBlogReader = openBlogReader;
+
+    function closeBlogReader() {
+      const grid = document.getElementById('blogArticlesGrid');
+      const reader = document.getElementById('blogReaderContainer');
+      if (reader) reader.style.display = 'none';
+      if (grid) grid.style.display = 'grid';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.closeBlogReader = closeBlogReader;
 
     // Modal Handlers
     function openGameModal(gameName) {
