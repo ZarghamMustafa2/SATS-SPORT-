@@ -138,11 +138,27 @@
       display: block;
     }
 
+    .header-nav-wrapper {
+      display: flex;
+      align-items: center;
+      max-width: 246px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: smooth;
+    }
+    .header-nav-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
     .header-nav {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       margin-left: 6px;
+      width: max-content;
+      white-space: nowrap;
     }
 
     .nav-item {
@@ -180,28 +196,27 @@
     }
 
     .header-video-btn {
-      background: #000000;
+      background: transparent;
       border: none;
       border-radius: 6px;
-      width: 26px;
+      width: 24px;
       height: 24px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      margin-left: 2px;
+      margin-left: 4px;
       padding: 0;
       flex-shrink: 0;
-      transition: transform 0.15s ease, background 0.15s ease;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: transform 0.15s ease;
     }
     .header-video-btn:hover {
-      background: #222222;
-      transform: scale(1.05);
+      transform: scale(1.08);
     }
-
-    .nav-extra-item {
-      display: none !important;
+    .header-video-btn svg {
+      width: 24px;
+      height: 24px;
+      display: block;
     }
 
     .header-right {
@@ -3593,7 +3608,9 @@
         max-width: 140px !important;
         display: block !important;
       }
-      .header-nav {
+      .header-nav,
+      .header-nav-wrapper,
+      .header-video-btn {
         display: none !important;
       }
       .header-right {
@@ -4797,20 +4814,23 @@
       <a href="javascript:void(0);" class="header-logo" onclick="handleNavClick('sports', 'navExchange')">
         <img src="assets/images/satsport_logo_header.png" alt="SATSPORT Powered by betfair">
       </a>
-      <nav class="header-nav">
-        <a class="nav-item active" id="navExchange" onclick="handleNavClick('sports', 'navExchange')">Exchange</a>
-        <a class="nav-item" id="navEvolution" onclick="handleNavClick('evolution', 'navEvolution')">Evolution</a>
-        <a class="nav-item" id="navAllCasinos" onclick="handleNavClick('all-casinos', 'navAllCasinos')">All Casinos</a>
-        <button class="header-video-btn" id="headerVideoBtn" title="Live Sports Broadcast & Radar" onclick="openLiveTvModal()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#ffc21d"><polygon points="6,4 20,12 6,20"/></svg>
-        </button>
-        <!-- Additional casino categories for test automation & wide displays -->
-        <a class="nav-item nav-extra-item" id="navVirtualSports" onclick="handleNavClick('virtual-sports', 'navVirtualSports')">Virtual Sports</a>
-        <a class="nav-item nav-extra-item" id="navExchangeGames" onclick="handleNavClick('exchange-games', 'navExchangeGames')">Exchange Games</a>
-        <a class="nav-item nav-extra-item" id="navQtech" onclick="handleNavClick('qtech', 'navQtech')">QTECH</a>
-        <a class="nav-item nav-extra-item" id="navMarbleRace" onclick="handleNavClick('marble-race', 'navMarbleRace')">Marble Race</a>
-        <a class="nav-item nav-extra-item" id="navLotterySlots" onclick="handleNavClick('lottery-slots', 'navLotterySlots')">LOTTERY &amp; SLOTS</a>
-      </nav>
+      <div class="header-nav-wrapper" id="headerNavWrapper">
+        <nav class="header-nav" id="headerNavContainer">
+          <a class="nav-item active" id="navExchange" onclick="handleNavClick('sports', 'navExchange')">Exchange</a>
+          <a class="nav-item" id="navEvolution" onclick="handleNavClick('evolution', 'navEvolution')">Evolution</a>
+          <a class="nav-item" id="navAllCasinos" onclick="handleNavClick('all-casinos', 'navAllCasinos')">All Casinos</a>
+          <a class="nav-item" id="navVirtualSports" onclick="handleNavClick('virtual-sports', 'navVirtualSports')">Virtual Sports</a>
+          <a class="nav-item" id="navExchangeGames" onclick="handleNavClick('exchange-games', 'navExchangeGames')">Exchange Games</a>
+          <a class="nav-item" id="navQtech" onclick="handleNavClick('qtech', 'navQtech')">QTECH</a>
+          <a class="nav-item" id="navMarbleRace" onclick="handleNavClick('marble-race', 'navMarbleRace')">Marble Race</a>
+          <a class="nav-item" id="navLotterySlots" onclick="handleNavClick('lottery-slots', 'navLotterySlots')">LOTTERY &amp; SLOTS</a>
+        </nav>
+      </div>
+      <button class="header-video-btn" id="headerVideoBtn" title="Scroll Navigation" onclick="toggleNavScroll(event)">
+        <svg id="headerNavCaretSvg" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 640 640" fill="#000000">
+          <path id="headerNavCaretPath" d="M544 160C544 124.7 515.3 96 480 96L160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160zM416 320C416 326.7 413.2 333 408.3 337.6L296.3 441.6C289.3 448.1 279.1 449.8 270.4 446C261.7 442.2 256 433.5 256 424L256 216C256 206.5 261.7 197.8 270.4 194C279.1 190.2 289.3 191.9 296.3 198.4L408.3 302.4C413.2 306.9 416 313.3 416 320z"/>
+        </svg>
+      </button>
     </div>
 
     <div class="header-right">
@@ -6901,6 +6921,43 @@
   <script>
     // Embedded sections data for instant category grid rendering
     const allSectionsData = [{"title":"New Releases","totalGames":"18 Games","cards":[{"title":"AviaStar","img":"https://dabba.b-cdn.net/CasinoImages/aviaStar.webp","localImg":"assets/casino/games/aviastar_0.webp"},{"title":"JetX","img":"https://dabba.b-cdn.net/CasinoImages/JetX1.webp","localImg":"assets/casino/games/jetx_1.webp"},{"title":"Sugar","img":"https://dabba.b-cdn.net/CasinoImages/Inout/sugar_daddy.webp","localImg":"assets/casino/games/sugar_2.webp"},{"title":"ChickenHighway","img":"https://dabba.b-cdn.net/CasinoImages/ChickenHighway.webp","localImg":"assets/casino/games/chickenhighway_3.webp"},{"title":"Aviafly","img":"https://dabba.b-cdn.net/CasinoImages/Inout/aviafly.webp","localImg":"assets/casino/games/aviafly_4.webp"},{"title":"Chicken Ice","img":"https://icons.golden-eggs.games/chicken-road-ice.png","localImg":"assets/casino/games/chicken_ice_5.png"}]},{"title":"Popular Games","totalGames":"145 Games","cards":[{"title":"Ultimate Roulette","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Ultimate Roulette.png","localImg":"assets/casino/games/ultimate_roulette_6.png"},{"title":"Andar Bahar","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Andar Bahar.png","localImg":"assets/casino/games/andar_bahar_7.png"},{"title":"Sugar","img":"https://dabba.b-cdn.net/CasinoImages/Inout/sugar_daddy.webp","localImg":"assets/casino/games/sugar_2.webp"},{"title":"JetX","img":"https://dabba.b-cdn.net/CasinoImages/JetX1.webp","localImg":"assets/casino/games/jetx_1.webp"},{"title":"AviaStar","img":"https://dabba.b-cdn.net/CasinoImages/aviaStar.webp","localImg":"assets/casino/games/aviastar_0.webp"},{"title":"Win Escalator","img":"https://dabba.b-cdn.net/CasinoImages/RedTiger/2965.png","localImg":"assets/casino/games/win_escalator_8.png"}]},{"title":"Hot Games","totalGames":"14 Games","cards":[{"title":"Sic Bo","img":"https://dabba.b-cdn.net/CasinoImages/mac88gap/150003.webp","localImg":"assets/casino/games/sic_bo_9.webp"},{"title":"Dragon Tiger","img":"https://lobby.qtlauncher.com/images/?id=IML-dragontiger_en_US&amp;type=banner&amp;version=3292880859965&amp;show","localImg":"assets/casino/games/dragon_tiger_10.webp"},{"title":"Tombstone RIP","img":"https://lobby.qtlauncher.com/images/?id=NLC-tombstonerip_en_US&amp;type=banner&amp;version=3292880859965&amp;sho","localImg":"assets/casino/games/tombstone_rip_11.webp"},{"title":"xWays Hoarder xSplit","img":"https://lobby.qtlauncher.com/images/?id=NLC-xwayshoarderxsplit_en_US&amp;type=banner&amp;version=32928808599","localImg":"assets/casino/games/xways_hoarder_xsplit_12.webp"},{"title":"Champions of Rome","img":"https://lobby.qtlauncher.com/images/?id=YGG-championsofrome_en_US&amp;type=banner&amp;version=3292880859965&amp;","localImg":"assets/casino/games/champions_of_rome_13.webp"},{"title":"Teen Patti","img":"https://lobby.qtlauncher.com/images/?id=7MC-teenpatti_en_US&amp;type=banner&amp;version=3292880859965&amp;showIc","localImg":"assets/casino/games/teen_patti_14.webp"}]},{"title":"Teen Patti","totalGames":"14 Games","cards":[{"title":"Teen Patti","img":"https://dabba.b-cdn.net/CasinoImages/teen_patti.png","localImg":"assets/casino/games/teen_patti_15.png"},{"title":"Bet on Teen Patti","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Bet on Teen Patti.png","localImg":"assets/casino/games/bet_on_teen_patti_16.png"},{"title":"Teen Patti 3 Card","img":"https://dabba.b-cdn.net/CasinoImages/Ezugi/teen_patti_3_card_1x.png","localImg":"assets/casino/games/teen_patti_3_card_17.png"},{"title":"TeenPatti Joker","img":"https://dabba.b-cdn.net/CasinoImages/jilligap/600110.webp","localImg":"assets/casino/games/teenpatti_joker_18.webp"},{"title":"Teen Patti","img":"https://dabba.b-cdn.net/CasinoImages/teen_patti.png","localImg":"assets/casino/games/teen_patti_15.png"},{"title":"Open Teen patti","img":"https://dabba.b-cdn.net/CasinoImages/mac88gap/150049.webp","localImg":"assets/casino/games/open_teen_patti_19.webp"}]},{"title":"Indian Casino","totalGames":"10 Games","cards":[{"title":"Sexy Lucky 7 -2","img":"https://cdn.mac88.com/mac88/sl72.webp","localImg":"assets/casino/games/sexy_lucky_7_2_20.webp"},{"title":"Sexy Amar Akbar Anthony","img":"https://cdn.mac88.com/mac88/saaa.webp","localImg":"assets/casino/games/sexy_amar_akbar_anthony_21.webp"},{"title":"Sexy High Low","img":"https://cdn.mac88.com/mac88/shl.webp","localImg":"assets/casino/games/sexy_high_low_22.webp"},{"title":"Sexy High Low 2","img":"https://cdn.mac88.com/mac88/SHL2.webp","localImg":"assets/casino/games/sexy_high_low_2_23.webp"},{"title":"Sexy Lucky 7 -3","img":"https://cdn.mac88.com/mac88/sl73.webp","localImg":"assets/casino/games/sexy_lucky_7_3_24.webp"},{"title":"Sexy Lucky 7","img":"https://cdn.mac88.com/mac88/sl7.webp","localImg":"assets/casino/games/sexy_lucky_7_25.webp"}]},{"title":"Crash Games","totalGames":"15 Games","cards":[{"title":"JetX","img":"https://dabba.b-cdn.net/CasinoImages/JetX1.webp","localImg":"assets/casino/games/jetx_1.webp"},{"title":"AviaStar","img":"https://dabba.b-cdn.net/CasinoImages/aviaStar.webp","localImg":"assets/casino/games/aviastar_0.webp"},{"title":"Sugar","img":"https://dabba.b-cdn.net/CasinoImages/Inout/sugar_daddy.webp","localImg":"assets/casino/games/sugar_2.webp"},{"title":"Aviator","img":"https://dabba.b-cdn.net/CasinoImages/Aviator.jpg","localImg":"assets/casino/games/aviator_26.jpg"},{"title":"ChickenHighway","img":"https://dabba.b-cdn.net/CasinoImages/ChickenHighway.webp","localImg":"assets/casino/games/chickenhighway_3.webp"},{"title":"Aviatrix","img":"https://dabba.b-cdn.net/CasinoImages/Aviatrix.jpg","localImg":"assets/casino/games/aviatrix_27.jpg"}]},{"title":"Multiplayer Games","totalGames":"4 Games","cards":[{"title":"TeenPatti Joker","img":"https://dabba.b-cdn.net/CasinoImages/jilligap/600110.webp","localImg":"assets/casino/games/teenpatti_joker_18.webp"},{"title":"Sic Bo","img":"https://dabba.b-cdn.net/CasinoImages/jilligap/600065.webp","localImg":"assets/casino/games/sic_bo_28.webp"},{"title":"Video Poker","img":"https://cdn.dreamdelhi.com/jili/video_poker.webp","localImg":"assets/casino/games/video_poker_29.webp"},{"title":"Super Ace","img":"https://dabba.b-cdn.net/CasinoImages/jilligap/600041.webp","localImg":"assets/casino/games/super_ace_30.webp"}]},{"title":"Live Casino","totalGames":"42 Games","cards":[{"title":"Ultimate Roulette","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Ultimate Roulette.png","localImg":"assets/casino/games/ultimate_roulette_6.png"},{"title":"Andar Bahar","img":"https://lobby.qtlauncher.com/images/?id=TPG-andarbahar_en_US&type=banner&version=3292880859965&showI","localImg":"assets/casino/games/andar_bahar_31.webp"},{"title":"Caribbean Stud Poker","img":"https://dabba.b-cdn.net/CasinoImages/caribbean_stud_poker.png","localImg":"assets/casino/games/caribbean_stud_poker_32.png"},{"title":"Dragon Tiger","img":"https://cdn.dreamcasino.live/gap_casino/awc_aesexy/aes_dragon_tiger.webp","localImg":"assets/casino/games/dragon_tiger_33.webp"},{"title":"American Roulette","img":"https://lobby.qtlauncher.com/images/?id=NE-americanroulette_en_US&type=banner&version=3292880859965&","localImg":"assets/casino/games/american_roulette_34.webp"},{"title":"Sexy Lucky 7 -2","img":"https://cdn.mac88.com/mac88/sl72.webp","localImg":"assets/casino/games/sexy_lucky_7_2_20.webp"}]},{"title":"Dragon Tiger","totalGames":"11 Games","cards":[{"title":"Dragon Tiger","img":"https://cdn.dreamcasino.live/gap_casino/awc_aesexy/aes_dragon_tiger.webp","localImg":"assets/casino/games/dragon_tiger_33.webp"},{"title":"Dragon Tiger","img":"https://cdn.dreamcasino.live/gap_casino/awc_aesexy/aes_dragon_tiger.webp","localImg":"assets/casino/games/dragon_tiger_33.webp"},{"title":"Dragon Tiger","img":"https://cdn.dreamcasino.live/gap_casino/awc_aesexy/aes_dragon_tiger.webp","localImg":"assets/casino/games/dragon_tiger_33.webp"},{"title":"Sexy Dragon Tiger","img":"https://cdn.mac88.com/mac88/sdt.webp","localImg":"assets/casino/games/sexy_dragon_tiger_35.webp"},{"title":"Sexy Dragon tiger 2","img":"https://cdn.mac88.com/mac88/sdt2.webp","localImg":"assets/casino/games/sexy_dragon_tiger_2_36.webp"},{"title":"Sexy Dragon tiger 3","img":"https://cdn.mac88.com/mac88/sdt3.webp","localImg":"assets/casino/games/sexy_dragon_tiger_3_37.webp"}]},{"title":"Roulette","totalGames":"12 Games","cards":[{"title":"Ultimate Roulette","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Ultimate Roulette.png","localImg":"assets/casino/games/ultimate_roulette_6.png"},{"title":"American Roulette","img":"https://lobby.qtlauncher.com/images/?id=NE-americanroulette_en_US&type=banner&version=3292880859965&","localImg":"assets/casino/games/american_roulette_34.webp"},{"title":"EZ Dealer Roulette English","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/EZ Dealer Roulette English.png","localImg":"assets/casino/games/ez_dealer_roulette_english_38.png"},{"title":"Football Auto Roulette","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Football Auto Roulette.png","localImg":"assets/casino/games/football_auto_roulette_39.png"},{"title":"Cricket Auto Roulette","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Cricket Auto Roulette.png","localImg":"assets/casino/games/cricket_auto_roulette_40.png"},{"title":"Prestige Auto Roulette","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Prestige Auto Roulette.png","localImg":"assets/casino/games/prestige_auto_roulette_41.png"}]},{"title":"Baccarat","totalGames":"4 Games","cards":[{"title":"First Person Lightning Baccarat","img":"https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person Lightning Baccarat.png","localImg":"assets/casino/games/first_person_lightning_baccarat_42.png"},{"title":"First Person XXXtreme Lightning Baccarat","img":"https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/First Person XXXtreme Lightning Baccarat.png","localImg":"assets/casino/games/first_person_xxxtreme_lightning_baccarat_43.png"},{"title":"Baccarat A","img":"https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Baccarat A.png","localImg":"assets/casino/games/baccarat_a_44.png"},{"title":"Baccarat","img":"https://dabba.b-cdn.net/CasinoImages/RGGAP/900006.webp","localImg":"assets/casino/games/baccarat_45.webp"}]},{"title":"Sicbo","totalGames":"5 Games","cards":[{"title":"Super Sic Bo","img":"https://dabba.b-cdn.net/CasinoImages/super_sicbo.png","localImg":"assets/casino/games/super_sic_bo_46.png"},{"title":"Speed Super Sic Bo","img":"https://dabba.b-cdn.net/CasinoImages/speed_super_sic_bo.png","localImg":"assets/casino/games/speed_super_sic_bo_47.png"},{"title":"Sic Bo","img":"https://dabba.b-cdn.net/CasinoImages/jilligap/600065.webp","localImg":"assets/casino/games/sic_bo_28.webp"},{"title":"Sic Bo","img":"https://dabba.b-cdn.net/CasinoImages/jilligap/600065.webp","localImg":"assets/casino/games/sic_bo_28.webp"},{"title":"Thai Sic Bo","img":"https://daba.b-cdn.net/CasinoImages/Rich88/950043.webp","localImg":"assets/casino/games/thai_sic_bo_48.webp"}]},{"title":"Andar Bahar","totalGames":"1 Games","cards":[{"title":"Andar Bahar","img":"https://lobby.qtlauncher.com/images/?id=TPG-andarbahar_en_US&type=banner&version=3292880859965&showI","localImg":"assets/casino/games/andar_bahar_31.webp"}]},{"title":"Poker","totalGames":"11 Games","cards":[{"title":"Caribbean Stud Poker","img":"https://dabba.b-cdn.net/CasinoImages/caribbean_stud_poker.png","localImg":"assets/casino/games/caribbean_stud_poker_32.png"},{"title":"VR Poker","img":"https://dabba.b-cdn.net/CasinoImages/mac88gap/151017.webp","localImg":"assets/casino/games/vr_poker_49.webp"},{"title":"Three Card Poker","img":"https://dabba.b-cdn.net/CasinoImages/Evoluriondirect/Three Card Poker.png","localImg":"assets/casino/games/three_card_poker_50.png"},{"title":"Texas Hold'em Bonus Poker","img":"https://dabba.b-cdn.net/CasinoImages/texas_hold_em_bonus_poker.png","localImg":"assets/casino/games/texas_hold_em_bonus_poker_51.png"},{"title":"6 Player Poker","img":"https://daba.b-cdn.net/CasinoImages/Mac_Excite/150631.webp","localImg":"assets/casino/games/6_player_poker_6pp.webp"},{"title":"Video Poker","img":"https://cdn.dreamdelhi.com/jili/video_poker.webp","localImg":"assets/casino/games/video_poker_29.webp"}]},{"title":"Slot","totalGames":"6 Games","cards":[{"title":"Fortune Coins","img":"https://dabba.b-cdn.net/CasinoImages/Jilli/600241.webp","localImg":"assets/casino/games/fortune_coins_53.webp"},{"title":"Super Ace","img":"https://dabba.b-cdn.net/CasinoImages/jilligap/600041.webp","localImg":"assets/casino/games/super_ace_30.webp"},{"title":"3X3: Hell Spin","img":"https://lobby.qtlauncher.com/images/?id=GZX-3x3hellspin_en_US&type=banner&version=3292880859965&show","localImg":"assets/casino/games/3x3_hell_spin_54.webp"},{"title":"3X3: 27 Ways","img":"https://lobby.qtlauncher.com/images/?id=GZX-3x327ways_en_US&type=banner&version=3292880859965&showIc","localImg":"assets/casino/games/3x3_27_ways_55.webp"},{"title":"The Greatest Card Show Live","img":"https://dabba.b-cdn.net/CasinoImages/Sexybcrt/tgc.webp","localImg":"assets/casino/games/the_greatest_card_show_live_56.webp"},{"title":"88FA","img":"https://lobby.qtlauncher.com/images/?id=MNP-88fa_en_US&type=banner&version=3292880859965&showIcon=tr","localImg":"assets/casino/games/88fa_57.webp"}]},{"title":"Sexy Casino","totalGames":"7 Games","cards":[{"title":"Thai Hi Lo","img":"https://cdn.dreamcasino.live/awc_aesexy/aes_thai_hi_lo.webp","localImg":"assets/casino/games/thai_hi_lo_58.webp"},{"title":"Dragon Tiger","img":"https://cdn.dreamcasino.live/gap_casino/awc_aesexy/aes_dragon_tiger.webp","localImg":"assets/casino/games/dragon_tiger_33.webp"},{"title":"Dragon Tiger","img":"https://cdn.dreamcasino.live/gap_casino/awc_aesexy/aes_dragon_tiger.webp","localImg":"assets/casino/games/dragon_tiger_33.webp"},{"title":"SEXYBCRT LOBBY","img":"https://dabba.b-cdn.net/CasinoImages/Sexybcrt/400000.webp","localImg":"assets/casino/games/sexybcrt_lobby_59.webp"},{"title":"Baccarat Classic","img":"https://dabba.b-cdn.net/CasinoImages/Sexybcrt/400001.webp","localImg":"assets/casino/games/baccarat_classic_60.webp"},{"title":"Dragon Tiger","img":"https://cdn.dreamcasino.live/gap_casino/awc_aesexy/aes_dragon_tiger.webp","localImg":"assets/casino/games/dragon_tiger_33.webp"}]},{"title":"Table Games","totalGames":"20 Games","cards":[{"title":"Bet on Teen Patti","img":"https://dabba.b-cdn.net/CasinoImages/Ezugidirect/Bet on Teen Patti.png","localImg":"assets/casino/games/bet_on_teen_patti_16.png"},{"title":"Teen Patti 3 Card","img":"https://dabba.b-cdn.net/CasinoImages/Ezugi/teen_patti_3_card_1x.png","localImg":"assets/casino/games/teen_patti_3_card_17.png"},{"title":"Sexy Teenpatti One Day","img":"https://cdn.mac88.com/mac88/STP1D.webp","localImg":"assets/casino/games/sexy_teenpatti_one_day_61.webp"},{"title":"Sexy 2 Card Teenpatti","img":"https://cdn.mac88.com/mac88/s2ctp.webp","localImg":"assets/casino/games/sexy_2_card_teenpatti_62.webp"},{"title":"Teenpatti One Day","img":"https://dabba.b-cdn.net/CasinoImages/150009.png","localImg":"assets/casino/games/teenpatti_one_day_63.png"},{"title":"Muflis Teenpatti","img":"https://dabba.b-cdn.net/CasinoImages/150054.webp","localImg":"assets/casino/games/muflis_teenpatti_64.webp"}]},{"title":"Esports","totalGames":"9 Games","cards":[{"title":"Rocket League","img":"https://lobby.qtlauncher.com/images/?id=FLA-rocketleague_en_US&type=banner&version=1677592959935&wid","localImg":"assets/casino/games/rocket_league_65.webp"},{"title":"Halo","img":"https://lobby.qtlauncher.com/images/?id=FLA-halo_en_US&type=banner&version=1677592959935&width=450&t","localImg":"assets/casino/games/halo_66.webp"},{"title":"eFootball","img":"https://lobby.qtlauncher.com/images/?id=FLA-efootball_en_US&type=banner&version=3292880859965&showIc","localImg":"assets/casino/games/efootball_67.webp"},{"title":"Call of Duty","img":"https://dabba.b-cdn.net/CasinoImages/callofduty.webp","localImg":"assets/casino/games/call_of_duty_68.webp"},{"title":"Age of Empires","img":"https://lobby.qtlauncher.com/images/?id=FLA-ageofempires_en_US&type=banner&version=1677592959935&wid","localImg":"assets/casino/games/age_of_empires_69.webp"},{"title":"eCricket","img":"https://lobby.qtlauncher.com/images/?id=FLA-ecricket_en_US&type=banner&version=3292880859965&showIco","localImg":"assets/casino/games/ecricket_70.webp"}]}];
+
+    // TOP NAVIGATION HORIZONTAL SCROLLER (1:1 PARITY WITH LIVE REFERENCE .scroll-btn)
+    const CARET_RIGHT_PATH = "M544 160C544 124.7 515.3 96 480 96L160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160zM416 320C416 326.7 413.2 333 408.3 337.6L296.3 441.6C289.3 448.1 279.1 449.8 270.4 446C261.7 442.2 256 433.5 256 424L256 216C256 206.5 261.7 197.8 270.4 194C279.1 190.2 289.3 191.9 296.3 198.4L408.3 302.4C413.2 306.9 416 313.3 416 320z";
+    const CARET_LEFT_PATH = "M96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160C544 124.7 515.3 96 480 96L160 96C124.7 96 96 124.7 96 160L96 480zM224 320C224 313.3 226.8 307 231.7 302.4L343.7 198.4C350.7 191.9 360.9 190.2 369.6 194C378.3 197.8 384 206.5 384 216L384 424C384 433.5 378.3 442.2 369.6 446C360.9 449.8 350.7 448.1 343.7 441.6L231.7 337.6C226.8 333.1 224 326.7 224 320z";
+
+    function updateNavCaretIcon(isScrolled) {
+      const path = document.getElementById('headerNavCaretPath');
+      const btn = document.getElementById('headerVideoBtn');
+      if (!path) return;
+      if (isScrolled) {
+        path.setAttribute('d', CARET_LEFT_PATH);
+        if (btn) btn.setAttribute('title', 'Scroll Left');
+      } else {
+        path.setAttribute('d', CARET_RIGHT_PATH);
+        if (btn) btn.setAttribute('title', 'Scroll Right');
+      }
+    }
+
+    function toggleNavScroll(e) {
+      if (e) e.stopPropagation();
+      const wrapper = document.getElementById('headerNavWrapper');
+      if (!wrapper) return;
+      if (wrapper.scrollLeft > 25) {
+        wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        wrapper.scrollTo({ left: wrapper.scrollWidth - wrapper.clientWidth, behavior: 'smooth' });
+      }
+    }
+
+    function initHeaderNavScrollListener() {
+      const wrapper = document.getElementById('headerNavWrapper');
+      if (!wrapper) return;
+      wrapper.addEventListener('scroll', () => {
+        updateNavCaretIcon(wrapper.scrollLeft > 25);
+      }, { passive: true });
+    }
+    initHeaderNavScrollListener();
 
     // Top Header Navigation Router
     function handleNavClick(route, navId) {
@@ -10592,9 +10649,10 @@
       }
     };
 
-    // Initialize races meetings and inplay matches on load
+    // Initialize races meetings, inplay matches, and header nav scroller on load
     document.addEventListener('DOMContentLoaded', function() {
       hideLoader();
+      if (typeof initHeaderNavScrollListener === 'function') initHeaderNavScrollListener();
       if (typeof renderRacesMeetings === 'function') renderRacesMeetings();
       if (typeof selectSport === 'function') selectSport('inplay');
       if (typeof initSportbexLiveIntegration === 'function') initSportbexLiveIntegration();
