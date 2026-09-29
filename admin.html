@@ -205,34 +205,106 @@
             z-index: 999999;
             display: none;
         }
-
-        /* Odds Table */
-        .odds-table th, .odds-table td {
+        /* Match Odds Screen 1:1 Reference Parity Styles */
+        #viewMarketDetail .card-accent-primary {
+            border-top: 2px solid #20a8d8 !important;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        #viewMarketDetail .market-box {
+            padding: 0.5rem;
+        }
+        #viewMarketDetail .market-head {
+            border: 1px solid #808080;
+            border-bottom: none;
+            padding: 4px 10px;
+            margin: 0;
+            font-size: 0.9rem;
+            background-color: #f0f3f5;
+            color: #23282c;
+        }
+        #viewMarketDetail .runners {
+            border: 1px solid #808080;
+            border-bottom: none;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            min-height: 50px;
+        }
+        #viewMarketDetail .runners.lastItemBorder {
+            border-bottom: 1px solid #808080;
+        }
+        #viewMarketDetail .runner-name {
+            background-color: #f5f5f5;
+            color: #2b2f35;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        #viewMarketDetail .cta-back,
+        #viewMarketDetail .cta-lay {
+            height: 50px;
             text-align: center;
-            vertical-align: middle;
-            font-size: 13px;
-        }
-
-        .cell-back {
-            background-color: #b2d7ff !important;
+            padding: 4px 0 0 0 !important;
+            border-right: 1px solid #ffffff;
             cursor: pointer;
-            font-weight: bold;
+            user-select: none;
+            transition: background-color 0.15s ease-in-out;
         }
-
-        .cell-back:hover {
-            background-color: #8fc4ff !important;
+        #viewMarketDetail .cta-back {
+            background-color: #e3f8ff !important;
         }
-
-        .cell-lay {
-            background-color: #ffccd5 !important;
-            cursor: pointer;
-            font-weight: bold;
+        #viewMarketDetail .cta-back:hover {
+            background-color: #cbeeff !important;
         }
-
-        .cell-lay:hover {
-            background-color: #ffa8b8 !important;
+        #viewMarketDetail .cta-lay {
+            background-color: #ffcdcc !important;
         }
-
+        #viewMarketDetail .cta-lay:hover {
+            background-color: #ffb8b7 !important;
+        }
+        #viewMarketDetail .price .col-12.price,
+        #viewMarketDetail .price .col-md-12.price {
+            font-weight: 700;
+            color: #273a47;
+            font-size: 16px;
+            line-height: 1.2;
+            padding: 0;
+        }
+        #viewMarketDetail .price .col-12.size,
+        #viewMarketDetail .price .col-md-12.size {
+            font-weight: 400;
+            color: #273a47;
+            font-size: 12px;
+            line-height: 1.2;
+            padding: 0;
+        }
+        #viewMarketDetail .Orders-Widget {
+            max-height: 238px;
+            overflow-y: auto;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        #viewMarketDetail .Orders-Widget .no-pad {
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+        .inline-slip-box {
+            padding: 10px 14px;
+            margin: 2px 0;
+            border-radius: 3px;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        .inline-slip-back {
+            background: #e3f8ff;
+            border: 1px solid #72cbfd;
+        }
+        .inline-slip-lay {
+            background: #ffcdcc;
+            border: 1px solid #f99090;
+        }
         /* Nav Dropdown Items Toggle */
         .sidebar .nav-dropdown.open > .nav-dropdown-items {
             display: block !important;
@@ -2111,102 +2183,250 @@ Boland v Knights                        </a>
                          VIEW 11: MARKET ODDS DETAIL (/Markets/#!...)
                          ======================================================== -->
                     <div id="viewMarketDetail" class="admin-view-section">
-                        <div class="row">
-                            <div class="col-md-8 col-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <strong id="marketDetailTitleText">India v West Indies - Match Odds</strong>
-                                        <span class="badge badge-success ml-2">IN-PLAY</span>
+                        <div class="row" id="loadedmarkettoshow">
+                            <!-- Left: Market Odds Ladder -->
+                            <div id="MarketData" role="tablist" aria-multiselectable="true" class="content panel-group col-md-8 col-12">
+                                <div class="card card-accent-primary">
+                                    <div class="card-header" id="marketHeaderId">
+                                        <h4>
+                                            <strong id="marketDetailTitleText">Dolphins v Northern Cape - Match Odds</strong>
+                                            <span id="marketStatusText" style="color: rgb(232, 62, 140); margin-left: 6px;"><strong>OPEN</strong></span>
+                                            <i class="fa fa-address-book" style="margin-left: 4px; font-size: 1.1rem; color: #23282c;"></i>
+                                        </h4>
                                     </div>
-                                    <div class="card-body p-0">
-                                        <div class="p-2 bg-light d-flex justify-content-between font-weight-bold">
-                                            <span>Matched: Rs. 14,280,410</span>
-                                            <span>Min/Max: 100 / 5,000,000</span>
+                                    <div class="card-body market-box MBoxNopadding">
+                                        <div class="row bg-gray-100 market-head">
+                                            <div class="col"><strong id="marketDateText">30 Sep 9:00</strong></div>
+                                            <div class="col text-right"><strong>Remaining: <span id="marketTimer">29:17:39</span></strong></div>
                                         </div>
-                                        <table class="table table-bordered mb-0 odds-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Runner</th>
-                                                    <th colspan="3" style="background:#b2d7ff;">Back</th>
-                                                    <th colspan="3" style="background:#ffccd5;">Lay</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td class="text-left font-weight-bold">
-                                                        India
-                                                        <span class="d-block small text-success">Pos: 0</span>
-                                                    </td>
-                                                    <td class="cell-back">1.52<br><small>45.2K</small></td>
-                                                    <td class="cell-back">1.53<br><small>82.1K</small></td>
-                                                    <td class="cell-back">1.54<br><small>140.5K</small></td>
-                                                    <td class="cell-lay">1.55<br><small>98.2K</small></td>
-                                                    <td class="cell-lay">1.56<br><small>54.0K</small></td>
-                                                    <td class="cell-lay">1.57<br><small>21.5K</small></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-left font-weight-bold">
-                                                        West Indies
-                                                        <span class="d-block small text-success">Pos: 0</span>
-                                                    </td>
-                                                    <td class="cell-back">2.80<br><small>12.4K</small></td>
-                                                    <td class="cell-back">2.82<br><small>31.0K</small></td>
-                                                    <td class="cell-back">2.84<br><small>76.3K</small></td>
-                                                    <td class="cell-lay">2.86<br><small>48.9K</small></td>
-                                                    <td class="cell-lay">2.88<br><small>22.1K</small></td>
-                                                    <td class="cell-lay">2.90<br><small>10.5K</small></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        
+                                        <!-- Runner 1 (Dolphins) -->
+                                        <div id="runner-414464" class="row runners">
+                                            <div class="col-7 col-md-4 runner-name">
+                                                <strong id="runnerName1">Dolphins</strong> <br>
+                                                <span><span class="position-plus" id="runnerPos1"><strong></strong></span></span>
+                                            </div>
+                                            <div class="col-5 col-md-8 price">
+                                                <div class="row m-0">
+                                                    <div class="col-md-2 d-none d-md-block cta-back" onclick="openInlineBetSlip('runner1', 'back', '1.44', '12.3K')">
+                                                        <div id="b3-414464" class="col-12 price">1.44</div>
+                                                        <div id="bs3-414464" class="col-12 size">12.3K</div>
+                                                    </div>
+                                                    <div class="col-md-2 d-none d-md-block cta-back" onclick="openInlineBetSlip('runner1', 'back', '1.45', '18.7K')">
+                                                        <div id="b2-414464" class="col-md-12 col-sm-12 price">1.45</div>
+                                                        <div id="bs2-414464" class="col-md-12 col-sm-12 size">18.7K</div>
+                                                    </div>
+                                                    <div class="col-6 col-md-2 cta-back" onclick="openInlineBetSlip('runner1', 'back', '1.46', '6.7K')">
+                                                        <div id="b1-414464" class="col-12 price">1.46</div>
+                                                        <div id="bs1-414464" class="col-12 size">6.7K</div>
+                                                    </div>
+                                                    <div class="col-6 col-md-2 cta-lay" onclick="openInlineBetSlip('runner1', 'lay', '1.59', '9.0K')">
+                                                        <div id="l1-414464" class="col-md-12 col-sm-12 price">1.59</div>
+                                                        <div id="ls1-414464" class="col-md-12 col-sm-12 size">9.0K</div>
+                                                    </div>
+                                                    <div class="col-md-2 d-none d-md-block cta-lay" onclick="openInlineBetSlip('runner1', 'lay', '1.6', '4.1K')">
+                                                        <div id="l2-414464" class="col-md-12 col-sm-12 price">1.6</div>
+                                                        <div id="ls2-414464" class="col-md-12 col-sm-12 size">4.1K</div>
+                                                    </div>
+                                                    <div class="col-md-2 d-none d-md-block cta-lay" onclick="openInlineBetSlip('runner1', 'lay', '1.64', '18.2K')">
+                                                        <div id="l3-414464" class="col-md-12 col-sm-12 price">1.64</div>
+                                                        <div id="ls3-414464" class="col-md-12 col-sm-12 size">18.2K</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Inline Bet Slip Runner 1 -->
+                                        <div id="inlineSlipRunner1" class="inline-slip-box" style="display:none;"></div>
+
+                                        <!-- Runner 2 (Northern Cape) -->
+                                        <div id="runner-235" class="row runners lastItemBorder">
+                                            <div class="col-7 col-md-4 runner-name">
+                                                <strong id="runnerName2">Northern Cape</strong> <br>
+                                                <span><span class="position-plus" id="runnerPos2"><strong></strong></span></span>
+                                            </div>
+                                            <div class="col-5 col-md-8 price">
+                                                <div class="row m-0">
+                                                    <div class="col-md-2 d-none d-md-block cta-back" onclick="openInlineBetSlip('runner2', 'back', '2.5', '24.1K')">
+                                                        <div id="b3-235" class="col-12 price">2.5</div>
+                                                        <div id="bs3-235" class="col-12 size">24.1K</div>
+                                                    </div>
+                                                    <div class="col-md-2 d-none d-md-block cta-back" onclick="openInlineBetSlip('runner2', 'back', '2.56', '11.6K')">
+                                                        <div id="b2-235" class="col-md-12 col-sm-12 price">2.56</div>
+                                                        <div id="bs2-235" class="col-md-12 col-sm-12 size">11.6K</div>
+                                                    </div>
+                                                    <div class="col-6 col-md-2 cta-back" onclick="openInlineBetSlip('runner2', 'back', '2.68', '7.8K')">
+                                                        <div id="b1-235" class="col-12 price">2.68</div>
+                                                        <div id="bs1-235" class="col-12 size">7.8K</div>
+                                                    </div>
+                                                    <div class="col-6 col-md-2 cta-lay" onclick="openInlineBetSlip('runner2', 'lay', '3.2', '3.1K')">
+                                                        <div id="l1-235" class="col-md-12 col-sm-12 price">3.2</div>
+                                                        <div id="ls1-235" class="col-md-12 col-sm-12 size">3.1K</div>
+                                                    </div>
+                                                    <div class="col-md-2 d-none d-md-block cta-lay" onclick="openInlineBetSlip('runner2', 'lay', '3.25', '8.3K')">
+                                                        <div id="l2-235" class="col-md-12 col-sm-12 price">3.25</div>
+                                                        <div id="ls2-235" class="col-md-12 col-sm-12 size">8.3K</div>
+                                                    </div>
+                                                    <div class="col-md-2 d-none d-md-block cta-lay" onclick="openInlineBetSlip('runner2', 'lay', '3.3', '5.4K')">
+                                                        <div id="l3-235" class="col-md-12 col-sm-12 price">3.3</div>
+                                                        <div id="ls3-235" class="col-md-12 col-sm-12 size">5.4K</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Inline Bet Slip Runner 2 -->
+                                        <div id="inlineSlipRunner2" class="inline-slip-box" style="display:none;"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-md-4 col-12">
-                                <div class="card mb-2">
-                                    <div class="card-body p-2 d-flex">
-                                        <div class="dropdown mr-2">
-                                            <button class="btn btn-sm btn-primary bet-lock-toggle-btn dropdown-toggle" type="button" onclick="toggleBetLockDropdown(event)">
-                                                Bet Lock
+                            <!-- Right Panel (#Pnl-Orders) -->
+                            <div id="Pnl-Orders" class="col-md-4 col-12">
+                                <!-- Card 1: Controls (Bet Lock & User Book) -->
+                                <div class="card card-accent-primary right-content">
+                                    <div class="card-body pt-1 pb-1">
+                                        <div class="d-flex">
+                                            <div class="dropdown mr-2">
+                                                <button type="button" id="dropdownMenuLink" onclick="toggleBetLockDropdown(event)" class="btn btn-primary dropdown-toggle">
+                                                    Bet Lock
+                                                </button>
+                                                <div id="betLockMenu" class="dropdown-menu" style="display: none; position: absolute; z-index: 1000; top: 35px; left: 0px;">
+                                                    <a href="#" class="dropdown-item" onclick="toggleMarketBetLock('Match Odds', event)">Match Odds</a>
+                                                    <a href="#" class="dropdown-item" onclick="toggleMarketBetLock('Other Markets', event)">Other Markets</a>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-primary" onclick="openUserBookModal()">
+                                                User Book
                                             </button>
-                                            <div class="dropdown-menu" id="betLockMenu" style="display: none; position: absolute;">
-                                                <a class="dropdown-item" href="#" onclick="showToast('Match Odds locked!'); return false;">Match Odds</a>
-                                                <a class="dropdown-item" href="#" onclick="showToast('Other Markets locked!'); return false;">Other Markets</a>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-sm btn-primary" onclick="showToast('Opening User Book...')">User Book</button>
-                                    </div>
-                                </div>
-
-                                <div class="card mb-2">
-                                    <div class="btn-group w-100">
-                                        <button id="btnTvToggle" class="btn btn-primary btn-sm" onclick="switchLiveMedia('tv')">Tv</button>
-                                        <button id="btnScoreToggle" class="btn btn-outline-primary btn-sm" onclick="switchLiveMedia('score')">Score Card</button>
-                                    </div>
-                                    <div class="card-body p-2">
-                                        <div id="mediaTvDiv" style="display: none; background:#1a1a1a; color:#fff; text-align:center; padding:30px;">
-                                            <i class="fas fa-satellite-dish fa-3x text-success mb-2"></i>
-                                            <p class="small mb-0">Live Streaming Feed (Channel 1)</p>
-                                        </div>
-                                        <div id="mediaScoreDiv">
-                                            <div class="p-3 text-center bg-light">
-                                                <h6>Live Scorecard</h6>
-                                                <p class="mb-0">IND: 184/4 (20.0 ov) | WI: 120/3 (14.2 ov)</p>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="card">
-                                    <div class="card-header"><strong>Open Bets (0)</strong></div>
-                                    <div class="card-body text-center text-muted small">No active open bets.</div>
+                                <!-- Card 2: Tv & Score Card Tabs -->
+                                <div class="card card-accent-primary right-content">
+                                    <div class="btn-group btn-group-xs" style="width: 100%; height: 30px; margin-bottom: 2px;">
+                                        <button id="tvbackbtn" onclick="SHOWTV()" class="btn btn-primary btn-xs col" style="border-right: 1px solid rgba(255,255,255,0.3); border-radius: 0;">Tv</button>
+                                        <button id="livebackbtn" onclick="SHOWLIVE()" class="btn btn-primary btn-xs col" style="border-radius: 0;">Score Card</button>
+                                    </div>
+                                    <div id="TVDIV" style="display: none;">
+                                        <div class="card-body video-container" style="background:#1a1a1a; text-align:center; padding: 30px 10px; color:#fff;">
+                                            <i class="fa fa-tv fa-3x text-primary mb-2"></i>
+                                            <p class="small mb-0">Live Streaming Feed Unavailable</p>
+                                        </div>
+                                    </div>
+                                    <div id="TVDIVIFRAME"></div>
+                                    <div id="LIVEDIV" style="background: #0f1225; padding: 8px 12px; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+                                        <!-- Top Date / Time Pill -->
+                                        <div style="text-align: center; margin-bottom: 6px;">
+                                            <span id="scDatePill" style="background: rgba(255, 255, 255, 0.08); color: #8e95b0; font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 3px; letter-spacing: 0.5px;">30 SEP | 09:00</span>
+                                        </div>
+
+                                        <!-- Teams Header -->
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px;">
+                                            <span id="scTeam1" style="color: #ffffff; font-weight: 700; font-size: 14px; letter-spacing: 0.2px;">Dolphins</span>
+                                            <span id="scTeam2" style="color: #ffffff; font-weight: 700; font-size: 14px; letter-spacing: 0.2px;">Northern Cape</span>
+                                        </div>
+
+                                        <!-- Run Rate & Inns Dropdown -->
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 0 4px;">
+                                            <span style="color: #ffffff; font-weight: 700; font-size: 11px; letter-spacing: 0.5px;">RUN RATE</span>
+                                            <div class="dropdown d-inline-block">
+                                                <button class="btn btn-sm" type="button" style="background: #1a1e36; color: #c4c9dc; border: 1px solid #2d3354; font-size: 10px; padding: 1px 7px; line-height: 1.5; border-radius: 3px;">
+                                                    1st INNS <i class="fa fa-caret-down ml-1" style="font-size: 9px;"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Chart Canvas / SVG Area -->
+                                        <div style="position: relative; width: 100%; height: 95px; background: #0f1225;">
+                                            <svg viewBox="0 0 320 90" style="width: 100%; height: 100%; display: block;">
+                                                <!-- Horizontal axis lines -->
+                                                <line x1="22" y1="15" x2="280" y2="15" stroke="#1f243d" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="22" y1="70" x2="280" y2="70" stroke="#262b47" stroke-width="1" />
+
+                                                <!-- Vertical guide lines for overs 2 to 18 -->
+                                                <line x1="45" y1="15" x2="45" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="74" y1="15" x2="74" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="103" y1="15" x2="103" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="132" y1="15" x2="132" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="161" y1="15" x2="161" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="190" y1="15" x2="190" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="219" y1="15" x2="219" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="248" y1="15" x2="248" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+                                                <line x1="277" y1="15" x2="277" y2="70" stroke="#1c2038" stroke-width="1" stroke-dasharray="2,2" />
+
+                                                <!-- Dividing vertical bar on right -->
+                                                <line x1="285" y1="10" x2="285" y2="70" stroke="#2d3354" stroke-width="1.5" />
+
+                                                <!-- Y Axis labels -->
+                                                <text x="10" y="18" fill="#6f7694" font-size="9" font-family="sans-serif">1</text>
+                                                <text x="10" y="73" fill="#6f7694" font-size="9" font-family="sans-serif">0</text>
+
+                                                <!-- X Axis labels -->
+                                                <text x="43" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">2</text>
+                                                <text x="72" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">4</text>
+                                                <text x="101" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">6</text>
+                                                <text x="130" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">8</text>
+                                                <text x="159" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">10</text>
+                                                <text x="188" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">12</text>
+                                                <text x="217" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">14</text>
+                                                <text x="246" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">16</text>
+                                                <text x="275" y="82" fill="#6f7694" font-size="9" font-family="sans-serif" text-anchor="middle">18</text>
+
+                                                <!-- Trendline on right pane -->
+                                                <polyline points="288,52 294,48 300,38" fill="none" stroke="#e83e8c" stroke-width="1.5" />
+                                                <circle cx="300" cy="38" r="2" fill="#e83e8c" />
+
+                                                <!-- Mini bar chart icon on right bottom -->
+                                                <rect x="293" y="64" width="2" height="6" fill="#394060" />
+                                                <rect x="297" y="61" width="2" height="9" fill="#394060" />
+                                                <rect x="301" y="65" width="2" height="5" fill="#394060" />
+
+                                                <!-- Red Down Chevron at bottom center -->
+                                                <path d="M157 85 L160 88 L163 85" fill="none" stroke="#e83e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card">
+
+                                <!-- Card 3: Open Bets (0) -->
+                                <div class="card card-accent-primary">
                                     <div class="card-header">
-                                        <strong>Matched Bets (0)</strong>
-                                        <button class="btn btn-sm btn-primary float-right" onclick="showToast('Loading full bet list...')">Full Bet List</button>
+                                        <strong id="openBetsCountHeader">Open Bets (0)</strong>
                                     </div>
-                                    <div class="card-body text-center text-muted small">No matched bets.</div>
+                                    <div class="card-body Orders-Widget" style="min-height: 48px; background: #fff;">
+                                        <div class="row m-0 font-weight-bold" style="border-bottom: 1px solid #c8ced3; padding-bottom: 3px;">
+                                            <div class="col-4 no-pad"><strong>Runner</strong></div>
+                                            <div class="col-2 no-pad text-center"><strong>Price</strong></div>
+                                            <div class="col-2 no-pad text-center"><strong>Size</strong></div>
+                                            <div class="col-2 no-pad text-center"><strong>Better</strong></div>
+                                            <div class="col-2 no-pad text-right" style="display: flex; justify-content: flex-end; align-items: center;">
+                                                <strong>Master</strong>
+                                                <span style="font-size: 10px; color: #73818f; margin-left: 2px;"><i class="fa fa-sort"></i></span>
+                                            </div>
+                                        </div>
+                                        <div id="openBetsTableBody"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 4: Matched Bets (0) -->
+                                <div class="card card-accent-primary">
+                                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong id="matchedBetsCountHeader">Matched Bets (0)</strong>
+                                        <button class="btn btn-sm btn-primary" onclick="navigateAdmin('/Reports/BetList', event)">Full Bet List</button>
+                                    </div>
+                                    <div class="card-body Orders-Widget" style="min-height: 48px; background: #fff;">
+                                        <div class="row m-0 font-weight-bold" style="border-bottom: 1px solid #c8ced3; padding-bottom: 3px;">
+                                            <div class="col-4 no-pad"><strong>Runner</strong></div>
+                                            <div class="col-2 no-pad text-center"><strong>Price</strong></div>
+                                            <div class="col-2 no-pad text-center"><strong>Size</strong></div>
+                                            <div class="col-2 no-pad text-center"><strong>Better</strong></div>
+                                            <div class="col-2 no-pad text-right" style="display: flex; justify-content: flex-end; align-items: center;">
+                                                <strong>Master</strong>
+                                                <span style="font-size: 10px; color: #73818f; margin-left: 2px;"><i class="fa fa-sort"></i></span>
+                                            </div>
+                                        </div>
+                                        <div id="matchedBetsTableBody"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2336,6 +2556,7 @@ Boland v Knights                        </a>
         // Lifecycle & Routing
         window.addEventListener('DOMContentLoaded', function() {
             renderClientsTable();
+            loadMarketMatchByIdOrName('Dolphins v Northern Cape');
             var session = localStorage.getItem('bpexch_session');
             var p = window.location.pathname.toLowerCase();
             if (p === '/users/login' || p === '/login' || p === '/admin/login') {
@@ -2564,6 +2785,8 @@ Boland v Knights                        </a>
             } else if (lower.startsWith('/markets/')) {
                 document.getElementById('viewMarketDetail').style.display = 'block';
                 document.title = 'Market Odds | BPEXCH';
+                var mId = (window.location.href.match(/1\.\d+/) || [''])[0];
+                loadMarketMatchByIdOrName(mId || 'Dolphins v Northern Cape');
             } else if (lower === '/common/profile') {
                 document.getElementById('viewProfile').style.display = 'block';
                 document.title = 'Profile | BPEXCH';
@@ -2898,35 +3121,376 @@ Boland v Knights                        </a>
             }
         }
 
-        // Market Detail & Media Switcher
+        // ========================================================
+        // MATCH ODDS LOGIC & SCREEN 1:1 REFERENCE PARITY
+        // ========================================================
+        var marketMatchesData = {
+            'dolphins v northern cape': {
+                id: '1.263002589',
+                title: 'Dolphins v Northern Cape - Match Odds',
+                date: '30 Sep 9:00',
+                remainingSec: 29 * 3600 + 17 * 60 + 39,
+                scDate: '30 SEP | 09:00',
+                runner1: 'Dolphins',
+                runner2: 'Northern Cape',
+                r1Back: [{p: '1.44', s: '12.3K'}, {p: '1.45', s: '18.7K'}, {p: '1.46', s: '6.7K'}],
+                r1Lay: [{p: '1.59', s: '9.0K'}, {p: '1.6', s: '4.1K'}, {p: '1.64', s: '18.2K'}],
+                r2Back: [{p: '2.5', s: '24.1K'}, {p: '2.56', s: '11.6K'}, {p: '2.68', s: '7.8K'}],
+                r2Lay: [{p: '3.2', s: '3.1K'}, {p: '3.25', s: '8.3K'}, {p: '3.3', s: '5.4K'}]
+            },
+            'india v west indies': {
+                id: '1.263018266',
+                title: 'India v West Indies - Match Odds',
+                date: '30 Sep 1:30',
+                remainingSec: 21 * 3600 + 47 * 60 + 15,
+                scDate: '30 SEP | 13:30',
+                runner1: 'India',
+                runner2: 'West Indies',
+                r1Back: [{p: '1.52', s: '45.2K'}, {p: '1.53', s: '82.1K'}, {p: '1.54', s: '140.5K'}],
+                r1Lay: [{p: '1.55', s: '98.2K'}, {p: '1.56', s: '54.0K'}, {p: '1.57', s: '21.5K'}],
+                r2Back: [{p: '2.80', s: '12.4K'}, {p: '2.82', s: '31.0K'}, {p: '2.84', s: '76.3K'}],
+                r2Lay: [{p: '2.86', s: '48.9K'}, {p: '2.88', s: '22.1K'}, {p: '2.90', s: '10.5K'}]
+            },
+            'south africa v australia': {
+                id: '1.263019462',
+                title: 'South Africa v Australia - Match Odds',
+                date: '01 Oct 14:00',
+                remainingSec: 54 * 3600 + 10 * 60,
+                scDate: '01 OCT | 14:00',
+                runner1: 'South Africa',
+                runner2: 'Australia',
+                r1Back: [{p: '1.92', s: '35.0K'}, {p: '1.93', s: '60.1K'}, {p: '1.94', s: '95.4K'}],
+                r1Lay: [{p: '1.95', s: '80.0K'}, {p: '1.96', s: '42.0K'}, {p: '1.97', s: '15.2K'}],
+                r2Back: [{p: '2.04', s: '18.3K'}, {p: '2.06', s: '45.2K'}, {p: '2.08', s: '62.0K'}],
+                r2Lay: [{p: '2.10', s: '50.1K'}, {p: '2.12', s: '29.3K'}, {p: '2.14', s: '12.1K'}]
+            }
+        };
+
+        var currentMatchKey = 'dolphins v northern cape';
+        var currentRemainingSec = 29 * 3600 + 17 * 60 + 39;
+        var openBets = [];
+        var matchedBets = [];
+        var isMatchOddsLocked = false;
+
+        function loadMarketMatchByIdOrName(query) {
+            var raw = (query || '').trim().toLowerCase();
+            var matchedData = null;
+
+            for (var key in marketMatchesData) {
+                var item = marketMatchesData[key];
+                if (item.id === raw || raw.indexOf(key) !== -1 || key.indexOf(raw) !== -1) {
+                    matchedData = item;
+                    currentMatchKey = key;
+                    break;
+                }
+            }
+
+            if (!matchedData) {
+                var parts = (query || '').split(/\s+v\s+/i);
+                var t1 = parts[0] ? parts[0].trim() : 'Dolphins';
+                var t2 = parts[1] ? parts[1].trim() : 'Northern Cape';
+                matchedData = {
+                    title: t1 + ' v ' + t2 + ' - Match Odds',
+                    date: '30 Sep 9:00',
+                    remainingSec: 29 * 3600 + 17 * 60 + 39,
+                    scDate: '30 SEP | 09:00',
+                    runner1: t1,
+                    runner2: t2,
+                    r1Back: [{p: '1.44', s: '12.3K'}, {p: '1.45', s: '18.7K'}, {p: '1.46', s: '6.7K'}],
+                    r1Lay: [{p: '1.59', s: '9.0K'}, {p: '1.6', s: '4.1K'}, {p: '1.64', s: '18.2K'}],
+                    r2Back: [{p: '2.5', s: '24.1K'}, {p: '2.56', s: '11.6K'}, {p: '2.68', s: '7.8K'}],
+                    r2Lay: [{p: '3.2', s: '3.1K'}, {p: '3.25', s: '8.3K'}, {p: '3.3', s: '5.4K'}]
+                };
+            }
+
+            currentRemainingSec = matchedData.remainingSec;
+
+            var titleEl = document.getElementById('marketDetailTitleText');
+            if (titleEl) titleEl.innerText = matchedData.title;
+
+            var dateEl = document.getElementById('marketDateText');
+            if (dateEl) dateEl.innerText = matchedData.date;
+
+            var r1El = document.getElementById('runnerName1');
+            if (r1El) r1El.innerText = matchedData.runner1;
+
+            var r2El = document.getElementById('runnerName2');
+            if (r2El) r2El.innerText = matchedData.runner2;
+
+            var scT1 = document.getElementById('scTeam1');
+            if (scT1) scT1.innerText = matchedData.runner1;
+
+            var scT2 = document.getElementById('scTeam2');
+            if (scT2) scT2.innerText = matchedData.runner2;
+
+            var scDate = document.getElementById('scDatePill');
+            if (scDate) scDate.innerText = matchedData.scDate;
+
+            setRunnerPrices('414464', matchedData.r1Back, matchedData.r1Lay);
+            setRunnerPrices('235', matchedData.r2Back, matchedData.r2Lay);
+
+            closeInlineSlip('runner1');
+            closeInlineSlip('runner2');
+            updateTimerDisplay();
+        }
+
+        function setRunnerPrices(runnerId, backs, lays) {
+            if (backs[0]) { setCell('b3-' + runnerId, 'bs3-' + runnerId, backs[0].p, backs[0].s); }
+            if (backs[1]) { setCell('b2-' + runnerId, 'bs2-' + runnerId, backs[1].p, backs[1].s); }
+            if (backs[2]) { setCell('b1-' + runnerId, 'bs1-' + runnerId, backs[2].p, backs[2].s); }
+            if (lays[0]) { setCell('l1-' + runnerId, 'ls1-' + runnerId, lays[0].p, lays[0].s); }
+            if (lays[1]) { setCell('l2-' + runnerId, 'ls2-' + runnerId, lays[1].p, lays[1].s); }
+            if (lays[2]) { setCell('l3-' + runnerId, 'ls3-' + runnerId, lays[2].p, lays[2].s); }
+        }
+
+        function setCell(pId, sId, price, size) {
+            var pEl = document.getElementById(pId);
+            if (pEl) pEl.innerText = price;
+            var sEl = document.getElementById(sId);
+            if (sEl) sEl.innerText = size;
+        }
+
+        function updateTimerDisplay() {
+            var h = Math.floor(currentRemainingSec / 3600);
+            var m = Math.floor((currentRemainingSec % 3600) / 60);
+            var s = currentRemainingSec % 60;
+            var formatted = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+            var timerEl = document.getElementById('marketTimer');
+            if (timerEl) timerEl.innerText = formatted;
+        }
+
+        setInterval(function() {
+            if (currentRemainingSec > 0) {
+                currentRemainingSec--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+
+        function openMarketDetailByLink(linkEl, e) {
+            if (e) e.preventDefault();
+            var href = linkEl ? linkEl.getAttribute('href') : '/Markets/#!1.263002589';
+            var slideName = linkEl ? linkEl.querySelector('.slidename') : null;
+            var matchName = slideName ? slideName.innerText.trim() : (linkEl ? linkEl.innerText.trim() : 'Dolphins v Northern Cape');
+            matchName = matchName.replace(/\d+:\d+\s+[AP]M/gi, '').replace(/\d{4}-\d{2}-\d{2}T[^\s]+/gi, '').trim();
+            loadMarketMatchByIdOrName(matchName);
+            navigateAdmin(href);
+        }
+
         function openMarketDetail(marketId, matchName, sport, e) {
             if (e) e.preventDefault();
-            document.getElementById('marketDetailTitleText').innerText = matchName + ' - Match Odds';
+            loadMarketMatchByIdOrName(matchName || marketId);
             navigateAdmin('/Markets/#!' + marketId);
         }
 
-        function toggleBetLockDropdown(e) {
-            if (e) e.preventDefault();
-            e.stopPropagation();
-            var m = document.getElementById('betLockMenu');
-            if (m) m.style.display = m.style.display === 'none' ? 'block' : 'none';
+        function SHOWTV() {
+            var tvDiv = document.getElementById('TVDIV');
+            var liveDiv = document.getElementById('LIVEDIV');
+            if (tvDiv.style.display === 'block') {
+                tvDiv.style.display = 'none';
+            } else {
+                tvDiv.style.display = 'block';
+                if (liveDiv) liveDiv.style.display = 'none';
+            }
         }
 
-        function switchLiveMedia(type) {
-            if (type === 'tv') {
-                document.getElementById('btnTvToggle').classList.add('btn-primary');
-                document.getElementById('btnTvToggle').classList.remove('btn-outline-primary');
-                document.getElementById('btnScoreToggle').classList.add('btn-outline-primary');
-                document.getElementById('btnScoreToggle').classList.remove('btn-primary');
-                document.getElementById('mediaTvDiv').style.display = 'block';
-                document.getElementById('mediaScoreDiv').style.display = 'none';
+        function SHOWLIVE() {
+            var liveDiv = document.getElementById('LIVEDIV');
+            var tvDiv = document.getElementById('TVDIV');
+            if (liveDiv.style.display === 'block') {
+                liveDiv.style.display = 'none';
             } else {
-                document.getElementById('btnScoreToggle').classList.add('btn-primary');
-                document.getElementById('btnScoreToggle').classList.remove('btn-outline-primary');
-                document.getElementById('btnTvToggle').classList.add('btn-outline-primary');
-                document.getElementById('btnTvToggle').classList.remove('btn-primary');
-                document.getElementById('mediaTvDiv').style.display = 'none';
-                document.getElementById('mediaScoreDiv').style.display = 'block';
+                liveDiv.style.display = 'block';
+                if (tvDiv) tvDiv.style.display = 'none';
+            }
+        }
+
+        function toggleBetLockDropdown(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            var menu = document.getElementById('betLockMenu');
+            if (menu) {
+                menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function toggleMarketBetLock(type, e) {
+            if (e) e.preventDefault();
+            var menu = document.getElementById('betLockMenu');
+            if (menu) menu.style.display = 'none';
+
+            if (type === 'Match Odds') {
+                isMatchOddsLocked = !isMatchOddsLocked;
+                var statusEl = document.getElementById('marketStatusText');
+                if (statusEl) {
+                    if (isMatchOddsLocked) {
+                        statusEl.innerHTML = '<strong>SUSPENDED</strong>';
+                        statusEl.style.color = '#e53935';
+                        showToast('Match Odds SUSPENDED');
+                    } else {
+                        statusEl.innerHTML = '<strong>OPEN</strong>';
+                        statusEl.style.color = 'rgb(232, 62, 140)';
+                        showToast('Match Odds OPEN');
+                    }
+                }
+            } else {
+                showToast(type + ' Bet Lock Toggled');
+            }
+        }
+
+        function openUserBookModal() {
+            var r1 = document.getElementById('runnerName1') ? document.getElementById('runnerName1').innerText : 'Runner 1';
+            var r2 = document.getElementById('runnerName2') ? document.getElementById('runnerName2').innerText : 'Runner 2';
+            alert('User Book Positions:\n\n' + r1 + ': Rs. 0.00\n' + r2 + ': Rs. 0.00');
+        }
+
+        function openInlineBetSlip(runnerSlot, type, price, size) {
+            if (isMatchOddsLocked) {
+                showToast('Market is currently suspended!');
+                return;
+            }
+            var slipEl = document.getElementById(runnerSlot === 'runner1' ? 'inlineSlipRunner1' : 'inlineSlipRunner2');
+            var otherSlip = document.getElementById(runnerSlot === 'runner1' ? 'inlineSlipRunner2' : 'inlineSlipRunner1');
+            if (otherSlip) otherSlip.style.display = 'none';
+
+            var runnerName = document.getElementById(runnerSlot === 'runner1' ? 'runnerName1' : 'runnerName2').innerText;
+            var isBack = type === 'back';
+            var bgClass = isBack ? 'inline-slip-back' : 'inline-slip-lay';
+            var headerTitle = isBack ? 'Back (Bet For)' : 'Lay (Bet Against)';
+            var headerColor = isBack ? '#007bff' : '#e83e8c';
+
+            slipEl.className = 'inline-slip-box ' + bgClass;
+            slipEl.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                '<strong style="color:' + headerColor + '; font-size:13px;">' + headerTitle + ' - ' + runnerName + '</strong>' +
+                '<button class="btn btn-sm btn-link text-danger p-0" onclick="closeInlineSlip(\'' + runnerSlot + '\')">&times; Close</button>' +
+                '</div>' +
+                '<div class="row align-items-center mb-2">' +
+                '<div class="col-md-3 col-6 mb-1">' +
+                '<label class="small mb-0 font-weight-bold">Odds:</label>' +
+                '<input type="number" step="0.01" id="slipOddsInput" class="form-control form-control-sm" value="' + price + '">' +
+                '</div>' +
+                '<div class="col-md-3 col-6 mb-1">' +
+                '<label class="small mb-0 font-weight-bold">Stake:</label>' +
+                '<input type="number" step="100" id="slipStakeInput" class="form-control form-control-sm" value="1000" oninput="updateSlipProfit(\'' + type + '\')">' +
+                '</div>' +
+                '<div class="col-md-6 col-12 d-flex align-items-end justify-content-end mb-1">' +
+                '<span id="slipProfitText" class="font-weight-bold mr-3 small" style="color:' + headerColor + ';">Profit: Rs. ' + ((parseFloat(price) - 1) * 1000).toFixed(2) + '</span>' +
+                '<button class="btn btn-sm btn-secondary mr-1" onclick="closeInlineSlip(\'' + runnerSlot + '\')">Cancel</button>' +
+                '<button class="btn btn-sm btn-primary" onclick="confirmPlaceBet(\'' + runnerName + '\', \'' + type + '\', \'' + runnerSlot + '\')">Place Bet</button>' +
+                '</div>' +
+                '</div>' +
+                '<div class="d-flex flex-wrap">' +
+                '<button class="btn btn-xs btn-outline-dark mr-1 mb-1" onclick="addStake(1000, \'' + type + '\')">+1,000</button>' +
+                '<button class="btn btn-xs btn-outline-dark mr-1 mb-1" onclick="addStake(5000, \'' + type + '\')">+5,000</button>' +
+                '<button class="btn btn-xs btn-outline-dark mr-1 mb-1" onclick="addStake(10000, \'' + type + '\')">+10,000</button>' +
+                '<button class="btn btn-xs btn-outline-dark mr-1 mb-1" onclick="addStake(25000, \'' + type + '\')">+25,000</button>' +
+                '<button class="btn btn-xs btn-outline-dark mb-1" onclick="addStake(50000, \'' + type + '\')">+50,000</button>' +
+                '</div>';
+            slipEl.style.display = 'block';
+        }
+
+        function closeInlineSlip(runnerSlot) {
+            var el = document.getElementById(runnerSlot === 'runner1' ? 'inlineSlipRunner1' : 'inlineSlipRunner2');
+            if (el) el.style.display = 'none';
+        }
+
+        function updateSlipProfit(type) {
+            var odds = parseFloat(document.getElementById('slipOddsInput').value) || 1.0;
+            var stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            var profit = (odds - 1) * stake;
+            var textEl = document.getElementById('slipProfitText');
+            if (textEl) {
+                if (type === 'back') {
+                    textEl.innerText = 'Profit: Rs. ' + profit.toFixed(2);
+                } else {
+                    textEl.innerText = 'Liability: Rs. ' + profit.toFixed(2);
+                }
+            }
+        }
+
+        function addStake(amt, type) {
+            var stakeEl = document.getElementById('slipStakeInput');
+            if (stakeEl) {
+                var current = parseFloat(stakeEl.value) || 0;
+                stakeEl.value = current + amt;
+                updateSlipProfit(type);
+            }
+        }
+
+        function confirmPlaceBet(runner, type, runnerSlot) {
+            var odds = document.getElementById('slipOddsInput').value;
+            var stake = document.getElementById('slipStakeInput').value;
+            if (!stake || parseFloat(stake) <= 0) {
+                showToast('Please enter a valid stake');
+                return;
+            }
+
+            closeInlineSlip(runnerSlot);
+            showToast('Bet Placed: ' + runner + ' @ ' + odds + ' (Rs. ' + stake + ')');
+
+            var betObj = {
+                id: Date.now(),
+                runner: runner,
+                price: odds,
+                size: parseFloat(stake).toLocaleString(),
+                better: 'admin',
+                master: 'Master'
+            };
+
+            openBets.push(betObj);
+            renderBetsTables();
+
+            setTimeout(function() {
+                var idx = openBets.indexOf(betObj);
+                if (idx !== -1) {
+                    openBets.splice(idx, 1);
+                    matchedBets.unshift(betObj);
+                    renderBetsTables();
+                    showToast('Bet Matched: ' + runner + ' @ ' + odds);
+                }
+            }, 1500);
+        }
+
+        function renderBetsTables() {
+            var openHeader = document.getElementById('openBetsCountHeader');
+            if (openHeader) openHeader.innerText = 'Open Bets (' + openBets.length + ')';
+
+            var matchedHeader = document.getElementById('matchedBetsCountHeader');
+            if (matchedHeader) matchedHeader.innerText = 'Matched Bets (' + matchedBets.length + ')';
+
+            var openBody = document.getElementById('openBetsTableBody');
+            if (openBody) {
+                if (openBets.length === 0) {
+                    openBody.innerHTML = '';
+                } else {
+                    openBody.innerHTML = openBets.map(function(b) {
+                        return '<div class="row m-0 align-items-center py-1 border-bottom" style="font-size:12px;">' +
+                            '<div class="col-4 no-pad text-primary font-weight-bold">' + b.runner + '</div>' +
+                            '<div class="col-2 no-pad text-center font-weight-bold">' + b.price + '</div>' +
+                            '<div class="col-2 no-pad text-center">' + b.size + '</div>' +
+                            '<div class="col-2 no-pad text-center">' + b.better + '</div>' +
+                            '<div class="col-2 no-pad text-right">' + b.master + '</div>' +
+                        '</div>';
+                    }).join('');
+                }
+            }
+
+            var matchedBody = document.getElementById('matchedBetsTableBody');
+            if (matchedBody) {
+                if (matchedBets.length === 0) {
+                    matchedBody.innerHTML = '';
+                } else {
+                    matchedBody.innerHTML = matchedBets.map(function(b) {
+                        return '<div class="row m-0 align-items-center py-1 border-bottom" style="font-size:12px;">' +
+                            '<div class="col-4 no-pad text-primary font-weight-bold">' + b.runner + '</div>' +
+                            '<div class="col-2 no-pad text-center font-weight-bold">' + b.price + '</div>' +
+                            '<div class="col-2 no-pad text-center">' + b.size + '</div>' +
+                            '<div class="col-2 no-pad text-center">' + b.better + '</div>' +
+                            '<div class="col-2 no-pad text-right">' + b.master + '</div>' +
+                        '</div>';
+                    }).join('');
+                }
             }
         }
 
