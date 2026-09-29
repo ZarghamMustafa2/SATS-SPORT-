@@ -368,117 +368,667 @@
         <!-- AUTHENTIC COREUI SIDEBAR -->
         <div class="sidebar" id="adminSidebar">
             <nav class="sidebar-nav">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="sideNavDashboard" href="/index" onclick="navigateAdmin('/index', event)">
-                            <i class="nav-icon fas fa-tachometer-alt fa-inverse"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="sideNavUsers" href="/Accounts/Chart" onclick="navigateAdmin('/Accounts/Chart', event)">
-                            <i class="nav-icon fas fa-users fa-inverse"></i> Users
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="topNavPosition" href="/Markets/Liables" onclick="navigateAdmin('/Markets/Liables', event)">
-                            <i class="nav-icon fas fa-funnel-dollar fa-inverse"></i> Current Position
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="sideNavReports" href="/Reports/BookDetail" onclick="navigateAdmin('/Reports/BookDetail', event)">
-                            <i class="nav-icon fas fa-money-check fa-inverse"></i> Reports
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="sideNavBetLock" href="/Markets/BetLocker" onclick="navigateAdmin('/Markets/BetLocker', event)">
-                            <i class="nav-icon fas fa-unlock-alt fa-inverse"></i> Bet Lock
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="sideNavStarCasino" href="/Markets/Games" onclick="navigateAdmin('/Markets/Games', event)">
-                            <i class="nav-icon fas fa-star fa-inverse"></i> Star Casino
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="sideNavWorldCasino" href="/Markets/WorldCasino" onclick="navigateAdmin('/Markets/WorldCasino', event)">
-                            <i class="nav-icon fas fa-globe fa-inverse"></i> World Casino
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link sidebar-link" id="sideNavBetFairGames" href="/Markets/ExGames" onclick="navigateAdmin('/Markets/ExGames', event)">
-                            <i class="nav-icon fas fa-globe fa-inverse"></i> BetFair Games
-                        </a>
-                    </li>
+                
 
-                    <!-- Authentic Collapsible Sports Dropdowns with SVGs -->
-                    <li class="nav-item nav-dropdown" id="navDropSoccer">
-                        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleSportDropdown(event, 'navDropSoccer')">
-                            <img src="/img/v2/soccer.svg" alt="Soccer" style="width:16px; margin-right:8px;">
-                            Soccer
-                        </a>
-                        <ul class="nav-dropdown-items" style="display:none;">
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.261925410" onclick="openMarketDetail('1.261925410', 'Northern Ireland v Hungary', 'Soccer', event)">Northern Ireland v Hungary</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262637795" onclick="openMarketDetail('1.262637795', 'Belgium v France', 'Soccer', event)">Belgium v France</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262004755" onclick="openMarketDetail('1.262004755', 'Türkiye v Italy', 'Soccer', event)">Türkiye v Italy</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262647263" onclick="openMarketDetail('1.262647263', 'Sweden v Poland', 'Soccer', event)">Sweden v Poland</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.260989302" onclick="openMarketDetail('1.260989302', 'Georgia v Ukraine', 'Soccer', event)">Georgia v Ukraine</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.261925521" onclick="openMarketDetail('1.261925521', 'Armenia v Montenegro', 'Soccer', event)">Armenia v Montenegro</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.261925678" onclick="openMarketDetail('1.261925678', 'Latvia v Cyprus', 'Soccer', event)">Latvia v Cyprus</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262648453" onclick="openMarketDetail('1.262648453', 'Romania v Bosnia', 'Soccer', event)">Romania v Bosnia</a></li>
-                        </ul>
-                    </li>
+<ul class="nav">
+        <li class="nav-item open">
+            <a class="nav-link active" href="/index" id="sideNavDashboard" onclick="navigateAdmin('/index', event)">
+                <i class="nav-icon fas fa-tachometer-alt fa-inverse"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Accounts/Chart" id="sideNavUsers" onclick="navigateAdmin('/Accounts/Chart', event)">
+                <i class="nav-icon fas fa-users fa-inverse"></i> Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Markets/Liables" id="sideNavPosition" onclick="navigateAdmin('/Markets/Liables', event)">
+                <i class="nav-icon fas fa-funnel-dollar fa-inverse"></i> Current Position
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Reports/BookDetail" id="sideNavReports" onclick="navigateAdmin('/Reports/BookDetail', event)">
+                <i class="nav-icon fas fa-money-check fa-inverse"></i> Reports
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Markets/BetLocker" id="sideNavBetLock" onclick="navigateAdmin('/Markets/BetLocker', event)">
+                <i class="nav-icon fas fa-unlock-alt fa-inverse"></i> Bet Lock
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Markets/Games" id="sideNavStarCasino" onclick="navigateAdmin('/Markets/Games', event)">
+                <i class="nav-icon fas fa-star fa-inverse"></i> Star Casino
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Markets/WorldCasino" id="sideNavWorldCasino" onclick="navigateAdmin('/Markets/WorldCasino', event)">
+                <i class="nav-icon fas fa-globe fa-inverse"></i> World Casino
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Markets/ExGames" id="sideNavBetFairGames" onclick="navigateAdmin('/Markets/ExGames', event)">
+                <i class="nav-icon fas fa-globe fa-inverse"></i> BetFair Games
+            </a>
+        </li>
 
-                    <li class="nav-item nav-dropdown" id="navDropTennis">
-                        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleSportDropdown(event, 'navDropTennis')">
-                            <img src="/img/v2/tennis.svg" alt="Tennis" style="width:16px; margin-right:8px;">
-                            Tennis
-                        </a>
-                        <ul class="nav-dropdown-items" style="display:none;">
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262911111" onclick="openMarketDetail('1.262911111', 'Alcaraz v Sinner', 'Tennis', event)">Alcaraz v Sinner</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262922222" onclick="openMarketDetail('1.262922222', 'Djokovic v Medvedev', 'Tennis', event)">Djokovic v Medvedev</a></li>
-                        </ul>
-                    </li>
 
-                    <li class="nav-item nav-dropdown open" id="navDropCricket">
-                        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleSportDropdown(event, 'navDropCricket')">
-                            <img src="/img/v2/cricket.svg" alt="Cricket" style="width:16px; margin-right:8px;">
-                            Cricket
-                        </a>
-                        <ul class="nav-dropdown-items" style="display:block;">
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.263018266" onclick="openMarketDetail('1.263018266', 'India v West Indies', 'Cricket', event)">India v West Indies</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.263002589" onclick="openMarketDetail('1.263002589', 'Dolphins v Northern Cape', 'Cricket', event)">Dolphins v Northern Cape</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262900604" onclick="openMarketDetail('1.262900604', 'Warriors v Limpopo', 'Cricket', event)">Warriors v Limpopo</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.263019462" onclick="openMarketDetail('1.263019462', 'South Africa v Australia', 'Cricket', event)">South Africa v Australia</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.263002468" onclick="openMarketDetail('1.263002468', 'Boland v Knights', 'Cricket', event)">Boland v Knights</a></li>
-                        </ul>
-                    </li>
 
-                    <li class="nav-item nav-dropdown" id="navDropHorse">
-                        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleSportDropdown(event, 'navDropHorse')">
-                            <img src="/img/v2/horse.svg" alt="Horse Race" style="width:16px; margin-right:8px;">
-                            Horse Race
-                        </a>
-                        <ul class="nav-dropdown-items" style="display:none;">
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262939689" onclick="openMarketDetail('1.262939689', 'Wolverhampton (GB)', 'Horse Race', event)"><span class="slidedate market-time">8:55 AM</span> <span class="slidename">Wolverhampton (GB)</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262939508" onclick="openMarketDetail('1.262939508', 'Brighton (GB)', 'Horse Race', event)"><span class="slidedate market-time">9:00 AM</span> <span class="slidename">Brighton (GB)</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262939622" onclick="openMarketDetail('1.262939622', 'Roscommon (IE)', 'Horse Race', event)"><span class="slidedate market-time">9:05 AM</span> <span class="slidename">Roscommon (IE)</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.262939676" onclick="openMarketDetail('1.262939676', 'Hamilton (GB)', 'Horse Race', event)"><span class="slidedate market-time">9:13 AM</span> <span class="slidename">Hamilton (GB)</span></a></li>
-                        </ul>
-                    </li>
+    <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
+            <img src="/img/v2/soccer.svg" alt="C">
+            Soccer
+        </a>
 
-                    <li class="nav-item nav-dropdown" id="navDropGreyhound">
-                        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleSportDropdown(event, 'navDropGreyhound')">
-                            <img src="/img/v2/greyhound-racing.svg" alt="Greyhound" style="width:16px; margin-right:8px;">
-                            Greyhound
-                        </a>
-                        <ul class="nav-dropdown-items" style="display:none;">
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.263014989" onclick="openMarketDetail('1.263014989', 'Towcester (GB)', 'Greyhound', event)"><span class="slidedate market-time">10:08 AM</span> <span class="slidename">Towcester (GB)</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.263017330" onclick="openMarketDetail('1.263017330', 'Harlow (GB)', 'Greyhound', event)"><span class="slidedate market-time">10:11 AM</span> <span class="slidename">Harlow (GB)</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Markets/#!1.263016469" onclick="openMarketDetail('1.263016469', 'Yarmouth (GB)', 'Greyhound', event)"><span class="slidedate market-time">10:14 AM</span> <span class="slidename">Yarmouth (GB)</span></a></li>
-                        </ul>
+        <ul class="nav-dropdown-items" href="#">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.261925410" onclick="openMarketDetailByLink(this, event)">
+Northern Ireland v Hungary                        </a>
                     </li>
-                </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262637795" onclick="openMarketDetailByLink(this, event)">
+Belgium v France                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262004755" onclick="openMarketDetailByLink(this, event)">
+Türkiye v Italy                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262647263" onclick="openMarketDetailByLink(this, event)">
+Sweden v Poland                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.260989302" onclick="openMarketDetailByLink(this, event)">
+Georgia v Ukraine                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.261925521" onclick="openMarketDetailByLink(this, event)">
+Armenia v Montenegro                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.261925678" onclick="openMarketDetailByLink(this, event)">
+Latvia v Cyprus                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262648453" onclick="openMarketDetailByLink(this, event)">
+Romania v Bosnia                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263022345" onclick="openMarketDetailByLink(this, event)">
+Guadeloupe v Barbados                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262785893" onclick="openMarketDetailByLink(this, event)">
+Wanderers (Uru) v Albion FC                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263009889" onclick="openMarketDetailByLink(this, event)">
+Independiente Yumbo v Orsomarso                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262727198" onclick="openMarketDetailByLink(this, event)">
+America MG v Juventude                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263009999" onclick="openMarketDetailByLink(this, event)">
+Internacional de Palmira v Leones FC                        </a>
+                    </li>
+        </ul>
+    </li>
+    <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
+            <img src="/img/v2/tennis.svg" alt="C">
+            Tennis
+        </a>
+
+        <ul class="nav-dropdown-items" href="#">
+        </ul>
+    </li>
+    <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
+            <img src="/img/v2/cricket.svg" alt="C">
+            Cricket
+        </a>
+
+        <ul class="nav-dropdown-items" href="#">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263002589" onclick="openMarketDetailByLink(this, event)">
+Dolphins v Northern Cape                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262900604" onclick="openMarketDetailByLink(this, event)">
+Warriors v Limpopo                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263018266" onclick="openMarketDetailByLink(this, event)">
+India v West Indies                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263019462" onclick="openMarketDetailByLink(this, event)">
+South Africa v Australia                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263002468" onclick="openMarketDetailByLink(this, event)">
+Boland v Knights                        </a>
+                    </li>
+        </ul>
+    </li>
+    <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
+            <img src="/img/v2/horse.svg" alt="C">
+            Horse Race
+        </a>
+
+        <ul class="nav-dropdown-items" href="#">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939689" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">8:55 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T15:55:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939690" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">8:55 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T15:55:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939508" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:00 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:00:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Brighton (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939510" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:00 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:00:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Brighton (GB) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939622" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:05 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:05:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Roscommon (IE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939624" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:05 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:05:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Roscommon (IE) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939676" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:13 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:13:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Hamilton (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939678" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:13 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:13:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Hamilton (GB) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262997491" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:15 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:15:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Fort Erie (US)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939566" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:25 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:25:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Down Royal (IE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939568" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:25 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:25:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Down Royal (IE) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939694" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:30 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:30:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939695" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:30 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:30:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939629" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:40 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:40:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Roscommon (IE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939630" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:40 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:40:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Roscommon (IE) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262995629" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:40 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:40:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Philadelphia (US)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262997492" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:43 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:43:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Fort Erie (US)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262997314" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:55 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:55:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Finger Lakes (US)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939701" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:00 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:00:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939702" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:00 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:00:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262995632" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:07 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:07:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Philadelphia (US)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262997493" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:11 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:11:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Fort Erie (US)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262997317" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:24 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:24:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Finger Lakes (US)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939708" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:30 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:30:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.262939709" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:30 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:30:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Wolverhampton (GB) (PLACE)
+                                </span>
+                        </a>
+                    </li>
+        </ul>
+    </li>
+    <li class="nav-item nav-dropdown">
+        <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
+            <img src="/img/v2/greyhound-racing.svg" alt="C">
+            Greyhound
+        </a>
+
+        <ul class="nav-dropdown-items" href="#">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014326" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">8:56 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T15:56:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Doncaster (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263013902" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">8:59 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T15:59:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Sunderland (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014178" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:06 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:06:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Central Park (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263012778" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:12 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:12:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Monmore (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014328" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:14 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:14:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Doncaster (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263013904" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:18 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:18:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Sunderland (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014180" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:24 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:24:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Central Park (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014330" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:29 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:29:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Doncaster (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263012780" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:31 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:31:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Monmore (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263013906" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:37 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:37:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Sunderland (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014182" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:43 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:43:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Central Park (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014332" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:46 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:46:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Doncaster (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263012782" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:49 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:49:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Monmore (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263017328" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:51 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:51:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Harlow (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263013908" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:56 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:56:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Sunderland (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014334" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">9:59 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T16:59:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Doncaster (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014184" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:02 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:02:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Central Park (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263014989" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:08 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:08:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Towcester (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263017330" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:11 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:11:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Harlow (GB)
+                                </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Markets/#!1.263016469" onclick="openMarketDetailByLink(this, event)">
+                                <span class="slidedate market-time">10:14 AM</span>
+                                <span class="d-none utctime" data-format="h:mm A">
+                                    2026-09-28T17:14:00.0000000Z
+                                </span>
+                                <span class="slidename">
+                                    Yarmouth (GB)
+                                </span>
+                        </a>
+                    </li>
+        </ul>
+    </li>
+</ul>
             </nav>
+
             <button class="sidebar-minimizer brand-minimizer" type="button" onclick="toggleSidebarMinimizer()"></button>
         </div>
 
@@ -1875,6 +2425,26 @@
             document.body.classList.toggle('brand-minimized');
         }
 
+        
+        function toggleNavDropdown(e, el) {
+            if (e) e.preventDefault();
+            var parent = el ? el.closest('.nav-dropdown') : null;
+            if (parent) {
+                parent.classList.toggle('open');
+            }
+        }
+
+        function openMarketDetailByLink(linkEl, e) {
+            if (e) e.preventDefault();
+            var href = linkEl ? linkEl.getAttribute('href') : '/Markets/#!1.263018266';
+            var slideName = linkEl ? linkEl.querySelector('.slidename') : null;
+            var matchName = slideName ? slideName.innerText.trim() : (linkEl ? linkEl.innerText.trim() : 'India v West Indies');
+            matchName = matchName.replace(/\d+:\d+\s+[AP]M/gi, '').replace(/\d{4}-\d{2}-\d{2}T[^\s]+/gi, '').trim();
+            var titleEl = document.getElementById('marketDetailTitleText');
+            if (titleEl) titleEl.innerText = matchName + ' - Match Odds';
+            navigateAdmin(href);
+        }
+
         function toggleSportDropdown(e, dropdownId) {
             if (e) e.preventDefault();
             var drop = document.getElementById(dropdownId);
@@ -1971,6 +2541,8 @@
                 document.title = 'Account Ledger | BPEXCH';
             } else if (lower === '/markets/liables') {
                 document.getElementById('viewCurrentPosition').style.display = 'block';
+                document.getElementById('sideNavPosition')?.classList.add('active');
+                document.getElementById('sideNavPosition')?.classList.add('active');
                 document.getElementById('topNavPosition')?.classList.add('active');
                 document.title = 'Current Position | BPEXCH';
             } else if (lower.startsWith('/reports/')) {
