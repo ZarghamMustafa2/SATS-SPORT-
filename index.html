@@ -4022,15 +4022,45 @@
         align-items: center !important;
         justify-content: space-between !important;
         background-color: #ffc21d !important;
-        position: sticky !important;
+        position: fixed !important;
         top: 0 !important;
-        z-index: 1001 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 100000 !important;
       }
       .header-left {
         display: flex !important;
         align-items: center !important;
         gap: 12px !important;
         flex-shrink: 0 !important;
+      }
+      .side-toggle {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+      }
+      .side-toggle img {
+        content: url("assets/live/Menu.svg") !important;
+        width: 24px !important;
+        height: 20px !important;
+        display: block !important;
+      }
+      body.mobile-drawer-open .side-toggle,
+      #sidebarCollapse.is-open {
+        background: #000000 !important;
+        border-radius: 6px !important;
+        padding: 6px 8px !important;
+      }
+      body.mobile-drawer-open .side-toggle img,
+      #sidebarCollapse.is-open img {
+        content: url("assets/collapse-menu.svg") !important;
+        width: 20px !important;
+        height: 18px !important;
       }
       .sidebar-toggle-btn {
         width: 44px !important;
@@ -4075,12 +4105,13 @@
         display: none !important;
       }
       .header-play-wrap {
-        display: inline-flex !important;
-        margin-left: auto !important;
-        margin-right: 8px !important;
+        display: none !important;
       }
       .header-video-btn {
-        display: inline-flex !important;
+        display: none !important;
+      }
+      .play-button-menu {
+        display: none !important;
       }
       .header-right {
         display: none !important;
@@ -4125,8 +4156,11 @@
         height: 42px !important;
         gap: 22px !important;
         border-bottom: 1px solid #1a1a1a !important;
-        position: sticky !important;
+        position: fixed !important;
         top: 60px !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
         z-index: 1000 !important;
       }
       .mobile-top-modes-bar::-webkit-scrollbar {
@@ -4171,6 +4205,12 @@
         height: 52px !important;
         min-height: 52px !important;
         box-sizing: border-box !important;
+        position: fixed !important;
+        top: 102px !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 999 !important;
       }
       .subnav-bar::-webkit-scrollbar {
         display: none !important;
@@ -4197,10 +4237,10 @@
         transition: all 0.2s ease !important;
       }
       .subnav-item.active {
-        background: linear-gradient(180deg, rgb(255, 223, 94), rgb(255, 184, 0)) !important;
-        color: #000000 !important;
-        font-weight: 600 !important;
-        box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 6px 0px !important;
+        background: linear-gradient(180deg, rgb(42, 42, 42), rgb(21, 21, 21)) !important;
+        color: #ffffff !important;
+        font-weight: 500 !important;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 0px !important;
       }
       .subnav-item:not(:last-child)::after {
         content: "" !important;
@@ -4212,6 +4252,16 @@
         height: 32px !important;
         background: rgb(75, 75, 75) !important;
         pointer-events: none !important;
+      }
+
+      /* Fixed Top Content Offset */
+      .app-main,
+      #mainContent,
+      .main-wrapper,
+      #sportsViewContainer,
+      .sports-view-container {
+        padding-top: 154px !important;
+        box-sizing: border-box !important;
       }
 
       /* Responsive Match Details Overrides for Mobile (<= 768px) */
@@ -4249,10 +4299,12 @@
       .sidebar-backdrop {
         display: none;
         position: fixed;
-        inset: 0;
+        top: 60px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
         background: rgba(0,0,0,0.55);
-        z-index: 99998;
-        backdrop-filter: blur(2px);
+        z-index: 99990;
       }
       .sidebar-backdrop.show {
         display: block;
@@ -4336,20 +4388,21 @@
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        background: transparent !important;
-        color: #212529 !important;
-        font-weight: 400 !important;
-        font-size: 10px !important;
-        height: 18px !important;
-        margin: 6px 0 0 !important;
-        padding: 0 4px !important;
+        background: #ffc21d !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+        font-size: 11.5px !important;
+        height: 22px !important;
+        margin: 6px 6px 0 6px !important;
+        padding: 0 8px !important;
+        border-radius: 5px !important;
         overflow: hidden !important;
         letter-spacing: normal !important;
       }
       .news-ticker-container .marquee-text {
-        color: #212529 !important;
-        font-weight: 400 !important;
-        font-size: 10px !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+        font-size: 11.5px !important;
         white-space: nowrap !important;
       }
 
@@ -4368,171 +4421,176 @@
         box-sizing: border-box !important;
       }
 
-      /* White Heading Card */
-      .inplay-heading-card {
-        background: #ffffff !important;
-        height: 38px !important;
-        border-radius: 8px !important;
-        margin: 8px 10px 4px !important;
-        padding: 0 12px !important;
-        display: flex !important;
-        align-items: center !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
-        box-sizing: border-box !important;
-      }
-      .inplay-heading-card .heading-accent {
-        width: 6px !important;
-        height: 20px !important;
-        background: #ffc21d !important;
-        border-radius: 3px !important;
-        margin-right: 10px !important;
-      }
-      .inplay-heading-card .heading-title {
-        font-size: 15px !important;
-        font-weight: 700 !important;
-        color: #000000 !important;
-      }
-
-      /* Dark Accordion Header Bar */
+      /* Hide Synthetic Clutter Headings on Mobile (Reference shows match cards directly below tabs) */
+      .inplay-heading-card,
+      .inplay-sport-header,
       .cricket-accordion-header {
-        background: #111111 !important;
-        color: #ffc21d !important;
-        height: 36px !important;
-        border-radius: 8px 8px 0 0 !important;
-        margin: 6px 10px 0 !important;
-        padding: 0 14px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        font-size: 14px !important;
-        font-weight: 700 !important;
-        cursor: pointer !important;
-        box-sizing: border-box !important;
-      }
-      .cricket-accordion-header .chevron {
-        color: #ffffff !important;
-        font-size: 12px !important;
+        display: none !important;
       }
 
-      /* Match Rows Alternating Backgrounds & Spacing */
-      .sport-event-card {
-        margin: 0 10px 4px 10px !important;
-        border-radius: 8px !important;
-        padding: 8px 12px !important;
+      /* 1:1 Reference Match Cards */
+      .sport-event-card,
+      .inplay-match-card {
+        margin: 6px 10px 8px 10px !important;
+        border-radius: 12px !important;
+        padding: 10px 12px !important;
         box-sizing: border-box !important;
-        border: 1px solid rgba(0,0,0,0.05) !important;
-      }
-      .sport-event-card:nth-child(odd) {
+        border: 1px solid rgba(0,0,0,0.06) !important;
         background: #ffffff !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
       }
-      .sport-event-card:nth-child(even) {
-        background: #fcf4d9 !important;
+      .sport-event-card:nth-child(odd),
+      .sport-event-card:nth-child(even),
+      .inplay-match-card:nth-child(odd),
+      .inplay-match-card:nth-child(even) {
+        background: #ffffff !important;
       }
 
       /* LIVE Badge */
+      .live-wrapper {
+        width: 36px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+      }
+      .live-badge,
       .live-badge-capsule {
-        background: #66cc00 !important;
+        background: #55b80b !important;
         color: #ffffff !important;
-        font-size: 10px !important;
+        font-size: 9px !important;
         font-weight: 800 !important;
-        padding: 2px 8px !important;
+        padding: 2px 6px !important;
         border-radius: 10px !important;
-        display: inline-block !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         line-height: 1.2 !important;
+        letter-spacing: 0.4px !important;
+        flex-shrink: 0 !important;
+      }
+
+      /* Runners & Tourney subtitle */
+      .market-name-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        padding: 0 4px !important;
+      }
+      .def-runners-side {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        text-align: center !important;
+      }
+      .def-runner-team {
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: #111111 !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        line-height: 15px !important;
+        word-break: break-word !important;
+      }
+      .def-runner-team.text-right {
+        text-align: right !important;
+      }
+      .def-runner-team.text-left {
+        text-align: left !important;
+      }
+      .vs-badge {
+        font-size: 9.5px !important;
+        font-weight: 800 !important;
+        color: #b8860b !important;
+        background: #fdf3d0 !important;
+        padding: 1px 5px !important;
+        border-radius: 4px !important;
+        flex-shrink: 0 !important;
+      }
+      .competition-name {
+        display: block !important;
+        text-align: center !important;
+        font-size: 10px !important;
+        font-weight: 600 !important;
+        color: #555555 !important;
+        text-transform: uppercase !important;
+        margin: 2px 0 0 0 !important;
+        letter-spacing: 0.3px !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
       }
 
       /* B / F / M Yellow Tag Column */
       .bfm-container {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 2px !important;
+        display: none !important;
       }
-      .bfm-tags-row {
-        display: flex !important;
-        gap: 3px !important;
-      }
-      .bfm-tag {
-        background: #ffc21d !important;
-        color: #000000 !important;
-        font-size: 10px !important;
-        font-weight: 800 !important;
-        border-radius: 4px !important;
-        padding: 1px 5px !important;
-        min-width: 16px !important;
-        text-align: center !important;
-      }
-      .bfm-labels-row {
-        display: flex !important;
-        gap: 7px !important;
-        font-size: 9px !important;
-        font-weight: 700 !important;
-        color: #333333 !important;
+      .bfm-wrapper {
+        display: none !important;
       }
 
-      /* Odds Cells Grid */
+      /* 6 Odds Boxes in a Single Balanced Row */
+      .def-game-box-right,
       .odds-grid-row {
         display: flex !important;
+        width: 100% !important;
         gap: 4px !important;
-        align-items: center !important;
+        justify-content: space-between !important;
+        margin-top: 6px !important;
       }
+      .sp-b {
+        display: flex !important;
+        flex: 1 !important;
+        gap: 4px !important;
+      }
+      .box,
       .odds-box {
-        width: 44px !important;
+        flex: 1 !important;
         height: 38px !important;
         border-radius: 6px !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        font-size: 12px !important;
+        font-size: 13px !important;
         font-weight: 700 !important;
         cursor: pointer !important;
         box-sizing: border-box !important;
+        padding: 2px !important;
       }
+      .box.special-a,
       .odds-box.back {
-        background: #aed8f2 !important;
+        background: #a5d8f7 !important;
         color: #000000 !important;
       }
+      .box.special-b,
       .odds-box.lay {
-        background: #f8bbd0 !important;
+        background: #f8d0de !important;
         color: #000000 !important;
       }
+      .box.empty-odd,
       .odds-box.empty {
-        background: #aed8f2 !important;
-        opacity: 0.7 !important;
-        color: #000000 !important;
+        opacity: 0.8 !important;
       }
-      .odds-box.lay.empty {
-        background: #f8bbd0 !important;
-        opacity: 0.7 !important;
-        color: #000000 !important;
-      }
+      .box .amount-below p,
       .odds-box .vol {
         font-size: 9.5px !important;
         font-weight: 500 !important;
         color: #444444 !important;
+        margin: 0 !important;
       }
 
-      /* Floating Yellow Chat Button */
+      /* Floating Yellow Chat Button - Removed to match reference */
       .floating-yellow-chat-btn {
-        position: fixed !important;
-        bottom: 75px !important;
-        right: 12px !important;
-        width: 44px !important;
-        height: 44px !important;
-        background: #ffc21d !important;
-        border-radius: 50% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-        z-index: 9995 !important;
-        cursor: pointer !important;
-      }
-      .floating-yellow-chat-btn svg {
-        width: 22px !important;
-        height: 22px !important;
-        fill: #0d1b3e !important;
+        display: none !important;
       }
 
 
@@ -4775,23 +4833,23 @@
         color: #ffffff !important;
       }
       .sport-badge-live {
-        background: #111111 !important;
-        color: #ffffff !important;
-        border-radius: 8px !important;
+        background: #ffffff !important;
+        color: #111111 !important;
+        border-radius: 4px 0 0 4px !important;
         padding: 1px 5px !important;
         font-size: 11px !important;
         font-weight: 800 !important;
         line-height: 1.2 !important;
       }
       .sport-badge-upcoming {
-        background: #e6a800 !important;
-        color: #111111 !important;
-        border-radius: 8px !important;
+        background: #000000 !important;
+        color: #ffffff !important;
+        border-radius: 0 4px 4px 0 !important;
         padding: 1px 5px !important;
         font-size: 11px !important;
         font-weight: 800 !important;
         line-height: 1.2 !important;
-        margin-left: 1px !important;
+        margin-left: 0 !important;
       }
       .sport-pill-btn.dark .sport-badge-upcoming {
         background: #ffc21d !important;
@@ -4905,67 +4963,36 @@
       }
 
       /* DEDICATED AUTHENTIC MOBILE MENU DRAWER (app-menuitems) */
+      /* DEDICATED AUTHENTIC MOBILE MENU DRAWER (1:1 Reference Parity) */
       .mobile-drawer {
         position: fixed;
-        top: 0;
+        top: 60px !important;
         bottom: 0;
         left: 0;
-        width: min(320px, 86vw);
-        background: #f4f0da;
+        width: 246px !important;
+        background: #f4f0da !important;
         z-index: 99999;
         transform: translateX(-105%);
         transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         display: flex;
         flex-direction: column;
-        box-shadow: 4px 0 25px rgba(0, 0, 0, 0.45);
-        border-right: 1px solid #dcd3b8;
+        box-shadow: none !important;
+        border-right: none !important;
+        padding-top: 14px !important;
+        box-sizing: border-box !important;
       }
       .mobile-drawer.show {
         transform: translateX(0);
       }
       .mobile-drawer-header {
-        position: sticky;
-        top: 0;
-        z-index: 3;
-        background: #ffc21d;
-        padding: 10px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
-        gap: 8px;
-      }
-      .mobile-drawer-logo img {
-        height: 30px;
-        object-fit: contain;
-      }
-      .mobile-drawer-deposit {
-        background: #02a425;
-        color: #fff;
-        border: none;
-        padding: 5px 12px;
-        border-radius: 4px;
-        font-size: 11.5px;
-        font-weight: 700;
-        cursor: pointer;
-        white-space: nowrap;
-      }
-      .mobile-drawer-close {
-        background: none;
-        border: none;
-        font-size: 26px;
-        color: #000;
-        cursor: pointer;
-        line-height: 1;
-        padding: 0 4px;
-        font-weight: 700;
+        display: none !important;
       }
       .mobile-drawer-tabs {
         display: flex;
-        background: #f4f0da;
-        padding: 8px 10px;
+        background: transparent;
+        padding: 0 8px 8px 8px;
         gap: 8px;
-        border-bottom: 1px solid #dcd3b8;
+        border-bottom: none;
       }
       .mobile-drawer-tab-btn {
         flex: 1;
@@ -4974,19 +5001,21 @@
         align-items: center;
         justify-content: center;
         background: #ffffff;
-        padding: 6px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #222;
-        border: 1px solid #e0d8bf;
+        padding: 7px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #999999;
+        border: none;
         cursor: pointer;
-        gap: 2px;
+        gap: 3px;
+        height: 52px;
+        box-sizing: border-box;
       }
       .mobile-drawer-tab-btn.active {
-        background: #ffc21d;
-        border-color: #ffb400;
-        color: #000;
+        background: #ffc11c;
+        color: #000000;
+        font-weight: 700;
       }
       .mobile-drawer-tab-btn img {
         width: 22px;
@@ -4994,127 +5023,73 @@
         object-fit: contain;
       }
       .mobile-drawer-search {
-        padding: 8px 10px;
-        background: #f4f0da;
-        border-bottom: 1px solid #dcd3b8;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        padding: 0 8px 8px 8px;
+        background: transparent;
+        border-bottom: none;
+      }
+      .mobile-drawer-search .search-wrap {
+        position: relative;
+        width: 100%;
       }
       .mobile-drawer-search input {
-        border: 1px solid #c9be9a;
-        border-radius: 6px;
-        padding: 7px 10px;
+        border: 1px solid #e2e2e2;
+        border-radius: 10px;
+        padding: 7px 10px 7px 34px;
         font-size: 12px;
         width: 100%;
         outline: none;
         background: #ffffff;
-        color: #212529;
+        color: #000000;
+        box-sizing: border-box;
+      }
+      .mobile-drawer-search .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
       }
       .mobile-drawer-scrollable {
         flex: 1;
         overflow-y: auto;
-        padding: 8px 10px;
-        background: #f4f0da;
+        padding: 0 8px 14px 8px;
+        background: transparent;
       }
       .drawer-group-list {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 2px;
       }
       .drawer-sport-item {
-        background: #ffffff;
-        border: 1px solid #e2dabf;
-        border-radius: 8px;
-        padding: 9px 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 13px;
-        font-weight: 700;
-        color: #212529;
-        cursor: pointer;
-        transition: background 0.15s;
+        background: #ffffff !important;
+        border: none !important;
+        border-radius: 15px !important;
+        padding: 6px 12px !important;
+        margin: 4px 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #111010 !important;
+        cursor: pointer !important;
+        box-shadow: none !important;
+        height: 40px !important;
+        box-sizing: border-box !important;
       }
-      .drawer-sport-item:active, .drawer-sport-item.active {
-        background: #fff8e1;
-        border-color: #ffc21d;
+      .drawer-sport-item .sports-icon-img {
+        width: 20px !important;
+        height: 20px !important;
+        object-fit: contain !important;
+        margin-right: 10px !important;
+        flex-shrink: 0 !important;
       }
-      .drawer-sport-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .drawer-sport-left .sport-icon {
-        font-size: 16px;
-        width: 20px;
-        display: inline-block;
-        text-align: center;
-      }
-      .drawer-nested-menu {
-        display: none;
-        flex-direction: column;
-        background: #fdfcf7;
-        border-radius: 0 0 8px 8px;
-        border: 1px solid #e5dcbe;
-        border-top: none;
-        margin-top: -4px;
-        margin-bottom: 6px;
-        overflow: hidden;
-      }
-      .drawer-nested-menu.show {
-        display: flex;
-      }
-      .drawer-nested-item {
-        padding: 8px 14px 8px 40px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #444;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #f0ead6;
-        cursor: pointer;
-      }
-      .drawer-nested-item:active {
-        background: #fffae8;
-        color: #000;
-      }
-      .drawer-nested-item:last-child {
-        border-bottom: none;
-      }
-      .drawer-chevron {
-        font-size: 10px;
-        color: #888;
-        transition: transform 0.2s;
-      }
+      .drawer-sport-item .drawer-chevron,
+      .drawer-nested-menu,
       .mobile-drawer-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-top: 10px;
-        padding: 4px 0 20px;
-      }
-      .mobile-drawer-btn {
-        width: 100%;
-        padding: 9px;
-        border-radius: 6px;
-        font-size: 12.5px;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-      }
-      .mobile-drawer-btn.download {
-        background: linear-gradient(180deg, #ffdf5e, #ffb800);
-        color: #000;
-      }
-      .mobile-drawer-btn.logout {
-        background: #ffffff;
-        color: #d9534f;
-        border: 1px solid #dcd3b8;
+        display: none !important;
       }
 
       /* AUTHENTIC MOBILE SETTINGS BOTTOM SHEET */
@@ -8938,17 +8913,23 @@
     function toggleMobileDrawer() {
       const drawer = document.getElementById('mobileDrawer');
       const bd = document.getElementById('sidebarBackdrop');
-      if (drawer) drawer.classList.toggle('show');
-      if (bd) bd.classList.toggle('show');
+      const btn = document.getElementById('sidebarCollapse');
+      const isOpen = drawer && drawer.classList.toggle('show');
+      if (bd) bd.classList.toggle('show', Boolean(isOpen));
+      document.body.classList.toggle('mobile-drawer-open', Boolean(isOpen));
+      if (btn) btn.classList.toggle('is-open', Boolean(isOpen));
     }
 
     function closeMobileDrawer() {
       const drawer = document.getElementById('mobileDrawer');
       const bd = document.getElementById('sidebarBackdrop');
+      const btn = document.getElementById('sidebarCollapse');
       if (drawer) drawer.classList.remove('show');
       if (bd && !document.getElementById('mobileSettingsSheet')?.classList.contains('show')) {
         bd.classList.remove('show');
       }
+      document.body.classList.remove('mobile-drawer-open');
+      if (btn) btn.classList.remove('is-open');
     }
 
     function toggleMobileSidebar() {
@@ -10355,11 +10336,16 @@
           <div class="inplay-match-card default-game-box sport-event-card" style="background:${rowBg}; border-radius:10px; padding:8px 12px; margin:6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
             <!-- Left Side: Status/Date, Teams/Tourney, BFM Pin Badges -->
             <div class="default-game-box-left">
-              <div onclick="openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'all', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; overflow:hidden; cursor:pointer;" title="Click to view match details">
-                ${m.isLive ? '<span class="live-badge" style="background:#4cd964; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>' : `<span style="background:#ececec; color:#333333; font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:6px; flex-shrink:0;">${m.time || 'Upcoming'}</span>`}
-                <div class="def-runners-side" style="font-size:12px; font-weight:600; color:#111111; display:flex; align-items:center; gap:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                  <span class="def-runner-team">${m.team1}</span>
-                  ${m.team2 ? `<span class="vs-badge" style="font-size:9.5px; font-weight:800; color:#b8860b; background:#f5e29f; padding:1px 4px; border-radius:3px;">Vs</span><span class="def-runner-team">${m.team2}</span>` : ''}
+              <div onclick="openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'all', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; cursor:pointer;" title="Click to view match details">
+                <div class="live-wrapper">
+                  <span class="live-badge" style="background:#55b80b; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>
+                </div>
+                <div class="market-name-container" style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+                  <div class="def-runners-side" style="font-size:13px; font-weight:700; color:#111111; display:flex; align-items:center; justify-content:center; gap:6px; width:100%; min-width:0;">
+                    <span class="def-runner-team text-right">${m.team1}</span>
+                    ${m.team2 ? `<span class="vs-badge" style="font-size:9.5px; font-weight:800; color:#b8860b; background:#fdf3d0; padding:1px 5px; border-radius:4px;">Vs</span><span class="def-runner-team text-left">${m.team2}</span>` : ''}
+                  </div>
+                  ${m.competition ? `<div class="competition-name" style="font-size:10.5px; font-weight:700; color:#444444; text-transform:uppercase; margin-top:2px;">${m.competition}</div>` : ''}
                 </div>
               </div>
 
@@ -10532,6 +10518,12 @@
           </div>
           <div id="list-inplaySoccer" style="margin:0 10px; background:transparent;">
             ${soccerMatches.map((m, idx) => buildMatchRow(m, idx)).join('')}
+          </div>
+
+          <!-- Authentic Reference View More Link -->
+          <div class="mobile-view-more" style="text-align:center; padding:16px 0 10px; color:#e50914; font-size:14px; font-weight:700; cursor:pointer;" onclick="if (typeof selectSport === 'function') selectSport('cricket');">
+            View More
+            <div style="font-size:14px; margin-top:-2px; line-height:1;">&#x2304;</div>
           </div>
         `;
 
@@ -12137,171 +12129,110 @@
 
   <!-- DEDICATED AUTHENTIC MOBILE DRAWER (app-menuitems) -->
   <aside class="mobile-drawer" id="mobileDrawer">
-    <div class="mobile-drawer-header">
-      <div class="mobile-drawer-logo">
-        <img src="assets/images/logo.png" alt="SATSPORT">
-      </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <button class="mobile-drawer-deposit" onclick="openPromoModal('deposit')">+ Deposit</button>
-        <button class="mobile-drawer-close" onclick="closeMobileDrawer()">&times;</button>
-      </div>
-    </div>
-
-    <!-- Dual Mode Tabs inside Mobile Drawer -->
+    <!-- Authentic Dual Mode Tabs (Casino Left, Sports Right) -->
     <div class="mobile-drawer-tabs">
-      <button class="mobile-drawer-tab-btn active" id="drawerTabSports" onclick="switchDrawerMode('sports')">
-        <img src="assets/images/sports.webp" alt="Sports">
-        <span>Sports</span>
-      </button>
       <button class="mobile-drawer-tab-btn" id="drawerTabCasino" onclick="switchDrawerMode('casino')">
-        <img src="assets/images/casinos.webp" alt="Casino">
+        <img src="https://dabba.b-cdn.net/satsport247.app/casinos.webp" alt="Casino">
         <span>Casino</span>
       </button>
+      <button class="mobile-drawer-tab-btn active" id="drawerTabSports" onclick="switchDrawerMode('sports')">
+        <img src="https://dabba.b-cdn.net/satsport247.app/sports.webp" alt="Sports">
+        <span>Sports</span>
+      </button>
     </div>
 
-    <!-- Live Search Input -->
+    <!-- Authentic Search Input -->
     <div class="mobile-drawer-search">
-      <input type="text" placeholder="Search Market..." oninput="filterDrawerItems(this.value)" id="mobileDrawerSearchInput">
+      <div class="search-wrap">
+        <img src="https://daba.b-cdn.net/ssexch/mob/assets/images/sidebar-icons/searchside.svg" class="search-icon" alt="Search">
+        <input type="text" placeholder="Search Market.." oninput="filterDrawerItems(this.value)" id="mobileDrawerSearchInput">
+      </div>
     </div>
 
-    <!-- Scrollable Categories & Accordions -->
+    <!-- Scrollable Categories -->
     <div class="mobile-drawer-scrollable" id="mobileDrawerScrollable">
-      <!-- 1. SPORTS ACCORDION LIST -->
+      <!-- 1. SPORTS LIST (1:1 Reference Pills) -->
       <div class="drawer-group-list" id="drawerSportsGroup">
-        <!-- Cricket -->
-        <div class="drawer-sport-item active" onclick="toggleDrawerAccordion('cricket')">
-          <div class="drawer-sport-left">
-            <span class="sport-icon">🏏</span>
-            <span>Cricket</span>
-          </div>
-          <span class="drawer-chevron" id="drawerChev-cricket">▲</span>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('cricket', 'all')">
+          <img src="https://daba.b-cdn.net/satsports/cricket1.svg" class="sports-icon-img" alt="Cricket">
+          <span>Cricket</span>
         </div>
-        <div class="drawer-nested-menu show" id="drawerNested-cricket">
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'Indian Premier League')">Indian Premier League <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'One Day Internationals')">One Day Internationals <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'International Twenty20 Matches')">T20 Matches <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'ICC Champions Trophy')">ICC Champions Trophy <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('cricket', 'Caribbean Premier League')">Caribbean Premier League <span>›</span></div>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('soccer', 'all')">
+          <img src="https://dabba.b-cdn.net/satsports247.app/Soccer.svg" class="sports-icon-img" alt="Soccer">
+          <span>Soccer</span>
         </div>
-
-        <!-- Soccer -->
-        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('soccer')">
-          <div class="drawer-sport-left">
-            <span class="sport-icon">⚽</span>
-            <span>Soccer</span>
-          </div>
-          <span class="drawer-chevron" id="drawerChev-soccer">▼</span>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('soccer', 'fixtures')">
+          <img src="https://dabba.b-cdn.net/satsports247.app/Soccer.svg" class="sports-icon-img" alt="Soccer Fixtures">
+          <span>Soccer Fixtures</span>
         </div>
-        <div class="drawer-nested-menu" id="drawerNested-soccer">
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'English Premier League')">English Premier League <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'UEFA Champions League')">UEFA Champions League <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'Spanish La Liga')">Spanish La Liga <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'Italian Serie A')">Italian Serie A <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('soccer', 'German Bundesliga')">German Bundesliga <span>›</span></div>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('tennis', 'all')">
+          <img src="https://dabba.b-cdn.net/satsports247.app/Tennis.svg" class="sports-icon-img" alt="Tennis">
+          <span>Tennis</span>
         </div>
-
-        <!-- Soccer Fixtures -->
-        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('soccer', 'English Premier League')">
-          <div class="drawer-sport-left">
-            <span class="sport-icon">📅</span>
-            <span>Soccer Fixtures</span>
-          </div>
-          <span class="drawer-chevron">›</span>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('tennis', 'fixtures')">
+          <img src="https://dabba.b-cdn.net/satsports247.app/Tennis.svg" class="sports-icon-img" alt="Tennis Fixtures">
+          <span>Tennis Fixtures</span>
         </div>
-
-        <!-- Tennis -->
-        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('tennis')">
-          <div class="drawer-sport-left">
-            <span class="sport-icon">🎾</span>
-            <span>Tennis</span>
-          </div>
-          <span class="drawer-chevron" id="drawerChev-tennis">▼</span>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('horseracing', 'all')">
+          <img src="https://dabba.b-cdn.net/satsport/horse-racing.png" class="sports-icon-img" alt="Horse Racing">
+          <span>Horse Racing</span>
         </div>
-        <div class="drawer-nested-menu" id="drawerNested-tennis">
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'ATP Masters 1000')">ATP Masters 1000 <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'WTA Premier')">WTA Premier <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'Wimbledon Championships')">Wimbledon <span>›</span></div>
-          <div class="drawer-nested-item" onclick="selectSportFixtureAndClose('tennis', 'US Open')">US Open <span>›</span></div>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('horseracing', 'today')">
+          <img src="https://dabba.b-cdn.net/satsport/horse-racing.png" class="sports-icon-img" alt="Horse Race Todays Card">
+          <span>Horse Race Todays Card</span>
         </div>
-
-        <!-- Tennis Fixtures -->
-        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('tennis', 'ATP Masters 1000')">
-          <div class="drawer-sport-left">
-            <span class="sport-icon">📅</span>
-            <span>Tennis Fixtures</span>
-          </div>
-          <span class="drawer-chevron">›</span>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('greyhound', 'all')">
+          <img src="https://dabba.b-cdn.net/satsports247.app/dog.png" class="sports-icon-img" alt="Greyhound Racing">
+          <span>Greyhound Racing</span>
         </div>
-
-        <!-- Horse Racing -->
-        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('horseracing')">
-          <div class="drawer-sport-left">
-            <span class="sport-icon">🐎</span>
-            <span>Horse Racing</span>
-          </div>
-          <span class="drawer-chevron" id="drawerChev-horseracing">▼</span>
-        </div>
-        <div class="drawer-nested-menu" id="drawerNested-horseracing">
-          <div class="drawer-nested-item" onclick="selectSportAndClose('horseracing')">Horse Race Today's Card <span>›</span></div>
-        </div>
-
-        <!-- Greyhound Racing -->
-        <div class="drawer-sport-item" onclick="toggleDrawerAccordion('greyhound')">
-          <div class="drawer-sport-left">
-            <span class="sport-icon">🐕</span>
-            <span>Greyhound Racing</span>
-          </div>
-          <span class="drawer-chevron" id="drawerChev-greyhound">▼</span>
-        </div>
-        <div class="drawer-nested-menu" id="drawerNested-greyhound">
-          <div class="drawer-nested-item" onclick="selectSportAndClose('greyhound')">Greyhound Today's Card <span>›</span></div>
+        <div class="drawer-sport-item" onclick="selectSportFixtureAndClose('greyhound', 'today')">
+          <img src="https://dabba.b-cdn.net/satsports247.app/dog.png" class="sports-icon-img" alt="Greyhound Todays Card">
+          <span>Greyhound Todays Card</span>
         </div>
       </div>
 
-      <!-- 2. CASINO GROUP LIST -->
+      <!-- 2. CASINO LIST (Authentic Casino categories) -->
       <div class="drawer-group-list" id="drawerCasinoGroup" style="display: none;">
         <div class="drawer-sport-item" onclick="openCategoryAndClose('casino')">
-          <div class="drawer-sport-left"><span class="sport-icon">🎰</span><span>All Casinos</span></div>
-          <span class="drawer-chevron">›</span>
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94216.png" class="sports-icon-img" alt="Casino">
+          <span>Casino</span>
         </div>
-        <div class="drawer-sport-item" onclick="openCategoryAndClose('live-casino')">
-          <div class="drawer-sport-left"><span class="sport-icon">👩‍💼</span><span>Live Dealer Casino</span></div>
-          <span class="drawer-chevron">›</span>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('new-releases')">
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94217.png" class="sports-icon-img" alt="New Releases">
+          <span>New Releases</span>
         </div>
-        <div class="drawer-sport-item" onclick="openCategoryAndClose('slot')">
-          <div class="drawer-sport-left"><span class="sport-icon">🍒</span><span>Slots</span></div>
-          <span class="drawer-chevron">›</span>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('popular-games')">
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94218.png" class="sports-icon-img" alt="Popular Games">
+          <span>Popular Games</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('hot-games')">
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94219.png" class="sports-icon-img" alt="Hot Games">
+          <span>Hot Games</span>
         </div>
         <div class="drawer-sport-item" onclick="openCategoryAndClose('crash-games')">
-          <div class="drawer-sport-left"><span class="sport-icon">✈️</span><span>Crash &amp; Aviator</span></div>
-          <span class="drawer-chevron">›</span>
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94220.png" class="sports-icon-img" alt="Crash Games">
+          <span>Crash Games</span>
         </div>
         <div class="drawer-sport-item" onclick="openCategoryAndClose('indian-casino')">
-          <div class="drawer-sport-left"><span class="sport-icon">🪔</span><span>Indian Casino</span></div>
-          <span class="drawer-chevron">›</span>
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94221.png" class="sports-icon-img" alt="Indian Casino">
+          <span>Indian Casino</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('slot')">
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94222.png" class="sports-icon-img" alt="Slot Games">
+          <span>Slot Games</span>
         </div>
         <div class="drawer-sport-item" onclick="openCategoryAndClose('lottery-games')">
-          <div class="drawer-sport-left"><span class="sport-icon">🎱</span><span>Lottery Games</span></div>
-          <span class="drawer-chevron">›</span>
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94223.png" class="sports-icon-img" alt="Lottery Games">
+          <span>Lottery Games</span>
+        </div>
+        <div class="drawer-sport-item" onclick="openCategoryAndClose('live-casino')">
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94229.png" class="sports-icon-img" alt="Live Casinos">
+          <span>Live Casinos</span>
         </div>
         <div class="drawer-sport-item" onclick="openCategoryAndClose('table-games')">
-          <div class="drawer-sport-left"><span class="sport-icon">🃏</span><span>Table Games</span></div>
-          <span class="drawer-chevron">›</span>
+          <img src="https://dabba.b-cdn.net/satsport.co.in/banners/94238.png" class="sports-icon-img" alt="Table Games">
+          <span>Table Games</span>
         </div>
-        <div class="drawer-sport-item" onclick="openCategoryAndClose('esports')">
-          <div class="drawer-sport-left"><span class="sport-icon">🎮</span><span>Virtual Sports &amp; Esports</span></div>
-          <span class="drawer-chevron">›</span>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="mobile-drawer-actions">
-        <button class="mobile-drawer-btn download" onclick="window.open('https://daba.b-cdn.net/satsport.co.in/apk/Satsport.apk', '_blank')">
-          📲 Download Android App
-        </button>
-        <button class="mobile-drawer-btn logout" onclick="openMobileLogin(); closeMobileDrawer();">
-          🚪 Login / Register
-        </button>
       </div>
     </div>
   </aside>
