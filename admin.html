@@ -337,6 +337,281 @@
                 margin-right: auto;
             }
         }
+
+        /* ========================================================
+           AUTHENTIC MOBILE RESPONSIVE USER TABLE (1:1 REFERENCE)
+           ======================================================== */
+        .accounts-chart-summary-row {
+            display: none;
+        }
+        .user-child-row {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            /* Table Horizontal Scroll Container */
+            #tableLedger_wrapper {
+                overflow: visible !important;
+            }
+            #tableLedger_wrapper > .row:nth-child(2) > .col-sm-12,
+            #viewUsersList .col-sm-12 {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                margin-right: -20px !important;
+                padding-right: 20px !important;
+            }
+            table#tableLedger {
+                width: 526px !important;
+                min-width: 526px !important;
+                max-width: 526px !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+                background-color: #ffffff !important;
+            }
+
+            /* Hide Desktop Load Balance Button Row */
+            .desktop-only-load-row {
+                display: none !important;
+            }
+
+            /* Authentic Top Green Summary Row */
+            .accounts-chart-summary-row {
+                display: table-row !important;
+                background-color: #00b282 !important;
+            }
+            .accounts-chart-summary-row th {
+                background-color: #00b282 !important;
+                border: 1px solid #00936b !important;
+                color: #000000 !important;
+                font-size: 13.5px !important;
+                font-weight: 700 !important;
+                height: 41px !important;
+                padding: 6px 8px !important;
+                vertical-align: middle !important;
+                box-sizing: border-box !important;
+            }
+            .accounts-chart-summary-row th:nth-child(1) {
+                width: 111px !important;
+                min-width: 111px !important;
+                max-width: 111px !important;
+                text-align: left !important;
+            }
+            .accounts-chart-summary-row th:nth-child(2) {
+                width: 68px !important;
+                min-width: 68px !important;
+                max-width: 68px !important;
+            }
+            .accounts-chart-summary-row th:nth-child(3) {
+                width: 77px !important;
+                min-width: 77px !important;
+                max-width: 77px !important;
+                text-align: center !important;
+            }
+            .accounts-chart-summary-row th:nth-child(4),
+            .accounts-chart-summary-row th:nth-child(5),
+            .accounts-chart-summary-row th:nth-child(6),
+            .accounts-chart-summary-row th:nth-child(7),
+            .accounts-chart-summary-row th:nth-child(8),
+            .accounts-chart-summary-row th:nth-child(9) {
+                width: 45px !important;
+                min-width: 45px !important;
+                max-width: 45px !important;
+                text-align: center !important;
+            }
+
+            /* Table Header Columns on Mobile */
+            .accounts-chart-columns-row th {
+                background-color: #ffffff !important;
+                color: #23282c !important;
+                font-size: 14px !important;
+                font-weight: 700 !important;
+                height: 42px !important;
+                padding: 6px 8px !important;
+                vertical-align: middle !important;
+                text-align: center !important;
+                border: 1px solid #c8ced3 !important;
+                box-sizing: border-box !important;
+            }
+            .accounts-chart-columns-row th:nth-child(1) {
+                width: 111px !important;
+                min-width: 111px !important;
+                max-width: 111px !important;
+            }
+            .accounts-chart-columns-row th:nth-child(2) {
+                width: 68px !important;
+                min-width: 68px !important;
+                max-width: 68px !important;
+            }
+            .accounts-chart-columns-row th:nth-child(3) {
+                width: 77px !important;
+                min-width: 77px !important;
+                max-width: 77px !important;
+            }
+            .accounts-chart-columns-row th:nth-child(n+4) {
+                display: none !important;
+            }
+
+            /* User Main Row on Mobile */
+            .user-main-row td {
+                height: 42px !important;
+                padding: 6px 8px !important;
+                font-size: 14px !important;
+                color: #212529 !important;
+                border: 1px solid #c8ced3 !important;
+                vertical-align: middle !important;
+                box-sizing: border-box !important;
+            }
+            .user-main-row td:nth-child(1) {
+                width: 111px !important;
+                min-width: 111px !important;
+                max-width: 111px !important;
+                text-align: left !important;
+                font-weight: 700 !important;
+                cursor: pointer !important;
+            }
+            .user-main-row td:nth-child(2) {
+                width: 68px !important;
+                min-width: 68px !important;
+                max-width: 68px !important;
+                text-align: center !important;
+            }
+            .user-main-row td:nth-child(3) {
+                width: 77px !important;
+                min-width: 77px !important;
+                max-width: 77px !important;
+                text-align: left !important;
+            }
+            .user-main-row td:nth-child(n+4) {
+                display: none !important;
+            }
+            .user-main-row .desktop-info-btn-wrap {
+                display: none !important;
+            }
+
+            /* User Child Row (Expanded Details) */
+            .user-child-row {
+                display: none;
+            }
+            .user-child-row.show {
+                display: table-row !important;
+            }
+            .user-child-row td.child-details-cell {
+                background: #ffffff !important;
+                border: 1px solid #c8ced3 !important;
+                border-top: none !important;
+                padding: 10px 14px 14px 14px !important;
+                vertical-align: top !important;
+            }
+
+            /* Bullets & Expanded List Items */
+            ul.dtr-details {
+                list-style-type: disc !important;
+                margin: 0 !important;
+                padding-left: 20px !important;
+            }
+            ul.dtr-details li {
+                font-size: 14px !important;
+                color: #23282c !important;
+                line-height: 23px !important;
+                margin-bottom: 0px !important;
+            }
+            ul.dtr-details li .dtr-title {
+                font-weight: 600 !important;
+                color: #23282c !important;
+                margin-right: 4px !important;
+            }
+            ul.dtr-details li .dtr-data {
+                font-weight: 400 !important;
+                color: #23282c !important;
+            }
+
+            /* Mobile Options Buttons */
+            .options-li {
+                margin-top: 2px !important;
+            }
+            .options-line1 {
+                display: inline-flex !important;
+                gap: 5px !important;
+                vertical-align: middle !important;
+                margin-left: 5px !important;
+            }
+            .options-line2 {
+                margin-top: 5px !important;
+                display: block !important;
+            }
+
+            .btn-dtr {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                height: 32px !important;
+                border-radius: 4px !important;
+                font-size: 13px !important;
+                font-weight: 700 !important;
+                border: none !important;
+                text-decoration: none !important;
+                cursor: pointer !important;
+                line-height: 1 !important;
+            }
+            .btn-dtr-c {
+                width: 33px !important;
+                background-color: #e0a802 !important;
+                color: #000000 !important;
+                border: 1px solid #d49a00 !important;
+            }
+            .btn-dtr-edit {
+                width: 37px !important;
+                background-color: #00b281 !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-edit i {
+                font-size: 13px !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-l {
+                width: 31px !important;
+                background-color: #64c2dd !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-a {
+                width: 33px !important;
+                background-color: #55b877 !important;
+                color: #ffffff !important;
+            }
+
+            /* Centered Search Label and Input */
+            #tableLedger_filter {
+                text-align: center !important;
+                margin: 4px 0 12px 0 !important;
+                width: 100% !important;
+            }
+            #tableLedger_filter label {
+                display: block !important;
+                font-size: 15px !important;
+                color: #23282c !important;
+                font-weight: 500 !important;
+                margin-bottom: 6px !important;
+                width: 100% !important;
+            }
+            #tableLedger_filter input {
+                margin: 0 auto !important;
+                display: block !important;
+                width: 234px !important;
+                max-width: 90% !important;
+                height: 38px !important;
+                border: 1px solid #d2d6de !important;
+                border-radius: 4px !important;
+                padding: 4px 10px !important;
+                outline: none !important;
+                background: #ffffff !important;
+                font-size: 14px !important;
+            }
+
+            /* Hide Desktop Book Row on Mobile */
+            .desktop-book-row {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
@@ -1384,7 +1659,7 @@ Boland v Knights                        </a>
                                                 <div class="col-sm-12">
                                                     <table id="tableLedger" style="width: 100%;" class="display table table-bordered table-striped tbl-datatable1 dataTable no-footer dtr-inline">
                                                         <thead>
-                                                            <tr class="accounts-chart-head-bg">
+                                                            <tr class="accounts-chart-head-bg desktop-only-load-row">
                                                                 <th colspan="9">
                                                                     <img id="accountLoadGif" src="/img/preloader.gif" style="display: none; height: 18px;">
                                                                     <a href="" onclick="LoadFullAccounts(8730410, event); return false;" type="button" class="btn btn-warning">
@@ -1392,7 +1667,18 @@ Boland v Knights                        </a>
                                                                     </a>
                                                                 </th>
                                                             </tr>
-                                                            <tr>
+                                                            <tr class="accounts-chart-summary-row">
+                                                                <th>Total</th>
+                                                                <th></th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th></th>
+                                                            </tr>
+                                                            <tr class="accounts-chart-columns-row">
                                                                 <th>Username</th>
                                                                 <th>Type</th>
                                                                 <th>Credit</th>
@@ -2549,8 +2835,9 @@ Boland v Knights                        </a>
 
         // Preloaded Clients List
         var clientsList = [
-            { id: '8730421', username: 'Jimmy3221', type: 'Bettor', credit: '-', balance: '-', pl: '-', share: '-', exp: '-', avail: '-', active: true, domain: 'betproexch.com' },
-            { id: '8758678', username: 'Rana3471', type: 'Bettor', credit: '-', balance: '-', pl: '-', share: '-', exp: '-', avail: '-', active: true, domain: 'betproexch.com' }
+            { id: '8730410', username: 'Ramzan1295', type: 'Bettor', credit: '0', balance: '0', pl: '0', share: '85', exp: '0', avail: '0', active: true, domain: 'betproexch.com' },
+            { id: '8730421', username: 'Jimmy3221', type: 'Bettor', credit: '0', balance: '0 Rs.', pl: '0 Rs.', share: '0%', exp: '0 Rs.', avail: '0 Rs.', active: true, domain: 'betproexch.com' },
+            { id: '8758678', username: 'Rana3471', type: 'Bettor', credit: '0', balance: '0 Rs.', pl: '0 Rs.', share: '0%', exp: '0 Rs.', avail: '0 Rs.', active: true, domain: 'betproexch.com' }
         ];
 
         // Lifecycle & Routing
@@ -2844,15 +3131,17 @@ Boland v Knights                        </a>
             var tbody = document.getElementById('clientsTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            clientsList.forEach(function(client) {
+            clientsList.forEach(function(client, idx) {
                 var tr = document.createElement('tr');
                 tr.id = 'row-' + client.id;
+                tr.className = 'user-main-row';
                 tr.setAttribute('data-username', client.username);
+                tr.setAttribute('onclick', 'toggleMobileUserDetails(\'' + client.id + '\', event)');
                 tr.innerHTML = 
                     '<td>' +
                         '<strong>' + client.username + '</strong>' +
-                        '<span style="float:right;">' +
-                            '<button class="btn btn-sm" style="padding:0 4px; background:none; border:none; color:#73818f;" onclick="ShowBookRow(\'8730410\', \'' + client.id + '\')" title="Show Book Details">' +
+                        '<span class="desktop-info-btn-wrap" style="float:right;">' +
+                            '<button class="btn btn-sm" style="padding:0 4px; background:none; border:none; color:#73818f;" onclick="event.stopPropagation(); ShowBookRow(\'8730410\', \'' + client.id + '\')" title="Show Book Details">' +
                                 '<i class="fas fa-info-circle flag-icon-sm"></i>' +
                             '</button>' +
                         '</span>' +
@@ -2874,17 +3163,44 @@ Boland v Knights                        </a>
                         '<a class="btn btn-info btn-sm" href="/Accounts/Ledger?id=' + client.id + '" onclick="navigateAdmin(\'/Accounts/Ledger?id=' + client.id + '\', event)">' +
                             '<strong>L</strong>' +
                         '</a> ' +
-                        '<button class="btn btn-outline-danger btn-sm" onclick="toggleUserStatus(this)" title="Toggle Active/Inactive">' +
-                            '<strong>D</strong>' +
+                        '<button class="btn btn-success btn-sm btn-status-toggle" onclick="event.stopPropagation(); toggleUserStatus(this)" title="Toggle Active/Inactive">' +
+                            '<strong>' + (client.active ? 'A' : 'D') + '</strong>' +
                         '</button>' +
                     '</td>';
                 tbody.appendChild(tr);
 
-                // Book Row (collapsible)
+                // Mobile Expanded Details Row (1:1 Reference Layout)
+                var childTr = document.createElement('tr');
+                childTr.id = 'child-' + client.id;
+                childTr.className = (idx === 0) ? 'user-child-row show' : 'user-child-row';
+                childTr.innerHTML = 
+                    '<td colspan="3" class="child-details-cell">' +
+                        '<ul class="dtr-details">' +
+                            '<li><span class="dtr-title">Balance</span> <span class="dtr-data">' + client.balance + '</span></li>' +
+                            '<li><span class="dtr-title">Client (P/L)</span> <span class="dtr-data">' + client.pl + '</span></li>' +
+                            '<li><span class="dtr-title">Share</span> <span class="dtr-data">' + client.share + '</span></li>' +
+                            '<li><span class="dtr-title">Exposure</span> <span class="dtr-data">' + client.exp + '</span></li>' +
+                            '<li><span class="dtr-title">Available Balance</span> <span class="dtr-data">' + client.avail + '</span></li>' +
+                            '<li class="options-li">' +
+                                '<span class="dtr-title">Options</span>' +
+                                '<span class="options-line1">' +
+                                    '<a class="btn-dtr btn-dtr-c" href="/Accounts/Cash?id=' + client.id + '" onclick="event.stopPropagation(); popup_hawala(\'/Accounts/Cash\', \'' + client.id + '\', \'' + client.username + '\', event)"><strong>C</strong></a>' +
+                                    '<a class="btn-dtr btn-dtr-edit" href="/Users/Edit?id=' + client.id + '" onclick="event.stopPropagation(); navigateAdmin(\'/Users/Edit?id=' + client.id + '\', event)"><i class="fas fa-pencil-alt"></i></a>' +
+                                    '<a class="btn-dtr btn-dtr-l" href="/Accounts/Ledger?id=' + client.id + '" onclick="event.stopPropagation(); navigateAdmin(\'/Accounts/Ledger?id=' + client.id + '\', event)"><strong>L</strong></a>' +
+                                '</span>' +
+                                '<span class="options-line2">' +
+                                    '<button class="btn-dtr btn-dtr-a" onclick="event.stopPropagation(); toggleUserStatus(this)"><strong>' + (client.active ? 'A' : 'D') + '</strong></button>' +
+                                '</span>' +
+                            '</li>' +
+                        '</ul>' +
+                    '</td>';
+                tbody.appendChild(childTr);
+
+                // Book Row (collapsible for desktop)
                 var bookTr = document.createElement('tr');
                 bookTr.id = 'bookrow-' + client.id;
                 bookTr.style.display = 'none';
-                bookTr.className = 'bg-light';
+                bookTr.className = 'bg-light desktop-book-row';
                 bookTr.innerHTML = 
                     '<td colspan="9" style="padding:10px 15px;">' +
                         '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Currency:</strong> Rs. | <strong>Status:</strong> Active</small>' +
@@ -2894,6 +3210,14 @@ Boland v Knights                        </a>
 
             document.getElementById('sumUsersCount').innerText = clientsList.length;
             document.getElementById('tableLedger_info').innerText = 'Showing 1 to ' + clientsList.length + ' of ' + clientsList.length + ' entries';
+        }
+
+        function toggleMobileUserDetails(id, e) {
+            if (window.innerWidth > 768) return;
+            var child = document.getElementById('child-' + id);
+            if (child) {
+                child.classList.toggle('show');
+            }
         }
 
         // Load Balance Simulation
