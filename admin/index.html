@@ -1,0 +1,3362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>BPEXCH</title>
+  <link rel="shortcut icon" href="assets/admin/b2.jpg">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <style>
+    /* ==========================================================================
+       AUTHENTIC 1:1 BPEXCH ADMIN STYLES (MATCHING LIVE REFERENCE BPEXCH.ORG)
+       ========================================================================== */
+    :root {
+      --primary: #00b181;
+      --primary-hover: #4dbd74;
+      --header-bg: #254465;
+      --sidebar-bg: #254465;
+      --sidebar-active: #1b324b;
+      --body-bg: #eef1f5;
+      --card-bg: #ffffff;
+      --card-border: #c2cfd6;
+      --text-main: #3e5569;
+      --border-color: #d1d4d7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #23282c;
+      background-color: var(--body-bg);
+      text-align: left;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.15s ease-in-out;
+    }
+    a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    /* ==========================================================================
+       1. AUTHENTIC LOGIN SCREEN (bpexch.org/Users/Login)
+       ========================================================================== */
+    .login-container-wrap {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #1a1a1a;
+      background-image: url('assets/admin/bg-diamonds2.png');
+      background-repeat: repeat;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wrap-login100 {
+      width: 390px;
+      max-width: 90%;
+      background: linear-gradient(to bottom, #3e6d8d, #121d30) !important;
+      border-radius: 10px;
+      padding: 35px 30px 40px 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .login100-form-logo {
+      display: flex;
+      justify-content: center;
+      margin-top: -15px;
+      margin-bottom: 25px;
+    }
+
+    .login-logo-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: #5ce1e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .login-logo-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .login-input-group {
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .login-input-group i {
+      color: #ffffff;
+      font-size: 15px;
+      margin-right: 12px;
+      width: 16px;
+      text-align: center;
+    }
+
+    .login-input-group input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-size: 14px;
+      padding: 8px 0;
+    }
+
+    .login-input-group input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    .login100-form-btn-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .login100-form-btn {
+      width: 120px;
+      height: 42px;
+      border-radius: 21px;
+      background: linear-gradient(to top, #121d30, #3e6d8d);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3), 0 6px 20px 0 rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
+    }
+
+    .login100-form-btn:hover {
+      background: linear-gradient(to top, #182740, #4b84aa);
+      transform: translateY(-1px);
+    }
+
+    .login-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background-color: #4dbd74;
+    }
+
+    .login-error-msg {
+      color: #ff6b6b;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 14px;
+      display: none;
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       2. AUTHENTIC ADMIN PORTAL LAYOUT
+       ========================================================================== */
+    .app-admin {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* TOP HEADER */
+    .app-header {
+      height: 55px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #c2cfd6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-brand {
+      font-size: 20px;
+      font-weight: 800;
+      color: #00b181;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #73818f;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .hamburger-btn:hover {
+      color: #23282c;
+    }
+
+    .header-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header-nav-links a {
+      color: #73818f;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: 3px;
+    }
+
+    .header-nav-links a:hover,
+    .header-nav-links a.active {
+      color: #00b181;
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-balances-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: #23282c;
+      background-color: #f0f3f5;
+      padding: 5px 12px;
+      border-radius: 4px;
+      border: 1px solid #c2cfd6;
+    }
+
+    .header-balances-strip strong {
+      color: #00b181;
+    }
+
+    .user-dropdown-wrap {
+      position: relative;
+    }
+
+    .user-dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid #c2cfd6;
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #23282c;
+      cursor: pointer;
+      background-color: #ffffff;
+    }
+
+    .user-dropdown-btn:hover {
+      border-color: #00b181;
+      color: #00b181;
+    }
+
+    .user-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 5px;
+      background: #ffffff;
+      border: 1px solid #c2cfd6;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      min-width: 170px;
+      display: none;
+      flex-direction: column;
+      z-index: 1050;
+      overflow: hidden;
+    }
+
+    .user-dropdown-menu.show {
+      display: flex;
+    }
+
+    .user-dropdown-menu a {
+      padding: 8px 14px;
+      font-size: 13px;
+      color: #23282c;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .user-dropdown-menu a:hover {
+      background-color: #eef1f5;
+      color: #00b181;
+    }
+
+    .user-dropdown-menu .dropdown-divider {
+      height: 1px;
+      background-color: #e4e7ea;
+      margin: 4px 0;
+    }
+
+    /* BREADCRUMB BAR */
+    .breadcrumb-wrap {
+      background-color: #ffffff;
+      border-bottom: 1px solid #c2cfd6;
+      padding: 6px 16px;
+      font-size: 12px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+
+    .breadcrumb-item + .breadcrumb-item {
+      padding-left: 0.5rem;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+      display: inline-block;
+      padding-right: 0.5rem;
+      color: #73818f;
+      content: "/";
+    }
+
+    .breadcrumb-item.active {
+      color: #73818f;
+      font-weight: 600;
+    }
+
+    /* BODY CONTAINER */
+    .app-body {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* LEFT SIDEBAR */
+    .app-sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      min-height: calc(100vh - 55px);
+      transition: width 0.2s ease, transform 0.2s ease;
+      z-index: 1010;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-item {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      color: #cad1d8;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-item.active > .sidebar-link {
+      background-color: var(--sidebar-active);
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .sidebar-link i.nav-icon {
+      width: 24px;
+      font-size: 14px;
+      margin-right: 10px;
+      text-align: center;
+      color: #5ce1e6;
+    }
+
+    .sidebar-item.open > .sidebar-submenu {
+      display: block;
+    }
+
+    .sidebar-submenu {
+      display: none;
+      list-style: none;
+      background-color: #1b324b;
+      padding: 4px 0;
+      margin: 0;
+    }
+
+    .sidebar-submenu a {
+      display: flex;
+      align-items: center;
+      padding: 6px 16px 6px 48px;
+      color: #a4b7cd;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .sidebar-submenu a:hover {
+      color: #ffffff;
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .sidebar-badge {
+      margin-left: auto;
+      background-color: #00b181;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    /* MAIN CONTENT */
+    .app-main {
+      flex: 1;
+      padding: 16px;
+      background-color: var(--body-bg);
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    /* CARDS */
+    .admin-card, .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    }
+
+    .admin-card-header, .card-header {
+      padding: 10px 16px;
+      background-color: #f0f3f5;
+      border-bottom: 1px solid var(--card-border);
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #23282c;
+    }
+
+    .admin-card-header.bg-primary, .card-header.bg-primary {
+      background-color: #20a8d8 !important;
+      color: #ffffff;
+    }
+
+    .admin-card-header.bg-danger, .card-header.bg-danger {
+      background-color: #f86c6b !important;
+      color: #ffffff;
+    }
+
+    .admin-card-body, .card-body {
+      padding: 16px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      line-height: 1.2;
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+
+    .btn-primary {
+      background-color: #20a8d8;
+      border-color: #20a8d8;
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background-color: #1985ac;
+      border-color: #1985ac;
+      color: #ffffff;
+    }
+
+    .btn-outline-primary {
+      background-color: transparent;
+      border-color: #20a8d8;
+      color: #20a8d8;
+    }
+    .btn-outline-primary:hover,
+    .btn-outline-primary.active {
+      background-color: #20a8d8;
+      color: #ffffff;
+    }
+
+    .btn-warning {
+      background-color: #ffc107;
+      border-color: #ffc107;
+      color: #212529;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+
+    .btn-info {
+      background-color: #63c2de;
+      border-color: #63c2de;
+      color: #ffffff;
+    }
+    .btn-info:hover {
+      background-color: #43b5d6;
+    }
+
+    .btn-danger {
+      background-color: #f86c6b;
+      border-color: #f86c6b;
+      color: #ffffff;
+    }
+    .btn-danger:hover {
+      background-color: #f64846;
+    }
+
+    .btn-outline-danger {
+      background-color: transparent;
+      border-color: #f86c6b;
+      color: #f86c6b;
+    }
+    .btn-outline-danger:hover {
+      background-color: #f86c6b;
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background-color: #c2cfd6;
+      border-color: #a4b7cd;
+      color: #23282c;
+    }
+    .btn-secondary:hover {
+      background-color: #a4b7cd;
+    }
+
+    /* ACTION BADGES IN USERS TABLE */
+    .badge-square {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 11px;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .badge-c { background-color: #ffc107; color: #212529; }
+    .badge-edit { background-color: #20a8d8; }
+    .badge-ledger { background-color: #63c2de; }
+    .badge-active { background-color: #4dbd74; }
+    .badge-inactive { background-color: transparent; border: 1px solid #f86c6b; color: #f86c6b; }
+
+    /* TABLES */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 12px;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+    }
+
+    .admin-table th,
+    .admin-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .admin-table th {
+      background-color: #f0f3f5;
+      font-weight: 700;
+      color: #23282c;
+    }
+
+    .admin-table tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .admin-table tr.bg-primary th {
+      background-color: #20a8d8;
+      color: #ffffff;
+    }
+
+    .admin-table tr.bg-danger th {
+      background-color: #f86c6b;
+      color: #ffffff;
+    }
+
+    /* FORMS */
+    .form-control {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #495057;
+      background-color: #ffffff;
+      border: 1px solid #c2cfd6;
+      border-radius: 3px;
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: #00b181;
+      box-shadow: 0 0 0 2px rgba(0,177,129,0.2);
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #3e5569;
+      margin-bottom: 4px;
+      display: inline-block;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .input-group-prepend,
+    .input-group-append {
+      display: flex;
+    }
+
+    .input-group-text {
+      display: flex;
+      align-items: center;
+      padding: 6px 10px;
+      font-size: 12px;
+      background-color: #e4e7ea;
+      border: 1px solid #c2cfd6;
+      color: #5c6873;
+    }
+
+    .input-group .form-control {
+      flex: 1;
+    }
+
+    /* PILLS BAR FOR REPORTS */
+    .report-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    /* MARKET ODDS LADDER */
+    .market-odds-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .market-odds-table th,
+    .market-odds-table td {
+      border: 1px solid #d1d4d7;
+      padding: 6px;
+    }
+
+    .runner-name-col {
+      text-align: left !important;
+      font-weight: 700;
+      width: 35%;
+    }
+
+    .cell-back {
+      background-color: #b2d7ff;
+      color: #0c4a6e;
+      cursor: pointer;
+    }
+    .cell-back:hover {
+      background-color: #90c2ff;
+    }
+
+    .cell-lay {
+      background-color: #ffccd5;
+      color: #881337;
+      cursor: pointer;
+    }
+    .cell-lay:hover {
+      background-color: #ffb3c1;
+    }
+
+    .odd-price {
+      font-weight: 700;
+      font-size: 13px;
+      display: block;
+    }
+
+    .odd-size {
+      font-size: 10px;
+      opacity: 0.8;
+      display: block;
+    }
+
+    /* 2FA SWITCH */
+    .switch-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #f86c6b;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #4dbd74;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    /* MODAL */
+    .admin-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 1060;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-modal-content {
+      background: #ffffff;
+      border-radius: 4px;
+      max-width: 650px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .admin-modal-header {
+      padding: 12px 16px;
+      background-color: #f0f3f5;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .admin-modal-body {
+      padding: 16px;
+    }
+
+    .admin-modal-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #f8f9fa;
+    }
+
+    /* TOAST NOTICE */
+    .toast-notice {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #254465;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1070;
+      font-size: 13px;
+      border-left: 4px solid #00b181;
+    }
+
+    /* FOOTER */
+    .admin-footer {
+      height: 30px;
+      background-color: #ffffff;
+      border-top: 1px solid #c2cfd6;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 11px;
+      color: #73818f;
+      font-weight: 600;
+    }
+
+    /* RESPONSIVE MEDIA QUERIES (390x844 etc) */
+    @media (max-width: 991.98px) {
+      .app-sidebar {
+        position: fixed;
+        top: 55px;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+      }
+
+      body.sidebar-open .app-sidebar {
+        transform: translateX(0);
+      }
+
+      .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 55px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1005;
+      }
+
+      body.sidebar-open .sidebar-backdrop {
+        display: block;
+      }
+
+      .header-nav-links {
+        display: none;
+      }
+
+      .header-balances-strip {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="app">
+
+  <!-- ==========================================================================
+       LOGIN VIEW (bpexch.org/Users/Login)
+       ========================================================================== -->
+  <div id="adminLoginScreen" class="login-container-wrap">
+    <div class="wrap-login100">
+      <div class="login100-form-logo">
+        <div class="login-logo-circle">
+          <img src="assets/admin/b2.jpg" alt="BPEXCH">
+        </div>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="event.preventDefault(); executeAdminLogin();">
+        <div class="login-input-group">
+          <i class="fa fa-user"></i>
+          <input type="text" id="user_Username" placeholder="Username" required autocomplete="username">
+        </div>
+
+        <div class="login-input-group">
+          <i class="fa fa-lock"></i>
+          <input type="password" id="user_Password" placeholder="Password" required autocomplete="current-password">
+        </div>
+
+        <div class="login100-form-btn-wrap">
+          <button type="submit" class="login100-form-btn">
+            Login
+          </button>
+        </div>
+
+        <div class="login-error-msg" id="errorBox">
+          Invalid username or password!
+        </div>
+      </form>
+      <div class="login-bottom-bar"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       AUTHENTIC ADMIN APP
+       ========================================================================== -->
+  <div id="adminAppContainer" class="app-admin" style="display: none;">
+    <!-- TOP HEADER -->
+    <header class="app-header">
+      <div class="header-left">
+        <button class="hamburger-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a href="/index" onclick="navigateAdmin('/index', event)" class="admin-brand">
+          BPEXCH
+        </a>
+        <ul class="header-nav-links">
+          <li><a href="/index" onclick="navigateAdmin('/index', event)" id="topNavDashboard" class="active">Dashboard</a></li>
+          <li><a href="/Accounts/Chart" onclick="navigateAdmin('/Accounts/Chart', event)" id="topNavUsers">Users</a></li>
+          <li><a href="/Markets/Liables" onclick="navigateAdmin('/Markets/Liables', event)" id="topNavPosition">Current Position</a></li>
+          <li><a href="/Reports/BookDetail" onclick="navigateAdmin('/Reports/BookDetail', event)" id="topNavReports">Reports</a></li>
+        </ul>
+      </div>
+
+      <div class="header-right">
+        <div class="header-balances-strip">
+          <span>Ahmii9090x (SuperMaster)</span>
+          <span>Cur: <strong>Rs.</strong></span>
+          <span>Bal: <strong>0</strong></span>
+          <span>Credit: <strong>0</strong></span>
+          <span>Net Exp: <strong>0</strong></span>
+          <span>Avail: <strong>0</strong></span>
+        </div>
+
+        <div class="user-dropdown-wrap">
+          <button class="user-dropdown-btn" onclick="toggleUserDropdown(event)">
+            <i class="fas fa-user-circle"></i>
+            <span>Ahmii9090x</span>
+            <i class="fas fa-caret-down"></i>
+          </button>
+          <div class="user-dropdown-menu" id="userDropdownMenu">
+            <a href="/Common/Profile" onclick="navigateAdmin('/Common/Profile', event)"><i class="fas fa-user"></i> Profile</a>
+            <a href="#" onclick="openMarketRulesModal(event)"><i class="fas fa-book"></i> Market Rules</a>
+            <a href="/Common/Profile" onclick="navigateAdmin('/Common/Profile', event)"><i class="fas fa-key"></i> Change Password</a>
+            <div class="dropdown-divider"></div>
+            <a href="/Users/Login" onclick="executeAdminLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- BREADCRUMB BAR (#breadcrumbcustom) -->
+    <div class="breadcrumb-wrap">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" id="breadcrumbcustom">
+          <li class="breadcrumb-item"><a href="/index" onclick="navigateAdmin('/index', event)"><i class="fas fa-home"></i> Home</a></li>
+          <li class="breadcrumb-item active" id="breadcrumbCurrent">Users</li>
+        </ol>
+      </nav>
+    </div>
+
+    <!-- BODY WITH SIDEBAR & MAIN -->
+    <div class="app-body">
+      <!-- MOBILE BACKDROP -->
+      <div class="sidebar-backdrop" onclick="closeSidebarMobile()"></div>
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="app-sidebar">
+        <ul class="sidebar-nav">
+          <li class="sidebar-item" id="sideNavDashboard">
+            <a href="/index" onclick="navigateAdmin('/index', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item" id="sideNavUsers">
+            <a href="/Accounts/Chart" onclick="navigateAdmin('/Accounts/Chart', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-users"></i>
+              <span>Users</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item" id="sideNavPosition">
+            <a href="/Markets/Liables" onclick="navigateAdmin('/Markets/Liables', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-funnel-dollar"></i>
+              <span>Current Position</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item" id="sideNavReports">
+            <a href="/Reports/BookDetail" onclick="navigateAdmin('/Reports/BookDetail', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-money-check"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item" id="sideNavBetLock">
+            <a href="/Markets/BetLocker" onclick="navigateAdmin('/Markets/BetLocker', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-unlock-alt"></i>
+              <span>Bet Lock</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item" id="sideNavStarCasino">
+            <a href="/Markets/Games" onclick="navigateAdmin('/Markets/Games', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-star"></i>
+              <span>Star Casino</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item" id="sideNavWorldCasino">
+            <a href="/Markets/WorldCasino" onclick="navigateAdmin('/Markets/WorldCasino', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-globe"></i>
+              <span>World Casino</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item" id="sideNavBetFairGames">
+            <a href="/Markets/ExGames" onclick="navigateAdmin('/Markets/ExGames', event)" class="sidebar-link">
+              <i class="nav-icon fas fa-dice"></i>
+              <span>BetFair Games</span>
+            </a>
+          </li>
+
+          <!-- SPORTS TREE ACCORDIONS -->
+          <li class="sidebar-item" id="accordionSoccer">
+            <div class="sidebar-link" onclick="toggleSidebarAccordion('accordionSoccer')">
+              <i class="nav-icon fas fa-futbol"></i>
+              <span>Soccer</span>
+              <i class="fas fa-chevron-right ml-auto" style="font-size:10px; opacity:0.6; margin-left:auto;"></i>
+            </div>
+            <ul class="sidebar-submenu">
+              <li><a href="/Markets/#!1.261925410" onclick="navigateAdmin('/Markets/#!1.261925410', event)">Northern Ireland v Hungary</a></li>
+              <li><a href="/Markets/#!1.262637795" onclick="navigateAdmin('/Markets/#!1.262637795', event)">Belgium v France</a></li>
+              <li><a href="/Markets/#!1.262004755" onclick="navigateAdmin('/Markets/#!1.262004755', event)">Sweden v Poland</a></li>
+            </ul>
+          </li>
+
+          <li class="sidebar-item" id="accordionTennis">
+            <div class="sidebar-link" onclick="toggleSidebarAccordion('accordionTennis')">
+              <i class="nav-icon fas fa-table-tennis"></i>
+              <span>Tennis</span>
+              <i class="fas fa-chevron-right ml-auto" style="font-size:10px; opacity:0.6; margin-left:auto;"></i>
+            </div>
+            <ul class="sidebar-submenu">
+              <li><a href="/Markets/#!1.263018260" onclick="navigateAdmin('/Markets/#!1.263018260', event)">Alcaraz v Sinner</a></li>
+              <li><a href="/Markets/#!1.263018261" onclick="navigateAdmin('/Markets/#!1.263018261', event)">Djokovic v Medvedev</a></li>
+            </ul>
+          </li>
+
+          <li class="sidebar-item open" id="accordionCricket">
+            <div class="sidebar-link" onclick="toggleSidebarAccordion('accordionCricket')">
+              <i class="nav-icon fas fa-baseball-ball"></i>
+              <span>Cricket</span>
+              <i class="fas fa-chevron-down ml-auto" style="font-size:10px; opacity:0.6; margin-left:auto;"></i>
+            </div>
+            <ul class="sidebar-submenu" style="display:block;">
+              <li><a href="/Markets/#!1.263018266" onclick="navigateAdmin('/Markets/#!1.263018266', event)"><strong>India v West Indies</strong></a></li>
+              <li><a href="/Markets/#!1.263018267" onclick="navigateAdmin('/Markets/#!1.263018267', event)">South Africa v Australia</a></li>
+              <li><a href="/Markets/#!1.263018268" onclick="navigateAdmin('/Markets/#!1.263018268', event)">Boland v Knights</a></li>
+            </ul>
+          </li>
+
+          <li class="sidebar-item" id="accordionGreyhound">
+            <div class="sidebar-link" onclick="toggleSidebarAccordion('accordionGreyhound')">
+              <i class="nav-icon fas fa-dog"></i>
+              <span>Greyhound</span>
+              <i class="fas fa-chevron-right ml-auto" style="font-size:10px; opacity:0.6; margin-left:auto;"></i>
+            </div>
+            <ul class="sidebar-submenu">
+              <li><a href="/Markets/#!1.263012782" onclick="navigateAdmin('/Markets/#!1.263012782', event)">Monmore (GB)</a></li>
+              <li><a href="/Markets/#!1.263017328" onclick="navigateAdmin('/Markets/#!1.263017328', event)">Harlow (GB)</a></li>
+            </ul>
+          </li>
+
+          <li class="sidebar-item" id="accordionHorse">
+            <div class="sidebar-link" onclick="toggleSidebarAccordion('accordionHorse')">
+              <i class="nav-icon fas fa-horse"></i>
+              <span>Horse Racing</span>
+              <i class="fas fa-chevron-right ml-auto" style="font-size:10px; opacity:0.6; margin-left:auto;"></i>
+            </div>
+            <ul class="sidebar-submenu">
+              <li><a href="/Markets/#!1.263014989" onclick="navigateAdmin('/Markets/#!1.263014989', event)">Towcester (GB)</a></li>
+              <li><a href="/Markets/#!1.263016469" onclick="navigateAdmin('/Markets/#!1.263016469', event)">Yarmouth (GB)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- MAIN ROUTED VIEWS -->
+      <main class="app-main">
+
+        <!-- ==========================================
+             VIEW 1: DASHBOARD (/index)
+             ========================================== -->
+        <div id="viewDashboard" class="admin-view-section">
+          <!-- Search Users Card -->
+          <div class="admin-card" id="Usersearchcustom">
+            <div class="admin-card-header">
+              <span><i class="fa fa-filter mr-1"></i> Search-Users</span>
+            </div>
+            <div class="admin-card-body" style="padding-bottom:12px;">
+              <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                <div style="max-width:350px; flex:1;">
+                  <input type="search" placeholder="Username" id="dashboardSearchUser" class="form-control" onkeyup="if(event.key==='Enter') searchUsersFromInput('dashboardSearchUser')">
+                </div>
+                <button type="button" class="btn btn-primary" onclick="searchUsersFromInput('dashboardSearchUser')">
+                  <i class="fa fa-search mr-1"></i> Search
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sport Highlights -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span>Sport Highlights</span>
+              <button class="btn btn-sm btn-primary" onclick="refreshSportHighlights()"><strong>Refresh</strong></button>
+            </div>
+            <div class="admin-card-body" style="padding:0;">
+              <div class="table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th colspan="3" style="background:#254465; color:#ffffff;">Soccer</th>
+                    </tr>
+                    <tr>
+                      <th>Match Name</th>
+                      <th>Time</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Belgium v France</strong></td>
+                      <td><span class="badge" style="background:#4dbd74; color:#fff; padding:2px 6px; border-radius:3px;">LIVE</span></td>
+                      <td><button class="btn btn-sm btn-primary" onclick="navigateAdmin('/Markets/#!1.262637795', event)">View Odds</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Northern Ireland v Hungary</strong></td>
+                      <td>Tonight 8:00 PM</td>
+                      <td><button class="btn btn-sm btn-primary" onclick="navigateAdmin('/Markets/#!1.261925410', event)">View Odds</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="table-responsive" style="margin-top:14px;">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th colspan="3" style="background:#254465; color:#ffffff;">Cricket</th>
+                    </tr>
+                    <tr>
+                      <th>Match Name</th>
+                      <th>Time</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>India v West Indies</strong></td>
+                      <td><span class="badge" style="background:#4dbd74; color:#fff; padding:2px 6px; border-radius:3px;">LIVE</span></td>
+                      <td><button class="btn btn-sm btn-primary" onclick="navigateAdmin('/Markets/#!1.263018266', event)">View Odds</button></td>
+                    </tr>
+                    <tr>
+                      <td><strong>South Africa v Australia</strong></td>
+                      <td>Tomorrow 2:00 PM</td>
+                      <td><button class="btn btn-sm btn-primary" onclick="navigateAdmin('/Markets/#!1.263018267', event)">View Odds</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 2: USERS / DOWNLINE (/Accounts/Chart)
+             ========================================== -->
+        <div id="viewUsers" class="admin-view-section" style="display: none;">
+          <!-- Search-Users Card (Exact Reference #Usersearchcustom) -->
+          <div class="admin-card" id="Usersearchcustom" style="margin-bottom: 12px;">
+            <div class="admin-card-header">
+              <i class="fa fa-filter mr-1"></i>
+              <strong>Search-Users</strong>
+            </div>
+            <div class="admin-card-body" style="padding:12px 16px;">
+              <form autocomplete="off" onsubmit="event.preventDefault(); filterUserTable(document.getElementById('myInput').value);" style="display:flex; gap:8px; align-items:center;">
+                <div class="input-group" style="max-width:320px; display:flex;">
+                  <input type="search" placeholder="Username" id="myInput" class="form-control" oninput="filterUserTable(this.value)" style="border-radius:4px 0 0 4px;">
+                  <button id="myBtn" type="button" class="btn btn-primary" onclick="filterUserTable(document.getElementById('myInput').value)" style="border-radius:0 4px 4px 0;">
+                    <i class="fa fa-search mr-1"></i> Search
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Summary Balances Table (Exact Reference #Tabletoreplace) -->
+          <div id="Tabletoreplace" class="admin-card" style="margin-bottom: 12px;">
+            <div class="admin-card-body" style="padding:0;">
+              <div class="table-responsive">
+                <table class="admin-table" style="text-align:center; font-size:13px; margin:0; width:100%;">
+                  <tbody>
+                    <tr style="background:#f0f3f5; font-weight:700;">
+                      <th style="padding:8px; text-align:center;">Credit Remaining</th>
+                      <th style="padding:8px; text-align:center;">Cash</th>
+                      <th style="padding:8px; text-align:center;">P/L Downline</th>
+                      <th style="padding:8px; text-align:center;">Users</th>
+                    </tr>
+                    <tr>
+                      <th style="padding:8px; text-align:center;">
+                        <a href="/accounts/ledger?accountId=9611025" onclick="show_popup('/accounts/ledger?accountId=9611025', 'Credit Remaining Ledger', event); return false;" style="color:#00b181; text-decoration:none;">
+                          <span class="position-plus" id="sumCreditRemaining">0</span>
+                        </a>
+                      </th>
+                      <th style="padding:8px; text-align:center;">
+                        <a href="/accounts/ledger?accountId=9611026" onclick="show_popup('/accounts/ledger?accountId=9611026', 'Cash Ledger', event); return false;" style="color:#00b181; text-decoration:none;">
+                          <span class="position-plus" id="sumCash">0</span>
+                        </a>
+                      </th>
+                      <th style="padding:8px; text-align:center;">
+                        <a href="/accounts/ledger?accountId=9611024" onclick="show_popup('/accounts/ledger?accountId=9611024', 'P/L Downline Ledger', event); return false;" style="color:#00b181; text-decoration:none;">
+                          <span class="position-plus" id="sumPLDownline">0</span>
+                        </a>
+                      </th>
+                      <th style="padding:8px; text-align:center;" id="sumUsersCount">2</th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Action Bar (Reference-First) -->
+          <div class="admin-card" style="margin-bottom: 12px;">
+            <div class="admin-card-body" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 16px;">
+              <div style="display:flex; gap:8px;">
+                <a href="/Users/Create" onclick="navigateAdmin('/Users/Create', event)" class="btn btn-sm btn-primary">
+                  <i class="fa fa-user-plus mr-1"></i> <strong>New User</strong>
+                </a>
+                <a href="/Accounts/Ledger" onclick="navigateAdmin('/Accounts/Ledger', event)" class="btn btn-sm btn-primary">
+                  <i class="fa fa-book mr-1"></i> <strong>Account Ledger</strong>
+                </a>
+              </div>
+
+              <!-- Authentic Reference Legend -->
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#5c6873;">
+                <span class="badge-square badge-c">C</span> Cash / Credit
+                <span class="badge-square badge-edit"><i class="fas fa-pencil-alt" style="font-size:10px;"></i></span> Edit
+                <span class="badge-square badge-ledger">L</span> Ledger
+                <span class="badge-square badge-active">A</span> Active
+                <span class="badge-square badge-inactive">D</span> InActive
+              </div>
+            </div>
+          </div>
+
+          <!-- Users Table Card -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span>Clients List under <strong>Ahmii9090x</strong></span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <label style="font-size:12px; margin:0;">Search:</label>
+                <input type="search" id="usersListSearchInput" class="form-control" style="width:160px; padding:3px 8px; font-size:12px;" oninput="filterUserTable(this.value)">
+              </div>
+            </div>
+
+            <div class="admin-card-body" style="padding:0;">
+              <div class="table-responsive">
+                <table class="admin-table" id="adminUsersTable">
+                  <thead>
+                    <tr class="accounts-chart-head-bg">
+                      <th colspan="9" style="background:#f8f9fa; padding:10px 16px;">
+                        <img id="accountLoadGif" src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif" style="display:none; height:18px; margin-right:8px;" alt="loading">
+                        <a href="#" onclick="loadDynamicBalances(event)" class="btn btn-warning btn-sm">
+                          <strong>Load Balance</strong>
+                        </a>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th style="width:18%;">Username</th>
+                      <th style="width:8%;">Type</th>
+                      <th style="width:8%;">Credit</th>
+                      <th style="width:8%;">Balance</th>
+                      <th style="width:10%;">Client (P/L)</th>
+                      <th style="width:8%;">Share</th>
+                      <th style="width:10%;">Exposure</th>
+                      <th style="width:14%;">Available Balance</th>
+                      <th style="width:16%; text-align:right;">Options</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminUsersTableBody">
+                    <!-- Row 1: Jimmy3221 -->
+                    <tr id="row-8730421" data-username="Jimmy3221">
+                      <td>
+                        <strong>Jimmy3221</strong>
+                        <span style="float:right;">
+                          <button class="btn btn-sm" style="padding:0 4px; background:none; border:none; color:#73818f;" onclick="ShowBookRow('8730410', '8730421')" title="Show Book Details">
+                            <i class="fas fa-info-circle"></i>
+                          </button>
+                        </span>
+                      </td>
+                      <td>Bettor</td>
+                      <td class="credit-cell">-</td>
+                      <td class="balance-cell">-</td>
+                      <td class="pl-cell">-</td>
+                      <td class="share-cell">-</td>
+                      <td class="exp-cell">-</td>
+                      <td class="avail-cell">-</td>
+                      <td align="right" style="padding-right:12px;">
+                        <div style="display:inline-flex; gap:4px;">
+                          <a class="btn btn-sm btn-warning" href="/Accounts/Cash?id=8730421" onclick="popup_hawala('/Accounts/Cash', '8730421', 'Jimmy3221', event)">
+                            <strong>C</strong>
+                          </a>
+                          <a class="btn btn-sm btn-primary" href="/Users/Edit?id=8730421" onclick="openEditUserView('Jimmy3221', '8730421', event)">
+                            <i class="fas fa-pencil-alt"></i>
+                          </a>
+                          <a class="btn btn-sm btn-info" href="/accounts/ledger?accountId=9611037" onclick="show_popup('/accounts/ledger?accountId=9611037', 'Jimmy3221 - Account Ledger', event)">
+                            <strong>L</strong>
+                          </a>
+                          <button class="btn btn-sm btn-outline-danger" onclick="toggleUserStatus(this)" title="Toggle Active/Inactive">
+                            <strong>D</strong>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <!-- Child Book Row for Jimmy3221 -->
+                    <tr id="bookrow-8730421" style="display:none; background:#f4f7f9;">
+                      <td colspan="9" style="padding:10px 16px;">
+                        <div style="font-size:12px; display:flex; gap:20px; align-items:center;">
+                          <span><i class="fas fa-id-card text-muted mr-1"></i> Account ID: <strong>8730421</strong></span>
+                          <span><i class="fas fa-globe text-muted mr-1"></i> Domain: <strong>betproexch.com</strong></span>
+                          <span><i class="fas fa-coins text-muted mr-1"></i> Currency: <strong>Rs.</strong></span>
+                          <span><i class="fas fa-chart-line text-muted mr-1"></i> Max Widthdraw: <strong id="jimmyMaxW">0 Rs.</strong></span>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <!-- Row 2: Rana3471 -->
+                    <tr id="row-8758678" data-username="Rana3471">
+                      <td>
+                        <strong>Rana3471</strong>
+                        <span style="float:right;">
+                          <button class="btn btn-sm" style="padding:0 4px; background:none; border:none; color:#73818f;" onclick="ShowBookRow('8730410', '8758678')" title="Show Book Details">
+                            <i class="fas fa-info-circle"></i>
+                          </button>
+                        </span>
+                      </td>
+                      <td>Bettor</td>
+                      <td class="credit-cell">-</td>
+                      <td class="balance-cell">-</td>
+                      <td class="pl-cell">-</td>
+                      <td class="share-cell">-</td>
+                      <td class="exp-cell">-</td>
+                      <td class="avail-cell">-</td>
+                      <td align="right" style="padding-right:12px;">
+                        <div style="display:inline-flex; gap:4px;">
+                          <a class="btn btn-sm btn-warning" href="/Accounts/Cash?id=8758678" onclick="popup_hawala('/Accounts/Cash', '8758678', 'Rana3471', event)">
+                            <strong>C</strong>
+                          </a>
+                          <a class="btn btn-sm btn-primary" href="/Users/Edit?id=8758678" onclick="openEditUserView('Rana3471', '8758678', event)">
+                            <i class="fas fa-pencil-alt"></i>
+                          </a>
+                          <a class="btn btn-sm btn-info" href="/accounts/ledger?accountId=9642632" onclick="show_popup('/accounts/ledger?accountId=9642632', 'Rana3471 - Account Ledger', event)">
+                            <strong>L</strong>
+                          </a>
+                          <button class="btn btn-sm btn-outline-danger" onclick="toggleUserStatus(this)" title="Toggle Active/Inactive">
+                            <strong>D</strong>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <!-- Child Book Row for Rana3471 -->
+                    <tr id="bookrow-8758678" style="display:none; background:#f4f7f9;">
+                      <td colspan="9" style="padding:10px 16px;">
+                        <div style="font-size:12px; display:flex; gap:20px; align-items:center;">
+                          <span><i class="fas fa-id-card text-muted mr-1"></i> Account ID: <strong>8758678</strong></span>
+                          <span><i class="fas fa-globe text-muted mr-1"></i> Domain: <strong>betproexch.com</strong></span>
+                          <span><i class="fas fa-coins text-muted mr-1"></i> Currency: <strong>Rs.</strong></span>
+                          <span><i class="fas fa-chart-line text-muted mr-1"></i> Max Widthdraw: <strong>0 Rs.</strong></span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Table Footer Details -->
+              <div style="padding:10px 16px; display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#73818f;">
+                <span id="showingUsersEntryText">Showing 1 to 2 of 2 entries</span>
+                <div>
+                  Total Registered Clients: <strong id="totalUsersCountCell">2</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 3: CREATE NEW USER (/Users/Create)
+             ========================================== -->
+        <div id="viewUsersCreate" class="admin-view-section" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span>Create New User under <strong>Ahmii9090x</strong></span>
+              <button class="btn btn-sm btn-outline-primary" onclick="navigateAdmin('/Accounts/Chart', event)">← Back to Clients List</button>
+            </div>
+            <div class="admin-card-body" style="max-width: 650px;">
+              <form id="createNewUserForm" onsubmit="handleCreateUserSubmit(event)">
+                <div class="form-group row" style="display:flex; margin-bottom:14px;">
+                  <label class="form-label" style="width:140px;">Username</label>
+                  <div style="flex:1;">
+                    <input type="text" class="form-control" id="newUserName" required placeholder="Username">
+                  </div>
+                </div>
+
+                <div class="form-group row" style="display:flex; margin-bottom:14px;">
+                  <label class="form-label" style="width:140px;">Password</label>
+                  <div style="flex:1;">
+                    <input type="password" class="form-control" id="newUserPass" required placeholder="Password">
+                    <small id="newUserPassErr" style="color:#f86c6b; display:none;">Min length is 8 characters and password must contain alphabets and numerics.</small>
+                  </div>
+                </div>
+
+                <div class="form-group row" style="display:flex; margin-bottom:14px;">
+                  <label class="form-label" style="width:140px;">Type</label>
+                  <div style="flex:1; display:flex; gap:16px; align-items:center;">
+                    <label style="cursor:pointer;"><input type="radio" name="newUserType" value="Master"> Master</label>
+                    <label style="cursor:pointer;"><input type="radio" name="newUserType" value="Bettor" checked> Bettor</label>
+                  </div>
+                </div>
+
+                <div class="form-group row" style="display:flex; margin-bottom:14px;">
+                  <label class="form-label" style="width:140px;">IsActive</label>
+                  <div style="flex:1; display:flex; align-items:center;">
+                    <input type="checkbox" id="newUserActive" checked style="width:18px; height:18px; cursor:pointer;">
+                  </div>
+                </div>
+
+                <div class="form-group row" style="display:flex; margin-bottom:14px;">
+                  <label class="form-label" style="width:140px;">Phone</label>
+                  <div style="flex:1;">
+                    <input type="text" class="form-control" id="newUserPhone" placeholder="Phone">
+                  </div>
+                </div>
+
+                <div class="form-group row" style="display:flex; margin-bottom:14px;">
+                  <label class="form-label" style="width:140px;">Reference</label>
+                  <div style="flex:1;">
+                    <input type="text" class="form-control" id="newUserRef" placeholder="Reference">
+                  </div>
+                </div>
+
+                <div class="form-group row" style="display:flex; margin-bottom:14px;">
+                  <label class="form-label" style="width:140px;">Notes</label>
+                  <div style="flex:1;">
+                    <textarea class="form-control" id="newUserNotes" rows="3" placeholder="Notes"></textarea>
+                  </div>
+                </div>
+
+                <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid #c2cfd6;">
+                  <button type="submit" class="btn btn-primary"><i class="fas fa-check mr-1"></i> Submit</button>
+                  <button type="button" class="btn btn-outline-primary" style="margin-left:8px;" onclick="navigateAdmin('/Accounts/Chart', event)">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 4: EDIT USER (/Users/Edit?id=...)
+             ========================================== -->
+        <div id="viewUsersEdit" class="admin-view-section" style="display: none;">
+          <!-- Top Subnav Bar (Exact 1:1 Reference) -->
+          <div class="admin-card">
+            <div class="admin-card-body" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                <button id="EditBtn" class="btn btn-primary active" onclick="showhideEditUser()">Edit User</button>
+                <button id="LedgerBtn" class="btn btn-primary" onclick="showEditSubSection('ledger')">Ledger</button>
+                <button id="BetsBtn" class="btn btn-primary" onclick="showEditSubSection('bets')">Bets</button>
+                <button id="ProfitlossBtn" class="btn btn-primary" onclick="showEditSubSection('profitloss')">Profit Loss</button>
+                <button id="CPBtn" class="btn btn-primary" onclick="showEditSubSection('cp')">Current Position</button>
+              </div>
+              <strong style="float:right; font-size:20px" id="editUserDisplayHeader">Jimmy3221</strong>
+            </div>
+          </div>
+
+          <!-- Dynamic Iframe/Sub-section for Ledger, Bets, Profit Loss, Current Position -->
+          <div id="iframesection" class="col-12" style="display: none; margin-bottom:16px;">
+            <div class="admin-card">
+              <div class="admin-card-header" id="iframesectionTitle">
+                <span>Sub View</span>
+              </div>
+              <div class="admin-card-body" id="iframesectionBody" style="padding:16px;">
+                <!-- Filled dynamically by script -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Forms Section (editsection1 & editsection2) -->
+          <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <!-- Column 1: Edit Client Info (editsection1) -->
+            <div class="admin-card" id="editsection1" style="flex: 1; min-width: 320px;">
+              <div class="admin-card-header">
+                <span>Edit Client - <strong id="editClientTitleUser">Jimmy3221</strong></span>
+              </div>
+              <div class="admin-card-body">
+                <form id="editClientForm" onsubmit="handleEditClientSubmit(event)">
+                  <div style="display:grid; grid-template-columns: 120px 1fr; gap:12px; align-items:center; margin-bottom:12px;">
+                    <span style="font-weight:600;">ID</span>
+                    <span id="editUserIdVal">8730421</span>
+
+                    <span style="font-weight:600;">Username</span>
+                    <span id="editUserNameVal">Jimmy3221</span>
+
+                    <span style="font-weight:600;">Type</span>
+                    <span>Bettor</span>
+
+                    <span style="font-weight:600;">Currency</span>
+                    <span>Rs.</span>
+
+                    <span style="font-weight:600;">Password</span>
+                    <div>
+                      <input type="password" id="user_Password_Edit" class="form-control" placeholder="Leave blank to keep unchanged">
+                      <small id="userPasswordEditErr" style="color:#f86c6b; display:none;">Min length is 8 characters and password must contain alphabets and numerics.</small>
+                    </div>
+
+                    <span style="font-weight:600;">IsActive</span>
+                    <label><input type="checkbox" id="user_IsActive_Edit" checked style="width:16px;height:16px;"> Active</label>
+
+                    <span style="font-weight:600;">Betting Allowed</span>
+                    <label><input type="checkbox" id="user_CanBet_Edit" checked style="width:16px;height:16px;"> Allowed</label>
+
+                    <span style="font-weight:600;">Can Settle PL</span>
+                    <label><input type="checkbox" id="user_CanSettlePL_Edit"> Enable S button</label>
+
+                    <span style="font-weight:600;">Phone</span>
+                    <input type="text" id="user_Phone_Edit" class="form-control" value="">
+
+                    <span style="font-weight:600;">Reference</span>
+                    <input type="text" id="user_Reference_Edit" class="form-control" value="">
+
+                    <span style="font-weight:600;">Notes</span>
+                    <textarea id="user_Notes_Edit" class="form-control" rows="2"></textarea>
+
+                    <span style="font-weight:600;">Commission</span>
+                    <div>
+                      <input type="text" class="form-control" value="2.00" disabled style="background:#e9ecef;">
+                      <small style="color:#73818f;">Min commission is 2.00 %</small>
+                    </div>
+
+                    <span style="font-weight:600;">UserDomain</span>
+                    <input type="text" class="form-control" value="1  ( betproexch.com )" disabled style="background:#e9ecef;">
+                  </div>
+
+                  <div style="margin-top:16px;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check mr-1"></i> Submit</button>
+                    <button type="button" class="btn btn-outline-primary" style="margin-left:8px;" onclick="navigateAdmin('/Accounts/Chart', event)">Back</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Column 2: Max Bet Sizes (editsection2) -->
+            <div class="admin-card" id="editsection2" style="flex: 1; min-width: 320px;">
+              <div class="admin-card-header">
+                <strong>Max Bet Sizes</strong>
+              </div>
+              <div class="admin-card-body">
+                <form onsubmit="event.preventDefault(); showToast('Max bet sizes updated!');">
+                  <div style="display:grid; grid-template-columns: 120px 1fr; gap:12px; align-items:center; margin-bottom:12px;">
+                    <span style="font-weight:600;">Soccer</span>
+                    <div>
+                      <input type="text" class="form-control" value="1000000.00">
+                      <small style="color:#73818f;">Max: 1,000,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">Tennis</span>
+                    <div>
+                      <input type="text" class="form-control" value="250000.00">
+                      <small style="color:#73818f;">Max: 250,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">Cricket</span>
+                    <div>
+                      <input type="text" class="form-control" value="5000000.00">
+                      <small style="color:#73818f;">Max: 5,000,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">Fancy</span>
+                    <div>
+                      <input type="text" class="form-control" value="200000.00">
+                      <small style="color:#73818f;">Max: 200,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">Races</span>
+                    <div>
+                      <input type="text" class="form-control" value="200000.00">
+                      <small style="color:#73818f;">Max: 200,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">Casino</span>
+                    <div>
+                      <input type="text" class="form-control" value="50000.00">
+                      <small style="color:#73818f;">Max: 50,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">Greyhound</span>
+                    <div>
+                      <input type="text" class="form-control" value="50000.00">
+                      <small style="color:#73818f;">Max: 50,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">BookMaker</span>
+                    <div>
+                      <input type="text" class="form-control" value="2000000.00">
+                      <small style="color:#73818f;">Max: 2,000,000</small>
+                    </div>
+
+                    <span style="font-weight:600;">T-PIN</span>
+                    <input type="number" class="form-control" placeholder="T-PIN">
+                  </div>
+
+                  <div style="margin-top:16px;">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check mr-1"></i> Submit</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 5: CASH / CREDIT (/Accounts/Cash?id=...)
+             ========================================== -->
+        <div id="viewCashCredit" class="admin-view-section" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-body">
+              <!-- Authentic Tabs: Cash vs Credit -->
+              <div style="display:flex; border-bottom:1px solid #c2cfd6; margin-bottom:16px;">
+                <button id="cashCreditTabCash" class="btn btn-primary" style="border-radius:4px 4px 0 0; margin-right:4px;" onclick="switchCashCreditTab('cash')"><b>Cash</b></button>
+                <button id="cashCreditTabCredit" class="btn btn-outline-primary" style="border-radius:4px 4px 0 0;" onclick="switchCashCreditTab('credit')"><b>Credit</b></button>
+                <button class="btn btn-sm btn-outline-primary ml-auto" style="margin-left:auto;" onclick="navigateAdmin('/Accounts/Chart', event)">← Back to Users</button>
+              </div>
+
+              <h5 style="margin-bottom:12px;"><strong><span id="cashCreditUserTitle">Jimmy3221</span></strong></h5>
+              
+              <!-- Mini Balances Table (Authentic Reference: Credit, Balance, Max Widthdraw) -->
+              <table class="admin-table" style="max-width:450px; margin-bottom:20px;">
+                <tbody>
+                  <tr>
+                    <td>Credit</td>
+                    <td>Balance</td>
+                    <td>Max Widthdraw</td>
+                  </tr>
+                  <tr>
+                    <th><span id="userCashCreditVal">0 Rs.</span></th>
+                    <th><span id="userCashBalVal">0 Rs.</span></th>
+                    <th><span id="userCashMaxWithdrawVal">0 Rs.</span></th>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- TAB PANE 1: CASH (Deposit & Withdraw) -->
+              <div id="cashTabPane">
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                  <!-- Deposit Card -->
+                  <div class="card admin-card" style="flex:1; min-width:320px;">
+                    <div class="card-header admin-card-header bg-primary">
+                      <strong>Deposit Cash in <strong id="depositUserLabel">Jimmy3221</strong> account</strong>
+                    </div>
+                    <div class="card-body admin-card-body">
+                      <form onsubmit="handleDepositSubmit(event)">
+                        <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                          <label class="form-label" style="width:100px;">Description</label>
+                          <input type="text" class="form-control" id="depositDesc" value="Cash deposit in Jimmy3221" style="flex:1;">
+                        </div>
+                        <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                          <label class="form-label" style="width:100px;">Amount</label>
+                          <div class="input-group" style="flex:1;">
+                            <div class="input-group-prepend"><span class="input-group-text">Rs.</span></div>
+                            <input type="number" class="form-control" id="depositAmt" value="0" min="1" required>
+                          </div>
+                        </div>
+                        <div style="margin-top:16px;">
+                          <button type="submit" class="btn btn-primary"><strong>Submit</strong></button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+                  <!-- Withdraw Card -->
+                  <div class="card admin-card" style="flex:1; min-width:320px;">
+                    <div class="card-header admin-card-header bg-danger">
+                      <strong>Withdraw cash from <strong id="withdrawUserLabel">Jimmy3221</strong> account</strong>
+                    </div>
+                    <div class="admin-card-body">
+                      <form onsubmit="handleWithdrawSubmit(event)">
+                        <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                          <label class="form-label" style="width:100px;">Description</label>
+                          <input type="text" class="form-control" id="withdrawDesc" value="Cash withdrawn from Jimmy3221" style="flex:1;">
+                        </div>
+                        <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                          <label class="form-label" style="width:100px;">Amount</label>
+                          <div class="input-group" style="flex:1;">
+                            <div class="input-group-prepend"><span class="input-group-text">Rs.</span></div>
+                            <input type="number" class="form-control" id="withdrawAmt" value="0" min="1" required>
+                          </div>
+                        </div>
+                        <div style="margin-top:16px;">
+                          <button type="submit" class="btn btn-danger"><strong>Submit</strong></button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB PANE 2: CREDIT (Change Credit Limit) -->
+              <div id="creditTabPane" style="display:none;">
+                <div class="admin-card" style="max-width:550px;">
+                  <div class="admin-card-header bg-primary">
+                    <strong>Change Credit Limit - <span id="creditLimitUserTitle">Jimmy3221</span></strong>
+                  </div>
+                  <div class="admin-card-body">
+                    <form onsubmit="handleCreditLimitSubmit(event)">
+                      <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                        <label class="form-label" style="width:140px;">Current Credit</label>
+                        <span id="currentCreditLimitDisplay" style="font-weight:700;">0 Rs.</span>
+                      </div>
+                      <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                        <label class="form-label" style="width:140px;">New Credit Limit</label>
+                        <div class="input-group" style="flex:1;">
+                          <div class="input-group-prepend"><span class="input-group-text">Rs.</span></div>
+                          <input type="number" class="form-control" id="newCreditLimitInput" value="0" min="0" required>
+                        </div>
+                      </div>
+                      <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                        <label class="form-label" style="width:140px;">Remark</label>
+                        <input type="text" class="form-control" id="creditLimitRemark" placeholder="Remark for audit log" style="flex:1;">
+                      </div>
+                      <div class="form-group row" style="display:flex; margin-bottom:12px; align-items:center;">
+                        <label class="form-label" style="width:140px;">Master Password</label>
+                        <input type="password" class="form-control" id="creditLimitPassword" placeholder="Enter master password" required style="flex:1;">
+                      </div>
+                      <div style="margin-top:16px;">
+                        <button type="submit" class="btn btn-primary"><strong>Update Credit Limit</strong></button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 6: ACCOUNT LEDGER (/Accounts/Ledger)
+             ========================================== -->
+        <div id="viewAccountLedger" class="admin-view-section" style="display: none;">
+          <!-- Filter Card -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span><i class="fa fa-align-justify mr-1"></i> Report Filter</span>
+            </div>
+            <div class="admin-card-body">
+              <form id="ledgerFilterForm" onsubmit="event.preventDefault(); showToast('Ledger filter updated!');" style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <label class="form-label" style="margin:0;">From</label>
+                  <input type="date" class="form-control" id="ledgerDateFrom" value="2026-09-28" style="width:150px;">
+                </div>
+                <span>&nbsp;-&nbsp;</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <label class="form-label" style="margin:0;">To</label>
+                  <input type="date" class="form-control" id="ledgerDateTo" value="2026-09-28" style="width:150px;">
+                </div>
+                <button type="submit" class="btn btn-primary"><strong>Submit</strong></button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Ledger Table Card -->
+          <div class="admin-card">
+            <div class="admin-card-header" id="ledgerCardHeaderTitle">
+              <span>Ahmii9090x - Account Ledger</span>
+            </div>
+            <div class="admin-card-body">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <select class="form-control" style="width:80px; padding:3px 6px;">
+                    <option value="100">100</option>
+                    <option value="250">250</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>
+                  </select>
+                  <span style="font-size:12px; color:#5c6873;">entries per page</span>
+                </div>
+
+                <!-- Export Buttons: Print, Excel, PDF -->
+                <div style="display:flex; gap:6px;">
+                  <button class="btn btn-sm btn-secondary" onclick="window.print()"><i class="fas fa-print mr-1"></i> Print</button>
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('Exporting to Excel...')"><i class="fas fa-file-excel mr-1"></i> Excel</button>
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('Exporting to PDF...')"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+                </div>
+
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <span style="font-size:12px;">Search:</span>
+                  <input type="search" class="form-control" style="width:140px; padding:3px 8px;" placeholder="">
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th style="width:40px;">#</th>
+                      <th style="width:200px;">Date</th>
+                      <th>Description</th>
+                      <th style="width:120px;">Amount</th>
+                      <th style="width:120px;">Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>9/28/2026 12:00:00 am</td>
+                      <td><a href="#" onclick="showToast('Statement popup: Opening balance 0'); return false;">Opening Balance</a></td>
+                      <td>0</td>
+                      <td>0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#73818f; margin-top:8px;">
+                <span>Showing 1 to 1 of 1 entry</span>
+                <div style="display:flex; gap:2px;">
+                  <button class="btn btn-sm btn-secondary" disabled>«</button>
+                  <button class="btn btn-sm btn-secondary" disabled>‹</button>
+                  <button class="btn btn-sm btn-primary active">1</button>
+                  <button class="btn btn-sm btn-secondary" disabled>›</button>
+                  <button class="btn btn-sm btn-secondary" disabled>»</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 7: CURRENT POSITION (/Markets/Liables)
+             ========================================== -->
+        <div id="viewCurrentPosition" class="admin-view-section" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span>Current Position / Live Exposure Monitor</span>
+              <button class="btn btn-sm btn-primary" onclick="showToast('Exposure positions refreshed.')">Refresh</button>
+            </div>
+            <div class="admin-card-body">
+              <p style="color:#73818f; margin-bottom:12px; font-size:13px;">Currently no open market positions under this account hierarchy.</p>
+              <div class="table-responsive">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>Market</th>
+                      <th>Selection</th>
+                      <th>Client Exposure</th>
+                      <th>Master P/L</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="5" style="text-align:center; color:#73818f; padding:20px;">No open liabilities currently recorded.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 8: REPORTS (/Reports/...)
+             ========================================== -->
+        <div id="viewReports" class="admin-view-section" style="display: none;">
+          <!-- 7 Reference Pills -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span><i class="fa fa-filter mr-1"></i> <strong>Report Type</strong></span>
+            </div>
+            <div class="admin-card-body" style="padding:10px 16px;">
+              <div class="report-pills-row" id="reportsPillsRow">
+                <button id="repPillBookDetail" class="btn btn-primary" onclick="navigateAdmin('/Reports/BookDetail', event)">Book Detail</button>
+                <button id="repPillDetail2" class="btn btn-outline-primary" onclick="navigateAdmin('/Reports/Detail2', event)">Book Detail 2</button>
+                <button id="repPillDailyPl" class="btn btn-outline-primary" onclick="navigateAdmin('/Reports/DailyPl', event)">Daily PL</button>
+                <button id="repPillDaily" class="btn btn-outline-primary" onclick="navigateAdmin('/Reports/Daily', event)">Daily Report</button>
+                <button id="repPillFinalSheet" class="btn btn-outline-primary" onclick="navigateAdmin('/Reports/FinalSheet', event)">Final Sheet</button>
+                <button id="repPillAccounts" class="btn btn-outline-primary" onclick="navigateAdmin('/Accounts/Chart', event)">Accounts</button>
+                <button id="repPillCommission" class="btn btn-outline-primary" onclick="navigateAdmin('/Reports/Commission', event)">Commission Report</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Common Report Filter Bar -->
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span><i class="fa fa-filter mr-1"></i> <strong>Report Filter</strong></span>
+            </div>
+            <div class="admin-card-body">
+              <form id="commonReportFilterForm" onsubmit="event.preventDefault(); showToast('Report generated for selected dates.');" style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <label class="form-label" style="margin:0;">From</label>
+                  <input type="date" class="form-control" value="2026-09-28" style="width:150px;">
+                </div>
+                <span>&nbsp;-&nbsp;</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <label class="form-label" style="margin:0;">To</label>
+                  <input type="date" class="form-control" value="2026-09-28" style="width:150px;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-dot-circle-o mr-1"></i> <strong>Submit</strong></button>
+              </form>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 1: Book Detail (/Reports/BookDetail) -->
+          <div id="repSubViewBookDetail" class="report-subtype-section">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span>Book Detail - Ahmii9090x</span>
+              </div>
+              <div class="admin-card-body">
+                <div class="table-responsive">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Sport</th>
+                        <th>Event</th>
+                        <th>Market</th>
+                        <th>Win / Loss</th>
+                        <th>Commission</th>
+                        <th>Total P/L</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="6" style="text-align:center; color:#73818f; padding:20px;">No book records found for the selected period.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 2: Book Detail 2 (/Reports/Detail2) -->
+          <div id="repSubViewBookDetail2" class="report-subtype-section" style="display:none;">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span><i class="fa fa-align-justify mr-1"></i> <strong>Ahmii9090x</strong></span>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn btn-sm btn-secondary" onclick="window.print()">Print</button>
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('Excel downloaded.')">Excel</button>
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('PDF downloaded.')">PDF</button>
+                </div>
+              </div>
+              <div class="admin-card-body">
+                <div class="table-responsive">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Event</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="bg-primary" style="color:#ffffff;">
+                        <th>Total</th>
+                        <th>0</th>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 3: Daily PL (/Reports/DailyPl) -->
+          <div id="repSubViewDailyPL" class="report-subtype-section" style="display:none;">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span><i class="fa fa-align-justify mr-1"></i> <strong>Report (Profit & Loss)</strong></span>
+              </div>
+              <div class="admin-card-body">
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                  <!-- Profit Side (bg-primary) -->
+                  <div style="flex:1; min-width:300px;">
+                    <div class="table-responsive">
+                      <table class="admin-table">
+                        <thead>
+                          <tr>
+                            <th>Name (Profit)</th>
+                            <th>Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td colspan="2" style="text-align:center; color:#73818f;">No profit data available</td>
+                          </tr>
+                        </tbody>
+                        <tfoot>
+                          <tr class="bg-primary" style="color:#fff;">
+                            <th>Total</th>
+                            <th>0</th>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+
+                  <!-- Loss Side (bg-danger) -->
+                  <div style="flex:1; min-width:300px;">
+                    <div class="table-responsive">
+                      <table class="admin-table">
+                        <thead>
+                          <tr>
+                            <th>Name (Loss)</th>
+                            <th>Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td colspan="2" style="text-align:center; color:#73818f;">No loss data available</td>
+                          </tr>
+                        </tbody>
+                        <tfoot>
+                          <tr class="bg-danger" style="color:#fff;">
+                            <th>Total</th>
+                            <th>0</th>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 4: Daily Report (/Reports/Daily) -->
+          <div id="repSubViewDaily" class="report-subtype-section" style="display:none;">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span>Daily Activity & Turnover Report</span>
+              </div>
+              <div class="admin-card-body">
+                <div class="table-responsive">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Total Bets</th>
+                        <th>Turnover (Rs.)</th>
+                        <th>Commission</th>
+                        <th>Net Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="5" style="text-align:center; color:#73818f; padding:20px;">No daily records found.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 5: Final Sheet (/Reports/FinalSheet) -->
+          <div id="repSubViewFinalSheet" class="report-subtype-section" style="display:none;">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span>Final Settlement Sheet - Ahmii9090x</span>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button class="btn btn-sm btn-outline-primary" onclick="toggleZeroAccounts()"><i class="fas fa-eye-slash mr-1"></i> Toggle Zero Accounts</button>
+                  <button class="btn btn-sm btn-secondary" onclick="window.print()">Print</button>
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('Excel downloaded.')">Excel</button>
+                  <button class="btn btn-sm btn-secondary" onclick="showToast('PDF downloaded.')">PDF</button>
+                </div>
+              </div>
+              <div class="admin-card-body">
+                <div class="table-responsive">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>User</th>
+                        <th>Opening</th>
+                        <th>Deposit</th>
+                        <th>Withdraw</th>
+                        <th>P/L</th>
+                        <th>Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Jimmy3221</strong></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Rana3471</strong></td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 6: Commission Report (/Reports/Commission) -->
+          <div id="repSubViewCommission" class="report-subtype-section" style="display:none;">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span>Commission Breakdown Report</span>
+              </div>
+              <div class="admin-card-body">
+                <div class="table-responsive">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Client</th>
+                        <th>Turnover</th>
+                        <th>Rate (%)</th>
+                        <th>Comm Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="4" style="text-align:center; color:#73818f; padding:20px;">No commission records in this period.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 9: BET LOCK (/Markets/BetLocker)
+             ========================================== -->
+        <div id="viewBetLock" class="admin-view-section" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span><strong>Allowed Market Types (Ahmii9090x)</strong></span>
+              <button class="btn btn-sm btn-primary" onclick="showToast('Bet Lock settings saved!')">Save Changes</button>
+            </div>
+            <div class="admin-card-body" style="padding-left:30px;">
+              <!-- All Casino -->
+              <div style="margin-bottom:16px;">
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-casino')">
+                  <span>All Casino</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-casino"> TeenPatti Studio</label>
+                  <label><input type="checkbox" checked class="cb-casino"> Royal Casino</label>
+                  <label><input type="checkbox" checked class="cb-casino"> Betfair Games</label>
+                  <label><input type="checkbox" checked class="cb-casino"> Star Casino</label>
+                  <label><input type="checkbox" checked class="cb-casino"> Galaxy Casino</label>
+                  <label><input type="checkbox" checked class="cb-casino"> Sports Book</label>
+                  <label><input type="checkbox" checked class="cb-casino"> Super Nowa</label>
+                </div>
+              </div>
+              <hr style="border-color:#e4e7ea; margin:16px 0;">
+
+              <!-- Cricket -->
+              <div style="margin-bottom:16px;">
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-cricket')">
+                  <span>Cricket</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-cricket"> Figure</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Fancy</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Meter</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Odd Even</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Khado</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Test Session</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Live Session</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> BookMaker</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Match Odds</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Tied Match</label>
+                  <label><input type="checkbox" checked class="cb-cricket"> Completed Match</label>
+                </div>
+              </div>
+              <hr style="border-color:#e4e7ea; margin:16px 0;">
+
+              <!-- Soccer -->
+              <div style="margin-bottom:16px;">
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-soccer')">
+                  <span>Soccer</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-soccer"> Match Odds</label>
+                  <label><input type="checkbox" checked class="cb-soccer"> Over/Under</label>
+                </div>
+              </div>
+              <hr style="border-color:#e4e7ea; margin:16px 0;">
+
+              <!-- Tennis -->
+              <div style="margin-bottom:16px;">
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-tennis')">
+                  <span>Tennis</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-tennis"> Match Odds</label>
+                </div>
+              </div>
+              <hr style="border-color:#e4e7ea; margin:16px 0;">
+
+              <!-- Greyhound -->
+              <div style="margin-bottom:16px;">
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-greyhound')">
+                  <span>Greyhound</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-greyhound"> Australia</label>
+                  <label><input type="checkbox" checked class="cb-greyhound"> Britian</label>
+                  <label><input type="checkbox" checked class="cb-greyhound"> New Zealand</label>
+                </div>
+              </div>
+              <hr style="border-color:#e4e7ea; margin:16px 0;">
+
+              <!-- Horse Race -->
+              <div>
+                <label style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" checked style="width:18px; height:18px;" onchange="toggleChildCheckboxes(this, '.cb-horse')">
+                  <span>Horse Race</span>
+                </label>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-top:8px; padding-left:26px;">
+                  <label><input type="checkbox" checked class="cb-horse"> Dubai</label>
+                  <label><input type="checkbox" checked class="cb-horse"> Australia</label>
+                  <label><input type="checkbox" checked class="cb-horse"> Bahrain</label>
+                  <label><input type="checkbox" checked class="cb-horse"> France</label>
+                  <label><input type="checkbox" checked class="cb-horse"> Britian</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 10: CASINO CONSOLES (/Markets/Games etc)
+             ========================================== -->
+        <div id="viewCasinoConsole" class="admin-view-section" style="display: none;">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span>Live Casino Provider Console</span>
+              <button class="btn btn-sm btn-primary" onclick="showToast('Casino feeds refreshed!')">Refresh Feed</button>
+            </div>
+            <div class="admin-card-body">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+                <div class="admin-card" style="margin:0;">
+                  <div class="admin-card-header">Star Casino</div>
+                  <div class="admin-card-body">
+                    <p style="font-size:12px; color:#5c6873;">Live Tables: Roulette, Teen Patti, Andar Bahar, Dragon Tiger</p>
+                    <button class="btn btn-sm btn-primary" onclick="showToast('Connecting to Star Casino feed...')">Launch Console</button>
+                  </div>
+                </div>
+                <div class="admin-card" style="margin:0;">
+                  <div class="admin-card-header">World Casino</div>
+                  <div class="admin-card-body">
+                    <p style="font-size:12px; color:#5c6873;">Evolution Gaming, Pragmatic Play, Ezugi Live streams</p>
+                    <button class="btn btn-sm btn-primary" onclick="showToast('Connecting to World Casino feed...')">Launch Console</button>
+                  </div>
+                </div>
+                <div class="admin-card" style="margin:0;">
+                  <div class="admin-card-header">BetFair Games</div>
+                  <div class="admin-card-body">
+                    <p style="font-size:12px; color:#5c6873;">Exchange Hi-Lo, Poker, Baccarat, Card Derby</p>
+                    <button class="btn btn-sm btn-primary" onclick="showToast('Connecting to Betfair Games feed...')">Launch Console</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 11: MARKET ODDS DRILL-DOWN (/Markets/#!...)
+             ========================================== -->
+        <div id="viewMarketDetail" class="admin-view-section" style="display: none;">
+          <div style="display:flex; gap:16px; flex-wrap:wrap;">
+            <!-- Left Main Column: Market Odds Ladder -->
+            <div style="flex:2; min-width:320px;">
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <span id="marketDetailTitleText"><strong>India v West Indies - Match Odds</strong> <i class="fa fa-address-book ml-1"></i></span>
+                  <span class="badge" style="background:#4dbd74; color:#fff; padding:2px 8px; border-radius:3px;">IN-PLAY</span>
+                </div>
+                <div class="admin-card-body" style="padding:0;">
+                  <div style="padding:8px 12px; background:#f0f3f5; font-size:12px; font-weight:700; display:flex; justify-content:space-between;">
+                    <span>Matched: Rs. 14,280,410</span>
+                    <span>Min/Max: 100 / 5,000,000</span>
+                  </div>
+
+                  <table class="market-odds-table">
+                    <thead>
+                      <tr>
+                        <th class="runner-name-col">Runner</th>
+                        <th colspan="3" style="background:#b2d7ff;">Back</th>
+                        <th colspan="3" style="background:#ffccd5;">Lay</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Runner 1: India -->
+                      <tr>
+                        <td class="runner-name-col">
+                          <strong>India</strong>
+                          <span style="font-size:11px; display:block; color:#00b181;">Pos: 0</span>
+                        </td>
+                        <td class="cell-back">
+                          <span class="odd-price">1.52</span>
+                          <span class="odd-size">45.2K</span>
+                        </td>
+                        <td class="cell-back">
+                          <span class="odd-price">1.53</span>
+                          <span class="odd-size">82.1K</span>
+                        </td>
+                        <td class="cell-back" style="background:#8fc4ff;">
+                          <span class="odd-price">1.54</span>
+                          <span class="odd-size">140.5K</span>
+                        </td>
+                        <td class="cell-lay" style="background:#ffa8b8;">
+                          <span class="odd-price">1.55</span>
+                          <span class="odd-size">98.2K</span>
+                        </td>
+                        <td class="cell-lay">
+                          <span class="odd-price">1.56</span>
+                          <span class="odd-size">54.0K</span>
+                        </td>
+                        <td class="cell-lay">
+                          <span class="odd-price">1.57</span>
+                          <span class="odd-size">21.5K</span>
+                        </td>
+                      </tr>
+
+                      <!-- Runner 2: West Indies -->
+                      <tr>
+                        <td class="runner-name-col">
+                          <strong>West Indies</strong>
+                          <span style="font-size:11px; display:block; color:#00b181;">Pos: 0</span>
+                        </td>
+                        <td class="cell-back">
+                          <span class="odd-price">2.80</span>
+                          <span class="odd-size">12.4K</span>
+                        </td>
+                        <td class="cell-back">
+                          <span class="odd-price">2.82</span>
+                          <span class="odd-size">31.0K</span>
+                        </td>
+                        <td class="cell-back" style="background:#8fc4ff;">
+                          <span class="odd-price">2.84</span>
+                          <span class="odd-size">76.3K</span>
+                        </td>
+                        <td class="cell-lay" style="background:#ffa8b8;">
+                          <span class="odd-price">2.86</span>
+                          <span class="odd-size">48.9K</span>
+                        </td>
+                        <td class="cell-lay">
+                          <span class="odd-price">2.88</span>
+                          <span class="odd-size">22.1K</span>
+                        </td>
+                        <td class="cell-lay">
+                          <span class="odd-price">2.90</span>
+                          <span class="odd-size">10.5K</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Orders Column -->
+            <div style="flex:1; min-width:300px;">
+              <!-- Bet Lock Dropdown & User Book -->
+              <div class="admin-card" style="margin-bottom:12px;">
+                <div class="admin-card-body" style="padding:10px; display:flex; gap:8px;">
+                  <div style="position:relative;">
+                    <button class="btn btn-sm btn-primary bet-lock-toggle-btn" onclick="toggleBetLockDropdown(event)">Bet Lock <i class="fas fa-caret-down ml-1"></i></button>
+                    <div id="betLockMenu" style="display:none; position:absolute; top:100%; left:0; background:#fff; border:1px solid #c2cfd6; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:10; min-width:140px;">
+                      <a href="#" style="display:block; padding:6px 12px; color:#23282c; font-size:12px;" onclick="showToast('Match Odds locked!'); return false;">Match Odds</a>
+                      <a href="#" style="display:block; padding:6px 12px; color:#23282c; font-size:12px;" onclick="showToast('Other Markets locked!'); return false;">Other Markets</a>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-primary" onclick="showToast('Opening User Book details...')">User Book</button>
+                </div>
+              </div>
+
+              <!-- Live TV / Scorecard Switcher -->
+              <div class="admin-card">
+                <div style="display:flex; border-bottom:1px solid #c2cfd6;">
+                  <button id="btnTvToggle" class="btn btn-primary btn-sm col" style="flex:1; border-radius:0;" onclick="switchLiveMedia('tv')">Tv</button>
+                  <button id="btnScoreToggle" class="btn btn-outline-primary btn-sm col" style="flex:1; border-radius:0;" onclick="switchLiveMedia('score')">Score Card</button>
+                </div>
+                <div class="admin-card-body" style="padding:8px;">
+                  <div id="mediaTvDiv" style="display:none; text-align:center; padding:30px; background:#1a1a1a; color:#fff;">
+                    <i class="fas fa-satellite-dish fa-3x" style="color:#00b181; margin-bottom:10px;"></i>
+                    <p style="font-size:12px;">Live Streaming Feed (Channel 1)</p>
+                  </div>
+                  <div id="mediaScoreDiv">
+                    <iframe id="liveScoreIframe" src="https://bpexch.xyz/Common/LiveScoreCard?id=1.263018266" style="width:100%; height:200px; border:none;"></iframe>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Open Bets -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <span><strong>Open Bets (0)</strong></span>
+                </div>
+                <div class="admin-card-body" style="font-size:12px; color:#73818f; text-align:center; padding:16px;">
+                  No active open bets.
+                </div>
+              </div>
+
+              <!-- Matched Bets -->
+              <div class="admin-card">
+                <div class="admin-card-header">
+                  <span><strong>Matched Bets (0)</strong></span>
+                  <button class="btn btn-sm btn-primary" onclick="showToast('Loading full bet list...')">Full Bet List</button>
+                </div>
+                <div class="admin-card-body" style="font-size:12px; color:#73818f; text-align:center; padding:16px;">
+                  No matched bets.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 12: USER PROFILE (/Common/Profile)
+             ========================================== -->
+        <div id="viewProfile" class="admin-view-section" style="display: none;">
+          <!-- Profile Stakes Card -->
+          <div class="admin-card" style="max-width:650px;">
+            <div class="admin-card-header">
+              <span>Profile Settings</span>
+            </div>
+            <div class="admin-card-body">
+              <form onsubmit="event.preventDefault(); showToast('Stakes updated successfully!');">
+                <div style="display:grid; grid-template-columns: 120px 1fr; gap:12px; align-items:center; margin-bottom:14px;">
+                  <label class="form-label">Stake 1</label>
+                  <input type="number" class="form-control" value="2000" style="max-width:200px;">
+
+                  <label class="form-label">Stake 2</label>
+                  <input type="number" class="form-control" value="5000" style="max-width:200px;">
+
+                  <label class="form-label">Stake 3</label>
+                  <input type="number" class="form-control" value="10000" style="max-width:200px;">
+
+                  <label class="form-label">Stake 4</label>
+                  <input type="number" class="form-control" value="25000" style="max-width:200px;">
+
+                  <label class="form-label">Plus 1</label>
+                  <input type="number" class="form-control" value="1000" style="max-width:200px;">
+
+                  <label class="form-label">Plus 2</label>
+                  <input type="number" class="form-control" value="5000" style="max-width:200px;">
+
+                  <label class="form-label">Plus 3</label>
+                  <input type="number" class="form-control" value="10000" style="max-width:200px;">
+
+                  <label class="form-label">Plus 4</label>
+                  <input type="number" class="form-control" value="25000" style="max-width:200px;">
+                </div>
+
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save changes</button>
+                <button type="button" class="btn btn-danger" style="margin-left:8px;" onclick="navigateAdmin('/index', event)">Cancel</button>
+                <p style="font-size:11px; color:#73818f; margin-top:8px;"><strong>Note: Updated stakes will be applied to new users.</strong></p>
+              </form>
+            </div>
+          </div>
+
+          <!-- Change Password Card -->
+          <div class="admin-card" style="max-width:650px;">
+            <div class="admin-card-header">
+              <span>Change Password</span>
+            </div>
+            <div class="admin-card-body">
+              <form id="profileChangePassForm" onsubmit="handleProfileChangePass(event)">
+                <div style="display:flex; gap:12px; align-items:center;">
+                  <label class="form-label" style="width:120px;">NewPassword</label>
+                  <input type="password" id="profileNewPassInput" class="form-control" style="width:250px;" required>
+                  <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+                <small id="profilePassErr" style="color:#f86c6b; display:none; margin-top:6px;">Min length is 8 characters and password must contain alphabets and numerics.</small>
+              </form>
+            </div>
+          </div>
+
+          <!-- 2FA Card -->
+          <div class="admin-card" style="max-width:650px;">
+            <div class="admin-card-header">
+              <span>Two Factor Authentication</span>
+            </div>
+            <div class="admin-card-body">
+              <p style="margin-bottom:12px;"><i class="fas fa-key mr-1"></i> Two factor authentication (2FA) is <strong id="tfaStatusText">DISABLED</strong> for this account:</p>
+              <div class="switch-container">
+                <span style="font-size:13px; font-weight:600;">Enable two factor authentication</span>
+                <label class="switch">
+                  <input type="checkbox" id="tfaCheckbox" onchange="toggle2FA(this)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- BOTTOM FOOTER -->
+    <footer class="admin-footer">
+      Welcome to Exchange.
+    </footer>
+  </div>
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+  <!-- MARKET RULES MODAL (#modalMarketRules) -->
+  <div class="admin-modal-overlay" id="modalMarketRules">
+    <div class="admin-modal-content">
+      <div class="admin-modal-header">
+        <h5>Market Rules</h5>
+        <button class="btn btn-sm btn-secondary" onclick="closeMarketRulesModal()">×</button>
+      </div>
+      <div class="admin-modal-body" style="font-size:13px; line-height:1.6;">
+        <p><strong>1. General Exchange Rules:</strong> All bets matched are subject to official tournament and sport governing bodies' settlement.</p>
+        <p><strong>2. In-Play Delays:</strong> A standard transmission delay exists on all live in-play markets to ensure fair market integrity.</p>
+        <p><strong>3. Fancy & Bookmaker Markets:</strong> Settled based on official results and live video feeds broadcast by providers.</p>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="btn btn-secondary" onclick="closeMarketRulesModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast-notice" id="adminToast">Action Completed</div>
+
+  <!-- ==========================================================================
+       AUTHENTIC INTERACTION CONTROLLER SCRIPT (1:1 FIDELITY WITH BPEXCH.ORG)
+       ========================================================================== -->
+  <script>
+    // State
+    let currentAdminUser = 'Ahmii9090x';
+    let currentEditingUser = 'Jimmy3221';
+    let currentEditingId = '8730421';
+
+    // Users Database State
+    let usersList = [
+      { id: '8730421', username: 'Jimmy3221', type: 'Bettor', credit: '-', balance: '-', pl: '-', share: '-', exp: '-', avail: '-', active: true, domain: 'betproexch.com' },
+      { id: '8758678', username: 'Rana3471', type: 'Bettor', credit: '-', balance: '-', pl: '-', share: '-', exp: '-', avail: '-', active: true, domain: 'betproexch.com' }
+    ];
+
+    // Initialization & Route Handling
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check session or default to login
+      const session = localStorage.getItem('bpexch_session');
+      const p = window.location.pathname.toLowerCase();
+      if (p === '/users/login' || p === '/login' || p === '/admin/login') {
+        showLoginScreen();
+        return;
+      }
+      if (session === 'active') {
+        showAdminApp();
+        routeFromUrl();
+      } else {
+        showLoginScreen();
+      }
+    });
+
+    window.addEventListener('popstate', () => {
+      routeFromUrl();
+    });
+
+    function showLoginScreen() {
+      document.getElementById('adminLoginScreen').style.display = 'flex';
+      document.getElementById('adminAppContainer').style.display = 'none';
+      document.title = 'BPEXCH Login';
+    }
+
+    function showAdminApp() {
+      document.getElementById('adminLoginScreen').style.display = 'none';
+      document.getElementById('adminAppContainer').style.display = 'flex';
+      document.title = 'BPEXCH';
+    }
+
+    function executeAdminLogin() {
+      const u = document.getElementById('user_Username').value.trim();
+      const p = document.getElementById('user_Password').value.trim();
+      const err = document.getElementById('errorBox');
+
+      if (u === 'Ahmii9090x' && p === '1234Qwer') {
+        err.style.display = 'none';
+        localStorage.setItem('bpexch_session', 'active');
+        showAdminApp();
+        navigateAdmin('/index');
+        showToast('Logged in successfully!');
+      } else {
+        err.style.display = 'block';
+      }
+    }
+
+    function executeAdminLogout(e) {
+      if (e) e.preventDefault();
+      localStorage.removeItem('bpexch_session');
+      closeUserDropdown();
+      showLoginScreen();
+      showToast('Logged out.');
+      if (window.history.pushState) {
+        window.history.pushState(null, '', '/Users/Login');
+      }
+    }
+
+    // Sidebar & Mobile Off-canvas
+    function toggleSidebar() {
+      if (window.innerWidth < 992) {
+        document.body.classList.toggle('sidebar-open');
+        document.querySelector('.app-sidebar')?.classList.toggle('sidebar-open');
+      } else {
+        document.body.classList.toggle('sidebar-collapsed');
+      }
+    }
+
+    function closeSidebarMobile() {
+      document.body.classList.remove('sidebar-open');
+      document.querySelector('.app-sidebar')?.classList.remove('sidebar-open');
+    }
+
+    function toggleSidebarAccordion(accordionId) {
+      const item = document.getElementById(accordionId);
+      if (item) {
+        item.classList.toggle('open');
+        const submenu = item.querySelector('.sidebar-submenu');
+        if (submenu) {
+          submenu.style.display = item.classList.contains('open') ? 'block' : 'none';
+        }
+      }
+    }
+
+    // User Dropdown
+    function toggleUserDropdown(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('userDropdownMenu');
+      if (menu) menu.classList.toggle('show');
+    }
+
+    function closeUserDropdown() {
+      const menu = document.getElementById('userDropdownMenu');
+      if (menu) menu.classList.remove('show');
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-dropdown-wrap')) {
+        closeUserDropdown();
+      }
+      if (!e.target.closest('#betLockMenu') && !e.target.closest('.bet-lock-toggle-btn')) {
+        const bl = document.getElementById('betLockMenu');
+        if (bl) bl.style.display = 'none';
+      }
+    });
+
+    // Market Rules Modal
+    function openMarketRulesModal(e) {
+      if (e) e.preventDefault();
+      closeUserDropdown();
+      document.getElementById('modalMarketRules').style.display = 'flex';
+    }
+
+    function closeMarketRulesModal() {
+      document.getElementById('modalMarketRules').style.display = 'none';
+    }
+
+    // Router & View Switcher
+    function navigateAdmin(path, e) {
+      if (e) e.preventDefault();
+      closeSidebarMobile();
+      closeUserDropdown();
+
+      if (window.history.pushState) {
+        window.history.pushState(null, '', path);
+      }
+      routeFromUrl();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function routeFromUrl() {
+      const fullPath = window.location.pathname;
+      const lower = fullPath.toLowerCase();
+      const search = window.location.search;
+      const hash = window.location.hash;
+
+      // Extract query params
+      const urlParams = new URLSearchParams(search);
+      const userId = urlParams.get('id') || urlParams.get('accountId') || '8730421';
+
+      if (lower === '/users/login' || lower === '/login' || lower === '/admin/login') {
+        showLoginScreen();
+        return;
+      }
+
+      // Hide all view sections
+      document.querySelectorAll('.admin-view-section').forEach(sec => sec.style.display = 'none');
+      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.header-nav-links a').forEach(a => a.classList.remove('active'));
+
+      const breadcrumbCurrent = document.getElementById('breadcrumbCurrent');
+
+      if (lower === '/index' || lower === '/admin' || lower === '/admin/' || lower === '/') {
+        document.getElementById('viewDashboard').style.display = 'block';
+        document.getElementById('sideNavDashboard')?.classList.add('active');
+        document.getElementById('topNavDashboard')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Dashboard';
+        document.title = 'BPEXCH | Dashboard';
+      } else if (lower.startsWith('/accounts/chart')) {
+        document.getElementById('viewUsers').style.display = 'block';
+        document.getElementById('sideNavUsers')?.classList.add('active');
+        document.getElementById('topNavUsers')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Users';
+        document.title = 'BPEXCH | Users';
+      } else if (lower === '/users/create') {
+        document.getElementById('viewUsersCreate').style.display = 'block';
+        document.getElementById('sideNavUsers')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Create New User';
+        document.title = 'BPEXCH | Create New User';
+      } else if (lower.startsWith('/users/edit')) {
+        setupUserEditPage(userId);
+        document.getElementById('viewUsersEdit').style.display = 'block';
+        document.getElementById('sideNavUsers')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Edit User';
+        document.title = 'BPEXCH | Edit User';
+      } else if (lower.startsWith('/accounts/cash') || lower.startsWith('/accounts/credit')) {
+        setupCashCreditPage(userId);
+        document.getElementById('viewCashCredit').style.display = 'block';
+        document.getElementById('sideNavUsers')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Cash / Credit';
+        document.title = 'BPEXCH | Cash / Credit';
+      } else if (lower.startsWith('/accounts/ledger')) {
+        document.getElementById('viewAccountLedger').style.display = 'block';
+        document.getElementById('sideNavUsers')?.classList.add('active');
+        const userObj = usersList.find(u => u.id === userId);
+        const uname = userObj ? userObj.username : (userId === '9611024' ? 'Ahmii9090x' : 'Jimmy3221');
+        document.getElementById('ledgerCardHeaderTitle').innerHTML = `<span><strong>${uname}</strong> - Account Ledger</span>`;
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Account Ledger';
+        document.title = 'BPEXCH | Account Ledger';
+      } else if (lower === '/markets/liables') {
+        document.getElementById('viewCurrentPosition').style.display = 'block';
+        document.getElementById('sideNavPosition')?.classList.add('active');
+        document.getElementById('topNavPosition')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Current Position';
+        document.title = 'BPEXCH | Current Position';
+      } else if (lower.startsWith('/reports/')) {
+        document.getElementById('viewReports').style.display = 'block';
+        document.getElementById('sideNavReports')?.classList.add('active');
+        document.getElementById('topNavReports')?.classList.add('active');
+        handleReportRoute(fullPath);
+      } else if (lower === '/markets/betlocker') {
+        document.getElementById('viewBetLock').style.display = 'block';
+        document.getElementById('sideNavBetLock')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Bet Lock';
+        document.title = 'BPEXCH | Bet Lock';
+      } else if (lower === '/markets/games' || lower === '/markets/worldcasino' || lower === '/markets/exgames') {
+        document.getElementById('viewCasinoConsole').style.display = 'block';
+        if (lower === '/markets/games') document.getElementById('sideNavStarCasino')?.classList.add('active');
+        if (lower === '/markets/worldcasino') document.getElementById('sideNavWorldCasino')?.classList.add('active');
+        if (lower === '/markets/exgames') document.getElementById('sideNavBetFairGames')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Casino Console';
+        document.title = 'BPEXCH | Casino Console';
+      } else if (lower.startsWith('/markets/')) {
+        document.getElementById('viewMarketDetail').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Market Detail';
+        document.title = 'BPEXCH | Market Odds';
+      } else if (lower === '/common/profile') {
+        document.getElementById('viewProfile').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Profile Settings';
+        document.title = 'BPEXCH | Profile Settings';
+      } else {
+        // Fallback default to Dashboard
+        document.getElementById('viewDashboard').style.display = 'block';
+        document.getElementById('sideNavDashboard')?.classList.add('active');
+        document.getElementById('topNavDashboard')?.classList.add('active');
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Dashboard';
+      }
+    }
+
+    // Reports Pill Selector
+    function handleReportRoute(path) {
+      const lower = (path || '').toLowerCase();
+      document.querySelectorAll('#reportsPillsRow button').forEach(b => {
+        b.classList.remove('btn-primary', 'active');
+        b.classList.add('btn-outline-primary');
+      });
+      document.querySelectorAll('.report-subtype-section').forEach(s => s.style.display = 'none');
+      const breadcrumbCurrent = document.getElementById('breadcrumbCurrent');
+
+      if (lower === '/reports/detail2') {
+        document.getElementById('repPillDetail2')?.classList.add('btn-primary', 'active');
+        document.getElementById('repSubViewBookDetail2').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Book Detail 2';
+        document.title = 'BPEXCH | Book Detail 2';
+      } else if (lower === '/reports/dailypl') {
+        document.getElementById('repPillDailyPl')?.classList.add('btn-primary', 'active');
+        document.getElementById('repSubViewDailyPL').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Daily PL';
+        document.title = 'BPEXCH | Daily PL';
+      } else if (lower === '/reports/daily') {
+        document.getElementById('repPillDaily')?.classList.add('btn-primary', 'active');
+        document.getElementById('repSubViewDaily').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Daily Report';
+        document.title = 'BPEXCH | Daily Report';
+      } else if (lower === '/reports/finalsheet') {
+        document.getElementById('repPillFinalSheet')?.classList.add('btn-primary', 'active');
+        document.getElementById('repSubViewFinalSheet').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Final Sheet';
+        document.title = 'BPEXCH | Final Sheet';
+      } else if (lower === '/reports/commission') {
+        document.getElementById('repPillCommission')?.classList.add('btn-primary', 'active');
+        document.getElementById('repSubViewCommission').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Commission Report';
+        document.title = 'BPEXCH | Commission Report';
+      } else {
+        document.getElementById('repPillBookDetail')?.classList.add('btn-primary', 'active');
+        document.getElementById('repSubViewBookDetail').style.display = 'block';
+        if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Book Detail';
+        document.title = 'BPEXCH | Book Detail';
+      }
+    }
+
+    // Load Balances Simulation
+    function loadDynamicBalances(e) {
+      if (e) e.preventDefault();
+      const gif = document.getElementById('accountLoadGif');
+      if (gif) gif.style.display = 'inline';
+      showToast('Loading balances from exchange...');
+      setTimeout(() => {
+        if (gif) gif.style.display = 'none';
+        document.querySelectorAll('#adminUsersTableBody tr').forEach(row => {
+          const c = row.querySelector('.credit-cell'); if (c) c.innerText = '0';
+          const b = row.querySelector('.balance-cell'); if (b) b.innerText = '0 Rs.';
+          const p = row.querySelector('.pl-cell'); if (p) p.innerText = '0 Rs.';
+          const s = row.querySelector('.share-cell'); if (s) s.innerText = '0%';
+          const ex = row.querySelector('.exp-cell'); if (ex) ex.innerText = '0 Rs.';
+          const av = row.querySelector('.avail-cell'); if (av) av.innerText = '0 Rs.';
+        });
+        showToast('Balances loaded successfully.');
+      }, 600);
+    }
+
+    // Show Book Row (Expandable (i) icon)
+    function ShowBookRow(mid, btid) {
+      const row = document.getElementById('bookrow-' + btid);
+      if (row) {
+        row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
+      }
+    }
+
+    // Popup Helpers (1:1 with Reference)
+    function popup_hawala(url, clientId, username, e) {
+      if (e) e.preventDefault();
+      currentEditingUser = username || 'Jimmy3221';
+      currentEditingId = clientId;
+      navigateAdmin(`/Accounts/Cash?id=${clientId}`);
+    }
+
+    function show_popup(url, title, e) {
+      if (e) e.preventDefault();
+      navigateAdmin(url);
+    }
+
+    // Users Table Search Filter
+    function filterUserTable(term) {
+      const q = (term || '').toLowerCase().trim();
+      const rows = document.querySelectorAll('#adminUsersTableBody tr[data-username]');
+      let visible = 0;
+      rows.forEach(r => {
+        const u = (r.getAttribute('data-username') || '').toLowerCase();
+        if (u.includes(q)) {
+          r.style.display = '';
+          visible++;
+        } else {
+          r.style.display = 'none';
+          const child = document.getElementById('bookrow-' + r.id.replace('row-', ''));
+          if (child) child.style.display = 'none';
+        }
+      });
+      const el = document.getElementById('showingUsersEntryText');
+      if (el) el.innerText = `Showing 1 to ${visible} of ${rows.length} entries`;
+    }
+
+    function searchUsersFromInput(inputId) {
+      const val = document.getElementById(inputId).value.trim();
+      navigateAdmin('/Accounts/Chart');
+      document.getElementById('usersListSearchInput').value = val;
+      filterUserTable(val);
+    }
+
+    // New User Submit
+    function handleCreateUserSubmit(e) {
+      e.preventDefault();
+      const u = document.getElementById('newUserName').value.trim();
+      const p = document.getElementById('newUserPass').value.trim();
+      const err = document.getElementById('newUserPassErr');
+
+      // Password Validation (Ref: 8 chars + alphabet + number)
+      const strongPass = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+      if (!strongPass.test(p)) {
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+
+      const newId = (8700000 + Math.floor(Math.random() * 99999)).toString();
+      usersList.push({
+        id: newId,
+        username: u,
+        type: 'Bettor',
+        credit: '-',
+        balance: '-',
+        pl: '-',
+        share: '-',
+        exp: '-',
+        avail: '-',
+        active: true,
+        domain: 'betproexch.com'
+      });
+
+      const tbody = document.getElementById('adminUsersTableBody');
+      const tr = document.createElement('tr');
+      tr.id = 'row-' + newId;
+      tr.setAttribute('data-username', u);
+      tr.innerHTML = `
+        <td>
+          <strong>${u}</strong>
+          <span style="float:right;">
+            <button class="btn btn-sm" style="padding:0 4px; background:none; border:none; color:#73818f;" onclick="ShowBookRow('8730410', '${newId}')" title="Show Book Details">
+              <i class="fas fa-info-circle"></i>
+            </button>
+          </span>
+        </td>
+        <td>Bettor</td>
+        <td class="credit-cell">-</td>
+        <td class="balance-cell">-</td>
+        <td class="pl-cell">-</td>
+        <td class="share-cell">-</td>
+        <td class="exp-cell">-</td>
+        <td class="avail-cell">-</td>
+        <td align="right" style="padding-right:12px;">
+          <div style="display:inline-flex; gap:4px;">
+            <a class="btn btn-sm btn-warning" href="/Accounts/Cash?id=${newId}" onclick="popup_hawala('/Accounts/Cash', '${newId}', '${u}', event)">
+              <strong>C</strong>
+            </a>
+            <a class="btn btn-sm btn-primary" href="/Users/Edit?id=${newId}" onclick="openEditUserView('${u}', '${newId}', event)">
+              <i class="fas fa-pencil-alt"></i>
+            </a>
+            <a class="btn btn-sm btn-info" href="/accounts/ledger?accountId=${newId}" onclick="show_popup('/accounts/ledger?accountId=${newId}', '${u} - Account Ledger', event)">
+              <strong>L</strong>
+            </a>
+            <button class="btn btn-sm btn-outline-danger" onclick="toggleUserStatus(this)" title="Toggle Active/Inactive">
+              <strong>D</strong>
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      const totalCount = document.querySelectorAll('#adminUsersTableBody tr[data-username]').length;
+      document.getElementById('totalUsersCountCell').innerText = totalCount;
+      document.getElementById('showingUsersEntryText').innerText = `Showing 1 to ${totalCount} of ${totalCount} entries`;
+
+      showToast(`User ${u} created successfully!`);
+      document.getElementById('createNewUserForm').reset();
+      navigateAdmin('/Accounts/Chart');
+    }
+
+    // Setup User Edit
+    function openEditUserView(uname, uid, e) {
+      if (e) e.preventDefault();
+      currentEditingUser = uname;
+      currentEditingId = uid;
+      navigateAdmin(`/Users/Edit?id=${uid}`);
+    }
+
+    function setupUserEditPage(uid) {
+      const user = usersList.find(u => u.id === uid) || { username: 'Jimmy3221', id: uid };
+      currentEditingUser = user.username;
+      currentEditingId = uid;
+
+      document.getElementById('editUserDisplayHeader').innerText = user.username;
+      document.getElementById('editClientTitleUser').innerText = user.username;
+      document.getElementById('editUserNameVal').innerText = user.username;
+      document.getElementById('editUserIdVal').innerText = uid;
+
+      showhideEditUser();
+    }
+
+    function showhideEditUser() {
+      document.getElementById('iframesection').style.display = 'none';
+      document.getElementById('editsection1').style.display = 'block';
+      document.getElementById('editsection2').style.display = 'block';
+
+      document.querySelectorAll('#viewUsersEdit .admin-card-body button').forEach(b => b.classList.remove('active'));
+      document.getElementById('EditBtn')?.classList.add('active');
+    }
+
+    function showEditSubSection(type) {
+      document.getElementById('editsection1').style.display = 'none';
+      document.getElementById('editsection2').style.display = 'none';
+      document.getElementById('iframesection').style.display = 'block';
+
+      document.querySelectorAll('#viewUsersEdit .admin-card-body button').forEach(b => b.classList.remove('active'));
+
+      const titleEl = document.getElementById('iframesectionTitle');
+      const bodyEl = document.getElementById('iframesectionBody');
+
+      if (type === 'ledger') {
+        document.getElementById('LedgerBtn')?.classList.add('active');
+        titleEl.innerHTML = `<span><strong>${currentEditingUser}</strong> - Account Ledger</span>`;
+        bodyEl.innerHTML = `
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr><th>#</th><th>Date</th><th>Description</th><th>Amount</th><th>Balance</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>9/28/2026 12:00:00 am</td><td>Opening Balance</td><td>0</td><td>0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (type === 'bets') {
+        document.getElementById('BetsBtn')?.classList.add('active');
+        titleEl.innerHTML = `<span><strong>${currentEditingUser}</strong> - Active & Settled Bets</span>`;
+        bodyEl.innerHTML = `
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Bet ID</th><th>Event</th><th>Selection</th><th>Odds</th><th>Stake (Rs.)</th><th>Placed At</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="7" style="text-align:center; color:#73818f; padding:20px;">No placed bets recorded for this client.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (type === 'profitloss') {
+        document.getElementById('ProfitlossBtn')?.classList.add('active');
+        titleEl.innerHTML = `<span><strong>${currentEditingUser}</strong> - Profit & Loss Statement</span>`;
+        bodyEl.innerHTML = `
+          <div style="display:flex; gap:16px; flex-wrap:wrap;">
+            <div style="flex:1;">
+              <table class="admin-table">
+                <thead><tr class="bg-primary" style="color:#fff;"><th>Profit Events</th><th>Amount (Rs.)</th></tr></thead>
+                <tbody><tr><td colspan="2" style="text-align:center; color:#73818f;">0.00</td></tr></tbody>
+              </table>
+            </div>
+            <div style="flex:1;">
+              <table class="admin-table">
+                <thead><tr class="bg-danger" style="color:#fff;"><th>Loss Events</th><th>Amount (Rs.)</th></tr></thead>
+                <tbody><tr><td colspan="2" style="text-align:center; color:#73818f;">0.00</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else if (type === 'cp') {
+        document.getElementById('CPBtn')?.classList.add('active');
+        titleEl.innerHTML = `<span><strong>${currentEditingUser}</strong> - Current Positions</span>`;
+        bodyEl.innerHTML = `<p style="color:#73818f; padding:20px; text-align:center;">No open liabilities or positions for this client.</p>`;
+      }
+    }
+
+    function handleEditClientSubmit(e) {
+      e.preventDefault();
+      const p = document.getElementById('user_Password_Edit').value.trim();
+      const err = document.getElementById('userPasswordEditErr');
+
+      if (p !== '') {
+        const strongPass = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+        if (!strongPass.test(p)) {
+          err.style.display = 'block';
+          return;
+        }
+      }
+      err.style.display = 'none';
+      showToast(`User ${currentEditingUser} details updated!`);
+    }
+
+    // Setup Cash / Credit View
+    function setupCashCreditPage(uid) {
+      const user = usersList.find(u => u.id === uid) || { username: 'Jimmy3221', id: uid };
+      currentEditingUser = user.username;
+      currentEditingId = uid;
+
+      document.getElementById('cashCreditUserTitle').innerText = user.username;
+      document.getElementById('depositUserLabel').innerText = user.username;
+      document.getElementById('withdrawUserLabel').innerText = user.username;
+      document.getElementById('creditLimitUserTitle').innerText = user.username;
+      document.getElementById('depositDesc').value = `Cash deposit in ${user.username}`;
+      document.getElementById('withdrawDesc').value = `Cash withdrawn from ${user.username}`;
+
+      switchCashCreditTab('cash');
+    }
+
+    function switchCashCreditTab(tab) {
+      if (tab === 'cash') {
+        document.getElementById('cashCreditTabCash').classList.add('btn-primary');
+        document.getElementById('cashCreditTabCash').classList.remove('btn-outline-primary');
+        document.getElementById('cashCreditTabCredit').classList.add('btn-outline-primary');
+        document.getElementById('cashCreditTabCredit').classList.remove('btn-primary');
+
+        document.getElementById('cashTabPane').style.display = 'block';
+        document.getElementById('creditTabPane').style.display = 'none';
+      } else {
+        document.getElementById('cashCreditTabCredit').classList.add('btn-primary');
+        document.getElementById('cashCreditTabCredit').classList.remove('btn-outline-primary');
+        document.getElementById('cashCreditTabCash').classList.add('btn-outline-primary');
+        document.getElementById('cashCreditTabCash').classList.remove('btn-primary');
+
+        document.getElementById('cashTabPane').style.display = 'none';
+        document.getElementById('creditTabPane').style.display = 'block';
+      }
+    }
+
+    function handleDepositSubmit(e) {
+      e.preventDefault();
+      const amt = document.getElementById('depositAmt').value;
+      showToast(`Deposited Rs. ${amt} into ${currentEditingUser} account!`);
+      document.getElementById('userCashBalVal').innerText = `${amt} Rs.`;
+      document.getElementById('userCashMaxWithdrawVal').innerText = `${amt} Rs.`;
+    }
+
+    function handleWithdrawSubmit(e) {
+      e.preventDefault();
+      const amt = document.getElementById('withdrawAmt').value;
+      showToast(`Withdrew Rs. ${amt} from ${currentEditingUser} account!`);
+      document.getElementById('userCashBalVal').innerText = `0 Rs.`;
+      document.getElementById('userCashMaxWithdrawVal').innerText = `0 Rs.`;
+    }
+
+    function handleCreditLimitSubmit(e) {
+      e.preventDefault();
+      const newLimit = document.getElementById('newCreditLimitInput').value;
+      showToast(`Credit Limit updated to Rs. ${newLimit} for ${currentEditingUser}!`);
+      document.getElementById('currentCreditLimitDisplay').innerText = `${newLimit} Rs.`;
+      document.getElementById('userCashCreditVal').innerText = `${newLimit} Rs.`;
+    }
+
+    // Toggle Active Status
+    function toggleUserStatus(btn) {
+      if (btn.classList.contains('badge-inactive') || btn.classList.contains('btn-outline-danger')) {
+        btn.classList.remove('badge-inactive', 'btn-outline-danger');
+        btn.classList.add('badge-active', 'btn-primary');
+        btn.querySelector('strong').innerText = 'A';
+        showToast('User status changed to ACTIVE');
+      } else {
+        btn.classList.remove('badge-active', 'btn-primary');
+        btn.classList.add('badge-inactive', 'btn-outline-danger');
+        btn.querySelector('strong').innerText = 'D';
+        showToast('User status changed to INACTIVE');
+      }
+    }
+
+    // Profile Change Password
+    function handleProfileChangePass(e) {
+      e.preventDefault();
+      const p = document.getElementById('profileNewPassInput').value.trim();
+      const err = document.getElementById('profilePassErr');
+      const strongPass = /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/;
+      if (!strongPass.test(p)) {
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+      showToast('Master password updated successfully!');
+      document.getElementById('profileChangePassForm').reset();
+    }
+
+    // 2FA Toggle
+    function toggle2FA(chk) {
+      const statusText = document.getElementById('tfaStatusText');
+      if (chk.checked) {
+        statusText.innerText = 'ENABLED';
+        statusText.style.color = '#00b181';
+        showToast('Two Factor Authentication ENABLED!');
+      } else {
+        statusText.innerText = 'DISABLED';
+        statusText.style.color = '';
+        showToast('Two Factor Authentication DISABLED!');
+      }
+    }
+
+    // Market Odds Media Switcher (TV vs Scorecard)
+    function switchLiveMedia(type) {
+      if (type === 'tv') {
+        document.getElementById('btnTvToggle').classList.add('btn-primary');
+        document.getElementById('btnTvToggle').classList.remove('btn-outline-primary');
+        document.getElementById('btnScoreToggle').classList.add('btn-outline-primary');
+        document.getElementById('btnScoreToggle').classList.remove('btn-primary');
+        document.getElementById('mediaTvDiv').style.display = 'block';
+        document.getElementById('mediaScoreDiv').style.display = 'none';
+      } else {
+        document.getElementById('btnScoreToggle').classList.add('btn-primary');
+        document.getElementById('btnScoreToggle').classList.remove('btn-outline-primary');
+        document.getElementById('btnTvToggle').classList.add('btn-outline-primary');
+        document.getElementById('btnTvToggle').classList.remove('btn-primary');
+        document.getElementById('mediaTvDiv').style.display = 'none';
+        document.getElementById('mediaScoreDiv').style.display = 'block';
+      }
+    }
+
+    function toggleBetLockDropdown(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('betLockMenu');
+      if (menu) menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function toggleChildCheckboxes(master, selector) {
+      document.querySelectorAll(selector).forEach(c => c.checked = master.checked);
+    }
+
+    function refreshSportHighlights() {
+      showToast('Sport highlights refreshed!');
+    }
+
+    function toggleZeroAccounts() {
+      const rows = document.querySelectorAll('#repSubViewFinalSheet table tbody tr');
+      let hidden = false;
+      rows.forEach(r => {
+        const balCell = r.cells[r.cells.length - 1];
+        if (balCell && (balCell.innerText.trim() === '0' || balCell.innerText.trim() === '0.00')) {
+          if (r.style.display === 'none') {
+            r.style.display = '';
+          } else {
+            r.style.display = 'none';
+            hidden = true;
+          }
+        }
+      });
+      showToast(hidden ? 'Zero balance accounts hidden.' : 'Showing all accounts.');
+    }
+
+    // Toast helper
+    function showToast(msg) {
+      const toast = document.getElementById('adminToast');
+      if (!toast) return;
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
