@@ -2932,7 +2932,7 @@
       setTimeout(() => {
         if (gif) gif.style.display = 'none';
         document.querySelectorAll('#adminUsersTableBody tr').forEach(row => {
-          const c = row.querySelector('.credit-cell'); if (c) c.innerText = '0 Rs.';
+          const c = row.querySelector('.credit-cell'); if (c) c.innerText = '0';
           const b = row.querySelector('.balance-cell'); if (b) b.innerText = '0 Rs.';
           const p = row.querySelector('.pl-cell'); if (p) p.innerText = '0 Rs.';
           const s = row.querySelector('.share-cell'); if (s) s.innerText = '0%';
