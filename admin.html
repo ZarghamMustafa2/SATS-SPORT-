@@ -2665,6 +2665,11 @@
     window.addEventListener('DOMContentLoaded', () => {
       // Check session or default to login
       const session = localStorage.getItem('bpexch_session');
+      const p = window.location.pathname.toLowerCase();
+      if (p === '/users/login' || p === '/login' || p === '/admin/login') {
+        showLoginScreen();
+        return;
+      }
       if (session === 'active') {
         showAdminApp();
         routeFromUrl();
@@ -2789,13 +2794,19 @@
     }
 
     function routeFromUrl() {
-      const pathname = window.location.pathname;
+      const fullPath = window.location.pathname;
+      const lower = fullPath.toLowerCase();
       const search = window.location.search;
       const hash = window.location.hash;
 
       // Extract query params
       const urlParams = new URLSearchParams(search);
       const userId = urlParams.get('id') || urlParams.get('accountId') || '8730421';
+
+      if (lower === '/users/login' || lower === '/login' || lower === '/admin/login') {
+        showLoginScreen();
+        return;
+      }
 
       // Hide all view sections
       document.querySelectorAll('.admin-view-section').forEach(sec => sec.style.display = 'none');
@@ -2804,36 +2815,36 @@
 
       const breadcrumbCurrent = document.getElementById('breadcrumbCurrent');
 
-      if (pathname === '/index' || pathname === '/admin' || pathname === '/admin/' || pathname === '/') {
+      if (lower === '/index' || lower === '/admin' || lower === '/admin/' || lower === '/') {
         document.getElementById('viewDashboard').style.display = 'block';
         document.getElementById('sideNavDashboard')?.classList.add('active');
         document.getElementById('topNavDashboard')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Dashboard';
         document.title = 'BPEXCH | Dashboard';
-      } else if (pathname === '/Accounts/Chart' || pathname.startsWith('/Accounts/Chart')) {
+      } else if (lower.startsWith('/accounts/chart')) {
         document.getElementById('viewUsers').style.display = 'block';
         document.getElementById('sideNavUsers')?.classList.add('active');
         document.getElementById('topNavUsers')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Users';
         document.title = 'BPEXCH | Users';
-      } else if (pathname === '/Users/Create') {
+      } else if (lower === '/users/create') {
         document.getElementById('viewUsersCreate').style.display = 'block';
         document.getElementById('sideNavUsers')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Create New User';
         document.title = 'BPEXCH | Create New User';
-      } else if (pathname === '/Users/Edit') {
+      } else if (lower.startsWith('/users/edit')) {
         setupUserEditPage(userId);
         document.getElementById('viewUsersEdit').style.display = 'block';
         document.getElementById('sideNavUsers')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Edit User';
         document.title = 'BPEXCH | Edit User';
-      } else if (pathname === '/Accounts/Cash' || pathname === '/Accounts/Credit') {
+      } else if (lower.startsWith('/accounts/cash') || lower.startsWith('/accounts/credit')) {
         setupCashCreditPage(userId);
         document.getElementById('viewCashCredit').style.display = 'block';
         document.getElementById('sideNavUsers')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Cash / Credit';
         document.title = 'BPEXCH | Cash / Credit';
-      } else if (pathname === '/Accounts/Ledger' || pathname === '/accounts/ledger') {
+      } else if (lower.startsWith('/accounts/ledger')) {
         document.getElementById('viewAccountLedger').style.display = 'block';
         document.getElementById('sideNavUsers')?.classList.add('active');
         const userObj = usersList.find(u => u.id === userId);
@@ -2841,34 +2852,34 @@
         document.getElementById('ledgerCardHeaderTitle').innerHTML = `<span><strong>${uname}</strong> - Account Ledger</span>`;
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Account Ledger';
         document.title = 'BPEXCH | Account Ledger';
-      } else if (pathname === '/Markets/Liables') {
+      } else if (lower === '/markets/liables') {
         document.getElementById('viewCurrentPosition').style.display = 'block';
         document.getElementById('sideNavPosition')?.classList.add('active');
         document.getElementById('topNavPosition')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Current Position';
         document.title = 'BPEXCH | Current Position';
-      } else if (pathname.startsWith('/Reports/')) {
+      } else if (lower.startsWith('/reports/')) {
         document.getElementById('viewReports').style.display = 'block';
         document.getElementById('sideNavReports')?.classList.add('active');
         document.getElementById('topNavReports')?.classList.add('active');
-        handleReportRoute(pathname);
-      } else if (pathname === '/Markets/BetLocker') {
+        handleReportRoute(fullPath);
+      } else if (lower === '/markets/betlocker') {
         document.getElementById('viewBetLock').style.display = 'block';
         document.getElementById('sideNavBetLock')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Bet Lock';
         document.title = 'BPEXCH | Bet Lock';
-      } else if (pathname === '/Markets/Games' || pathname === '/Markets/WorldCasino' || pathname === '/Markets/ExGames') {
+      } else if (lower === '/markets/games' || lower === '/markets/worldcasino' || lower === '/markets/exgames') {
         document.getElementById('viewCasinoConsole').style.display = 'block';
-        if (pathname === '/Markets/Games') document.getElementById('sideNavStarCasino')?.classList.add('active');
-        if (pathname === '/Markets/WorldCasino') document.getElementById('sideNavWorldCasino')?.classList.add('active');
-        if (pathname === '/Markets/ExGames') document.getElementById('sideNavBetFairGames')?.classList.add('active');
+        if (lower === '/markets/games') document.getElementById('sideNavStarCasino')?.classList.add('active');
+        if (lower === '/markets/worldcasino') document.getElementById('sideNavWorldCasino')?.classList.add('active');
+        if (lower === '/markets/exgames') document.getElementById('sideNavBetFairGames')?.classList.add('active');
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Casino Console';
         document.title = 'BPEXCH | Casino Console';
-      } else if (pathname.startsWith('/Markets/')) {
+      } else if (lower.startsWith('/markets/')) {
         document.getElementById('viewMarketDetail').style.display = 'block';
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Market Detail';
         document.title = 'BPEXCH | Market Odds';
-      } else if (pathname === '/Common/Profile') {
+      } else if (lower === '/common/profile') {
         document.getElementById('viewProfile').style.display = 'block';
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Profile Settings';
         document.title = 'BPEXCH | Profile Settings';
@@ -2883,6 +2894,7 @@
 
     // Reports Pill Selector
     function handleReportRoute(path) {
+      const lower = (path || '').toLowerCase();
       document.querySelectorAll('#reportsPillsRow button').forEach(b => {
         b.classList.remove('btn-primary', 'active');
         b.classList.add('btn-outline-primary');
@@ -2890,27 +2902,27 @@
       document.querySelectorAll('.report-subtype-section').forEach(s => s.style.display = 'none');
       const breadcrumbCurrent = document.getElementById('breadcrumbCurrent');
 
-      if (path === '/Reports/Detail2') {
+      if (lower === '/reports/detail2') {
         document.getElementById('repPillDetail2')?.classList.add('btn-primary', 'active');
         document.getElementById('repSubViewBookDetail2').style.display = 'block';
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Book Detail 2';
         document.title = 'BPEXCH | Book Detail 2';
-      } else if (path === '/Reports/DailyPl') {
+      } else if (lower === '/reports/dailypl') {
         document.getElementById('repPillDailyPl')?.classList.add('btn-primary', 'active');
         document.getElementById('repSubViewDailyPL').style.display = 'block';
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Daily PL';
         document.title = 'BPEXCH | Daily PL';
-      } else if (path === '/Reports/Daily') {
+      } else if (lower === '/reports/daily') {
         document.getElementById('repPillDaily')?.classList.add('btn-primary', 'active');
         document.getElementById('repSubViewDaily').style.display = 'block';
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Daily Report';
         document.title = 'BPEXCH | Daily Report';
-      } else if (path === '/Reports/FinalSheet') {
+      } else if (lower === '/reports/finalsheet') {
         document.getElementById('repPillFinalSheet')?.classList.add('btn-primary', 'active');
         document.getElementById('repSubViewFinalSheet').style.display = 'block';
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Final Sheet';
         document.title = 'BPEXCH | Final Sheet';
-      } else if (path === '/Reports/Commission') {
+      } else if (lower === '/reports/commission') {
         document.getElementById('repPillCommission')?.classList.add('btn-primary', 'active');
         document.getElementById('repSubViewCommission').style.display = 'block';
         if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Commission Report';

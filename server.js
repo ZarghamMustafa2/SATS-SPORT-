@@ -312,20 +312,24 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Admin Portal Routes
-  if (
-    pathname === '/admin' ||
-    pathname === '/admin/' ||
-    pathname === '/admin.html' ||
-    pathname.startsWith('/admin/') ||
-    pathname === '/index' ||
-    pathname.startsWith('/Users/') ||
-    pathname.startsWith('/Accounts/') ||
-    pathname.startsWith('/accounts/') ||
-    pathname.startsWith('/Reports/') ||
-    pathname.startsWith('/Markets/') ||
-    pathname.startsWith('/Common/') ||
-    pathname.startsWith('/Customer/')
-  ) {
+  const lowerPath = pathname.toLowerCase();
+  const isAdminRoute = 
+    lowerPath === '/admin' ||
+    lowerPath === '/admin/' ||
+    lowerPath === '/admin.html' ||
+    lowerPath.startsWith('/admin/') ||
+    lowerPath === '/login' ||
+    lowerPath === '/login/' ||
+    lowerPath.startsWith('/login/') ||
+    lowerPath === '/index' ||
+    lowerPath.startsWith('/users') ||
+    lowerPath.startsWith('/accounts') ||
+    lowerPath.startsWith('/reports') ||
+    lowerPath.startsWith('/markets') ||
+    lowerPath.startsWith('/common') ||
+    lowerPath.startsWith('/customer');
+
+  if (isAdminRoute) {
     const adminPath = path.join(__dirname, 'admin.html');
     res.writeHead(200, { 'Content-Type': 'text/html' });
     fs.createReadStream(adminPath).pipe(res);
