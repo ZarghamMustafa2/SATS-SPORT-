@@ -2878,6 +2878,49 @@ Boland v Knights                        </a>
             { id: '8758678', username: 'Rana3471', type: 'Bettor', credit: '0', balance: '0 Rs.', pl: '0 Rs.', share: '0%', exp: '0 Rs.', avail: '0 Rs.', active: true, domain: 'betproexch.com' }
         ];
 
+        // Production vs Local API Base URL Resolver
+        function getApiUrl(endpoint) {
+            var isGitHubPages = window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:';
+            var base = isGitHubPages ? 'https://sats-sport.vercel.app' : '';
+            if (endpoint.charAt(0) !== '/') endpoint = '/' + endpoint;
+            return base + endpoint;
+        }
+
+        function getAppPath(path) {
+            if (window.location.pathname.startsWith('/SATS-SPORT-')) {
+                if (path === '/' || path === '/index.html' || path === '') return '/SATS-SPORT-/';
+                if (path === '/admin' || path === '/login') return '/SATS-SPORT-/admin.html';
+                return '/SATS-SPORT-' + (path.charAt(0) === '/' ? path : '/' + path);
+            }
+            return path;
+        }
+
+        // Defensive API fetch wrapper (Step 8)
+        async function safeFetchJson(url, options) {
+            try {
+                var res = await fetch(url, options);
+                var contentType = res.headers.get('content-type') || '';
+                var data;
+                if (contentType.includes('application/json')) {
+                    data = await res.json();
+                } else {
+                    var text = await res.text();
+                    data = {
+                        status: 'error',
+                        message: 'Unexpected server response (' + res.status + ')',
+                        raw: text
+                    };
+                }
+                return { ok: res.ok, status: res.status, data: data };
+            } catch (netErr) {
+                return {
+                    ok: false,
+                    status: 0,
+                    data: { status: 'error', message: 'Network connection error: ' + netErr.message }
+                };
+            }
+        }
+
         // Auth Mode Switch (Login vs User Registration)
         function toggleAuthMode() {
             var loginF = document.getElementById('adminLoginForm');
@@ -2919,13 +2962,13 @@ Boland v Knights                        </a>
             }
             
             try {
-                var res = await fetch('/api/auth/register', {
+                var result = await safeFetchJson(getApiUrl('/api/auth/register'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: u, password: p })
                 });
-                var data = await res.json();
-                if (data.status === 'success') {
+                var data = result.data;
+                if (result.ok && data.status === 'success') {
                     err.style.display = 'none';
                     succ.innerText = 'Registration successful! You can now login.';
                     succ.style.display = 'block';
@@ -3011,13 +3054,11 @@ Boland v Knights                        </a>
             if (!token) return;
 
             try {
-                var res = await fetch('/api/admin/users', {
+                var result = await safeFetchJson(getApiUrl('/api/admin/users'), {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
-                if (!res.ok) return;
-
-                var data = await res.json();
-                if (data.status === 'success' && Array.isArray(data.users)) {
+                var data = result.data;
+                if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
                     if (data.users.length > 0) {
                         clientsList = data.users.map(function(u) {
                             var balNum = parseFloat(u.balance);
@@ -3061,17 +3102,17 @@ Boland v Knights                        </a>
             }
 
             try {
-                var res = await fetch('/api/auth/me', {
+                var result = await safeFetchJson(getApiUrl('/api/auth/me'), {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
-                var data = await res.json();
-                if (data.status === 'success' && data.user) {
+                var data = result.data;
+                if (result.ok && data.status === 'success' && data.user) {
                     if (data.user.role === 'user') {
                         // TEST 6: Normal user attempts to open /admin -> Server rejects/denies access
                         alert('Access Denied: You do not have administrator permissions.');
                         localStorage.removeItem('auth_token');
                         localStorage.removeItem('current_user');
-                        window.location.href = '/';
+                        window.location.href = getAppPath('/');
                         return;
                     }
 
@@ -3123,21 +3164,21 @@ Boland v Knights                        </a>
             }
 
             try {
-                var res = await fetch('/api/auth/login', {
+                var result = await safeFetchJson(getApiUrl('/api/auth/login'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: u, password: p })
                 });
-                var data = await res.json();
+                var data = result.data;
 
-                if (data.status === 'success') {
+                if (result.ok && data.status === 'success') {
                     err.style.display = 'none';
                     localStorage.setItem('auth_token', data.token);
                     localStorage.setItem('current_user', JSON.stringify(data.user));
 
                     if (data.user.role === 'user') {
                         // Single login for all roles: Normal user redirected to User Website
-                        window.location.href = data.redirectTo || '/';
+                        window.location.href = getAppPath(data.redirectTo || '/');
                         return;
                     }
 
@@ -3162,7 +3203,7 @@ Boland v Knights                        </a>
             var token = localStorage.getItem('auth_token');
             try {
                 if (token) {
-                    await fetch('/api/auth/logout', {
+                    await safeFetchJson(getApiUrl('/api/auth/logout'), {
                         method: 'POST',
                         headers: { 'Authorization': 'Bearer ' + token }
                     });
@@ -3174,7 +3215,7 @@ Boland v Knights                        </a>
             showLoginScreen();
             showToast('Logged out.');
             if (window.history.pushState) {
-                window.history.pushState(null, '', '/login');
+                window.history.pushState(null, '', getAppPath('/login'));
             }
         }
 
@@ -3581,7 +3622,7 @@ Boland v Knights                        </a>
             }
 
             try {
-                var res = await fetch('/api/admin/users/create', {
+                var result = await safeFetchJson(getApiUrl('/api/admin/users/create'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3593,8 +3634,8 @@ Boland v Knights                        </a>
                         role: targetRole
                     })
                 });
-                var data = await res.json();
-                if (data.status === 'success') {
+                var data = result.data;
+                if (result.ok && data.status === 'success') {
                     showToast(data.message || ('User ' + u + ' created successfully!'));
                     document.getElementById('createNewUserForm').reset();
                     await fetchAdminUsers();
@@ -3740,7 +3781,7 @@ Boland v Knights                        </a>
             }
 
             try {
-                var res = await fetch('/api/admin/users/status', {
+                var result = await safeFetchJson(getApiUrl('/api/admin/users/status'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3748,8 +3789,8 @@ Boland v Knights                        </a>
                     },
                     body: JSON.stringify({ targetUserId: clientId })
                 });
-                var data = await res.json();
-                if (data.status === 'success') {
+                var data = result.data;
+                if (result.ok && data.status === 'success') {
                     showToast(data.message);
                     await fetchAdminUsers();
                 } else {

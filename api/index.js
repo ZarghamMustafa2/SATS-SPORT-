@@ -1,18 +1,19 @@
 const url = require('url');
 
-const loginHandler = require('./auth/login');
-const registerHandler = require('./auth/register');
-const meHandler = require('./auth/me');
-const logoutHandler = require('./auth/logout');
-const createUserHandler = require('./admin/users/create');
-const statusUserHandler = require('./admin/users/status');
-const listUsersHandler = require('./admin/users/index');
+const loginHandler = require('../lib/api/auth/login');
+const registerHandler = require('../lib/api/auth/register');
+const meHandler = require('../lib/api/auth/me');
+const logoutHandler = require('../lib/api/auth/logout');
+const createUserHandler = require('../lib/api/admin/users/create');
+const statusUserHandler = require('../lib/api/admin/users/status');
+const listUsersHandler = require('../lib/api/admin/users/index');
+const sportbexHandler = require('../lib/api/sportbex/cricket/live');
 
 module.exports = async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, sportbex-api-key');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -30,6 +31,7 @@ module.exports = async function handler(req, res) {
   if (pathname === '/api/admin/users/create') return createUserHandler(req, res);
   if (pathname === '/api/admin/users/status') return statusUserHandler(req, res);
   if (pathname === '/api/admin/users') return listUsersHandler(req, res);
+  if (pathname === '/api/sportbex/cricket/live') return sportbexHandler(req, res);
 
   res.statusCode = 404;
   res.setHeader('Content-Type', 'application/json');

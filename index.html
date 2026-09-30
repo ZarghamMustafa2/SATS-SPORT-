@@ -8834,6 +8834,49 @@
       document.getElementById('loginModalBackdrop').classList.remove('show');
     }
 
+    // Production vs Local API Base URL Resolver
+    function getApiUrl(endpoint) {
+      const isGitHubPages = window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:';
+      const base = isGitHubPages ? 'https://sats-sport.vercel.app' : '';
+      if (endpoint.charAt(0) !== '/') endpoint = '/' + endpoint;
+      return base + endpoint;
+    }
+
+    function getAppPath(path) {
+      if (window.location.pathname.startsWith('/SATS-SPORT-')) {
+        if (path === '/' || path === '/index.html' || path === '') return '/SATS-SPORT-/';
+        if (path === '/admin' || path === '/login') return '/SATS-SPORT-/admin.html';
+        return '/SATS-SPORT-' + (path.charAt(0) === '/' ? path : '/' + path);
+      }
+      return path;
+    }
+
+    // Defensive API fetch wrapper (Step 8)
+    async function safeFetchJson(url, options) {
+      try {
+        const res = await fetch(url, options);
+        const contentType = res.headers.get('content-type') || '';
+        let data;
+        if (contentType.includes('application/json')) {
+          data = await res.json();
+        } else {
+          const text = await res.text();
+          data = {
+            status: 'error',
+            message: 'Unexpected server response (' + res.status + ')',
+            raw: text
+          };
+        }
+        return { ok: res.ok, status: res.status, data };
+      } catch (netErr) {
+        return {
+          ok: false,
+          status: 0,
+          data: { status: 'error', message: 'Network connection error: ' + netErr.message }
+        };
+      }
+    }
+
     async function handleModalLogin() {
       const u = document.getElementById('modalUsername').value.trim();
       const p = document.getElementById('modalPassword').value.trim();
@@ -8848,14 +8891,14 @@
       }
 
       try {
-        const res = await fetch('/api/auth/login', {
+        const result = await safeFetchJson(getApiUrl('/api/auth/login'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: u, password: p })
         });
-        const data = await res.json();
+        const data = result.data;
 
-        if (data.status === 'success') {
+        if (result.ok && data.status === 'success') {
           if (errBox) errBox.style.display = 'none';
           localStorage.setItem('auth_token', data.token);
           localStorage.setItem('current_user', JSON.stringify(data.user));
@@ -8863,7 +8906,7 @@
 
           // Single login system: if admin account logs in, redirect to /admin
           if (data.user.role === 'company' || data.user.role === 'super_admin' || data.user.role === 'super_master') {
-            window.location.href = data.redirectTo || '/admin';
+            window.location.href = getAppPath(data.redirectTo || '/admin');
             return;
           }
 
@@ -9801,7 +9844,7 @@
       const token = localStorage.getItem('auth_token');
       try {
         if (token) {
-          await fetch('/api/auth/logout', {
+          await safeFetchJson(getApiUrl('/api/auth/logout'), {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token }
           });
@@ -9829,11 +9872,11 @@
       if (!token) return;
 
       try {
-        const res = await fetch('/api/auth/me', {
+        const result = await safeFetchJson(getApiUrl('/api/auth/me'), {
           headers: { 'Authorization': 'Bearer ' + token }
         });
-        const data = await res.json();
-        if (data.status === 'success' && data.user) {
+        const data = result.data;
+        if (result.ok && data.status === 'success' && data.user) {
           updateUserLoggedInState(data.user);
         } else {
           localStorage.removeItem('auth_token');
@@ -12024,7 +12067,7 @@
     // Live Sportbex Cricket API Integration Loader
     window.initSportbexLiveIntegration = function() {
       function refreshLiveFeed() {
-        fetch('/api/sportbex/cricket/live')
+        fetch(getApiUrl('/api/sportbex/cricket/live'))
           .then(res => res.json())
           .then(data => {
             if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
