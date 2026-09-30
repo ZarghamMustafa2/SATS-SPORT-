@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="./">
+    <script>
+        (function() {
+            var isGhPages = window.location.hostname.includes('github.io');
+            var isFile = window.location.protocol === 'file:';
+            var baseHref = isGhPages ? '/SATS-SPORT-/' : (isFile ? './' : '/');
+            document.write('<base href="' + baseHref + '">');
+        })();
+    </script>
     <meta charset="utf-8">
     <meta name="google" content="notranslate">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,13 +17,13 @@
     <meta name="keyword" content="sports trading, bet, betfair">
     <title>BPEXCH</title>
     <!-- Icons & CoreUI Authentic Stylesheets -->
-    <link rel="shortcut icon" href="/img/favicon/favicon.ico">
+    <link rel="shortcut icon" href="img/favicon/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/assets/admin/all.css">
-    <link href="/assets/admin/style.css" rel="stylesheet">
-    <link href="/assets/admin/site.min.css" rel="stylesheet">
-    <link href="/assets/admin/BPEXCH-style.css" rel="stylesheet">
-    <link href="/assets/admin/BPEXCH-login-style.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/admin/all.css">
+    <link href="assets/admin/style.css" rel="stylesheet">
+    <link href="assets/admin/site.min.css" rel="stylesheet">
+    <link href="assets/admin/BPEXCH-style.css" rel="stylesheet">
+    <link href="assets/admin/BPEXCH-login-style.css" rel="stylesheet">
 
     <style>
         /* Exact Reference Parity Overrides */
@@ -27,7 +34,7 @@
             width: 100vw;
             height: 100vh;
             background-color: #1a1a1a;
-            background-image: url('/assets/admin/bg-diamonds2.png');
+            background-image: url('assets/admin/bg-diamonds2.png');
             background-repeat: repeat;
             z-index: 99999;
             display: flex;
@@ -623,7 +630,7 @@
         <div class="wrap-login100">
             <div class="login100-form-logo">
                 <div class="login-logo-circle">
-                    <img src="/assets/admin/b2.jpg" alt="BPEXCH">
+                    <img src="assets/admin/b2.jpg" alt="BPEXCH">
                 </div>
             </div>
 
@@ -795,7 +802,7 @@
 
     <li class="nav-item nav-dropdown">
         <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
-            <img src="/img/v2/soccer.svg" alt="C">
+            <img src="img/v2/soccer.svg" alt="C">
             Soccer
         </a>
 
@@ -856,7 +863,7 @@ Internacional de Palmira v Leones FC                        </a>
     </li>
     <li class="nav-item nav-dropdown">
         <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
-            <img src="/img/v2/tennis.svg" alt="C">
+            <img src="img/v2/tennis.svg" alt="C">
             Tennis
         </a>
 
@@ -865,7 +872,7 @@ Internacional de Palmira v Leones FC                        </a>
     </li>
     <li class="nav-item nav-dropdown">
         <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
-            <img src="/img/v2/cricket.svg" alt="C">
+            <img src="img/v2/cricket.svg" alt="C">
             Cricket
         </a>
 
@@ -894,7 +901,7 @@ Boland v Knights                        </a>
     </li>
     <li class="nav-item nav-dropdown">
         <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
-            <img src="/img/v2/horse.svg" alt="C">
+            <img src="img/v2/horse.svg" alt="C">
             Horse Race
         </a>
 
@@ -1178,7 +1185,7 @@ Boland v Knights                        </a>
     </li>
     <li class="nav-item nav-dropdown">
         <a class="nav-link nav-dropdown-toggle" href="#" onclick="toggleNavDropdown(event, this)">
-            <img src="/img/v2/greyhound-racing.svg" alt="C">
+            <img src="img/v2/greyhound-racing.svg" alt="C">
             Greyhound
         </a>
 
@@ -1447,7 +1454,7 @@ Boland v Knights                        </a>
                                         </form>
                                     </div>
                                     <div class="col-md-6 col-12" style="padding: 0px; height: 65px;">
-                                        <img src="/img/preloader.gif" id="searchPreloader" style="height: 20px; display: none;">
+                                        <img src="img/preloader.gif" id="searchPreloader" style="height: 20px; display: none;">
                                         <nav aria-label="breadcrumb" id="breadcrumbcustom" class="col-12 bccustom2" style="display: none;">
                                             <ol class="breadcrumb" style="max-height: 40px;"></ol>
                                         </nav>
@@ -1692,7 +1699,7 @@ Boland v Knights                        </a>
                                                         <thead>
                                                             <tr class="accounts-chart-head-bg desktop-only-load-row">
                                                                 <th colspan="9">
-                                                                    <img id="accountLoadGif" src="/img/preloader.gif" style="display: none; height: 18px;">
+                                                                    <img id="accountLoadGif" src="img/preloader.gif" style="display: none; height: 18px;">
                                                                     <a href="" onclick="LoadFullAccounts(8730410, event); return false;" type="button" class="btn btn-warning">
                                                                         <strong>Load Balance</strong>
                                                                     </a>
