@@ -5,6 +5,7 @@ const registerHandler = require('./auth/register');
 const meHandler = require('./auth/me');
 const logoutHandler = require('./auth/logout');
 const createUserHandler = require('./admin/users/create');
+const companyCreateSuperAdminHandler = require('./admin/company/create-super-admin');
 const statusUserHandler = require('./admin/users/status');
 const listUsersHandler = require('./admin/users/index');
 const sportbexHandler = require('./sportbex/cricket/live');
@@ -13,7 +14,7 @@ module.exports = async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, sportbex-api-key');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Company-Key, sportbex-api-key');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -28,6 +29,7 @@ module.exports = async function handler(req, res) {
   if (pathname === '/api/auth/register') return registerHandler(req, res);
   if (pathname === '/api/auth/me') return meHandler(req, res);
   if (pathname === '/api/auth/logout') return logoutHandler(req, res);
+  if (pathname === '/api/admin/company/create-super-admin') return companyCreateSuperAdminHandler(req, res);
   if (pathname === '/api/admin/users/create') return createUserHandler(req, res);
   if (pathname === '/api/admin/users/status') return statusUserHandler(req, res);
   if (pathname === '/api/admin/users') return listUsersHandler(req, res);

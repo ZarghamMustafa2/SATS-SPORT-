@@ -22,7 +22,7 @@ module.exports = async function handler(req, res) {
 
     const result = authDb.authenticate(username, password);
     if (!result.success) {
-      const status = result.reason === 'account_inactive' ? 403 : 401;
+      const status = (result.reason === 'account_inactive' || result.reason === 'unsupported_auth_method') ? 403 : 401;
       return sendJson(res, status, { status: 'error', message: result.message, reason: result.reason });
     }
 

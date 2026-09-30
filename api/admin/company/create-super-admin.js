@@ -1,5 +1,5 @@
 const authDb = require('../../../lib/auth_db');
-const { parseJsonBody, getRequestSession, sendJson } = require('../../../lib/http_util');
+const { parseJsonBody, sendJson } = require('../../../lib/http_util');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,44 +16,29 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 405, { status: 'error', message: 'Method not allowed' });
   }
 
-  // Authorize via user session or Root Company Master Key
-  let requester = getRequestSession(req, authDb);
+  // Verify Company Administrative Key
   const companyKey = req.headers['x-company-key'] || (req.headers.authorization && req.headers.authorization.startsWith('Key ') ? req.headers.authorization.slice(4).trim() : null);
 
-  if (!requester && companyKey) {
-    if (authDb.verifyCompanyKey(companyKey)) {
-      requester = {
-        userId: 'usr_company_001',
-        id: 'usr_company_001',
-        name: 'Company Account',
-        role: authDb.ROLES.COMPANY,
-        status: 'active'
-      };
-    } else {
-      return sendJson(res, 403, { status: 'error', message: 'Invalid Company Administrative Key' });
-    }
-  }
-
-  if (!requester) {
-    return sendJson(res, 401, { status: 'error', message: 'Authentication required' });
+  if (!companyKey || !authDb.verifyCompanyKey(companyKey)) {
+    return sendJson(res, 403, { status: 'error', message: 'Access denied: Valid Company Master Key required' });
   }
 
   try {
     const body = await parseJsonBody(req);
-    const { username, password, role, ...extra } = body;
+    const { username, password, phone, reference, ...extra } = body;
 
-    const newAdmin = authDb.createAdminUser({
-      requesterUser: requester,
+    const newSuperAdmin = authDb.createSuperAdminByCompany({
       username,
       password,
-      role,
+      phone,
+      reference,
       extra
     });
 
     return sendJson(res, 201, {
       status: 'success',
-      message: `${authDb.ROLE_LABELS[role] || role} created successfully`,
-      user: newAdmin
+      message: 'Super Admin created successfully by Company Account',
+      user: newSuperAdmin
     });
   } catch (err) {
     const statusCode = err.statusCode || 400;
