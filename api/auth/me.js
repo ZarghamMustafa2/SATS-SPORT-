@@ -1,5 +1,5 @@
-const authDb = require('../../auth_db');
-const { getRequestSession, sendJson } = require('../../http_util');
+const authDb = require('../../lib/auth_db');
+const { getRequestSession, sendJson } = require('../../lib/http_util');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

@@ -1,9 +1,9 @@
-const authDb = require('../../../auth_db');
-const { parseJsonBody, getRequestSession, sendJson } = require('../../../http_util');
+const authDb = require('../../../lib/auth_db');
+const { getRequestSession, sendJson } = require('../../../lib/http_util');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (req.method !== 'POST') {
+  if (req.method !== 'GET') {
     return sendJson(res, 405, { status: 'error', message: 'Method not allowed' });
   }
 
@@ -26,21 +26,14 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const body = await parseJsonBody(req);
-    const { targetUserId } = body;
-
-    const updatedUser = authDb.toggleUserStatus({
-      requesterUser: session,
-      targetUserId
-    });
-
+    const downline = authDb.getDownlineUsers(session);
     return sendJson(res, 200, {
       status: 'success',
-      message: `User ${updatedUser.username} is now ${updatedUser.status}`,
-      user: updatedUser
+      currentUser: authDb.sanitizeUser(authDb.getUserById(session.userId)),
+      users: downline
     });
   } catch (err) {
-    const statusCode = err.statusCode || 400;
-    return sendJson(res, statusCode, { status: 'error', message: err.message });
+    console.error('List users error:', err);
+    return sendJson(res, 500, { status: 'error', message: 'Internal server error' });
   }
 };

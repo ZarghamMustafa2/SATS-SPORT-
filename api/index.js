@@ -1,13 +1,13 @@
 const url = require('url');
 
-const loginHandler = require('../lib/api/auth/login');
-const registerHandler = require('../lib/api/auth/register');
-const meHandler = require('../lib/api/auth/me');
-const logoutHandler = require('../lib/api/auth/logout');
-const createUserHandler = require('../lib/api/admin/users/create');
-const statusUserHandler = require('../lib/api/admin/users/status');
-const listUsersHandler = require('../lib/api/admin/users/index');
-const sportbexHandler = require('../lib/api/sportbex/cricket/live');
+const loginHandler = require('./auth/login');
+const registerHandler = require('./auth/register');
+const meHandler = require('./auth/me');
+const logoutHandler = require('./auth/logout');
+const createUserHandler = require('./admin/users/create');
+const statusUserHandler = require('./admin/users/status');
+const listUsersHandler = require('./admin/users/index');
+const sportbexHandler = require('./sportbex/cricket/live');
 
 module.exports = async function handler(req, res) {
   // CORS Headers
