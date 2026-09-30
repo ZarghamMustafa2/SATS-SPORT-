@@ -626,7 +626,7 @@
     <!-- ==========================================================================
          AUTHENTIC LOGIN SCREEN (/Users/Login)
          ========================================================================== -->
-    <div id="adminLoginScreen" class="login-container-wrap">
+    <div id="adminLoginScreen" class="login-container-wrap" style="display: none;">
         <div class="wrap-login100">
             <div class="login100-form-logo">
                 <div class="login-logo-circle">
@@ -2874,6 +2874,32 @@ Boland v Knights                        </a>
             'user': 'Normal User'
         };
 
+        // ==============================================================================
+        // TEMPORARY ADMIN ACCESS CONFIGURATION (Direct Admin Access Without Login Guard)
+        // Can be toggled back to false at any time to re-enable authentication requirements
+        // ==============================================================================
+        var BYPASS_ADMIN_AUTH = true;
+
+        var DEFAULT_BYPASS_ADMIN_USER = {
+            id: '8764246',
+            username: 'superadmin_1',
+            name: 'Super Admin',
+            role: 'super_admin',
+            status: 'active',
+            credit: '100,000',
+            balance: '100,000.00 Rs.',
+            share: '90%',
+            exp: '0.00 Rs.'
+        };
+
+        function getAdminAuthToken() {
+            var token = localStorage.getItem('auth_token');
+            if (!token && BYPASS_ADMIN_AUTH) {
+                return 'bypass_admin_token';
+            }
+            return token;
+        }
+
         var currentAdminUser = null;
         var currentEditingUser = 'Jimmy3221';
         var currentEditingId = '8730421';
@@ -3057,12 +3083,12 @@ Boland v Knights                        </a>
 
         // Fetch Admin Users Downline from Server
         async function fetchAdminUsers() {
-            var token = localStorage.getItem('auth_token');
+            var token = getAdminAuthToken();
             if (!token) return;
 
             try {
                 var result = await safeFetchJson(getApiUrl('/api/admin/users'), {
-                    headers: { 'Authorization': 'Bearer ' + token }
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
@@ -3100,6 +3126,26 @@ Boland v Knights                        </a>
         window.addEventListener('DOMContentLoaded', async function() {
             renderClientsTable();
             loadMarketMatchByIdOrName('Dolphins v Northern Cape');
+
+            // TEMPORARY ADMIN ACCESS: Completely Bypass Login Guard & Direct Access
+            if (BYPASS_ADMIN_AUTH) {
+                var userToApply = DEFAULT_BYPASS_ADMIN_USER;
+                var stored = localStorage.getItem('current_user');
+                if (stored) {
+                    try {
+                        var parsed = JSON.parse(stored);
+                        if (parsed && (parsed.role === 'super_admin' || parsed.role === 'super_master' || parsed.role === 'company')) {
+                            userToApply = parsed;
+                        }
+                    } catch (e) {}
+                }
+                applyUserRoleUI(userToApply);
+                showAdminApp();
+                await fetchAdminUsers();
+                routeFromUrl();
+                return;
+            }
+
             var token = localStorage.getItem('auth_token');
             var p = window.location.pathname.toLowerCase();
 
@@ -3144,6 +3190,10 @@ Boland v Knights                        </a>
         });
 
         function showLoginScreen() {
+            if (BYPASS_ADMIN_AUTH) {
+                showAdminApp();
+                return;
+            }
             document.getElementById('adminLoginScreen').style.display = 'flex';
             document.getElementById('adminAppContainer').style.display = 'none';
             document.querySelector('.app-header').style.display = 'none';
@@ -3152,10 +3202,14 @@ Boland v Knights                        </a>
         }
 
         function showAdminApp() {
-            document.getElementById('adminLoginScreen').style.display = 'none';
-            document.getElementById('adminAppContainer').style.display = 'flex';
-            document.querySelector('.app-header').style.display = 'flex';
-            document.querySelector('.app-footer').style.display = 'flex';
+            var loginEl = document.getElementById('adminLoginScreen');
+            if (loginEl) loginEl.style.display = 'none';
+            var appContainer = document.getElementById('adminAppContainer');
+            if (appContainer) appContainer.style.display = 'flex';
+            var appHeader = document.querySelector('.app-header');
+            if (appHeader) appHeader.style.display = 'flex';
+            var appFooter = document.querySelector('.app-footer');
+            if (appFooter) appFooter.style.display = 'flex';
             document.title = 'BPEXCH';
         }
 
@@ -3209,7 +3263,7 @@ Boland v Knights                        </a>
             if (e) e.preventDefault();
             var token = localStorage.getItem('auth_token');
             try {
-                if (token) {
+                if (token && token !== 'bypass_admin_token') {
                     await safeFetchJson(getApiUrl('/api/auth/logout'), {
                         method: 'POST',
                         headers: { 'Authorization': 'Bearer ' + token }
@@ -3219,6 +3273,12 @@ Boland v Knights                        </a>
             localStorage.removeItem('auth_token');
             localStorage.removeItem('current_user');
             closeUserDropdown();
+            if (BYPASS_ADMIN_AUTH) {
+                showToast('Temporary Admin Bypass is active. Access remains open.');
+                showAdminApp();
+                navigateAdmin('/index');
+                return;
+            }
             showLoginScreen();
             showToast('Logged out.');
             if (window.history.pushState) {
@@ -3329,6 +3389,14 @@ Boland v Knights                        </a>
             var userId = urlParams.get('id') || urlParams.get('accountId') || '8730421';
 
             if (lower === '/users/login' || lower === '/login' || lower === '/admin/login') {
+                if (BYPASS_ADMIN_AUTH) {
+                    document.getElementById('viewDashboard').style.display = 'block';
+                    document.getElementById('sideNavDashboard')?.classList.add('active');
+                    document.getElementById('topNavDashboard')?.classList.add('active');
+                    document.title = 'Dashboard | BPEXCH';
+                    showAdminApp();
+                    return;
+                }
                 showLoginScreen();
                 return;
             }
@@ -3621,7 +3689,7 @@ Boland v Knights                        </a>
                 return;
             }
 
-            var token = localStorage.getItem('auth_token');
+            var token = getAdminAuthToken();
             if (!token) {
                 alert('Authentication required. Please login again.');
                 showLoginScreen();
@@ -3781,7 +3849,7 @@ Boland v Knights                        </a>
             }
             if (!clientId) return;
 
-            var token = localStorage.getItem('auth_token');
+            var token = getAdminAuthToken();
             if (!token) {
                 alert('Authentication required.');
                 return;
