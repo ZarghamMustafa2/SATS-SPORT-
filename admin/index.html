@@ -337,6 +337,281 @@
                 margin-right: auto;
             }
         }
+
+        /* ========================================================
+           AUTHENTIC MOBILE RESPONSIVE USER TABLE (1:1 REFERENCE)
+           ======================================================== */
+        .accounts-chart-summary-row {
+            display: none;
+        }
+        .user-child-row {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            /* Table Horizontal Scroll Container */
+            #tableLedger_wrapper {
+                overflow: visible !important;
+            }
+            #tableLedger_wrapper > .row:nth-child(2) > .col-sm-12,
+            #viewUsersList .col-sm-12 {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                margin-right: -20px !important;
+                padding-right: 20px !important;
+            }
+            table#tableLedger {
+                width: 526px !important;
+                min-width: 526px !important;
+                max-width: 526px !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+                background-color: #ffffff !important;
+            }
+
+            /* Hide Desktop Load Balance Button Row */
+            .desktop-only-load-row {
+                display: none !important;
+            }
+
+            /* Authentic Top Green Summary Row */
+            .accounts-chart-summary-row {
+                display: table-row !important;
+                background-color: #00b282 !important;
+            }
+            .accounts-chart-summary-row th {
+                background-color: #00b282 !important;
+                border: 1px solid #00936b !important;
+                color: #000000 !important;
+                font-size: 13.5px !important;
+                font-weight: 700 !important;
+                height: 41px !important;
+                padding: 6px 8px !important;
+                vertical-align: middle !important;
+                box-sizing: border-box !important;
+            }
+            .accounts-chart-summary-row th:nth-child(1) {
+                width: 111px !important;
+                min-width: 111px !important;
+                max-width: 111px !important;
+                text-align: left !important;
+            }
+            .accounts-chart-summary-row th:nth-child(2) {
+                width: 68px !important;
+                min-width: 68px !important;
+                max-width: 68px !important;
+            }
+            .accounts-chart-summary-row th:nth-child(3) {
+                width: 77px !important;
+                min-width: 77px !important;
+                max-width: 77px !important;
+                text-align: center !important;
+            }
+            .accounts-chart-summary-row th:nth-child(4),
+            .accounts-chart-summary-row th:nth-child(5),
+            .accounts-chart-summary-row th:nth-child(6),
+            .accounts-chart-summary-row th:nth-child(7),
+            .accounts-chart-summary-row th:nth-child(8),
+            .accounts-chart-summary-row th:nth-child(9) {
+                width: 45px !important;
+                min-width: 45px !important;
+                max-width: 45px !important;
+                text-align: center !important;
+            }
+
+            /* Table Header Columns on Mobile */
+            .accounts-chart-columns-row th {
+                background-color: #ffffff !important;
+                color: #23282c !important;
+                font-size: 14px !important;
+                font-weight: 700 !important;
+                height: 42px !important;
+                padding: 6px 8px !important;
+                vertical-align: middle !important;
+                text-align: center !important;
+                border: 1px solid #c8ced3 !important;
+                box-sizing: border-box !important;
+            }
+            .accounts-chart-columns-row th:nth-child(1) {
+                width: 111px !important;
+                min-width: 111px !important;
+                max-width: 111px !important;
+            }
+            .accounts-chart-columns-row th:nth-child(2) {
+                width: 68px !important;
+                min-width: 68px !important;
+                max-width: 68px !important;
+            }
+            .accounts-chart-columns-row th:nth-child(3) {
+                width: 77px !important;
+                min-width: 77px !important;
+                max-width: 77px !important;
+            }
+            .accounts-chart-columns-row th:nth-child(n+4) {
+                display: none !important;
+            }
+
+            /* User Main Row on Mobile */
+            .user-main-row td {
+                height: 42px !important;
+                padding: 6px 8px !important;
+                font-size: 14px !important;
+                color: #212529 !important;
+                border: 1px solid #c8ced3 !important;
+                vertical-align: middle !important;
+                box-sizing: border-box !important;
+            }
+            .user-main-row td:nth-child(1) {
+                width: 111px !important;
+                min-width: 111px !important;
+                max-width: 111px !important;
+                text-align: left !important;
+                font-weight: 700 !important;
+                cursor: pointer !important;
+            }
+            .user-main-row td:nth-child(2) {
+                width: 68px !important;
+                min-width: 68px !important;
+                max-width: 68px !important;
+                text-align: center !important;
+            }
+            .user-main-row td:nth-child(3) {
+                width: 77px !important;
+                min-width: 77px !important;
+                max-width: 77px !important;
+                text-align: left !important;
+            }
+            .user-main-row td:nth-child(n+4) {
+                display: none !important;
+            }
+            .user-main-row .desktop-info-btn-wrap {
+                display: none !important;
+            }
+
+            /* User Child Row (Expanded Details) */
+            .user-child-row {
+                display: none;
+            }
+            .user-child-row.show {
+                display: table-row !important;
+            }
+            .user-child-row td.child-details-cell {
+                background: #ffffff !important;
+                border: 1px solid #c8ced3 !important;
+                border-top: none !important;
+                padding: 10px 14px 14px 14px !important;
+                vertical-align: top !important;
+            }
+
+            /* Bullets & Expanded List Items */
+            ul.dtr-details {
+                list-style-type: disc !important;
+                margin: 0 !important;
+                padding-left: 20px !important;
+            }
+            ul.dtr-details li {
+                font-size: 14px !important;
+                color: #23282c !important;
+                line-height: 23px !important;
+                margin-bottom: 0px !important;
+            }
+            ul.dtr-details li .dtr-title {
+                font-weight: 600 !important;
+                color: #23282c !important;
+                margin-right: 4px !important;
+            }
+            ul.dtr-details li .dtr-data {
+                font-weight: 400 !important;
+                color: #23282c !important;
+            }
+
+            /* Mobile Options Buttons */
+            .options-li {
+                margin-top: 2px !important;
+            }
+            .options-line1 {
+                display: inline-flex !important;
+                gap: 5px !important;
+                vertical-align: middle !important;
+                margin-left: 5px !important;
+            }
+            .options-line2 {
+                margin-top: 5px !important;
+                display: block !important;
+            }
+
+            .btn-dtr {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                height: 32px !important;
+                border-radius: 4px !important;
+                font-size: 13px !important;
+                font-weight: 700 !important;
+                border: none !important;
+                text-decoration: none !important;
+                cursor: pointer !important;
+                line-height: 1 !important;
+            }
+            .btn-dtr-c {
+                width: 33px !important;
+                background-color: #e0a802 !important;
+                color: #000000 !important;
+                border: 1px solid #d49a00 !important;
+            }
+            .btn-dtr-edit {
+                width: 37px !important;
+                background-color: #00b281 !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-edit i {
+                font-size: 13px !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-l {
+                width: 31px !important;
+                background-color: #64c2dd !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-a {
+                width: 33px !important;
+                background-color: #55b877 !important;
+                color: #ffffff !important;
+            }
+
+            /* Centered Search Label and Input */
+            #tableLedger_filter {
+                text-align: center !important;
+                margin: 4px 0 12px 0 !important;
+                width: 100% !important;
+            }
+            #tableLedger_filter label {
+                display: block !important;
+                font-size: 15px !important;
+                color: #23282c !important;
+                font-weight: 500 !important;
+                margin-bottom: 6px !important;
+                width: 100% !important;
+            }
+            #tableLedger_filter input {
+                margin: 0 auto !important;
+                display: block !important;
+                width: 234px !important;
+                max-width: 90% !important;
+                height: 38px !important;
+                border: 1px solid #d2d6de !important;
+                border-radius: 4px !important;
+                padding: 4px 10px !important;
+                outline: none !important;
+                background: #ffffff !important;
+                font-size: 14px !important;
+            }
+
+            /* Hide Desktop Book Row on Mobile */
+            .desktop-book-row {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
@@ -364,7 +639,7 @@
                 </div>
 
                 <div class="login100-form-btn-wrap">
-                    <button type="submit" class="login100-form-btn">
+                    <button type="submit" class="login100-form-btn" id="adminLoginSubmitBtn">
                         Login
                     </button>
                 </div>
@@ -373,6 +648,37 @@
                     Invalid username or password!
                 </div>
             </form>
+
+            <form id="adminRegisterForm" style="display: none;" onsubmit="event.preventDefault(); executeNormalRegister();">
+                <div class="login-input-group">
+                    <i class="fa fa-user"></i>
+                    <input type="text" id="reg_Username" placeholder="Choose Username" required autocomplete="username">
+                </div>
+
+                <div class="login-input-group">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" id="reg_Password" placeholder="Password (min 6 chars)" required autocomplete="new-password">
+                </div>
+
+                <div class="login-input-group">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" id="reg_ConfirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
+                </div>
+
+                <div class="login100-form-btn-wrap">
+                    <button type="submit" class="login100-form-btn" id="normalRegSubmitBtn">
+                        Register Account
+                    </button>
+                </div>
+
+                <div class="login-error-msg" id="regErrorBox" style="color: #f86c6b;"></div>
+                <div class="login-error-msg" id="regSuccessBox" style="color: #4dbd74; display: none;"></div>
+            </form>
+
+            <div id="loginScreenToggleWrap" style="text-align: center; margin-top: 18px; font-size: 13px; color: #ced4da;">
+                <span id="loginTogglePrompt">Don't have an account?</span> 
+                <a href="javascript:void(0)" id="loginToggleLink" onclick="toggleAuthMode()" style="color: #5ce1e6; text-decoration: underline; font-weight: 600; cursor: pointer;">Register User</a>
+            </div>
         </div>
     </div>
 
@@ -414,7 +720,7 @@
         <ul class="nav navbar-nav ml-auto">
             <li class="nav-item px-2 dropdown" id="headerUserDropdownContainer">
                 <a class="nav-link user-dropdown-btn" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleUserDropdown(event)">
-                    Ahmii9090x (SuperMaster) <i class="fas fa-caret-down"></i>
+                    <span id="headerUserDisplayName">Ahmii9090x (SuperMaster)</span> <i class="fas fa-caret-down"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" id="userProfileDropdown">
                     <a class="dropdown-item" href="/Common/Profile" onclick="navigateAdmin('/Common/Profile', event)">
@@ -1319,7 +1625,7 @@ Boland v Knights                        </a>
                             <div class="col-12">
                                 <div class="card admin-card">
                                     <div class="card-header">
-                                        <h5><strong>Ahmii9090x</strong> - Clients List | Default</h5>
+                                        <h5><strong id="clientsListHeaderUsername">Ahmii9090x</strong> - Clients List | Default</h5>
                                     </div>
                                     <div class="card-body" style="padding-bottom: 0;">
                                         <div id="Tabletoreplace" class="row col-12" style="overflow-x: auto;">
@@ -1384,7 +1690,7 @@ Boland v Knights                        </a>
                                                 <div class="col-sm-12">
                                                     <table id="tableLedger" style="width: 100%;" class="display table table-bordered table-striped tbl-datatable1 dataTable no-footer dtr-inline">
                                                         <thead>
-                                                            <tr class="accounts-chart-head-bg">
+                                                            <tr class="accounts-chart-head-bg desktop-only-load-row">
                                                                 <th colspan="9">
                                                                     <img id="accountLoadGif" src="/img/preloader.gif" style="display: none; height: 18px;">
                                                                     <a href="" onclick="LoadFullAccounts(8730410, event); return false;" type="button" class="btn btn-warning">
@@ -1392,7 +1698,18 @@ Boland v Knights                        </a>
                                                                     </a>
                                                                 </th>
                                                             </tr>
-                                                            <tr>
+                                                            <tr class="accounts-chart-summary-row">
+                                                                <th>Total</th>
+                                                                <th></th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th>0</th>
+                                                                <th></th>
+                                                            </tr>
+                                                            <tr class="accounts-chart-columns-row">
                                                                 <th>Username</th>
                                                                 <th>Type</th>
                                                                 <th>Credit</th>
@@ -1797,6 +2114,7 @@ Boland v Knights                        </a>
                                         <strong>Create New User</strong>
                                     </div>
                                     <div class="card-body">
+                                        <div id="userRoleHierarchyNotice" class="alert alert-info" style="display:none; margin-bottom: 20px;"></div>
                                         <form id="createNewUserForm" onsubmit="handleCreateUserSubmit(event);">
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Username</label>
@@ -1807,7 +2125,7 @@ Boland v Knights                        </a>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Password</label>
                                                 <div class="col-md-9">
-                                                    <input class="form-control" type="password" id="newUserPass" required placeholder="Enter password (min 8 chars, letters & numbers)">
+                                                    <input class="form-control" type="password" id="newUserPass" required placeholder="Enter password (min 6 chars, letters & numbers)">
                                                 </div>
                                             </div>
                                             <div class="form-group row">
@@ -1828,14 +2146,13 @@ Boland v Knights                        </a>
                                                     <input class="form-control" type="text" id="newUserRef" placeholder="Reference">
                                                 </div>
                                             </div>
-                                            <div class="form-group row">
-                                                <label class="col-md-3 col-form-label">Type</label>
+                                            <div class="form-group row" id="userRoleFormGroup">
+                                                <label class="col-md-3 col-form-label">Role</label>
                                                 <div class="col-md-9">
-                                                    <select class="form-control" id="newUserType">
-                                                        <option value="Bettor">Bettor</option>
-                                                        <option value="Agent">Agent</option>
-                                                        <option value="Master">Master</option>
+                                                    <select class="form-control" id="newUserRole">
+                                                        <option value="super_admin">Super Admin</option>
                                                     </select>
+                                                    <small class="form-text text-muted" id="userRoleHelperText"></small>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
@@ -1851,7 +2168,7 @@ Boland v Knights                        </a>
                                                 </div>
                                             </div>
                                             <div class="form-actions">
-                                                <button class="btn btn-primary" type="submit"><strong>Submit New User</strong></button>
+                                                <button class="btn btn-primary" type="submit" id="createUserSubmitBtn"><strong>Submit New User</strong></button>
                                             </div>
                                         </form>
                                     </div>
@@ -2542,31 +2859,234 @@ Boland v Knights                        </a>
          SCRIPTS & CONTROLLER
          ========================================================================== -->
     <script>
-        // State
-        var currentAdminUser = 'Ahmii9090x';
+        // State & Auth Roles
+        var ROLE_LABELS = {
+            'company': 'Company Account',
+            'super_admin': 'Super Admin',
+            'super_master': 'Super Master',
+            'user': 'Normal User'
+        };
+
+        var currentAdminUser = null;
         var currentEditingUser = 'Jimmy3221';
         var currentEditingId = '8730421';
 
-        // Preloaded Clients List
+        // Preloaded Clients List (fallback/default)
         var clientsList = [
-            { id: '8730421', username: 'Jimmy3221', type: 'Bettor', credit: '-', balance: '-', pl: '-', share: '-', exp: '-', avail: '-', active: true, domain: 'betproexch.com' },
-            { id: '8758678', username: 'Rana3471', type: 'Bettor', credit: '-', balance: '-', pl: '-', share: '-', exp: '-', avail: '-', active: true, domain: 'betproexch.com' }
+            { id: '8730410', username: 'Ramzan1295', type: 'Bettor', credit: '0', balance: '0', pl: '0', share: '85', exp: '0', avail: '0', active: true, domain: 'betproexch.com' },
+            { id: '8730421', username: 'Jimmy3221', type: 'Bettor', credit: '0', balance: '0 Rs.', pl: '0 Rs.', share: '0%', exp: '0 Rs.', avail: '0 Rs.', active: true, domain: 'betproexch.com' },
+            { id: '8758678', username: 'Rana3471', type: 'Bettor', credit: '0', balance: '0 Rs.', pl: '0 Rs.', share: '0%', exp: '0 Rs.', avail: '0 Rs.', active: true, domain: 'betproexch.com' }
         ];
 
+        // Auth Mode Switch (Login vs User Registration)
+        function toggleAuthMode() {
+            var loginF = document.getElementById('adminLoginForm');
+            var regF = document.getElementById('adminRegisterForm');
+            var prompt = document.getElementById('loginTogglePrompt');
+            var link = document.getElementById('loginToggleLink');
+            var errBox = document.getElementById('errorBox');
+            var regErr = document.getElementById('regErrorBox');
+            var regSucc = document.getElementById('regSuccessBox');
+            
+            if (loginF.style.display === 'none') {
+                loginF.style.display = 'block';
+                regF.style.display = 'none';
+                prompt.innerText = "Don't have an account?";
+                link.innerText = "Register User";
+                if (regErr) regErr.style.display = 'none';
+                if (regSucc) regSucc.style.display = 'none';
+            } else {
+                loginF.style.display = 'none';
+                regF.style.display = 'block';
+                prompt.innerText = "Already have an account?";
+                link.innerText = "Login Here";
+                if (errBox) errBox.style.display = 'none';
+            }
+        }
+
+        // Normal User Public Registration
+        async function executeNormalRegister() {
+            var u = document.getElementById('reg_Username').value.trim();
+            var p = document.getElementById('reg_Password').value.trim();
+            var cp = document.getElementById('reg_ConfirmPassword').value.trim();
+            var err = document.getElementById('regErrorBox');
+            var succ = document.getElementById('regSuccessBox');
+            
+            if (p !== cp) {
+                err.innerText = 'Passwords do not match';
+                err.style.display = 'block';
+                return;
+            }
+            
+            try {
+                var res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                var data = await res.json();
+                if (data.status === 'success') {
+                    err.style.display = 'none';
+                    succ.innerText = 'Registration successful! You can now login.';
+                    succ.style.display = 'block';
+                    setTimeout(function() {
+                        toggleAuthMode();
+                        document.getElementById('user_Username').value = u;
+                        document.getElementById('user_Password').value = '';
+                        document.getElementById('user_Password').focus();
+                    }, 1200);
+                } else {
+                    succ.style.display = 'none';
+                    err.innerText = data.message || 'Registration failed';
+                    err.style.display = 'block';
+                }
+            } catch (e) {
+                succ.style.display = 'none';
+                err.innerText = 'Network error: ' + e.message;
+                err.style.display = 'block';
+            }
+        }
+
+        // Apply UI according to Authenticated Role
+        function applyUserRoleUI(user) {
+            currentAdminUser = user;
+            var roleLabel = ROLE_LABELS[user.role] || user.role;
+
+            // Header username and role badge
+            var headerDisplay = document.getElementById('headerUserDisplayName');
+            if (headerDisplay) {
+                headerDisplay.innerHTML = '<strong>' + user.username + '</strong> <span class="badge badge-warning" style="margin-left:6px; font-size:11px; padding:3px 6px; text-transform:uppercase;">' + roleLabel + '</span>';
+            }
+
+            // Clients List Header
+            var clientsHeader = document.getElementById('clientsListHeaderUsername');
+            if (clientsHeader) clientsHeader.innerText = user.username + ' (' + roleLabel + ')';
+
+            // Role creation hierarchy controls
+            var roleSelect = document.getElementById('newUserRole');
+            var roleNotice = document.getElementById('userRoleHierarchyNotice');
+            var submitBtn = document.getElementById('createUserSubmitBtn');
+
+            if (roleSelect && submitBtn) {
+                if (user.role === 'company') {
+                    // Level 1: Company Account creates Super Admin
+                    roleSelect.innerHTML = '<option value="super_admin">Super Admin (Level 2)</option>';
+                    roleSelect.disabled = false;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<strong>Submit New Super Admin</strong>';
+                    if (roleNotice) {
+                        roleNotice.className = 'alert alert-info';
+                        roleNotice.style.display = 'block';
+                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> As <b>Company Account</b>, you can create <b>Super Admin</b> accounts.';
+                    }
+                } else if (user.role === 'super_admin') {
+                    // Level 2: Super Admin creates Super Master
+                    roleSelect.innerHTML = '<option value="super_master">Super Master (Level 3)</option>';
+                    roleSelect.disabled = false;
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<strong>Submit New Super Master</strong>';
+                    if (roleNotice) {
+                        roleNotice.className = 'alert alert-info';
+                        roleNotice.style.display = 'block';
+                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> As <b>Super Admin</b>, you can create <b>Super Master</b> accounts.';
+                    }
+                } else if (user.role === 'super_master') {
+                    // Level 3: Super Master cannot create another admin level
+                    roleSelect.innerHTML = '<option value="">No Admin Creation Allowed</option>';
+                    roleSelect.disabled = true;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<strong>Creation Disabled</strong>';
+                    if (roleNotice) {
+                        roleNotice.className = 'alert alert-danger';
+                        roleNotice.style.display = 'block';
+                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> <b>Super Master</b> cannot create another admin level. The admin hierarchy ends here.';
+                    }
+                }
+            }
+        }
+
+        // Fetch Admin Users Downline from Server
+        async function fetchAdminUsers() {
+            var token = localStorage.getItem('auth_token');
+            if (!token) return;
+
+            try {
+                var res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) return;
+
+                var data = await res.json();
+                if (data.status === 'success' && Array.isArray(data.users)) {
+                    if (data.users.length > 0) {
+                        clientsList = data.users.map(function(u) {
+                            var balNum = parseFloat(u.balance);
+                            var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
+                            var expNum = parseFloat(u.exposure);
+                            var expStr = (!isNaN(expNum) ? expNum.toFixed(2) : '0.00') + ' Rs.';
+                            var shrStr = (u.share != null ? u.share.toString().replace('%', '') : '0') + '%';
+                            return {
+                                id: u.id,
+                                username: u.username,
+                                type: ROLE_LABELS[u.role] || u.role,
+                                role: u.role,
+                                credit: u.credit != null ? u.credit.toString() : '0',
+                                balance: balStr,
+                                pl: '0.00 Rs.',
+                                share: shrStr,
+                                exp: expStr,
+                                avail: balStr,
+                                active: u.status === 'active',
+                                domain: 'satsport.co'
+                            };
+                        });
+                    }
+                    renderClientsTable();
+                }
+            } catch (err) {
+                console.error('Error fetching admin users:', err);
+            }
+        }
+
         // Lifecycle & Routing
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', async function() {
             renderClientsTable();
             loadMarketMatchByIdOrName('Dolphins v Northern Cape');
-            var session = localStorage.getItem('bpexch_session');
+            var token = localStorage.getItem('auth_token');
             var p = window.location.pathname.toLowerCase();
-            if (p === '/users/login' || p === '/login' || p === '/admin/login') {
+
+            if (!token) {
                 showLoginScreen();
                 return;
             }
-            if (session === 'active') {
-                showAdminApp();
-                routeFromUrl();
-            } else {
+
+            try {
+                var res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                var data = await res.json();
+                if (data.status === 'success' && data.user) {
+                    if (data.user.role === 'user') {
+                        // TEST 6: Normal user attempts to open /admin -> Server rejects/denies access
+                        alert('Access Denied: You do not have administrator permissions.');
+                        localStorage.removeItem('auth_token');
+                        localStorage.removeItem('current_user');
+                        window.location.href = '/';
+                        return;
+                    }
+
+                    // Admin user authorized
+                    applyUserRoleUI(data.user);
+                    showAdminApp();
+                    await fetchAdminUsers();
+                    routeFromUrl();
+                } else {
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('current_user');
+                    showLoginScreen();
+                }
+            } catch (err) {
+                console.error('Session verify error:', err);
                 showLoginScreen();
             }
         });
@@ -2591,30 +3111,70 @@ Boland v Knights                        </a>
             document.title = 'BPEXCH';
         }
 
-        function executeAdminLogin() {
+        async function executeAdminLogin() {
             var u = document.getElementById('user_Username').value.trim();
             var p = document.getElementById('user_Password').value.trim();
             var err = document.getElementById('errorBox');
 
-            if (u === 'Ahmii9090x' && p === '1234Qwer') {
-                err.style.display = 'none';
-                localStorage.setItem('bpexch_session', 'active');
-                showAdminApp();
-                navigateAdmin('/index');
-                showToast('Logged in successfully!');
-            } else {
+            if (!u || !p) {
+                err.innerText = 'Please enter username and password';
+                err.style.display = 'block';
+                return;
+            }
+
+            try {
+                var res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                var data = await res.json();
+
+                if (data.status === 'success') {
+                    err.style.display = 'none';
+                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('current_user', JSON.stringify(data.user));
+
+                    if (data.user.role === 'user') {
+                        // Single login for all roles: Normal user redirected to User Website
+                        window.location.href = data.redirectTo || '/';
+                        return;
+                    }
+
+                    // Admin roles (Company, Super Admin, Super Master)
+                    applyUserRoleUI(data.user);
+                    showAdminApp();
+                    await fetchAdminUsers();
+                    navigateAdmin('/index');
+                    showToast('Logged in successfully as ' + (ROLE_LABELS[data.user.role] || data.user.role) + '!');
+                } else {
+                    err.innerText = data.message || 'Invalid username or password!';
+                    err.style.display = 'block';
+                }
+            } catch (e) {
+                err.innerText = 'Connection error: ' + e.message;
                 err.style.display = 'block';
             }
         }
 
-        function executeAdminLogout(e) {
+        async function executeAdminLogout(e) {
             if (e) e.preventDefault();
-            localStorage.removeItem('bpexch_session');
+            var token = localStorage.getItem('auth_token');
+            try {
+                if (token) {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                }
+            } catch (err) {}
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('current_user');
             closeUserDropdown();
             showLoginScreen();
             showToast('Logged out.');
             if (window.history.pushState) {
-                window.history.pushState(null, '', '/Users/Login');
+                window.history.pushState(null, '', '/login');
             }
         }
 
@@ -2844,15 +3404,17 @@ Boland v Knights                        </a>
             var tbody = document.getElementById('clientsTableBody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            clientsList.forEach(function(client) {
+            clientsList.forEach(function(client, idx) {
                 var tr = document.createElement('tr');
                 tr.id = 'row-' + client.id;
+                tr.className = 'user-main-row';
                 tr.setAttribute('data-username', client.username);
+                tr.setAttribute('onclick', 'toggleMobileUserDetails(\'' + client.id + '\', event)');
                 tr.innerHTML = 
                     '<td>' +
                         '<strong>' + client.username + '</strong>' +
-                        '<span style="float:right;">' +
-                            '<button class="btn btn-sm" style="padding:0 4px; background:none; border:none; color:#73818f;" onclick="ShowBookRow(\'8730410\', \'' + client.id + '\')" title="Show Book Details">' +
+                        '<span class="desktop-info-btn-wrap" style="float:right;">' +
+                            '<button class="btn btn-sm" style="padding:0 4px; background:none; border:none; color:#73818f;" onclick="event.stopPropagation(); ShowBookRow(\'8730410\', \'' + client.id + '\')" title="Show Book Details">' +
                                 '<i class="fas fa-info-circle flag-icon-sm"></i>' +
                             '</button>' +
                         '</span>' +
@@ -2874,17 +3436,44 @@ Boland v Knights                        </a>
                         '<a class="btn btn-info btn-sm" href="/Accounts/Ledger?id=' + client.id + '" onclick="navigateAdmin(\'/Accounts/Ledger?id=' + client.id + '\', event)">' +
                             '<strong>L</strong>' +
                         '</a> ' +
-                        '<button class="btn btn-outline-danger btn-sm" onclick="toggleUserStatus(this)" title="Toggle Active/Inactive">' +
-                            '<strong>D</strong>' +
+                        '<button class="btn btn-success btn-sm btn-status-toggle" onclick="event.stopPropagation(); toggleUserStatus(this)" title="Toggle Active/Inactive">' +
+                            '<strong>' + (client.active ? 'A' : 'D') + '</strong>' +
                         '</button>' +
                     '</td>';
                 tbody.appendChild(tr);
 
-                // Book Row (collapsible)
+                // Mobile Expanded Details Row (1:1 Reference Layout)
+                var childTr = document.createElement('tr');
+                childTr.id = 'child-' + client.id;
+                childTr.className = (idx === 0) ? 'user-child-row show' : 'user-child-row';
+                childTr.innerHTML = 
+                    '<td colspan="3" class="child-details-cell">' +
+                        '<ul class="dtr-details">' +
+                            '<li><span class="dtr-title">Balance</span> <span class="dtr-data">' + client.balance + '</span></li>' +
+                            '<li><span class="dtr-title">Client (P/L)</span> <span class="dtr-data">' + client.pl + '</span></li>' +
+                            '<li><span class="dtr-title">Share</span> <span class="dtr-data">' + client.share + '</span></li>' +
+                            '<li><span class="dtr-title">Exposure</span> <span class="dtr-data">' + client.exp + '</span></li>' +
+                            '<li><span class="dtr-title">Available Balance</span> <span class="dtr-data">' + client.avail + '</span></li>' +
+                            '<li class="options-li">' +
+                                '<span class="dtr-title">Options</span>' +
+                                '<span class="options-line1">' +
+                                    '<a class="btn-dtr btn-dtr-c" href="/Accounts/Cash?id=' + client.id + '" onclick="event.stopPropagation(); popup_hawala(\'/Accounts/Cash\', \'' + client.id + '\', \'' + client.username + '\', event)"><strong>C</strong></a>' +
+                                    '<a class="btn-dtr btn-dtr-edit" href="/Users/Edit?id=' + client.id + '" onclick="event.stopPropagation(); navigateAdmin(\'/Users/Edit?id=' + client.id + '\', event)"><i class="fas fa-pencil-alt"></i></a>' +
+                                    '<a class="btn-dtr btn-dtr-l" href="/Accounts/Ledger?id=' + client.id + '" onclick="event.stopPropagation(); navigateAdmin(\'/Accounts/Ledger?id=' + client.id + '\', event)"><strong>L</strong></a>' +
+                                '</span>' +
+                                '<span class="options-line2">' +
+                                    '<button class="btn-dtr btn-dtr-a" onclick="event.stopPropagation(); toggleUserStatus(this)"><strong>' + (client.active ? 'A' : 'D') + '</strong></button>' +
+                                '</span>' +
+                            '</li>' +
+                        '</ul>' +
+                    '</td>';
+                tbody.appendChild(childTr);
+
+                // Book Row (collapsible for desktop)
                 var bookTr = document.createElement('tr');
                 bookTr.id = 'bookrow-' + client.id;
                 bookTr.style.display = 'none';
-                bookTr.className = 'bg-light';
+                bookTr.className = 'bg-light desktop-book-row';
                 bookTr.innerHTML = 
                     '<td colspan="9" style="padding:10px 15px;">' +
                         '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Currency:</strong> Rs. | <strong>Status:</strong> Active</small>' +
@@ -2894,6 +3483,14 @@ Boland v Knights                        </a>
 
             document.getElementById('sumUsersCount').innerText = clientsList.length;
             document.getElementById('tableLedger_info').innerText = 'Showing 1 to ' + clientsList.length + ' of ' + clientsList.length + ' entries';
+        }
+
+        function toggleMobileUserDetails(id, e) {
+            if (window.innerWidth > 768) return;
+            var child = document.getElementById('child-' + id);
+            if (child) {
+                child.classList.toggle('show');
+            }
         }
 
         // Load Balance Simulation
@@ -2964,30 +3561,50 @@ Boland v Knights                        </a>
         }
 
         // Create User
-        function handleCreateUserSubmit(e) {
+        async function handleCreateUserSubmit(e) {
             e.preventDefault();
             var u = document.getElementById('newUserName').value.trim();
             var p = document.getElementById('newUserPass').value.trim();
+            var roleSelect = document.getElementById('newUserRole');
+            var targetRole = roleSelect ? roleSelect.value : '';
 
-            var newId = (8700000 + Math.floor(Math.random() * 99999)).toString();
-            clientsList.push({
-                id: newId,
-                username: u,
-                type: 'Bettor',
-                credit: '-',
-                balance: '-',
-                pl: '-',
-                share: '-',
-                exp: '-',
-                avail: '-',
-                active: true,
-                domain: 'betproexch.com'
-            });
+            if (!targetRole) {
+                alert('You are not authorized to create new admin users.');
+                return;
+            }
 
-            renderClientsTable();
-            showToast('User ' + u + ' created successfully!');
-            document.getElementById('createNewUserForm').reset();
-            navigateAdmin('/Accounts/Chart');
+            var token = localStorage.getItem('auth_token');
+            if (!token) {
+                alert('Authentication required. Please login again.');
+                showLoginScreen();
+                return;
+            }
+
+            try {
+                var res = await fetch('/api/admin/users/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        username: u,
+                        password: p,
+                        role: targetRole
+                    })
+                });
+                var data = await res.json();
+                if (data.status === 'success') {
+                    showToast(data.message || ('User ' + u + ' created successfully!'));
+                    document.getElementById('createNewUserForm').reset();
+                    await fetchAdminUsers();
+                    navigateAdmin('/Accounts/Chart');
+                } else {
+                    alert('Creation rejected: ' + (data.message || 'Unauthorized'));
+                }
+            } catch (err) {
+                alert('Network error: ' + err.message);
+            }
         }
 
         // User Edit Page Setup
@@ -3107,17 +3724,39 @@ Boland v Knights                        </a>
         }
 
         // Active / Inactive Status Toggle
-        function toggleUserStatus(btn) {
-            if (btn.classList.contains('btn-outline-danger')) {
-                btn.classList.remove('btn-outline-danger');
-                btn.classList.add('btn-success');
-                btn.querySelector('strong').innerText = 'A';
-                showToast('User status set to ACTIVE');
-            } else {
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-outline-danger');
-                btn.querySelector('strong').innerText = 'D';
-                showToast('User status set to INACTIVE');
+        async function toggleUserStatus(btn) {
+            var row = btn.closest('tr');
+            var clientId = null;
+            if (row) {
+                if (row.id && row.id.startsWith('row-')) clientId = row.id.replace('row-', '');
+                else if (row.id && row.id.startsWith('child-')) clientId = row.id.replace('child-', '');
+            }
+            if (!clientId) return;
+
+            var token = localStorage.getItem('auth_token');
+            if (!token) {
+                alert('Authentication required.');
+                return;
+            }
+
+            try {
+                var res = await fetch('/api/admin/users/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ targetUserId: clientId })
+                });
+                var data = await res.json();
+                if (data.status === 'success') {
+                    showToast(data.message);
+                    await fetchAdminUsers();
+                } else {
+                    alert('Status toggle failed: ' + (data.message || 'Unauthorized'));
+                }
+            } catch (err) {
+                alert('Network error: ' + err.message);
             }
         }
 

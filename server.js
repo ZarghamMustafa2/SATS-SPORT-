@@ -303,6 +303,7 @@ const server = http.createServer(async (req, res) => {
 
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
+  const lowerPath = pathname.toLowerCase();
 
   // API endpoint for Sportbex Live Cricket
   if (pathname === '/api/sportbex/cricket/live') {
@@ -317,8 +318,32 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Authentication APIs
+  if (lowerPath === '/api/auth/login' || lowerPath === '/api/auth/login/') {
+    return require('./api/auth/login')(req, res);
+  }
+  if (lowerPath === '/api/auth/register' || lowerPath === '/api/auth/register/') {
+    return require('./api/auth/register')(req, res);
+  }
+  if (lowerPath === '/api/auth/me' || lowerPath === '/api/auth/me/') {
+    return require('./api/auth/me')(req, res);
+  }
+  if (lowerPath === '/api/auth/logout' || lowerPath === '/api/auth/logout/') {
+    return require('./api/auth/logout')(req, res);
+  }
+
+  // Admin Management APIs
+  if (lowerPath === '/api/admin/users/create' || lowerPath === '/api/admin/users/create/') {
+    return require('./api/admin/users/create')(req, res);
+  }
+  if (lowerPath === '/api/admin/users/status' || lowerPath === '/api/admin/users/status/') {
+    return require('./api/admin/users/status')(req, res);
+  }
+  if (lowerPath === '/api/admin/users' || lowerPath === '/api/admin/users/') {
+    return require('./api/admin/users/index')(req, res);
+  }
+
   // Admin Portal Routes
-  const lowerPath = pathname.toLowerCase();
   const isAdminRoute = 
     lowerPath === '/admin' ||
     lowerPath === '/admin/' ||

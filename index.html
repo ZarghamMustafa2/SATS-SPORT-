@@ -7475,9 +7475,10 @@
         <img src="assets/images/logo.png" alt="SATSPORT">
       </div>
       <div class="modal-body-content">
+        <div id="modalLoginError" style="color: #ff4d4f; font-size: 13px; text-align: center; margin-bottom: 10px; display: none;"></div>
         <div class="form-group">
           <label>Username</label>
-          <input type="text" placeholder="Username" id="modalUsername" class="modal-input" value="dineshk01">
+          <input type="text" placeholder="Enter username" id="modalUsername" class="modal-input" autocomplete="username">
         </div>
         <div class="form-check-wrap">
           <input type="checkbox" id="rememberUser" checked>
@@ -7486,14 +7487,14 @@
         <div class="form-group">
           <label>Password</label>
           <div class="password-wrap" style="position: relative;">
-            <input type="password" placeholder="Password" id="modalPassword" class="modal-input" value="••••••••">
+            <input type="password" placeholder="Enter password" id="modalPassword" class="modal-input" autocomplete="current-password">
             <span class="password-eye" onclick="togglePasswordVisibility()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="#333333"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
             </span>
           </div>
         </div>
         <div class="modal-btn-row">
-          <button class="modal-confirm-btn btn-verification btn-confirm" onclick="handleModalLogin()">Login</button>
+          <button class="modal-confirm-btn btn-verification btn-confirm" id="modalLoginSubmitBtn" onclick="handleModalLogin()">Login</button>
           <button class="modal-exit-btn btn-verification" onclick="closeModals()">Exit</button>
         </div>
       </div>
@@ -8833,9 +8834,54 @@
       document.getElementById('loginModalBackdrop').classList.remove('show');
     }
 
-    function handleModalLogin() {
-      closeModals();
-      alert('Welcome, dineshk01! Session active.');
+    async function handleModalLogin() {
+      const u = document.getElementById('modalUsername').value.trim();
+      const p = document.getElementById('modalPassword').value.trim();
+      const errBox = document.getElementById('modalLoginError');
+
+      if (!u || !p) {
+        if (errBox) {
+          errBox.innerText = 'Please enter both username and password';
+          errBox.style.display = 'block';
+        }
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          if (errBox) errBox.style.display = 'none';
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('current_user', JSON.stringify(data.user));
+          closeModals();
+
+          // Single login system: if admin account logs in, redirect to /admin
+          if (data.user.role === 'company' || data.user.role === 'super_admin' || data.user.role === 'super_master') {
+            window.location.href = data.redirectTo || '/admin';
+            return;
+          }
+
+          // Normal User
+          updateUserLoggedInState(data.user);
+          showToast('Welcome, ' + data.user.username + '! Session active.');
+        } else {
+          if (errBox) {
+            errBox.innerText = data.message || 'Invalid username or password';
+            errBox.style.display = 'block';
+          }
+        }
+      } catch (e) {
+        if (errBox) {
+          errBox.innerText = 'Connection error: ' + e.message;
+          errBox.style.display = 'block';
+        }
+      }
     }
 
     function togglePasswordVisibility() {
@@ -9723,7 +9769,47 @@
       if (p) p.classList.remove('show');
     }
 
-    function handleUserLogout() {
+    function updateUserLoggedInState(user) {
+      const loggedIn = document.getElementById('desktopLoggedIn');
+      const loggedOut = document.getElementById('desktopLoggedOut');
+      if (loggedOut) loggedOut.style.display = 'none';
+      if (loggedIn) loggedIn.style.display = 'flex';
+      const nameEl = document.getElementById('headerUserName');
+      if (nameEl) nameEl.innerText = user.username;
+      
+      const dropdownInfo = document.querySelector('.dropdown-header-info div:first-child');
+      if (dropdownInfo) dropdownInfo.innerText = user.username;
+
+      // If user is admin, add an Admin link to the profile dropdown
+      const d = document.getElementById('userProfileDropdown');
+      if (d && (user.role === 'company' || user.role === 'super_admin' || user.role === 'super_master')) {
+        let adminItem = document.getElementById('adminAreaLink');
+        if (!adminItem) {
+          adminItem = document.createElement('a');
+          adminItem.id = 'adminAreaLink';
+          adminItem.className = 'dropdown-item';
+          adminItem.href = '/admin';
+          adminItem.style.color = '#00b181';
+          adminItem.style.fontWeight = 'bold';
+          adminItem.innerText = 'Admin Portal (' + user.role + ')';
+          d.insertBefore(adminItem, d.querySelector('.logout'));
+        }
+      }
+    }
+
+    async function handleUserLogout() {
+      const token = localStorage.getItem('auth_token');
+      try {
+        if (token) {
+          await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+        }
+      } catch (e) {}
+
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('current_user');
       const loggedIn = document.getElementById('desktopLoggedIn');
       const loggedOut = document.getElementById('desktopLoggedOut');
       if (loggedIn) loggedIn.style.display = 'none';
@@ -9734,12 +9820,33 @@
     }
 
     function handleUserLogin() {
-      const loggedIn = document.getElementById('desktopLoggedIn');
-      const loggedOut = document.getElementById('desktopLoggedOut');
-      if (loggedOut) loggedOut.style.display = 'none';
-      if (loggedIn) loggedIn.style.display = 'flex';
-      showToast('Welcome back, Sitetest01!');
+      proceedToLoginModal();
     }
+
+    // Verify session on index.html load
+    window.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (data.status === 'success' && data.user) {
+          updateUserLoggedInState(data.user);
+        } else {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('current_user');
+          const loggedIn = document.getElementById('desktopLoggedIn');
+          const loggedOut = document.getElementById('desktopLoggedOut');
+          if (loggedIn) loggedIn.style.display = 'none';
+          if (loggedOut) loggedOut.style.display = 'flex';
+        }
+      } catch (e) {
+        console.error('Session verify error:', e);
+      }
+    });
 
     function refreshUserBalance(e) {
       if (e) e.stopPropagation();
