@@ -727,22 +727,11 @@
         <ul class="nav navbar-nav ml-auto">
             <li class="nav-item px-2 dropdown" id="headerUserDropdownContainer">
                 <a class="nav-link user-dropdown-btn" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleUserDropdown(event)">
-                    <span id="headerUserDisplayName">Ahmii9090x (SuperMaster)</span> <i class="fas fa-caret-down"></i>
+                    <span id="headerUserDisplayName">Ahmii9090x (Company)</span> <i class="fas fa-caret-down"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" id="userProfileDropdown">
                     <a class="dropdown-item" href="/Common/Profile" onclick="navigateAdmin('/Common/Profile', event)">
                         <i class="fa fa-user"></i> Profile
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <h6 class="dropdown-header" style="font-size:11px; text-transform:uppercase; color:#73818f; padding:4px 16px; margin:0;">Role View</h6>
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="switchAdminRole('company')">
-                        <i class="fa fa-building" style="color:#ffc107; margin-right:6px;"></i> Company Account
-                    </a>
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="switchAdminRole('super_admin')">
-                        <i class="fa fa-shield" style="color:#20a8d8; margin-right:6px;"></i> Super Admin
-                    </a>
-                    <a class="dropdown-item" href="javascript:void(0)" onclick="switchAdminRole('super_master')">
-                        <i class="fa fa-users" style="color:#4dbd74; margin-right:6px;"></i> Super Master
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" id="btn-logout" href="/Common/Logout" onclick="executeAdminLogout(event)">
@@ -2883,9 +2872,9 @@ Boland v Knights                        </a>
     <script>
         // State & Auth Roles
         var ROLE_LABELS = {
-            'company': 'Company Account',
+            'company': 'Company',
             'super_admin': 'Super Admin',
-            'super_master': 'Super Master',
+            'super_master': 'SuperMaster',
             'user': 'Normal User'
         };
 
@@ -2897,8 +2886,8 @@ Boland v Knights                        </a>
 
         var COMPANY_USER = {
             id: 'usr_company_001',
-            username: 'Company Account',
-            name: 'Company Account',
+            username: 'Ahmii9090x',
+            name: 'Ahmii9090x',
             role: 'company',
             status: 'active',
             credit: '10,000,000',
@@ -2931,7 +2920,7 @@ Boland v Knights                        </a>
             exp: '0.00 Rs.'
         };
 
-        var DEFAULT_BYPASS_ADMIN_USER = SUPER_ADMIN_USER;
+        var DEFAULT_BYPASS_ADMIN_USER = COMPANY_USER;
 
         function getAdminAuthToken() {
             var token = localStorage.getItem('auth_token');
@@ -3088,16 +3077,15 @@ Boland v Knights                        </a>
             currentAdminUser = user;
             var roleLabel = ROLE_LABELS[user.role] || user.role;
 
-            // Header username and role badge
+            // Header username and role label matching BPExch reference format
             var headerDisplay = document.getElementById('headerUserDisplayName');
             if (headerDisplay) {
-                var badgeClass = user.role === 'company' ? 'badge-warning' : (user.role === 'super_admin' ? 'badge-primary' : 'badge-success');
-                headerDisplay.innerHTML = '<strong>' + user.username + '</strong> <span class="badge ' + badgeClass + '" style="margin-left:6px; font-size:11px; padding:3px 6px; text-transform:uppercase;">' + roleLabel + '</span>';
+                headerDisplay.textContent = user.username + ' (' + roleLabel + ')';
             }
 
-            // Clients List Header
+            // Clients List Header matching BPExch reference format (Username - Clients List | Default)
             var clientsHeader = document.getElementById('clientsListHeaderUsername');
-            if (clientsHeader) clientsHeader.innerText = user.username + ' (' + roleLabel + ')';
+            if (clientsHeader) clientsHeader.innerText = user.username;
 
             // Top Header Wallet & Accounts Chart KPI row
             var walletBal = document.getElementById('headerWalletBal');
