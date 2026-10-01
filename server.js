@@ -293,7 +293,7 @@ const server = http.createServer(async (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, sportbex-api-key');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Request, X-Company-Key, sportbex-api-key');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;

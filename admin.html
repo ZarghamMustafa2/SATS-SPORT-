@@ -2826,6 +2826,35 @@ Boland v Knights                        </a>
                                     </div>
                                 </div>
 
+                                <div class="card mb-3" id="adminWhatsappSettingsCard">
+                                    <div class="card-header">
+                                        <i class="fab fa-whatsapp" style="color: #25d366; font-size: 16px; margin-right: 6px;"></i>
+                                        <strong>Deposit / Withdraw WhatsApp Number</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="adminWhatsappForm" onsubmit="saveAdminWhatsappSettings(event)">
+                                            <div class="form-group row">
+                                                <label class="col-md-4 col-form-label"><strong>WhatsApp Number</strong></label>
+                                                <div class="col-md-8">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="fab fa-whatsapp" style="color: #25d366;"></i></span>
+                                                        </div>
+                                                        <input type="text" id="adminWhatsappNumberInput" class="form-control" placeholder="e.g. 447846062779 or 923001234567" required autocomplete="off">
+                                                    </div>
+                                                    <small class="form-text text-muted">
+                                                        Enter full international number with country code (no '+' or spaces). Users clicking Deposit or Withdraw will be directed to this WhatsApp number.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div id="adminWhatsappNotice" style="display:none; margin-bottom:12px;"></div>
+                                            <div class="form-actions">
+                                                <button class="btn btn-primary" type="submit" id="btnSaveWhatsapp"><strong>Save WhatsApp Number</strong></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
                                 <div class="card">
                                     <div class="card-header"><strong>Two Factor Authentication</strong></div>
                                     <div class="card-body">
@@ -3467,6 +3496,7 @@ Boland v Knights                        </a>
             } else if (lower === '/common/profile') {
                 document.getElementById('viewProfile').style.display = 'block';
                 document.title = 'Profile | BPEXCH';
+                loadAdminWhatsappSettings();
             } else {
                 document.getElementById('viewDashboard').style.display = 'block';
                 document.getElementById('sideNavDashboard')?.classList.add('active');
@@ -4283,6 +4313,90 @@ Boland v Knights                        </a>
             t.innerText = msg;
             t.style.display = 'block';
             setTimeout(function() { t.style.display = 'none'; }, 2500);
+        }
+
+        // ========================================================
+        // MANUAL DEPOSIT & WITHDRAW WHATSAPP SETTINGS
+        // ========================================================
+        async function loadAdminWhatsappSettings() {
+            var input = document.getElementById('adminWhatsappNumberInput');
+            if (!input) return;
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/settings/whatsapp'));
+                if (res.ok && res.data && (res.data.whatsappNumber || res.data.depositWithdrawWhatsapp)) {
+                    input.value = res.data.whatsappNumber || res.data.depositWithdrawWhatsapp;
+                }
+            } catch (err) {
+                console.warn('Could not load WhatsApp settings:', err);
+            }
+        }
+
+        async function saveAdminWhatsappSettings(event) {
+            if (event) event.preventDefault();
+            var input = document.getElementById('adminWhatsappNumberInput');
+            var btn = document.getElementById('btnSaveWhatsapp');
+            var notice = document.getElementById('adminWhatsappNotice');
+            if (!input) return;
+
+            var rawNumber = input.value.trim();
+            if (!rawNumber) {
+                if (notice) {
+                    notice.className = 'alert alert-danger';
+                    notice.innerText = 'Please enter a valid WhatsApp phone number.';
+                    notice.style.display = 'block';
+                }
+                return;
+            }
+
+            var token = getAdminAuthToken();
+            var originalBtnHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<strong>Saving...</strong>';
+            }
+            if (notice) notice.style.display = 'none';
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/settings/whatsapp'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({ whatsappNumber: rawNumber })
+                });
+
+                var data = res.data;
+                if (res.ok && data && data.status === 'success') {
+                    input.value = data.whatsappNumber;
+                    if (notice) {
+                        notice.className = 'alert alert-success';
+                        notice.innerText = 'WhatsApp number updated successfully to +' + data.whatsappNumber;
+                        notice.style.display = 'block';
+                    }
+                    showToast(data.message || 'WhatsApp number saved successfully!');
+                } else {
+                    var errorMsg = (data && data.message) ? data.message : 'Failed to update WhatsApp number.';
+                    if (notice) {
+                        notice.className = 'alert alert-danger';
+                        notice.innerText = errorMsg;
+                        notice.style.display = 'block';
+                    }
+                    alert('Error: ' + errorMsg);
+                }
+            } catch (err) {
+                if (notice) {
+                    notice.className = 'alert alert-danger';
+                    notice.innerText = 'Network error: ' + err.message;
+                    notice.style.display = 'block';
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
+                }
+            }
         }
     </script>
 </body>
