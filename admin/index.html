@@ -727,7 +727,7 @@
         <ul class="nav navbar-nav ml-auto">
             <li class="nav-item px-2 dropdown" id="headerUserDropdownContainer">
                 <a class="nav-link user-dropdown-btn" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleUserDropdown(event)">
-                    <span id="headerUserDisplayName">Ahmii9090x (SuperMaster)</span> <i class="fas fa-caret-down"></i>
+                    <span id="headerUserDisplayName">Ahmii9090x</span> <i class="fas fa-caret-down"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" id="userProfileDropdown">
                     <a class="dropdown-item" href="/Common/Profile" onclick="navigateAdmin('/Common/Profile', event)">
@@ -3028,10 +3028,11 @@ Boland v Knights                        </a>
             currentAdminUser = user;
             var roleLabel = ROLE_LABELS[user.role] || user.role;
 
-            // Header username and role badge
+            // Header username (clean without role badge)
             var headerDisplay = document.getElementById('headerUserDisplayName');
             if (headerDisplay) {
-                headerDisplay.innerHTML = '<strong>' + user.username + '</strong> <span class="badge badge-warning" style="margin-left:6px; font-size:11px; padding:3px 6px; text-transform:uppercase;">' + roleLabel + '</span>';
+                var displayName = user.username || user.name || 'Ahmii9090x';
+                headerDisplay.innerHTML = '<strong>' + displayName + '</strong>';
             }
 
             // Clients List Header
