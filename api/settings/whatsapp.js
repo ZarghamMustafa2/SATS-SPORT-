@@ -16,6 +16,9 @@ module.exports = async function handler(req, res) {
 
   // 1. GET: Public retrieval of current WhatsApp number for User Deposit / Withdraw
   if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     const publicSettings = settingsDb.getPublicSettings();
     return sendJson(res, 200, {
       status: 'success',

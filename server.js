@@ -325,7 +325,10 @@ const server = http.createServer(async (req, res) => {
     lowerPath.startsWith('/reports') ||
     lowerPath.startsWith('/markets') ||
     lowerPath.startsWith('/common') ||
-    lowerPath.startsWith('/customer');
+    lowerPath.startsWith('/customer') ||
+    lowerPath === '/settings' ||
+    lowerPath === '/settings/' ||
+    lowerPath.startsWith('/settings');
 
   if (isAdminRoute) {
     const adminPath = path.join(__dirname, 'admin.html');

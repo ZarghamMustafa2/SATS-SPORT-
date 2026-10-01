@@ -722,19 +722,31 @@
             <li class="nav-item px-3">
                 <a class="nav-link" id="topNavReports" href="/Reports/BookDetail" onclick="navigateAdmin('/Reports/BookDetail', event)">Reports</a>
             </li>
+            <li class="nav-item px-3">
+                <a class="nav-link" id="topNavSettings" href="/Settings" onclick="navigateAdmin('/Settings', event)"><i class="fas fa-cog mr-1"></i> Settings</a>
+            </li>
         </ul>
 
         <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item px-2">
+                <a class="nav-link" id="headerWhatsappQuickBtn" href="/Settings" onclick="navigateAdmin('/Settings', event)" style="padding: 4px 10px; font-weight: 700; border-radius: 4px; border: 1.5px solid #25d366; color: #15803d; background: #f0fdf4; display: inline-flex; align-items: center; gap: 6px; font-size: 12px;" title="Deposit / Withdraw WhatsApp Setting">
+                    <i class="fab fa-whatsapp" style="color: #25d366; font-size: 15px;"></i>
+                    <span>WhatsApp Setting</span>
+                </a>
+            </li>
             <li class="nav-item px-2 dropdown" id="headerUserDropdownContainer">
                 <a class="nav-link user-dropdown-btn" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleUserDropdown(event)">
                     <span id="headerUserDisplayName">Ahmii9090x</span> <i class="fas fa-caret-down"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" id="userProfileDropdown">
+                    <a class="dropdown-item" href="/Settings" onclick="navigateAdmin('/Settings', event)">
+                        <i class="fa fa-cog mr-1"></i> Settings
+                    </a>
                     <a class="dropdown-item" href="/Common/Profile" onclick="navigateAdmin('/Common/Profile', event)">
-                        <i class="fa fa-user"></i> Profile
+                        <i class="fa fa-user mr-1"></i> Profile
                     </a>
                     <a class="dropdown-item" id="btn-logout" href="/Common/Logout" onclick="executeAdminLogout(event)">
-                        <i class="fa fa-sign-out"></i> Logout
+                        <i class="fa fa-sign-out mr-1"></i> Logout
                     </a>
                 </div>
             </li>
@@ -780,6 +792,11 @@
         <li class="nav-item">
             <a class="nav-link" href="/Markets/BetLocker" id="sideNavBetLock" onclick="navigateAdmin('/Markets/BetLocker', event)">
                 <i class="nav-icon fas fa-unlock-alt fa-inverse"></i> Bet Lock
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Settings" id="sideNavSettings" onclick="navigateAdmin('/Settings', event)">
+                <i class="nav-icon fas fa-cog fa-inverse"></i> Settings
             </a>
         </li>
         <li class="nav-item">
@@ -2757,9 +2774,52 @@ Boland v Knights                        </a>
                     </div>
 
                     <!-- ========================================================
-                         VIEW 12: USER PROFILE (/Common/Profile)
+                         VIEW 12: SETTINGS & USER PROFILE (/Settings, /Common/Profile)
                          ======================================================== -->
                     <div id="viewProfile" class="admin-view-section">
+                        <!-- TOP ROW: Deposit / Withdraw WhatsApp Configuration -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <div class="card" id="adminWhatsappSettingsCard" style="border: 2px solid #25d366; box-shadow: 0 3px 12px rgba(37,211,102,0.18);">
+                                    <div class="card-header" style="background: #f0fdf4; border-bottom: 1.5px solid #86efac; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="fab fa-whatsapp" style="color: #25d366; font-size: 22px;"></i>
+                                            <strong style="color: #166534; font-size: 16px;">Deposit / Withdraw WhatsApp Number</strong>
+                                        </div>
+                                        <span class="badge badge-success" style="background: #22c55e; color: #fff; font-size: 11px; padding: 5px 10px; font-weight: 700; border-radius: 4px;">Live Setting</span>
+                                    </div>
+                                    <div class="card-body" style="background: #ffffff; padding: 22px;">
+                                        <form id="adminWhatsappForm" onsubmit="saveAdminWhatsappSettings(event)">
+                                            <div class="form-group row align-items-center mb-2">
+                                                <label class="col-md-3 col-form-label" style="font-size: 14px; font-weight: 700; color: #1f2937;">
+                                                    WhatsApp Number:
+                                                </label>
+                                                <div class="col-md-6">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" style="background: #f0fdf4; border-color: #86efac;">
+                                                                <i class="fab fa-whatsapp" style="color: #25d366; font-size: 18px;"></i>
+                                                            </span>
+                                                        </div>
+                                                        <input type="text" id="adminWhatsappNumberInput" class="form-control" style="font-size: 15px; font-weight: 700; letter-spacing: 0.5px; height: 42px;" placeholder="e.g. 447846062779 or 923001234567" required autocomplete="off">
+                                                    </div>
+                                                    <small class="form-text text-muted" style="margin-top: 6px; font-size: 12px;">
+                                                        Enter full international number with country code (digits only, no '+' or spaces). When users click <strong>Deposit</strong> or <strong>Withdraw</strong> on the site, they will be directly routed to this WhatsApp number.
+                                                    </small>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button class="btn btn-success btn-block" type="submit" id="btnSaveWhatsapp" style="background: #22c55e; border-color: #16a34a; font-weight: 700; height: 42px; font-size: 14px;">
+                                                        <i class="fas fa-save mr-1"></i> Save Number
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div id="adminWhatsappNotice" style="display:none; margin-top:14px;"></div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-12 col-md-6">
                                 <div class="card">
@@ -2821,35 +2881,6 @@ Boland v Knights                        </a>
                                                 <div class="col-md-3">
                                                     <button class="btn btn-primary" type="submit">Update</button>
                                                 </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-
-                                <div class="card mb-3" id="adminWhatsappSettingsCard">
-                                    <div class="card-header">
-                                        <i class="fab fa-whatsapp" style="color: #25d366; font-size: 16px; margin-right: 6px;"></i>
-                                        <strong>Deposit / Withdraw WhatsApp Number</strong>
-                                    </div>
-                                    <div class="card-body">
-                                        <form id="adminWhatsappForm" onsubmit="saveAdminWhatsappSettings(event)">
-                                            <div class="form-group row">
-                                                <label class="col-md-4 col-form-label"><strong>WhatsApp Number</strong></label>
-                                                <div class="col-md-8">
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <span class="input-group-text"><i class="fab fa-whatsapp" style="color: #25d366;"></i></span>
-                                                        </div>
-                                                        <input type="text" id="adminWhatsappNumberInput" class="form-control" placeholder="e.g. 447846062779 or 923001234567" required autocomplete="off">
-                                                    </div>
-                                                    <small class="form-text text-muted">
-                                                        Enter full international number with country code (no '+' or spaces). Users clicking Deposit or Withdraw will be directed to this WhatsApp number.
-                                                    </small>
-                                                </div>
-                                            </div>
-                                            <div id="adminWhatsappNotice" style="display:none; margin-bottom:12px;"></div>
-                                            <div class="form-actions">
-                                                <button class="btn btn-primary" type="submit" id="btnSaveWhatsapp"><strong>Save WhatsApp Number</strong></button>
                                             </div>
                                         </form>
                                     </div>
@@ -3154,6 +3185,7 @@ Boland v Knights                        </a>
 
         // Lifecycle & Routing
         window.addEventListener('DOMContentLoaded', async function() {
+            loadAdminWhatsappSettings();
             renderClientsTable();
             loadMarketMatchByIdOrName('Dolphins v Northern Cape');
 
@@ -3493,9 +3525,17 @@ Boland v Knights                        </a>
                 document.title = 'Market Odds | BPEXCH';
                 var mId = (window.location.href.match(/1\.\d+/) || [''])[0];
                 loadMarketMatchByIdOrName(mId || 'Dolphins v Northern Cape');
-            } else if (lower === '/common/profile') {
+            } else if (
+                lower === '/settings' || lower === '/settings/' || lower.startsWith('/settings') ||
+                lower === '/common/settings' || lower === '/common/settings/' || lower.startsWith('/common/settings') ||
+                lower === '/common/profile' || lower === '/common/profile/' || lower.startsWith('/common/profile') ||
+                (window.location.hash && window.location.hash.toLowerCase().includes('settings')) ||
+                (window.location.hash && window.location.hash.toLowerCase().includes('profile'))
+            ) {
                 document.getElementById('viewProfile').style.display = 'block';
-                document.title = 'Profile | BPEXCH';
+                document.getElementById('sideNavSettings')?.classList.add('active');
+                document.getElementById('topNavSettings')?.classList.add('active');
+                document.title = 'Settings | BPEXCH';
                 loadAdminWhatsappSettings();
             } else {
                 document.getElementById('viewDashboard').style.display = 'block';

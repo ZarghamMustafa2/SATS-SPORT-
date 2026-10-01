@@ -9151,8 +9151,11 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function openWhatsAppChat() {
-      window.open('https://api.whatsapp.com/send?phone=447846062779&text=Hi%2C%20I%20need%20support%20with%20Satsports', '_blank');
+    async function openWhatsAppChat() {
+      let num = activeWhatsappNumber;
+      if (!num) num = await fetchWhatsappSettings();
+      const cleanNumber = String(num || '447846062779').replace(/\D/g, '');
+      window.open('https://api.whatsapp.com/send?phone=' + cleanNumber + '&text=Hi%2C%20I%20need%20support%20with%20Satsports', '_blank');
     }
 
     function filterMobileRaceRegion(el, reg) {

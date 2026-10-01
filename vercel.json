@@ -52,6 +52,12 @@
     { "source": "/Customer/(.*)", "destination": "/admin" },
     { "source": "/customer", "destination": "/admin" },
     { "source": "/customer/", "destination": "/admin" },
-    { "source": "/customer/(.*)", "destination": "/admin" }
+    { "source": "/customer/(.*)", "destination": "/admin" },
+    { "source": "/Settings", "destination": "/admin" },
+    { "source": "/Settings/", "destination": "/admin" },
+    { "source": "/Settings/(.*)", "destination": "/admin" },
+    { "source": "/settings", "destination": "/admin" },
+    { "source": "/settings/", "destination": "/admin" },
+    { "source": "/settings/(.*)", "destination": "/admin" }
   ]
 }
