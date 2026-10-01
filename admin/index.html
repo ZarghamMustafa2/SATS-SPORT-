@@ -733,6 +733,18 @@
                     <a class="dropdown-item" href="/Common/Profile" onclick="navigateAdmin('/Common/Profile', event)">
                         <i class="fa fa-user"></i> Profile
                     </a>
+                    <div class="dropdown-divider"></div>
+                    <h6 class="dropdown-header" style="font-size:11px; text-transform:uppercase; color:#73818f; padding:4px 16px; margin:0;">Role View</h6>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="switchAdminRole('company')">
+                        <i class="fa fa-building" style="color:#ffc107; margin-right:6px;"></i> Company Account
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="switchAdminRole('super_admin')">
+                        <i class="fa fa-shield" style="color:#20a8d8; margin-right:6px;"></i> Super Admin
+                    </a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="switchAdminRole('super_master')">
+                        <i class="fa fa-users" style="color:#4dbd74; margin-right:6px;"></i> Super Master
+                    </a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" id="btn-logout" href="/Common/Logout" onclick="executeAdminLogout(event)">
                         <i class="fa fa-sign-out"></i> Logout
                     </a>
@@ -2812,6 +2824,9 @@ Boland v Knights                        </a>
                                 <div class="card mb-3">
                                     <div class="card-header"><strong>Change Password</strong></div>
                                     <div class="card-body">
+                                        <div id="profileCompanyPassNotice" class="alert alert-info mb-0" style="display:none;">
+                                            <strong>Root Account Notice:</strong> The Company Account is the top root account in the system and operates without a password or credential login.
+                                        </div>
                                         <form id="profileChangePassForm" onsubmit="event.preventDefault(); showToast('Master password updated!');">
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">NewPassword</label>
@@ -2880,7 +2895,19 @@ Boland v Knights                        </a>
         // ==============================================================================
         var BYPASS_ADMIN_AUTH = true;
 
-        var DEFAULT_BYPASS_ADMIN_USER = {
+        var COMPANY_USER = {
+            id: 'usr_company_001',
+            username: 'Company Account',
+            name: 'Company Account',
+            role: 'company',
+            status: 'active',
+            credit: '10,000,000',
+            balance: '10,000,000.00 Rs.',
+            share: '100%',
+            exp: '0.00 Rs.'
+        };
+
+        var SUPER_ADMIN_USER = {
             id: '8764246',
             username: 'superadmin_1',
             name: 'Super Admin',
@@ -2892,12 +2919,45 @@ Boland v Knights                        </a>
             exp: '0.00 Rs.'
         };
 
+        var SUPER_MASTER_USER = {
+            id: '8728498',
+            username: 'supermaster_1',
+            name: 'Super Master',
+            role: 'super_master',
+            status: 'active',
+            credit: '50,000',
+            balance: '50,000.00 Rs.',
+            share: '85%',
+            exp: '0.00 Rs.'
+        };
+
+        var DEFAULT_BYPASS_ADMIN_USER = SUPER_ADMIN_USER;
+
         function getAdminAuthToken() {
             var token = localStorage.getItem('auth_token');
             if (!token && BYPASS_ADMIN_AUTH) {
+                if (currentAdminUser && currentAdminUser.role === 'company') {
+                    return 'bypass_company_token';
+                }
                 return 'bypass_admin_token';
             }
             return token;
+        }
+
+        function switchAdminRole(role) {
+            closeUserDropdown();
+            if (role === 'company') {
+                localStorage.setItem('current_user', JSON.stringify(COMPANY_USER));
+                applyUserRoleUI(COMPANY_USER);
+            } else if (role === 'super_admin') {
+                localStorage.setItem('current_user', JSON.stringify(SUPER_ADMIN_USER));
+                applyUserRoleUI(SUPER_ADMIN_USER);
+            } else if (role === 'super_master') {
+                localStorage.setItem('current_user', JSON.stringify(SUPER_MASTER_USER));
+                applyUserRoleUI(SUPER_MASTER_USER);
+            }
+            fetchAdminUsers();
+            showToast('Switched view to ' + (ROLE_LABELS[role] || role));
         }
 
         var currentAdminUser = null;
@@ -3031,12 +3091,42 @@ Boland v Knights                        </a>
             // Header username and role badge
             var headerDisplay = document.getElementById('headerUserDisplayName');
             if (headerDisplay) {
-                headerDisplay.innerHTML = '<strong>' + user.username + '</strong> <span class="badge badge-warning" style="margin-left:6px; font-size:11px; padding:3px 6px; text-transform:uppercase;">' + roleLabel + '</span>';
+                var badgeClass = user.role === 'company' ? 'badge-warning' : (user.role === 'super_admin' ? 'badge-primary' : 'badge-success');
+                headerDisplay.innerHTML = '<strong>' + user.username + '</strong> <span class="badge ' + badgeClass + '" style="margin-left:6px; font-size:11px; padding:3px 6px; text-transform:uppercase;">' + roleLabel + '</span>';
             }
 
             // Clients List Header
             var clientsHeader = document.getElementById('clientsListHeaderUsername');
             if (clientsHeader) clientsHeader.innerText = user.username + ' (' + roleLabel + ')';
+
+            // Top Header Wallet & Accounts Chart KPI row
+            var walletBal = document.getElementById('headerWalletBal');
+            var walletExp = document.getElementById('headerWalletExp');
+            var sumCredit = document.getElementById('sumCreditRemaining');
+            var sumCash = document.getElementById('sumCash');
+            var sumPL = document.getElementById('sumPLDownline');
+            var sumUsers = document.getElementById('sumUsersCount');
+
+            if (user.role === 'company') {
+                if (walletBal) walletBal.innerText = '10,000,000';
+                if (walletExp) walletExp.innerText = '0';
+                if (sumCredit) sumCredit.innerText = '10,000,000 Rs.';
+                if (sumCash) sumCash.innerText = '10,000,000 Rs.';
+                if (sumPL) sumPL.innerText = '0.00 Rs.';
+            } else if (user.role === 'super_admin') {
+                if (walletBal) walletBal.innerText = '100,000';
+                if (walletExp) walletExp.innerText = '0';
+                if (sumCredit) sumCredit.innerText = '100,000 Rs.';
+                if (sumCash) sumCash.innerText = '100,000 Rs.';
+                if (sumPL) sumPL.innerText = '0.00 Rs.';
+            } else {
+                if (walletBal) walletBal.innerText = '50,000';
+                if (walletExp) walletExp.innerText = '0';
+                if (sumCredit) sumCredit.innerText = '50,000 Rs.';
+                if (sumCash) sumCash.innerText = '50,000 Rs.';
+                if (sumPL) sumPL.innerText = '0.00 Rs.';
+            }
+            if (sumUsers) sumUsers.innerText = (clientsList ? clientsList.length : 0).toString();
 
             // Role creation hierarchy controls
             var roleSelect = document.getElementById('newUserRole');
@@ -3079,6 +3169,19 @@ Boland v Knights                        </a>
                     }
                 }
             }
+
+            // Profile Change Password card controls
+            var passForm = document.getElementById('profileChangePassForm');
+            var compPassNotice = document.getElementById('profileCompanyPassNotice');
+            if (passForm && compPassNotice) {
+                if (user.role === 'company') {
+                    passForm.style.display = 'none';
+                    compPassNotice.style.display = 'block';
+                } else {
+                    passForm.style.display = 'block';
+                    compPassNotice.style.display = 'none';
+                }
+            }
         }
 
         // Fetch Admin Users Downline from Server
@@ -3086,9 +3189,14 @@ Boland v Knights                        </a>
             var token = getAdminAuthToken();
             if (!token) return;
 
+            var headers = { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' };
+            if (currentAdminUser && currentAdminUser.role === 'company') {
+                headers['X-Admin-Role'] = 'company';
+            }
+
             try {
                 var result = await safeFetchJson(getApiUrl('/api/admin/users'), {
-                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                    headers: headers
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
@@ -3130,14 +3238,30 @@ Boland v Knights                        </a>
             // TEMPORARY ADMIN ACCESS: Completely Bypass Login Guard & Direct Access
             if (BYPASS_ADMIN_AUTH) {
                 var userToApply = DEFAULT_BYPASS_ADMIN_USER;
-                var stored = localStorage.getItem('current_user');
-                if (stored) {
-                    try {
-                        var parsed = JSON.parse(stored);
-                        if (parsed && (parsed.role === 'super_admin' || parsed.role === 'super_master' || parsed.role === 'company')) {
-                            userToApply = parsed;
-                        }
-                    } catch (e) {}
+
+                // Priority 1: Check query string (?role=company or ?role=super_admin or ?role=super_master) or URL path
+                var urlParams = new URLSearchParams(window.location.search);
+                var reqRole = urlParams.get('role');
+                var path = window.location.pathname.toLowerCase();
+                if (reqRole === 'company' || path === '/company' || path === '/company/' || path.startsWith('/company/')) {
+                    userToApply = COMPANY_USER;
+                    localStorage.setItem('current_user', JSON.stringify(COMPANY_USER));
+                } else if (reqRole === 'super_admin') {
+                    userToApply = SUPER_ADMIN_USER;
+                    localStorage.setItem('current_user', JSON.stringify(SUPER_ADMIN_USER));
+                } else if (reqRole === 'super_master') {
+                    userToApply = SUPER_MASTER_USER;
+                    localStorage.setItem('current_user', JSON.stringify(SUPER_MASTER_USER));
+                } else {
+                    var stored = localStorage.getItem('current_user');
+                    if (stored) {
+                        try {
+                            var parsed = JSON.parse(stored);
+                            if (parsed && (parsed.role === 'super_admin' || parsed.role === 'super_master' || parsed.role === 'company')) {
+                                userToApply = parsed;
+                            }
+                        } catch (e) {}
+                    }
                 }
                 applyUserRoleUI(userToApply);
                 showAdminApp();
@@ -3406,7 +3530,15 @@ Boland v Knights                        </a>
             document.querySelectorAll('.sidebar .nav-link').forEach(function(a) { a.classList.remove('active'); });
             document.querySelectorAll('.app-header .nav-link').forEach(function(a) { a.classList.remove('active'); });
 
-            if (lower === '/index' || lower === '/admin' || lower === '/admin/' || lower === '/') {
+            if (lower === '/company' || lower === '/company/') {
+                if (!currentAdminUser || currentAdminUser.role !== 'company') {
+                    switchAdminRole('company');
+                }
+                document.getElementById('viewDashboard').style.display = 'block';
+                document.getElementById('sideNavDashboard')?.classList.add('active');
+                document.getElementById('topNavDashboard')?.classList.add('active');
+                document.title = 'Company Dashboard | BPEXCH';
+            } else if (lower === '/index' || lower === '/admin' || lower === '/admin/' || lower === '/') {
                 document.getElementById('viewDashboard').style.display = 'block';
                 document.getElementById('sideNavDashboard')?.classList.add('active');
                 document.getElementById('topNavDashboard')?.classList.add('active');
@@ -3696,13 +3828,19 @@ Boland v Knights                        </a>
                 return;
             }
 
+            var headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+                'X-Admin-Request': 'true'
+            };
+            if (currentAdminUser && currentAdminUser.role === 'company') {
+                headers['X-Admin-Role'] = 'company';
+            }
+
             try {
                 var result = await safeFetchJson(getApiUrl('/api/admin/users/create'), {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
+                    headers: headers,
                     body: JSON.stringify({
                         username: u,
                         password: p,
@@ -3855,13 +3993,19 @@ Boland v Knights                        </a>
                 return;
             }
 
+            var headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+                'X-Admin-Request': 'true'
+            };
+            if (currentAdminUser && currentAdminUser.role === 'company') {
+                headers['X-Admin-Role'] = 'company';
+            }
+
             try {
                 var result = await safeFetchJson(getApiUrl('/api/admin/users/status'), {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
+                    headers: headers,
                     body: JSON.stringify({ targetUserId: clientId })
                 });
                 var data = result.data;
