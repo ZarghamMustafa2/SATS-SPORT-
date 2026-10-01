@@ -316,9 +316,6 @@ const server = http.createServer(async (req, res) => {
     lowerPath === '/admin/' ||
     lowerPath === '/admin.html' ||
     lowerPath.startsWith('/admin/') ||
-    lowerPath === '/company' ||
-    lowerPath === '/company/' ||
-    lowerPath.startsWith('/company/') ||
     lowerPath === '/login' ||
     lowerPath === '/login/' ||
     lowerPath.startsWith('/login/') ||

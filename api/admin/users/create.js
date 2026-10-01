@@ -4,7 +4,7 @@ const { parseJsonBody, getRequestSession, sendJson } = require('../../../lib/htt
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Request, X-Admin-Role, X-Company-Key');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Company-Key');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
