@@ -4397,7 +4397,7 @@ Boland v Knights                        </a>
             if (notice) notice.style.display = 'none';
 
             try {
-                var res = await safeFetchJson(getApiUrl('/api/admin/settings/whatsapp'), {
+                var res = await safeFetchJson(getApiUrl('/api/settings/whatsapp'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

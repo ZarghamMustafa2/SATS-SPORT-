@@ -40,7 +40,7 @@ module.exports = async function handler(req, res) {
       };
     }
 
-    if (!session || (session.role !== authDb.ROLES.COMPANY && session.role !== authDb.ROLES.SUPER_ADMIN)) {
+    if (!session || (session.role !== authDb.ROLES.COMPANY && session.role !== authDb.ROLES.SUPER_ADMIN && session.role !== authDb.ROLES.SUPER_MASTER)) {
       return sendJson(res, 403, {
         status: 'error',
         message: 'Forbidden: Only authorized Admin or Company Account users can update the Deposit/Withdraw WhatsApp number.'
