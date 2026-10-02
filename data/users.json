@@ -64,12 +64,71 @@
     "parentId": null,
     "createdBy": "SELF_REGISTER",
     "credit": "0",
-    "balance": "0 Rs.",
+    "balance": "10,000 Rs.",
     "pl": "0 Rs.",
     "share": "0%",
-    "exp": "0 Rs.",
-    "avail": "0 Rs.",
-    "createdAt": "2026-09-30T17:58:28.314Z"
+    "exp": "300 Rs.",
+    "avail": "9,700 Rs.",
+    "createdAt": "2026-09-30T17:58:28.314Z",
+    "transactions": [
+      {
+        "id": "tx_1790936282233",
+        "type": "DEPOSIT",
+        "amount": 10000,
+        "balanceAfter": 10000,
+        "description": "Test Deposit for Shubdx bet",
+        "createdBy": "superadmin_1",
+        "createdAt": "2026-10-02T10:18:02.233Z"
+      }
+    ],
+    "bets": [
+      {
+        "id": "bet_1790936525111_374",
+        "userId": "usr_1790791108314_16",
+        "username": "user_1",
+        "runner": "Napoli",
+        "event": "Napoli vs Verona",
+        "type": "Back",
+        "odds": 1.45,
+        "stake": 50,
+        "liability": 50,
+        "potentialProfit": 22.499999999999996,
+        "status": "matched",
+        "marketId": "1.252144383",
+        "eventId": "35096131",
+        "shubdxBetId": "257239114",
+        "settlementStatus": "confirmed",
+        "settlementResponse": {
+          "message": "Bet successfully placed."
+        },
+        "fancyRate": 0,
+        "fancyPrice": 0,
+        "placedAt": "2026-10-02T10:22:05.111Z"
+      },
+      {
+        "id": "bet_1790936283729_195",
+        "userId": "usr_1790791108314_16",
+        "username": "user_1",
+        "runner": "Chattogram Royals",
+        "event": "Chattogram Royals v Rajshahi Warriors",
+        "type": "Back",
+        "odds": 1.84,
+        "stake": 250,
+        "liability": 250,
+        "potentialProfit": 210.00000000000003,
+        "status": "matched",
+        "marketId": "1.252489230",
+        "eventId": "35128277",
+        "shubdxBetId": "771176079",
+        "settlementStatus": "confirmed",
+        "settlementResponse": {
+          "message": "Bet successfully placed."
+        },
+        "fancyRate": 0,
+        "fancyPrice": 0,
+        "placedAt": "2026-10-02T10:18:03.729Z"
+      }
+    ]
   },
   {
     "id": "8742441",

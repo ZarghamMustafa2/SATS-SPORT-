@@ -2,6 +2,8 @@
   "version": 2,
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/api/sports/(.*)", "destination": "/api/sports" },
+    { "source": "/api/sports", "destination": "/api/sports" },
     { "source": "/api/admin/settings/whatsapp", "destination": "/api/settings/whatsapp" },
     { "source": "/api/admin/users/finance", "destination": "/api/admin/users" },
     { "source": "/api/admin/users/status", "destination": "/api/admin/users" },

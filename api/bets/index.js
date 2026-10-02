@@ -1,4 +1,5 @@
 const authDb = require('../../lib/auth_db');
+const shubdx = require('../../lib/shubdx');
 const { parseJsonBody, getRequestSession, sendJson } = require('../../lib/http_util');
 
 module.exports = async function handler(req, res) {
@@ -17,21 +18,75 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 401, { status: 'error', message: 'Authentication required' });
   }
 
-  // POST: Place a Bet
+  // POST: Place a Bet with Automatic Shubdx Settlement Order
   if (req.method === 'POST') {
     try {
       const body = await parseJsonBody(req);
       const { runner, event, type, odds, stake } = body;
 
+      const eventTypeId = String(body.eventTypeId || body.event_type_id || '4');
+      const shubdxBetId = String(body.bet_id || Math.floor(100000000 + Math.random() * 900000000)).substring(0, 9);
+      const matchName = body.match_name || event || 'Sports Match';
+      const selectionName = body.selection_name || runner || 'Selection';
+      const side = (type && String(type).toLowerCase() === 'lay') ? 'lay' : 'back';
+      const marketId = body.market_id || '1.000000000';
+      const eventId = String(body.event_id || '0');
+      const sectionTeam = body.section_team || runner || 'Team';
+
+      // 1. Submit Settlement Order to Official Shubdx Settlement Endpoint
+      // POST https://shubdxinternational.com/settlement/order/{eventTypeId}
+      let settlementStatus = 'pending';
+      let settlementResponse = null;
+      try {
+        const orderPayload = {
+          match_name: matchName,
+          market_id: marketId,
+          bet_id: shubdxBetId,
+          selection_name: selectionName,
+          side: side,
+          rate: String(body.rate || (body.fancy_rate ? body.rate : 100)),
+          price: String(body.price || odds || 1.95),
+          fancy_rate: String(body.fancy_rate || 0),
+          fancy_price: String(body.fancy_price || 0),
+          stake: String(stake || 500),
+          website: 'https://sats-sport.vercel.app',
+          event_id: eventId,
+          section_team: sectionTeam
+        };
+
+        const shubdxResult = await shubdx.submitSettlementOrder(eventTypeId, orderPayload);
+        settlementResponse = shubdxResult.response.data || shubdxResult.response.raw;
+        if (shubdxResult.response.statusCode === 200 && settlementResponse && settlementResponse.message && settlementResponse.message.includes('successfully')) {
+          settlementStatus = 'confirmed';
+        } else if (settlementResponse && settlementResponse.error) {
+          settlementStatus = 'rejected: ' + settlementResponse.error;
+        } else {
+          settlementStatus = 'submitted';
+        }
+      } catch (shubdxErr) {
+        console.warn('Shubdx settlement submission note:', shubdxErr.message);
+        settlementStatus = 'deferred';
+        settlementResponse = { note: shubdxErr.message };
+      }
+
+      // 2. Commit Bet & Deduct Funds in Database
       await authDb.hydrateUsersAsync();
       await authDb.hydrateBetsAsync();
       const result = authDb.placeUserBet({
         userId: session.userId,
-        runner,
-        event,
-        type,
-        odds,
-        stake
+        runner: selectionName,
+        event: matchName,
+        type: side === 'lay' ? 'Lay' : 'Back',
+        odds: parseFloat(odds) || 1.95,
+        stake: parseFloat(stake) || 500,
+        match_name: matchName,
+        market_id: marketId,
+        event_id: eventId,
+        shubdx_bet_id: shubdxBetId,
+        settlement_status: settlementStatus,
+        settlement_response: settlementResponse,
+        fancy_rate: body.fancy_rate || 0,
+        fancy_price: body.fancy_price || 0
       });
       await authDb.saveUsersToDiskAsync();
       await authDb.saveBetsToDiskAsync(result.bet);
@@ -39,6 +94,12 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 200, {
         status: 'success',
         message: 'Bet placed successfully!',
+        shubdxSettlement: {
+          endpoint: `https://shubdxinternational.com/settlement/order/${eventTypeId}`,
+          betId: shubdxBetId,
+          status: settlementStatus,
+          response: settlementResponse
+        },
         bet: result.bet,
         user: result.user
       });
