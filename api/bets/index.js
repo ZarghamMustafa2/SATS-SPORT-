@@ -25,7 +25,8 @@ module.exports = async function handler(req, res) {
       const { runner, event, type, odds, stake } = body;
 
       const eventTypeId = String(body.eventTypeId || body.event_type_id || '4');
-      const shubdxBetId = String(body.bet_id || Math.floor(100000000 + Math.random() * 900000000)).substring(0, 9);
+      const rawBetId = String(body.bet_id || '').replace(/\D/g, '');
+      const shubdxBetId = (rawBetId && rawBetId.length <= 8) ? rawBetId : String(Math.floor(10000000 + Math.random() * 90000000));
       const matchName = body.match_name || event || 'Sports Match';
       const selectionName = body.selection_name || runner || 'Selection';
       const side = (type && String(type).toLowerCase() === 'lay') ? 'lay' : 'back';
