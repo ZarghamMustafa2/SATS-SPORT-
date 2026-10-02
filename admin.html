@@ -4448,19 +4448,18 @@ Boland v Knights                        </a>
                     headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
                 });
                 if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.bets)) {
-                        matchedBets = res.data.bets.map(function(b) {
-                            var statusLabel = b.settlementStatus === 'confirmed' ? 'Shubdx Confirmed' : (b.settlementStatus || 'Matched');
-                            var idLabel = b.shubdxBetId ? ' [#' + b.shubdxBetId + ']' : '';
-                            return {
-                                runner: b.runner + idLabel,
-                                price: (b.odds || 2.0).toFixed(2),
-                                size: b.stake || 0,
-                                better: b.username || 'User',
-                                master: statusLabel
-                            };
-                        });
-                        renderBetsTables();
-                    }
+                    matchedBets = res.data.bets.map(function(b) {
+                        var statusLabel = b.settlementStatus === 'confirmed' ? 'Shubdx Confirmed' : (b.settlementStatus || 'Matched');
+                        var idLabel = b.shubdxBetId ? ' [#' + b.shubdxBetId + ']' : '';
+                        return {
+                            runner: b.runner + idLabel,
+                            price: (b.odds || 2.0).toFixed(2),
+                            size: b.stake || 0,
+                            better: b.username || 'User',
+                            master: statusLabel
+                        };
+                    });
+                    renderBetsTables();
                 }
             } catch (e) {}
         }
