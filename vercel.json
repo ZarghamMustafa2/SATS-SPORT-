@@ -2,6 +2,8 @@
   "version": 2,
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/api/health", "destination": "/api/sports?action=health" },
+    { "source": "/api/shubdx/health", "destination": "/api/sports?action=shubdx_health" },
     { "source": "/api/sports/(.*)", "destination": "/api/sports" },
     { "source": "/api/sports", "destination": "/api/sports" },
     { "source": "/api/admin/settings/whatsapp", "destination": "/api/settings/whatsapp" },

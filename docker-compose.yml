@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  satssport-egress-backend:
+    build: .
+    container_name: satssport-backend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - HOST=0.0.0.0
+      - SHUBDX_API_BASE_URL=https://shubdxinternational.com
+      - SHUBDX_API_KEY=
+      - SHUBDX_SERVER_MODE=standalone

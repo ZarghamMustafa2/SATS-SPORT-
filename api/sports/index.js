@@ -28,6 +28,30 @@ module.exports = async function handler(req, res) {
   const sportParam = searchParams.get('sport') || searchParams.get('sportsname') || 'cricket';
   const groupById = searchParams.get('match') || searchParams.get('groupById') || searchParams.get('id') || '';
 
+  // 0. HEALTH CHECK & CONNECTIVITY DIAGNOSTICS (GET)
+  if (req.method === 'GET' && (action === 'health' || pathname === '/api/health')) {
+    return sendJson(res, 200, {
+      status: 'ok',
+      service: 'SatsSport Backend Gateway',
+      version: '3.1.0',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  if (req.method === 'GET' && (action === 'shubdx_health' || pathname === '/api/shubdx/health' || pathname.includes('/shubdx/health'))) {
+    try {
+      const healthData = await shubdx.checkHealth();
+      return sendJson(res, 200, healthData);
+    } catch (err) {
+      return sendJson(res, 500, {
+        status: 'error',
+        message: err.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+
   // 1. FETCH MATCH DETAILS & MARKETS (GET)
   if (req.method === 'GET' && (action === 'fetchmatch' || pathname.includes('/fetchmatch') || (groupById && action !== 'allmatches'))) {
     if (!groupById) {
