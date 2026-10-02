@@ -24,6 +24,7 @@ module.exports = async function handler(req, res) {
       const { runner, event, type, odds, stake } = body;
 
       await authDb.hydrateUsersAsync();
+      await authDb.hydrateBetsAsync();
       const result = authDb.placeUserBet({
         userId: session.userId,
         runner,
@@ -33,7 +34,7 @@ module.exports = async function handler(req, res) {
         stake
       });
       await authDb.saveUsersToDiskAsync();
-      await authDb.saveBetsToDiskAsync();
+      await authDb.saveBetsToDiskAsync(result.bet);
 
       return sendJson(res, 200, {
         status: 'success',
@@ -53,12 +54,12 @@ module.exports = async function handler(req, res) {
   // GET: Retrieve Bets
   if (req.method === 'GET') {
     try {
-      await authDb.hydrateBetsAsync();
+      const allBets = await authDb.hydrateBetsAsync();
       let bets = [];
       if (session.role === authDb.ROLES.COMPANY || session.role === authDb.ROLES.SUPER_ADMIN || session.role === authDb.ROLES.SUPER_MASTER) {
-        bets = authDb.getAllBets();
+        bets = allBets;
       } else {
-        bets = authDb.getUserBets(session.userId);
+        bets = allBets.filter(b => b.userId === session.userId);
       }
 
       return sendJson(res, 200, {
