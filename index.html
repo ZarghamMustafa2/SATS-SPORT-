@@ -12152,8 +12152,9 @@
         fetch(getApiUrl('/api/sports?action=allmatches&sport=cricket'))
           .then(res => res.json())
           .then(data => {
-            if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+            if (data && data.status === 'success' && data.isLiveShubdx && Array.isArray(data.matches) && data.matches.length > 0) {
               window.liveShubdxCricketMatches = data.matches;
+              window.isShubdxLiveActive = true;
               window.liveSportbexCricketMatches = data.matches;
               if (typeof currentSelectedSport !== 'undefined' && (currentSelectedSport === 'inplay' || currentSelectedSport === 'cricket')) {
                 const sportsCont = document.getElementById('sportsViewContainer');
@@ -12164,14 +12165,11 @@
                 }
               }
             } else {
-              // Fallback to legacy live feed if needed
-              fetch(getApiUrl('/api/sportbex/cricket/live'))
-                .then(r => r.json())
-                .then(d => {
-                  if (d && d.status === 'success' && Array.isArray(d.matches) && d.matches.length > 0) {
-                    window.liveSportbexCricketMatches = d.matches;
-                  }
-                }).catch(() => {});
+              window.isShubdxLiveActive = false;
+              // Offline fallback active: ensure website operates smoothly without crashing
+              if (data && Array.isArray(data.matches) && data.matches.length > 0) {
+                window.liveSportbexCricketMatches = data.matches;
+              }
             }
           })
           .catch(err => {

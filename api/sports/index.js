@@ -44,7 +44,8 @@ module.exports = async function handler(req, res) {
       const shubdxData = shubdxRes.response.data;
       const rawList = shubdxData?.data?.result || (Array.isArray(shubdxData?.result) ? shubdxData.result : []);
 
-      const categorized = shubdx.categorizeMarkets(rawList);
+      const isLiveShubdx = rawList.length > 0;
+      const categorized = isLiveShubdx ? shubdx.categorizeMarkets(rawList) : null;
 
       let ipNotice = null;
       if (shubdxData && shubdxData.status === 'error') {
@@ -56,18 +57,19 @@ module.exports = async function handler(req, res) {
         };
       }
 
-      // If live API is waiting for IP whitelist, build full categorized markets from available data or fallback template
-      const fullMarkets = (rawList.length > 0) ? categorized : getFallbackMatchMarkets(groupById, sportsname);
+      const fallbackMarkets = getFallbackMatchMarkets(groupById, sportsname);
 
       return sendJson(res, 200, {
-        status: 'success',
+        status: isLiveShubdx ? 'success' : 'unauthorized',
+        dataSource: isLiveShubdx ? 'LIVE_SHUBDX' : 'OFFLINE_FALLBACK',
+        isLiveShubdx: isLiveShubdx,
         groupById: groupById,
         sport: sportsname,
         eventTypeId: eventTypeId,
         endpoint: shubdxRes.endpoint,
-        isShubdxAuthorized: rawList.length > 0,
+        isShubdxAuthorized: isLiveShubdx,
         shubdxNotice: ipNotice,
-        markets: fullMarkets,
+        markets: isLiveShubdx ? categorized : fallbackMarkets,
         rawShubdxResponse: shubdxData
       });
     } catch (err) {
@@ -103,31 +105,30 @@ module.exports = async function handler(req, res) {
         isShubdxLive = true;
       } else if (shubdxData && shubdxData.status === 'error') {
         ipAuthNotice = {
-          message: shubdxData.message || 'IP address not authorized on Shubdx API',
+          message: shubdxData.message || 'Access denied: Your IP address is not authorized.',
           clientIp: shubdxData.client || null,
           resolution: shubdxData.resolution || 'Authorize egress IP on Shubdx portal',
           requiresWhitelist: true
         };
       }
 
-      // Fallback: If Shubdx requires IP whitelisting or returns empty, provide verified fallback fixtures
-      // so the website UI is never blank or non-responsive.
-      if (normalizedMatches.length === 0) {
-        normalizedMatches = getFallbackMatches(sportsname);
-      }
+      // Offline fallback: Used strictly to prevent white-screen crashes during outages / pending authorization
+      const fallbackMatches = getFallbackMatches(sportsname);
 
       const responsePayload = {
-        status: 'success',
+        status: isShubdxLive ? 'success' : 'unauthorized',
+        dataSource: isShubdxLive ? 'LIVE_SHUBDX' : 'OFFLINE_FALLBACK',
+        isLiveShubdx: isShubdxLive,
         timestamp: new Date().toISOString(),
         sport: sportsname,
         sportName: name,
         eventTypeId: eventTypeId,
-        provider: isShubdxLive ? 'shubdx' : 'shubdx_fallback',
+        provider: isShubdxLive ? 'shubdx_live' : 'offline_fallback',
         isShubdxAuthorized: isShubdxLive,
         shubdxNotice: ipAuthNotice,
         endpoint: shubdxRes.endpoint,
-        count: normalizedMatches.length,
-        matches: normalizedMatches,
+        count: isShubdxLive ? normalizedMatches.length : fallbackMatches.length,
+        matches: isShubdxLive ? normalizedMatches : fallbackMatches,
         rawShubdxResponse: shubdxData
       };
 
@@ -139,6 +140,8 @@ module.exports = async function handler(req, res) {
       console.error('Error fetching Shubdx allmatches:', err.message);
       return sendJson(res, 500, {
         status: 'error',
+        dataSource: 'OFFLINE_FALLBACK',
+        isLiveShubdx: false,
         message: err.message,
         matches: getFallbackMatches(sportsname)
       });
