@@ -96,12 +96,29 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl restart nginx
 
-# 9. Configure UFW Firewall (Open SSH 22, HTTP 80, HTTPS 443; block direct 4000 from public)
-echo "🔒 Configuring UFW Firewall..."
+# 9. Configure Firewalls (UFW + Oracle Cloud OS iptables)
+echo "🔒 Configuring Firewalls (UFW + Oracle Cloud iptables)..."
 sudo ufw allow 22/tcp || true
 sudo ufw allow 80/tcp || true
 sudo ufw allow 443/tcp || true
 sudo ufw --force enable || true
+
+# Oracle Cloud specific: ensure iptables does not block 80/443
+if command -v iptables &> /dev/null; then
+    sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT 2>/dev/null || sudo iptables -I INPUT -p tcp --dport 80 -j ACCEPT || true
+    sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT 2>/dev/null || sudo iptables -I INPUT -p tcp --dport 443 -j ACCEPT || true
+    if command -v netfilter-persistent &> /dev/null; then
+        sudo netfilter-persistent save || true
+    fi
+fi
+
+# Optional Domain SSL Configuration with Certbot
+DOMAIN=$1
+if [ -n "$DOMAIN" ] && [ "$DOMAIN" != "none" ]; then
+    echo "🔒 Configuring Let's Encrypt SSL for domain: $DOMAIN..."
+    sudo apt-get install -y certbot python3-certbot-nginx || true
+    sudo certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos --register-unsafely-without-email --redirect || true
+fi
 
 # 10. Wait 3 seconds and run Shubdx Health Verification
 sleep 3
@@ -110,7 +127,7 @@ echo "========================================================"
 echo "🩺 Running Shubdx Health & Egress IP Probe from VPS..."
 echo "========================================================"
 HEALTH_OUTPUT=$(curl -s http://127.0.0.1:4000/api/shubdx/health || echo '{"status":"failed"}')
-echo "$HEALTH_OUTPUT" | python3 -m json.tool || echo "$HEALTH_OUTPUT"
+echo "$HEALTH_OUTPUT" | python3 -m json.tool 2>/dev/null || echo "$HEALTH_OUTPUT"
 
 echo ""
 echo "========================================================"
