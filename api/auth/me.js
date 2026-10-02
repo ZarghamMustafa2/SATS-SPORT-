@@ -21,6 +21,7 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 401, { status: 'unauthenticated', message: 'Not authenticated' });
   }
 
+  await authDb.hydrateUsersAsync();
   const user = authDb.getUserById(session.userId);
   if (!user || user.status !== 'active') {
     return sendJson(res, 401, { status: 'unauthenticated', message: 'Session expired or user inactive' });

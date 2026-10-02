@@ -23,6 +23,7 @@ module.exports = async function handler(req, res) {
       const body = await parseJsonBody(req);
       const { runner, event, type, odds, stake } = body;
 
+      await authDb.hydrateUsersAsync();
       const result = authDb.placeUserBet({
         userId: session.userId,
         runner,
