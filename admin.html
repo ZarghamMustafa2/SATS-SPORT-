@@ -701,7 +701,7 @@
         </button>
 
         <div class="logo-bar">
-            <a href="/index" onclick="navigateAdmin('/index', event)">
+            <a href="/admin" onclick="navigateAdmin('/admin', event)">
                 <span class="green-logo-text d-sm-down-none">
                     BPEXCH
                 </span>
@@ -714,7 +714,7 @@
 
         <ul class="nav navbar-nav d-md-down-none">
             <li class="nav-item px-3">
-                <a class="nav-link" id="topNavDashboard" href="/index" onclick="navigateAdmin('/index', event)">Dashboard</a>
+                <a class="nav-link" id="topNavDashboard" href="/admin" onclick="navigateAdmin('/admin', event)">Dashboard</a>
             </li>
             <li class="nav-item px-3">
                 <a class="nav-link" id="topNavUsers" href="/Accounts/Chart" onclick="navigateAdmin('/Accounts/Chart', event)">Users</a>
@@ -770,7 +770,7 @@
 
 <ul class="nav">
         <li class="nav-item open">
-            <a class="nav-link active" href="/index" id="sideNavDashboard" onclick="navigateAdmin('/index', event)">
+            <a class="nav-link active" href="/admin" id="sideNavDashboard" onclick="navigateAdmin('/admin', event)">
                 <i class="nav-icon fas fa-tachometer-alt fa-inverse"></i> Dashboard
             </a>
         </li>
@@ -1487,7 +1487,7 @@ Boland v Knights                        </a>
                                     <div class="card admin-card">
                                         <div class="card-header">
                                             <strong>Sport Highlights</strong>
-                                            <a class="btn btn-sm btn-primary" href="/index" onclick="refreshSportHighlights(event)">
+                                            <a class="btn btn-sm btn-primary" href="/admin" onclick="refreshSportHighlights(event)">
                                                 <strong>Refresh</strong>
                                             </a>
                                         </div>
@@ -2860,7 +2860,7 @@ Boland v Knights                        </a>
                                             </div>
                                             <div class="form-actions">
                                                 <button class="btn btn-primary" type="submit">Save changes</button>
-                                                <button class="btn btn-danger ml-2" type="button" onclick="navigateAdmin('/index', event)">Cancel</button>
+                                                <button class="btn btn-danger ml-2" type="button" onclick="navigateAdmin('/admin', event)">Cancel</button>
                                                 <p class="text-muted small mt-2"><strong>Note: Updated stakes will be applied to new users.</strong></p>
                                             </div>
                                         </form>
@@ -3153,6 +3153,7 @@ Boland v Knights                        </a>
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
+                    if (data.users.length > 0) {
                         clientsList = data.users.map(function(u) {
                             var balNum = parseFloat(String(u.balance || '0').replace(/[^0-9.-]/g, ''));
                             var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
@@ -3225,11 +3226,15 @@ Boland v Knights                        </a>
                 var data = result.data;
                 if (result.ok && data.status === 'success' && data.user) {
                     if (data.user.role === 'user') {
-                        // TEST 6: Normal user attempts to open /admin -> Server rejects/denies access
-                        alert('Access Denied: You do not have administrator permissions.');
+                        // Normal user attempts to open /admin: Stay on /admin, display login screen with message, NEVER redirect to user website
+                        var errBox = document.getElementById('errorBox');
+                        if (errBox) {
+                            errBox.innerText = 'Access Denied: You do not have administrator permissions.';
+                            errBox.style.display = 'block';
+                        }
                         localStorage.removeItem('auth_token');
                         localStorage.removeItem('current_user');
-                        window.location.href = getAppPath('/');
+                        showLoginScreen();
                         return;
                     }
 
@@ -3297,21 +3302,24 @@ Boland v Knights                        </a>
                 var data = result.data;
 
                 if (result.ok && data.status === 'success') {
+                    if (data.user.role === 'user') {
+                        // User role attempted to login through admin portal: stay on /admin, display error
+                        err.innerText = 'Access Denied: Normal user accounts cannot log in to the Admin Portal.';
+                        err.style.display = 'block';
+                        localStorage.removeItem('auth_token');
+                        localStorage.removeItem('current_user');
+                        return;
+                    }
+
                     err.style.display = 'none';
                     localStorage.setItem('auth_token', data.token);
                     localStorage.setItem('current_user', JSON.stringify(data.user));
-
-                    if (data.user.role === 'user') {
-                        // Single login for all roles: Normal user redirected to User Website
-                        window.location.href = getAppPath(data.redirectTo || '/');
-                        return;
-                    }
 
                     // Admin roles (Company, Super Admin, Super Master)
                     applyUserRoleUI(data.user);
                     showAdminApp();
                     await fetchAdminUsers();
-                    navigateAdmin('/index');
+                    navigateAdmin('/admin');
                     showToast('Logged in successfully as ' + (ROLE_LABELS[data.user.role] || data.user.role) + '!');
                 } else {
                     err.innerText = data.message || 'Invalid username or password!';
@@ -3340,13 +3348,13 @@ Boland v Knights                        </a>
             if (BYPASS_ADMIN_AUTH) {
                 showToast('Temporary Admin Bypass is active. Access remains open.');
                 showAdminApp();
-                navigateAdmin('/index');
+                navigateAdmin('/admin');
                 return;
             }
             showLoginScreen();
             showToast('Logged out.');
             if (window.history.pushState) {
-                window.history.pushState(null, '', getAppPath('/login'));
+                window.history.pushState(null, '', getAppPath('/admin'));
             }
         }
 
@@ -3436,8 +3444,14 @@ Boland v Knights                        </a>
             closeSidebarMobile();
             closeUserDropdown();
 
+            // Admin Dashboard is always /admin, never /index or /
+            if (path === '/index' || path === '/' || path === '') {
+                path = '/admin';
+            }
+
+            var target = getAppPath(path);
             if (window.history.pushState) {
-                window.history.pushState(null, '', path);
+                window.history.pushState(null, '', target);
             }
             routeFromUrl();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3470,7 +3484,7 @@ Boland v Knights                        </a>
             document.querySelectorAll('.sidebar .nav-link').forEach(function(a) { a.classList.remove('active'); });
             document.querySelectorAll('.app-header .nav-link').forEach(function(a) { a.classList.remove('active'); });
 
-            if (lower === '/index' || lower === '/admin' || lower === '/admin/' || lower === '/') {
+            if (lower === '/admin' || lower === '/admin/' || lower === '/admin/index' || lower === '/admin/dashboard' || lower === '/index' || lower === '/') {
                 document.getElementById('viewDashboard').style.display = 'block';
                 document.getElementById('sideNavDashboard')?.classList.add('active');
                 document.getElementById('topNavDashboard')?.classList.add('active');
