@@ -23,6 +23,7 @@ module.exports = async function handler(req, res) {
     // Normal user self-registration ONLY - any role parameter provided by client is ignored
     const newUser = authDb.registerNormalUser({ username, password });
     const session = authDb.createSession(newUser);
+    await authDb.saveUsersToDiskAsync();
     const cookieVal = `auth_token=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`;
 
     return sendJson(res, 201, {

@@ -30,6 +30,7 @@ module.exports = async function handler(req, res) {
   // GET: Fetch downline users
   if (req.method === 'GET') {
     try {
+      await authDb.hydrateUsersAsync();
       const downline = authDb.getDownlineUsers(session);
       return sendJson(res, 200, {
         status: 'success',
@@ -58,6 +59,7 @@ module.exports = async function handler(req, res) {
           requesterUser: session,
           targetUserId: targetId
         });
+        await authDb.saveUsersToDiskAsync();
         return sendJson(res, 200, {
           status: 'success',
           message: `User ${updatedUser.username} is now ${updatedUser.status}`,
@@ -81,6 +83,7 @@ module.exports = async function handler(req, res) {
           amount,
           description
         });
+        await authDb.saveUsersToDiskAsync();
 
         const actionLabels = {
           deposit: 'Cash deposit completed successfully.',

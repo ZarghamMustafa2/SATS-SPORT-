@@ -31,6 +31,8 @@ module.exports = async function handler(req, res) {
         odds,
         stake
       });
+      await authDb.saveUsersToDiskAsync();
+      await authDb.saveBetsToDiskAsync();
 
       return sendJson(res, 200, {
         status: 'success',
@@ -50,6 +52,7 @@ module.exports = async function handler(req, res) {
   // GET: Retrieve Bets
   if (req.method === 'GET') {
     try {
+      await authDb.hydrateBetsAsync();
       let bets = [];
       if (session.role === authDb.ROLES.COMPANY || session.role === authDb.ROLES.SUPER_ADMIN || session.role === authDb.ROLES.SUPER_MASTER) {
         bets = authDb.getAllBets();
