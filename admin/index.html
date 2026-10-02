@@ -3155,9 +3155,11 @@ Boland v Knights                        </a>
                 if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
                     if (data.users.length > 0) {
                         clientsList = data.users.map(function(u) {
-                            var balNum = parseFloat(u.balance);
+                            var balNum = parseFloat(String(u.balance || '0').replace(/[^0-9.-]/g, ''));
                             var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
-                            var expNum = parseFloat(u.exposure);
+                            var availNum = parseFloat(String(u.avail || u.balance || '0').replace(/[^0-9.-]/g, ''));
+                            var availStr = (!isNaN(availNum) ? availNum.toFixed(2) : '0.00') + ' Rs.';
+                            var expNum = parseFloat(String(u.exp || u.exposure || '0').replace(/[^0-9.-]/g, ''));
                             var expStr = (!isNaN(expNum) ? expNum.toFixed(2) : '0.00') + ' Rs.';
                             var shrStr = (u.share != null ? u.share.toString().replace('%', '') : '0') + '%';
                             return {
@@ -3167,16 +3169,17 @@ Boland v Knights                        </a>
                                 role: u.role,
                                 credit: u.credit != null ? u.credit.toString() : '0',
                                 balance: balStr,
-                                pl: '0.00 Rs.',
+                                pl: u.pl || '0.00 Rs.',
                                 share: shrStr,
                                 exp: expStr,
-                                avail: balStr,
+                                avail: availStr,
                                 active: u.status === 'active',
-                                domain: 'satsport.co'
+                                domain: u.domain || 'satsport.co'
                             };
                         });
                     }
                     renderClientsTable();
+                    loadAdminBets();
                 }
             } catch (err) {
                 console.error('Error fetching admin users:', err);
@@ -3860,7 +3863,7 @@ Boland v Knights                        </a>
 
         // Cash / Credit Page Setup
         function setupCashCreditPage(uid) {
-            var user = clientsList.find(function(u) { return u.id === uid; }) || { username: 'Jimmy3221', id: uid };
+            var user = clientsList.find(function(u) { return u.id === uid; }) || { username: 'User', id: uid, balance: '0 Rs.', avail: '0 Rs.', credit: '0' };
             currentEditingUser = user.username;
             currentEditingId = uid;
 
@@ -3870,6 +3873,19 @@ Boland v Knights                        </a>
             document.getElementById('creditLimitUserTitle').innerText = user.username;
             document.getElementById('depositDesc').value = 'Cash deposit in ' + user.username;
             document.getElementById('withdrawDesc').value = 'Cash withdrawn from ' + user.username;
+
+            if (document.getElementById('userCashBalVal')) {
+                document.getElementById('userCashBalVal').innerText = user.balance || '0 Rs.';
+            }
+            if (document.getElementById('userCashMaxWithdrawVal')) {
+                document.getElementById('userCashMaxWithdrawVal').innerText = user.avail || user.balance || '0 Rs.';
+            }
+            if (document.getElementById('currentCreditLimitDisplay')) {
+                document.getElementById('currentCreditLimitDisplay').innerText = (user.credit || '0') + ' Rs.';
+            }
+            if (document.getElementById('userCashCreditVal')) {
+                document.getElementById('userCashCreditVal').innerText = (user.credit || '0') + ' Rs.';
+            }
 
             switchHawalaTab('cash');
         }
@@ -3889,25 +3905,116 @@ Boland v Knights                        </a>
             }
         }
 
-        function handleDepositSubmit() {
+        async function handleDepositSubmit() {
             var amt = document.getElementById('depositAmt').value;
-            showToast('Deposited Rs. ' + amt + ' into ' + currentEditingUser + '!');
-            document.getElementById('userCashBalVal').innerText = amt + ' Rs.';
-            document.getElementById('userCashMaxWithdrawVal').innerText = amt + ' Rs.';
+            var desc = document.getElementById('depositDesc').value;
+            if (!amt || parseFloat(amt) <= 0) {
+                alert('Please enter a valid deposit amount.');
+                return;
+            }
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users/finance'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        userId: currentEditingId,
+                        action: 'deposit',
+                        amount: amt,
+                        description: desc
+                    })
+                });
+                if (res.ok && res.data && res.data.status === 'success') {
+                    showToast(res.data.message || ('Deposited Rs. ' + amt + ' into ' + currentEditingUser + '!'));
+                    var updatedUser = res.data.user;
+                    if (document.getElementById('userCashBalVal')) document.getElementById('userCashBalVal').innerText = updatedUser.balance;
+                    if (document.getElementById('userCashMaxWithdrawVal')) document.getElementById('userCashMaxWithdrawVal').innerText = updatedUser.avail;
+                    document.getElementById('depositAmt').value = '';
+                    await fetchAdminUsers();
+                } else {
+                    alert('Deposit failed: ' + ((res.data && res.data.message) || 'Error occurred'));
+                }
+            } catch (err) {
+                alert('Network error: ' + err.message);
+            }
         }
 
-        function handleWithdrawSubmit() {
+        async function handleWithdrawSubmit() {
             var amt = document.getElementById('withdrawAmt').value;
-            showToast('Withdrew Rs. ' + amt + ' from ' + currentEditingUser + '!');
-            document.getElementById('userCashBalVal').innerText = '0 Rs.';
-            document.getElementById('userCashMaxWithdrawVal').innerText = '0 Rs.';
+            var desc = document.getElementById('withdrawDesc').value;
+            if (!amt || parseFloat(amt) <= 0) {
+                alert('Please enter a valid withdrawal amount.');
+                return;
+            }
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users/finance'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        userId: currentEditingId,
+                        action: 'withdraw',
+                        amount: amt,
+                        description: desc
+                    })
+                });
+                if (res.ok && res.data && res.data.status === 'success') {
+                    showToast(res.data.message || ('Withdrew Rs. ' + amt + ' from ' + currentEditingUser + '!'));
+                    var updatedUser = res.data.user;
+                    if (document.getElementById('userCashBalVal')) document.getElementById('userCashBalVal').innerText = updatedUser.balance;
+                    if (document.getElementById('userCashMaxWithdrawVal')) document.getElementById('userCashMaxWithdrawVal').innerText = updatedUser.avail;
+                    document.getElementById('withdrawAmt').value = '';
+                    await fetchAdminUsers();
+                } else {
+                    alert('Withdrawal failed: ' + ((res.data && res.data.message) || 'Error occurred'));
+                }
+            } catch (err) {
+                alert('Network error: ' + err.message);
+            }
         }
 
-        function handleCreditLimitSubmit() {
+        async function handleCreditLimitSubmit() {
             var amt = document.getElementById('newCreditLimitInput').value;
-            showToast('Credit limit updated to Rs. ' + amt + ' for ' + currentEditingUser + '!');
-            document.getElementById('currentCreditLimitDisplay').innerText = amt + ' Rs.';
-            document.getElementById('userCashCreditVal').innerText = amt + ' Rs.';
+            if (amt === '' || isNaN(parseFloat(amt))) {
+                alert('Please enter a valid credit limit.');
+                return;
+            }
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users/finance'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        userId: currentEditingId,
+                        action: 'credit',
+                        amount: amt
+                    })
+                });
+                if (res.ok && res.data && res.data.status === 'success') {
+                    showToast(res.data.message || ('Credit limit updated to Rs. ' + amt + ' for ' + currentEditingUser + '!'));
+                    var updatedUser = res.data.user;
+                    if (document.getElementById('currentCreditLimitDisplay')) document.getElementById('currentCreditLimitDisplay').innerText = updatedUser.credit + ' Rs.';
+                    if (document.getElementById('userCashCreditVal')) document.getElementById('userCashCreditVal').innerText = updatedUser.credit + ' Rs.';
+                    document.getElementById('newCreditLimitInput').value = '';
+                    await fetchAdminUsers();
+                } else {
+                    alert('Credit update failed: ' + ((res.data && res.data.message) || 'Error occurred'));
+                }
+            } catch (err) {
+                alert('Network error: ' + err.message);
+            }
         }
 
         // Active / Inactive Status Toggle
@@ -4318,6 +4425,30 @@ Boland v Knights                        </a>
                     }).join('');
                 }
             }
+        }
+
+        async function loadAdminBets() {
+            var token = getAdminAuthToken();
+            if (!token) return;
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/bets'), {
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                });
+                if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.bets)) {
+                    if (res.data.bets.length > 0) {
+                        matchedBets = res.data.bets.map(function(b) {
+                            return {
+                                runner: b.runner,
+                                price: (b.odds || 2.0).toFixed(2),
+                                size: b.stake || 0,
+                                better: b.username || 'User',
+                                master: 'supermaster_1'
+                            };
+                        });
+                        renderBetsTables();
+                    }
+                }
+            } catch (e) {}
         }
 
         // 2FA Toggle

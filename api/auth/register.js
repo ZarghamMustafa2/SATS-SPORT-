@@ -22,13 +22,16 @@ module.exports = async function handler(req, res) {
 
     // Normal user self-registration ONLY - any role parameter provided by client is ignored
     const newUser = authDb.registerNormalUser({ username, password });
+    const session = authDb.createSession(newUser);
+    const cookieVal = `auth_token=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`;
 
     return sendJson(res, 201, {
       status: 'success',
-      message: 'Account registered successfully. You can now login.',
+      message: 'Account registered successfully.',
+      token: session.token,
       user: newUser,
-      redirectTo: '/login'
-    });
+      redirectTo: '/'
+    }, { 'Set-Cookie': cookieVal });
   } catch (err) {
     const statusCode = err.message.includes('already taken') ? 409 : 400;
     return sendJson(res, statusCode, { status: 'error', message: err.message });

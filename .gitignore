@@ -10,8 +10,6 @@ Thumbs.db
 
 # Dependencies
 node_modules/
-package.json
-package-lock.json
 
 # Test & Scratch
 scratch/

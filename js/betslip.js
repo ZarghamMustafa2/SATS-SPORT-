@@ -77,14 +77,64 @@ function updateCalculation() {
   }
 }
 
-function placeBet() {
+async function placeBet() {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    alert('Please login to place bets.');
+    if (typeof proceedToLoginModal === 'function') proceedToLoginModal();
+    return;
+  }
+
   const stakeInput = document.getElementById('bsStakeInput');
   const oddsInput = document.getElementById('bsOddsInput');
-  const stake = stakeInput ? stakeInput.value : currentBet.stake;
-  const odds = oddsInput ? oddsInput.value : currentBet.odds;
+  const stake = parseFloat(stakeInput ? stakeInput.value : currentBet.stake) || 0;
+  const odds = parseFloat(oddsInput ? oddsInput.value : currentBet.odds) || 1.0;
 
-  alert('Bet Placed Successfully!\n' + currentBet.type + ': ' + currentBet.runner + '\nOdds: ' + odds + ' | Stake: ₹' + stake);
-  closeBetslip();
+  if (stake <= 0) {
+    alert('Please enter a valid stake amount.');
+    return;
+  }
+
+  const btn = document.querySelector('.btn-place-bet') || document.getElementById('bsPlaceBetBtn');
+  const originalText = btn ? btn.innerText : '';
+  if (btn) btn.innerText = 'Placing...';
+
+  try {
+    const url = (typeof getApiUrl === 'function') ? getApiUrl('/api/bets/place') : '/api/bets/place';
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        runner: currentBet.runner,
+        event: currentBet.event,
+        type: currentBet.type,
+        odds: odds,
+        stake: stake
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.status === 'success') {
+      alert(`Bet Placed Successfully!\n${currentBet.type}: ${currentBet.runner}\nOdds: ${odds} | Stake: ₹${stake}`);
+      closeBetslip();
+      if (data.user && typeof updateUserLoggedInState === 'function') {
+        updateUserLoggedInState(data.user);
+        localStorage.setItem('current_user', JSON.stringify(data.user));
+      }
+      if (typeof showToast === 'function') {
+        showToast('Bet placed and balance updated!');
+      }
+    } else {
+      alert('Bet Placement Failed: ' + (data.message || 'Error occurred'));
+    }
+  } catch (err) {
+    alert('Network error placing bet: ' + err.message);
+  } finally {
+    if (btn) btn.innerText = originalText;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

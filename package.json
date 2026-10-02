@@ -1,0 +1,11 @@
+{
+  "name": "satsport",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

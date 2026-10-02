@@ -7479,19 +7479,24 @@
         <img src="assets/images/logo.png" alt="SATSPORT">
       </div>
       <div class="modal-body-content">
+        <!-- Login / Register Tab Switcher -->
+        <div style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1.5px solid #222; padding-bottom: 6px;">
+          <button type="button" id="tabAuthLogin" onclick="switchAuthTab('login')" style="flex: 1; border: none; background: none; font-weight: 700; font-size: 14px; color: #ffc21d; border-bottom: 2px solid #ffc21d; padding: 6px 0; cursor: pointer;">Login</button>
+          <button type="button" id="tabAuthRegister" onclick="switchAuthTab('register')" style="flex: 1; border: none; background: none; font-weight: 600; font-size: 14px; color: #888888; padding: 6px 0; cursor: pointer;">Register</button>
+        </div>
         <div id="modalLoginError" style="color: #ff4d4f; font-size: 13px; text-align: center; margin-bottom: 10px; display: none;"></div>
         <div class="form-group">
-          <label>Username</label>
+          <label id="modalUsernameLabel">Username</label>
           <input type="text" placeholder="Enter username" id="modalUsername" class="modal-input" autocomplete="username">
         </div>
-        <div class="form-check-wrap">
+        <div class="form-check-wrap" id="rememberUserWrap">
           <input type="checkbox" id="rememberUser" checked>
           <label for="rememberUser">Remember username</label>
         </div>
         <div class="form-group">
-          <label>Password</label>
+          <label id="modalPasswordLabel">Password</label>
           <div class="password-wrap" style="position: relative;">
-            <input type="password" placeholder="Enter password" id="modalPassword" class="modal-input" autocomplete="current-password">
+            <input type="password" placeholder="Enter password (min 6 characters)" id="modalPassword" class="modal-input" autocomplete="current-password">
             <span class="password-eye" onclick="togglePasswordVisibility()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="#333333"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
             </span>
@@ -8881,6 +8886,45 @@
       }
     }
 
+    let authModalMode = 'login';
+    function switchAuthTab(mode) {
+      authModalMode = mode;
+      const tabLogin = document.getElementById('tabAuthLogin');
+      const tabRegister = document.getElementById('tabAuthRegister');
+      const submitBtn = document.getElementById('modalLoginSubmitBtn');
+      const rememberWrap = document.getElementById('rememberUserWrap');
+      const errBox = document.getElementById('modalLoginError');
+      if (errBox) errBox.style.display = 'none';
+
+      if (mode === 'register') {
+        if (tabRegister) {
+          tabRegister.style.color = '#ffc21d';
+          tabRegister.style.borderBottom = '2px solid #ffc21d';
+          tabRegister.style.fontWeight = '700';
+        }
+        if (tabLogin) {
+          tabLogin.style.color = '#888888';
+          tabLogin.style.borderBottom = 'none';
+          tabLogin.style.fontWeight = '600';
+        }
+        if (submitBtn) submitBtn.innerText = 'Register';
+        if (rememberWrap) rememberWrap.style.display = 'none';
+      } else {
+        if (tabLogin) {
+          tabLogin.style.color = '#ffc21d';
+          tabLogin.style.borderBottom = '2px solid #ffc21d';
+          tabLogin.style.fontWeight = '700';
+        }
+        if (tabRegister) {
+          tabRegister.style.color = '#888888';
+          tabRegister.style.borderBottom = 'none';
+          tabRegister.style.fontWeight = '600';
+        }
+        if (submitBtn) submitBtn.innerText = 'Login';
+        if (rememberWrap) rememberWrap.style.display = 'flex';
+      }
+    }
+
     async function handleModalLogin() {
       const u = document.getElementById('modalUsername').value.trim();
       const p = document.getElementById('modalPassword').value.trim();
@@ -8894,8 +8938,10 @@
         return;
       }
 
+      const endpoint = (authModalMode === 'register') ? '/api/auth/register' : '/api/auth/login';
+
       try {
-        const result = await safeFetchJson(getApiUrl('/api/auth/login'), {
+        const result = await safeFetchJson(getApiUrl(endpoint), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: u, password: p })
@@ -8904,22 +8950,24 @@
 
         if (result.ok && data.status === 'success') {
           if (errBox) errBox.style.display = 'none';
-          localStorage.setItem('auth_token', data.token);
-          localStorage.setItem('current_user', JSON.stringify(data.user));
+          if (data.token) localStorage.setItem('auth_token', data.token);
+          if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
           closeModals();
 
           // Single login system: if admin account logs in, redirect to /admin
-          if (data.user.role === 'company' || data.user.role === 'super_admin' || data.user.role === 'super_master') {
+          if (data.user && (data.user.role === 'company' || data.user.role === 'super_admin' || data.user.role === 'super_master')) {
             window.location.href = getAppPath(data.redirectTo || '/admin');
             return;
           }
 
           // Normal User
-          updateUserLoggedInState(data.user);
-          showToast('Welcome, ' + data.user.username + '! Session active.');
+          if (data.user) {
+            updateUserLoggedInState(data.user);
+            showToast(authModalMode === 'register' ? ('Account created! Welcome, ' + data.user.username) : ('Welcome, ' + data.user.username + '! Session active.'));
+          }
         } else {
           if (errBox) {
-            errBox.innerText = data.message || 'Invalid username or password';
+            errBox.innerText = data.message || 'Authentication request failed.';
             errBox.style.display = 'block';
           }
         }
@@ -9820,6 +9868,7 @@
     }
 
     function updateUserLoggedInState(user) {
+      if (!user) return;
       const loggedIn = document.getElementById('desktopLoggedIn');
       const loggedOut = document.getElementById('desktopLoggedOut');
       if (loggedOut) loggedOut.style.display = 'none';
@@ -9827,8 +9876,25 @@
       const nameEl = document.getElementById('headerUserName');
       if (nameEl) nameEl.innerText = user.username;
       
+      // Update balance & exposure from real database
+      const rawBal = parseFloat(String(user.balance || user.avail || '0').replace(/[^0-9.-]/g, '')) || 0;
+      const rawExp = parseFloat(String(user.exp || '0').replace(/[^0-9.-]/g, '')) || 0;
+
+      const balValEl = document.getElementById('headerBalVal');
+      if (balValEl) {
+        balValEl.innerText = rawBal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      const outValEl = document.getElementById('headerOutVal');
+      if (outValEl) {
+        outValEl.innerText = rawExp.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
       const dropdownInfo = document.querySelector('.dropdown-header-info div:first-child');
       if (dropdownInfo) dropdownInfo.innerText = user.username;
+      const dropdownSub = document.querySelector('.dropdown-header-info div:nth-child(2)');
+      if (dropdownSub) {
+        dropdownSub.innerText = 'Main: ₹' + rawBal.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + ' | Exposure: ₹' + rawExp.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      }
 
       // If user is admin, add an Admin link to the profile dropdown
       const d = document.getElementById('userProfileDropdown');
@@ -9899,14 +9965,28 @@
       }
     });
 
-    function refreshUserBalance(e) {
+    async function refreshUserBalance(e) {
       if (e) e.stopPropagation();
       const btn = document.querySelector('.balance-refresh-btn');
+      if (btn) btn.classList.add('spinning');
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        try {
+          const res = await safeFetchJson(getApiUrl('/api/auth/me'), {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (res.ok && res.data && res.data.user) {
+            updateUserLoggedInState(res.data.user);
+            localStorage.setItem('current_user', JSON.stringify(res.data.user));
+            showToast('Account balance refreshed.');
+          }
+        } catch (err) {
+          console.warn('Balance refresh failed:', err);
+        }
+      }
       if (btn) {
-        btn.classList.add('spinning');
         setTimeout(() => btn.classList.remove('spinning'), 600);
       }
-      showToast('Account balance refreshed.');
     }
 
     // DEDICATED MY MARKETS MODAL CONTROLLER
