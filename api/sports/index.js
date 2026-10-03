@@ -243,6 +243,8 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
         activeLiveData: activeDiag.liveData,
         dataSource: activeDiag.dataSource,
         serverEgressIp: shubdxHealth.serverPublicEgressIp || diamondHealth.clientSeenByDiamond || null,
+        gatewayUrl: providersConf.gatewayUrl || process.env.ORACLE_GATEWAY_URL || process.env.SHUBDX_PROXY_URL || null,
+        gatewayMode: shubdxHealth.serverMode || 'standalone',
         providers: {
           shubdx: {
             id: 'shubdx',
