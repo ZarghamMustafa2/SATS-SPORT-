@@ -21,6 +21,34 @@
   },
   "apiAuditLogs": [
     {
+      "timestamp": "2026-10-03T16:43:02.154Z",
+      "admin": "Admin",
+      "action": "API connection tested",
+      "provider": "shubdx",
+      "result": "Tested Shubdx API: Connection=UNAUTHORIZED, HTTP 200, Auth=IP WHITELIST REQUIRED"
+    },
+    {
+      "timestamp": "2026-10-03T16:42:58.945Z",
+      "admin": "Admin",
+      "action": "API connection tested",
+      "provider": "diamond",
+      "result": "Tested Diamond API: Connection=UNAUTHORIZED, HTTP 401, Auth=FAILED / UNAUTHORIZED"
+    },
+    {
+      "timestamp": "2026-10-03T16:38:02.436Z",
+      "admin": "Admin",
+      "action": "API connection tested",
+      "provider": "shubdx",
+      "result": "Tested Shubdx API: Connection=NO VALID DATA, HTTP 200, Auth=IP WHITELIST REQUIRED"
+    },
+    {
+      "timestamp": "2026-10-03T16:37:40.354Z",
+      "admin": "Admin",
+      "action": "API connection tested",
+      "provider": "diamond",
+      "result": "Tested Diamond API: Connection=UNAUTHORIZED, HTTP 401, Auth=FAILED / UNAUTHORIZED"
+    },
+    {
       "timestamp": "2026-10-03T16:21:06.330Z",
       "admin": "Admin",
       "action": "API connection tested",

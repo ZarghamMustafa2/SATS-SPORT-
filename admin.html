@@ -2929,8 +2929,9 @@ Boland v Knights                        </a>
                                         </div>
                                         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                                             <span id="apiActiveProviderBadge" class="badge badge-primary" style="font-size: 13px; padding: 6px 12px; font-weight: 700;">ACTIVE: Shubdx International</span>
-                                            <span id="apiActiveStatusBadge" class="badge badge-warning" style="font-size: 13px; padding: 6px 12px; font-weight: 700;">STATUS: UNAUTHORIZED (IP Whitelist Required)</span>
-                                            <span id="apiActiveSourceBadge" class="badge badge-secondary" style="font-size: 13px; padding: 6px 12px; font-weight: 700;">DATA: OFFLINE / FALLBACK</span>
+                                            <span id="apiActiveStatusBadge" class="badge badge-danger" style="font-size: 13px; padding: 6px 12px; font-weight: 700;">OVERALL STATUS: NOT CONNECTED</span>
+                                            <span id="apiActiveAuthBadge" class="badge badge-warning" style="background:#f59e0b; color:#fff; font-size: 13px; padding: 6px 12px; font-weight: 700;">AUTH: IP WHITELIST REQUIRED</span>
+                                            <span id="apiActiveSourceBadge" class="badge badge-secondary" style="font-size: 13px; padding: 6px 12px; font-weight: 700;">DATA SOURCE: FALLBACK</span>
                                             <button class="btn btn-sm btn-outline-primary" onclick="loadAdminApiManagement()" style="font-weight: 700;" title="Refresh Gateway Status">
                                                 <i class="fas fa-sync-alt"></i> Refresh
                                             </button>
@@ -2942,7 +2943,7 @@ Boland v Knights                        </a>
                                                 <div style="display: flex; flex-direction: column; gap: 6px;">
                                                     <div><strong style="color: #374151;">Active Endpoint URL:</strong> <code id="apiActiveBaseUrl" style="font-size: 14px; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 4px;">https://shubdxinternational.com</code></div>
                                                     <div><strong style="color: #374151;">Server Egress IP:</strong> <code id="apiServerEgressIp" style="font-size: 14px; color: #1f2937; background: #f3f4f6; padding: 2px 8px; border-radius: 4px;">3.234.250.111</code> <small class="text-muted">(Dynamic AWS IP from Vercel function)</small></div>
-                                                    <div><strong style="color: #374151;">77.37.44.135:3009 Candidate:</strong> <span class="badge badge-warning" style="font-size: 11px; padding: 3px 8px;">DORMANT / NOT AUTHORIZED (HTTP 401)</span> <small class="text-muted">(Diamond Betting API - Key or Whitelist needed)</small></div>
+                                                    <div><strong style="color: #374151;">77.37.44.135:3009 Candidate:</strong> <span class="badge badge-danger" style="font-size: 11px; padding: 3px 8px;">DORMANT / NOT AUTHORIZED (HTTP 401)</span> <small class="text-muted">(Diamond Betting API - Key or Whitelist needed)</small></div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-5 text-md-right">
@@ -2983,7 +2984,7 @@ Boland v Knights                        </a>
                                             <strong style="color: #1e40af; font-size: 15px;">Shubdx International</strong>
                                             <span class="badge badge-success ml-2" style="font-size: 11px; padding: 3px 7px;">ACTIVE PRODUCTION</span>
                                         </div>
-                                        <span id="shubdxStatusBadge" class="badge badge-warning" style="font-size: 11px;">Unauthorized (IP check)</span>
+                                        <span id="shubdxStatusBadge" class="badge badge-danger" style="font-size: 11px;">NOT CONNECTED</span>
                                     </div>
                                     <div class="card-body" style="padding: 16px;">
                                         <p style="font-size: 13px; color: #4b5563; margin-bottom: 8px;">
@@ -2991,8 +2992,11 @@ Boland v Knights                        </a>
                                         </p>
                                         <ul class="list-group list-group-flush mb-3" style="font-size: 12.5px;">
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Base URL:</span> <code id="shubdxCardBaseUrl">https://shubdxinternational.com</code></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authentication:</span> <span>Server Egress IP Whitelist</span></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>API Key:</span> <code id="shubdxCardKey">Not Configured</code></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Network Reachability:</span> <span id="shubdxNetworkBadge" class="badge badge-info" style="background:#0284c7; color:#fff;">REACHABLE</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authentication:</span> <span id="shubdxAuthBadge" class="badge badge-warning" style="background:#f59e0b; color:#fff;">IP WHITELIST REQUIRED</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Live Data:</span> <span id="shubdxLiveDataBadge" class="badge badge-secondary">NO</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Data Source:</span> <span id="shubdxSourceBadge" class="badge badge-warning" style="background:#f59e0b; color:#fff;">FALLBACK</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Overall Provider Status:</span> <span id="shubdxOverallBadge" class="badge badge-danger">NOT CONNECTED</span></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Settlement Status:</span> <span class="badge badge-success">POST Endpoint Live</span></li>
                                         </ul>
                                         <div class="btn-group btn-group-sm w-100" role="group">
@@ -3012,7 +3016,7 @@ Boland v Knights                        </a>
                                             <strong style="color: #92400e; font-size: 15px;">Diamond Betting API (77.37.44.135:3009)</strong>
                                             <span class="badge badge-secondary ml-2" style="font-size: 11px; padding: 3px 7px;">CANDIDATE (DORMANT)</span>
                                         </div>
-                                        <span id="diamondStatusBadge" class="badge badge-danger" style="font-size: 11px;">Dormant / HTTP 401</span>
+                                        <span id="diamondStatusBadge" class="badge badge-danger" style="font-size: 11px;">NOT CONNECTED</span>
                                     </div>
                                     <div class="card-body" style="padding: 16px;">
                                         <p style="font-size: 13px; color: #4b5563; margin-bottom: 8px;">
@@ -3021,9 +3025,11 @@ Boland v Knights                        </a>
                                         <ul class="list-group list-group-flush mb-3" style="font-size: 12.5px;">
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Base URL:</span> <code id="diamondCardBaseUrl">http://77.37.44.135:3009</code></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Documentation:</span> <a href="http://77.37.44.135:3009/docs" target="_blank" style="color: #0284c7;">Scalar API Reference <i class="fas fa-external-link-alt fa-xs"></i></a></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authentication:</span> <span>Query Key (?key=) OR IP Whitelist</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Network Reachability:</span> <span id="diamondNetworkBadge" class="badge badge-info" style="background:#0284c7; color:#fff;">REACHABLE</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authentication:</span> <span id="diamondAuthBadge" class="badge badge-danger">FAILED / UNAUTHORIZED</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Data Availability:</span> <span id="diamondDataBadge" class="badge badge-secondary">NO DATA</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Overall Provider Status:</span> <span id="diamondOverallBadge" class="badge badge-danger">NOT CONNECTED</span></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>API Key:</span> <code id="diamondCardKey">Not Configured</code></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authorization State:</span> <span class="badge badge-warning">HTTP 401 (Key/Whitelist needed)</span></li>
                                         </ul>
                                         <div class="btn-group btn-group-sm w-100" role="group">
                                             <button type="button" class="btn btn-warning font-weight-bold" onclick="testAdminApiConnection('diamond')"><i class="fas fa-plug mr-1"></i> Test Connection</button>
@@ -3039,11 +3045,11 @@ Boland v Knights                        </a>
                         <!-- Real-Time Connection Test Console -->
                         <div class="row mb-3" id="apiTestConsoleSection" style="display: none;">
                             <div class="col-12">
-                                <div class="card" style="border: 2px solid #10b981; box-shadow: 0 4px 12px rgba(16,185,129,0.15);">
-                                    <div class="card-header" style="background: #ecfdf5; display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
+                                <div class="card" style="border: 2px solid #0284c7; box-shadow: 0 4px 12px rgba(2,132,199,0.15);">
+                                    <div class="card-header" style="background: #f0f9ff; display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
                                         <div style="display: flex; align-items: center; gap: 8px;">
-                                            <i class="fas fa-terminal" style="color: #059669; font-size: 18px;"></i>
-                                            <strong style="color: #065f46; font-size: 15px;">Live Connection Test Output</strong>
+                                            <i class="fas fa-terminal" style="color: #0284c7; font-size: 18px;"></i>
+                                            <strong style="color: #0369a1; font-size: 15px;">Live Connection Test Output</strong>
                                         </div>
                                         <button class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('apiTestConsoleSection').style.display='none'">Close</button>
                                     </div>
@@ -3051,13 +3057,17 @@ Boland v Knights                        </a>
                                         <div class="table-responsive">
                                             <table class="table table-bordered table-sm mb-0" style="font-size: 13px; background: #ffffff;">
                                                 <tbody>
-                                                    <tr><th style="width: 200px;">Connection Status</th><td id="tcStatus">-</td></tr>
+                                                    <tr><th style="width: 220px;">Overall Provider Status</th><td id="tcOverallStatus">-</td></tr>
+                                                    <tr><th>Connection Status</th><td id="tcStatus">-</td></tr>
+                                                    <tr><th>Network Reachability</th><td id="tcNetwork">-</td></tr>
+                                                    <tr><th>Authentication Status</th><td id="tcAuth">-</td></tr>
+                                                    <tr><th>Data Availability</th><td id="tcData">-</td></tr>
+                                                    <tr><th>Live Data</th><td id="tcLiveData">-</td></tr>
+                                                    <tr><th>Data Source</th><td id="tcDataSource">-</td></tr>
                                                     <tr><th>HTTP Status Code</th><td id="tcHttpStatus">-</td></tr>
                                                     <tr><th>Provider Tested</th><td id="tcProvider">-</td></tr>
                                                     <tr><th>Endpoint Tested</th><td id="tcEndpoint">-</td></tr>
                                                     <tr><th>Response Latency</th><td id="tcLatency">-</td></tr>
-                                                    <tr><th>Authentication Status</th><td id="tcAuth">-</td></tr>
-                                                    <tr><th>Data Return</th><td id="tcData">-</td></tr>
                                                     <tr><th>Upstream Response Message</th><td id="tcError" style="font-weight: 600;">-</td></tr>
                                                     <tr><th>Client IP Seen by Upstream</th><td id="tcIp">-</td></tr>
                                                     <tr><th>Test Timestamp</th><td id="tcTime">-</td></tr>
@@ -4891,6 +4901,7 @@ Boland v Knights                        </a>
             // 1. Top Badges & Active Provider
             var activeBadge = document.getElementById('apiActiveProviderBadge');
             var statusBadge = document.getElementById('apiActiveStatusBadge');
+            var authBadge = document.getElementById('apiActiveAuthBadge');
             var sourceBadge = document.getElementById('apiActiveSourceBadge');
             var activeBaseUrlEl = document.getElementById('apiActiveBaseUrl');
             var egressIpEl = document.getElementById('apiServerEgressIp');
@@ -4900,13 +4911,18 @@ Boland v Knights                        </a>
             if (egressIpEl) egressIpEl.innerText = data.serverEgressIp || 'Detecting...';
 
             if (statusBadge) {
-                statusBadge.innerText = 'STATUS: ' + (data.activeStatus || 'UNAUTHORIZED');
-                statusBadge.className = 'badge ' + (data.activeStatus === 'CONNECTED' ? 'badge-success' : 'badge-warning');
+                statusBadge.innerText = 'OVERALL STATUS: ' + (data.activeStatus || 'NOT CONNECTED');
+                statusBadge.className = 'badge ' + (data.activeStatus === 'CONNECTED' ? 'badge-success' : 'badge-danger');
+            }
+
+            if (authBadge) {
+                authBadge.innerText = 'AUTH: ' + (data.activeAuth || 'IP WHITELIST REQUIRED');
+                authBadge.className = 'badge ' + (data.activeAuth === 'AUTHENTICATED' ? 'badge-success' : 'badge-warning');
             }
 
             if (sourceBadge) {
-                var isLive = data.dataSource === 'LIVE_API';
-                sourceBadge.innerText = 'DATA: ' + (isLive ? 'LIVE PROVIDER FEED' : 'OFFLINE / FALLBACK');
+                var isLive = data.dataSource === 'LIVE' || data.dataSource === 'LIVE_API';
+                sourceBadge.innerText = 'DATA SOURCE: ' + (isLive ? 'LIVE' : 'FALLBACK');
                 sourceBadge.className = 'badge ' + (isLive ? 'badge-success' : 'badge-secondary');
             }
 
@@ -4916,9 +4932,19 @@ Boland v Knights                        </a>
                 var s = providers.shubdx;
                 var shubdxBadge = document.getElementById('shubdxStatusBadge');
                 if (shubdxBadge) {
-                    shubdxBadge.innerText = s.isAuthorized ? 'Connected (Live)' : (s.status || 'Unauthorized');
-                    shubdxBadge.className = 'badge ' + (s.isAuthorized ? 'badge-success' : 'badge-warning');
+                    shubdxBadge.innerText = s.overallStatus || 'NOT CONNECTED';
+                    shubdxBadge.className = 'badge ' + (s.overallStatus === 'CONNECTED' ? 'badge-success' : 'badge-danger');
                 }
+                var sNet = document.getElementById('shubdxNetworkBadge');
+                if (sNet) sNet.innerText = s.networkReachability || 'REACHABLE';
+                var sAuth = document.getElementById('shubdxAuthBadge');
+                if (sAuth) sAuth.innerText = s.authentication || 'IP WHITELIST REQUIRED';
+                var sLive = document.getElementById('shubdxLiveDataBadge');
+                if (sLive) sLive.innerText = s.liveData || 'NO';
+                var sSrc = document.getElementById('shubdxSourceBadge');
+                if (sSrc) sSrc.innerText = s.dataSource || 'FALLBACK';
+                var sOver = document.getElementById('shubdxOverallBadge');
+                if (sOver) sOver.innerText = s.overallStatus || 'NOT CONNECTED';
                 var sUrl = document.getElementById('shubdxCardBaseUrl');
                 if (sUrl) sUrl.innerText = s.baseUrl || 'https://shubdxinternational.com';
                 var sKey = document.getElementById('shubdxCardKey');
@@ -4929,9 +4955,17 @@ Boland v Knights                        </a>
                 var d = providers.diamond;
                 var diamondBadge = document.getElementById('diamondStatusBadge');
                 if (diamondBadge) {
-                    diamondBadge.innerText = d.isAuthorized ? 'Connected (Live)' : (d.status || 'Dormant / HTTP 401');
-                    diamondBadge.className = 'badge ' + (d.isAuthorized ? 'badge-success' : 'badge-danger');
+                    diamondBadge.innerText = d.overallStatus || 'NOT CONNECTED';
+                    diamondBadge.className = 'badge ' + (d.overallStatus === 'CONNECTED' ? 'badge-success' : 'badge-danger');
                 }
+                var dNet = document.getElementById('diamondNetworkBadge');
+                if (dNet) dNet.innerText = d.networkReachability || 'REACHABLE';
+                var dAuth = document.getElementById('diamondAuthBadge');
+                if (dAuth) dAuth.innerText = d.authentication || 'FAILED / UNAUTHORIZED';
+                var dData = document.getElementById('diamondDataBadge');
+                if (dData) dData.innerText = d.dataAvailability || 'NO DATA';
+                var dOver = document.getElementById('diamondOverallBadge');
+                if (dOver) dOver.innerText = d.overallStatus || 'NOT CONNECTED';
                 var dUrl = document.getElementById('diamondCardBaseUrl');
                 if (dUrl) dUrl.innerText = d.baseUrl || 'http://77.37.44.135:3009';
                 var dKey = document.getElementById('diamondCardKey');
@@ -4996,24 +5030,32 @@ Boland v Knights                        </a>
             var consoleSec = document.getElementById('apiTestConsoleSection');
             if (consoleSec) consoleSec.style.display = 'block';
 
+            var tcOverallStatus = document.getElementById('tcOverallStatus');
             var tcStatus = document.getElementById('tcStatus');
+            var tcNetwork = document.getElementById('tcNetwork');
+            var tcAuth = document.getElementById('tcAuth');
+            var tcData = document.getElementById('tcData');
+            var tcLiveData = document.getElementById('tcLiveData');
+            var tcDataSource = document.getElementById('tcDataSource');
             var tcHttpStatus = document.getElementById('tcHttpStatus');
             var tcProvider = document.getElementById('tcProvider');
             var tcEndpoint = document.getElementById('tcEndpoint');
             var tcLatency = document.getElementById('tcLatency');
-            var tcAuth = document.getElementById('tcAuth');
-            var tcData = document.getElementById('tcData');
             var tcError = document.getElementById('tcError');
             var tcIp = document.getElementById('tcIp');
             var tcTime = document.getElementById('tcTime');
 
+            if (tcOverallStatus) tcOverallStatus.innerText = '...';
             if (tcStatus) tcStatus.innerHTML = '<span class="text-primary"><i class="fas fa-spinner fa-spin mr-1"></i> Running real backend probe to ' + provider + '...</span>';
+            if (tcNetwork) tcNetwork.innerText = '...';
+            if (tcAuth) tcAuth.innerText = '...';
+            if (tcData) tcData.innerText = '...';
+            if (tcLiveData) tcLiveData.innerText = '...';
+            if (tcDataSource) tcDataSource.innerText = '...';
             if (tcHttpStatus) tcHttpStatus.innerText = '...';
             if (tcProvider) tcProvider.innerText = provider.toUpperCase();
             if (tcEndpoint) tcEndpoint.innerText = '...';
             if (tcLatency) tcLatency.innerText = '...';
-            if (tcAuth) tcAuth.innerText = '...';
-            if (tcData) tcData.innerText = '...';
             if (tcError) tcError.innerText = '...';
             if (tcIp) tcIp.innerText = '...';
             if (tcTime) tcTime.innerText = new Date().toLocaleTimeString();
@@ -5032,21 +5074,84 @@ Boland v Knights                        </a>
 
                 if (res.ok && res.data && res.data.testResult) {
                     var t = res.data.testResult;
-                    var isSuccess = t.connection === 'SUCCESS';
-                    var hasRealData = t.data === 'REAL DATA';
 
-                    if (tcStatus) tcStatus.innerHTML = isSuccess
-                        ? '<span class="badge badge-success" style="font-size:12px; padding:4px 8px;"><i class="fas fa-check-circle mr-1"></i> SUCCESS</span>'
-                        : '<span class="badge badge-danger" style="font-size:12px; padding:4px 8px;"><i class="fas fa-times-circle mr-1"></i> FAILED</span>';
+                    // 1. Overall Provider Status (CONNECTED / NOT CONNECTED)
+                    if (tcOverallStatus) {
+                        tcOverallStatus.innerHTML = t.overallStatus === 'CONNECTED'
+                            ? '<span class="badge badge-success" style="font-size:12px; padding:4px 8px;"><i class="fas fa-link mr-1"></i> CONNECTED</span>'
+                            : '<span class="badge badge-danger" style="font-size:12px; padding:4px 8px;"><i class="fas fa-unlink mr-1"></i> NOT CONNECTED</span>';
+                    }
+
+                    // 2. Connection Status (CRITICAL: MUST NEVER BE SUCCESS ON 401, 403, 404, 500, TIMEOUT, UNAUTHORIZED, NO DATA)
+                    var connBadge = '';
+                    if (t.connectionStatus === 'CONNECTED / SUCCESS') {
+                        connBadge = '<span class="badge badge-success" style="font-size:12px; padding:4px 8px;"><i class="fas fa-check-circle mr-1"></i> CONNECTED / SUCCESS</span>';
+                    } else if (t.connectionStatus === 'UNAUTHORIZED') {
+                        connBadge = '<span class="badge badge-danger" style="font-size:12px; padding:4px 8px;"><i class="fas fa-lock mr-1"></i> UNAUTHORIZED</span>';
+                    } else if (t.connectionStatus === 'FORBIDDEN') {
+                        connBadge = '<span class="badge badge-danger" style="font-size:12px; padding:4px 8px;"><i class="fas fa-ban mr-1"></i> FORBIDDEN</span>';
+                    } else if (t.connectionStatus === 'ENDPOINT NOT FOUND') {
+                        connBadge = '<span class="badge badge-warning" style="font-size:12px; padding:4px 8px;"><i class="fas fa-exclamation-triangle mr-1"></i> ENDPOINT NOT FOUND</span>';
+                    } else if (t.connectionStatus === 'TIMEOUT') {
+                        connBadge = '<span class="badge badge-warning" style="font-size:12px; padding:4px 8px;"><i class="fas fa-clock mr-1"></i> TIMEOUT</span>';
+                    } else if (t.connectionStatus === 'NO VALID DATA') {
+                        connBadge = '<span class="badge badge-warning" style="font-size:12px; padding:4px 8px;"><i class="fas fa-exclamation-circle mr-1"></i> NO VALID DATA</span>';
+                    } else {
+                        connBadge = '<span class="badge badge-danger" style="font-size:12px; padding:4px 8px;"><i class="fas fa-times-circle mr-1"></i> ' + t.connectionStatus + '</span>';
+                    }
+                    if (tcStatus) tcStatus.innerHTML = connBadge;
+
+                    // 3. Network Reachability
+                    if (tcNetwork) {
+                        if (t.networkReachability === 'REACHABLE') {
+                            tcNetwork.innerHTML = '<span class="badge badge-info" style="background:#0284c7; color:#fff; font-size:12px; padding:4px 8px;"><i class="fas fa-satellite-dish mr-1"></i> REACHABLE</span>';
+                        } else if (t.networkReachability === 'TIMEOUT') {
+                            tcNetwork.innerHTML = '<span class="badge badge-warning" style="font-size:12px; padding:4px 8px;"><i class="fas fa-clock mr-1"></i> TIMEOUT</span>';
+                        } else {
+                            tcNetwork.innerHTML = '<span class="badge badge-danger" style="font-size:12px; padding:4px 8px;"><i class="fas fa-times-circle mr-1"></i> UNREACHABLE</span>';
+                        }
+                    }
+
+                    // 4. Authentication Status
+                    if (tcAuth) {
+                        if (t.authentication === 'AUTHENTICATED') {
+                            tcAuth.innerHTML = '<span class="badge badge-success" style="font-size:12px; padding:4px 8px;"><i class="fas fa-check-circle mr-1"></i> AUTHENTICATED</span>';
+                        } else if (t.authentication === 'IP WHITELIST REQUIRED') {
+                            tcAuth.innerHTML = '<span class="badge badge-warning" style="background:#f59e0b; color:#fff; font-size:12px; padding:4px 8px;"><i class="fas fa-shield-alt mr-1"></i> IP WHITELIST REQUIRED</span>';
+                        } else {
+                            tcAuth.innerHTML = '<span class="badge badge-danger" style="font-size:12px; padding:4px 8px;"><i class="fas fa-lock mr-1"></i> ' + t.authentication + '</span>';
+                        }
+                    }
+
+                    // 5. Data Availability
+                    if (tcData) {
+                        if (t.dataAvailability === 'REAL LIVE DATA') {
+                            tcData.innerHTML = '<span class="badge badge-success" style="font-size:12px; padding:4px 8px;">REAL LIVE DATA</span>';
+                        } else if (t.dataAvailability === 'NO VALID DATA') {
+                            tcData.innerHTML = '<span class="badge badge-warning" style="font-size:12px; padding:4px 8px;">NO VALID DATA</span>';
+                        } else {
+                            tcData.innerHTML = '<span class="badge badge-secondary" style="background:#64748b; color:#fff; font-size:12px; padding:4px 8px;">NO DATA</span>';
+                        }
+                    }
+
+                    // 6. Live Data
+                    if (tcLiveData) {
+                        tcLiveData.innerHTML = t.liveData === 'YES'
+                            ? '<span class="badge badge-success" style="font-size:12px; padding:4px 8px;">YES</span>'
+                            : '<span class="badge badge-secondary" style="background:#64748b; color:#fff; font-size:12px; padding:4px 8px;">NO</span>';
+                    }
+
+                    // 7. Data Source
+                    if (tcDataSource) {
+                        tcDataSource.innerHTML = t.dataSource === 'LIVE'
+                            ? '<span class="badge badge-success" style="font-size:12px; padding:4px 8px;">LIVE</span>'
+                            : '<span class="badge badge-warning" style="background:#f59e0b; color:#fff; font-size:12px; padding:4px 8px;">FALLBACK</span>';
+                    }
 
                     if (tcHttpStatus) tcHttpStatus.innerHTML = '<span class="badge ' + (t.httpStatus === 200 ? 'badge-success' : 'badge-warning') + '" style="font-size:12px;">HTTP ' + t.httpStatus + '</span>';
                     if (tcProvider) tcProvider.innerText = t.provider;
                     if (tcEndpoint) tcEndpoint.innerHTML = '<code>' + t.endpoint + '</code>';
                     if (tcLatency) tcLatency.innerText = t.responseTimeMs + ' ms';
-                    if (tcAuth) tcAuth.innerText = t.authentication;
-                    if (tcData) tcData.innerHTML = hasRealData
-                        ? '<span class="badge badge-success">REAL DATA</span>'
-                        : '<span class="badge badge-warning">NO DATA (' + (t.httpStatus === 401 ? 'Unauthorized' : 'Fallback active') + ')</span>';
 
                     if (tcError) {
                         tcError.innerHTML = t.error
@@ -5056,7 +5161,7 @@ Boland v Knights                        </a>
                     if (tcIp) tcIp.innerHTML = '<code>' + (t.clientIpSeen || 'N/A') + '</code>';
                     if (tcTime) tcTime.innerText = new Date(t.timestamp).toLocaleString();
 
-                    showToast(t.provider + ' probe finished: HTTP ' + t.httpStatus);
+                    showToast(t.provider + ' test: ' + t.connectionStatus + ' (HTTP ' + t.httpStatus + ')');
                     loadAdminApiManagement(); // Refresh overview and logs
                 } else {
                     if (tcStatus) tcStatus.innerHTML = '<span class="badge badge-danger">TEST ERROR</span>';

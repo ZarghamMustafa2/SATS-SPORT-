@@ -82,6 +82,123 @@ module.exports = async function handler(req, res) {
   }
 
   // 0.1 API MANAGEMENT DASHBOARD OVERVIEW (GET)
+function evaluateDiagnostics(providerId, providerName, endpoint, healthData, latencyMs) {
+  const statusCode = Number(healthData?.statusCode || healthData?.httpStatus || 0);
+  const isAuthorized = healthData?.isAuthorized === true;
+  const isAccessDenied = healthData?.isAccessDenied === true || statusCode === 401;
+  const rawMsg = String(healthData?.message || healthData?.upstreamMessage || healthData?.error || '');
+  const isTimeout = statusCode === 408 || rawMsg.toLowerCase().includes('timeout');
+  const isRefused = statusCode === 0 || rawMsg.includes('ECONNREFUSED') || rawMsg.includes('ENOTFOUND');
+
+  // 1. Network Reachability: REACHABLE | TIMEOUT | UNREACHABLE
+  let networkReachability = 'REACHABLE';
+  if (isTimeout) {
+    networkReachability = 'TIMEOUT';
+  } else if (isRefused) {
+    networkReachability = 'UNREACHABLE';
+  } else if (statusCode > 0 || healthData?.reachedUpstream) {
+    networkReachability = 'REACHABLE';
+  } else {
+    networkReachability = 'UNREACHABLE';
+  }
+
+  // 2. Authentication Status
+  let authentication = 'NOT AUTHENTICATED';
+  if (isAuthorized) {
+    authentication = 'AUTHENTICATED';
+  } else if (providerId === 'diamond') {
+    if (statusCode === 401 || isAccessDenied) {
+      authentication = 'FAILED / UNAUTHORIZED';
+    } else if (statusCode === 403) {
+      authentication = 'FORBIDDEN';
+    } else {
+      authentication = healthData?.hasApiKeyConfigured ? 'FAILED' : 'FAILED / UNAUTHORIZED';
+    }
+  } else if (providerId === 'shubdx') {
+    if (isAccessDenied || statusCode === 401 || statusCode === 403 || !isAuthorized) {
+      authentication = 'IP WHITELIST REQUIRED';
+    } else {
+      authentication = 'IP WHITELIST REQUIRED';
+    }
+  }
+
+  // 3. Data Availability & Live Data
+  let dataAvailability = 'NO DATA';
+  let liveData = 'NO';
+  let dataSource = 'FALLBACK';
+  if (isAuthorized) {
+    dataAvailability = 'REAL LIVE DATA';
+    liveData = 'YES';
+    dataSource = 'LIVE';
+  } else if (statusCode === 200 && !isAccessDenied) {
+    dataAvailability = 'NO VALID DATA';
+    liveData = 'NO';
+    dataSource = 'FALLBACK';
+  } else {
+    dataAvailability = 'NO DATA';
+    liveData = 'NO';
+    dataSource = 'FALLBACK';
+  }
+
+  // 4. Overall Provider Status: CONNECTED | NOT CONNECTED
+  const overallStatus = (isAuthorized && dataAvailability === 'REAL LIVE DATA') ? 'CONNECTED' : 'NOT CONNECTED';
+
+  // 5. Connection Status:
+  // MUST NEVER be SUCCESS when 401, 403, 404, 500, timeout, unauthorized, or no usable data
+  let connectionStatus = 'NOT CONNECTED';
+  if (isAuthorized && statusCode === 200 && dataAvailability === 'REAL LIVE DATA') {
+    connectionStatus = 'CONNECTED / SUCCESS';
+  } else if (statusCode === 401 || (isAccessDenied && statusCode !== 403)) {
+    connectionStatus = 'UNAUTHORIZED';
+  } else if (statusCode === 403) {
+    connectionStatus = 'FORBIDDEN';
+  } else if (statusCode === 404) {
+    connectionStatus = 'ENDPOINT NOT FOUND';
+  } else if (isTimeout) {
+    connectionStatus = 'TIMEOUT';
+  } else if (statusCode === 200 && (!isAuthorized || dataAvailability === 'NO VALID DATA')) {
+    connectionStatus = 'NO VALID DATA';
+  } else if (statusCode >= 500) {
+    connectionStatus = 'SERVER ERROR';
+  } else if (isRefused) {
+    connectionStatus = 'UNREACHABLE';
+  } else {
+    connectionStatus = 'NOT CONNECTED';
+  }
+
+  const clientIpSeen = healthData?.clientSeenByDiamond || healthData?.clientSeenByShubdx || healthData?.serverPublicEgressIp || null;
+
+  let error = null;
+  if (!isAuthorized) {
+    if (providerId === 'diamond') {
+      error = isAccessDenied
+        ? 'Access denied: Valid Diamond API key or IP whitelist required (HTTP 401)'
+        : (healthData?.message || 'Access denied / unauthorized');
+    } else {
+      error = isAccessDenied
+        ? 'Access denied: Your IP address is not authorized.'
+        : (healthData?.upstreamMessage || 'Access denied / unauthorized');
+    }
+  }
+
+  return {
+    provider: providerName,
+    overallStatus,
+    connectionStatus,
+    networkReachability,
+    authentication,
+    dataAvailability,
+    liveData,
+    dataSource,
+    httpStatus: statusCode,
+    endpoint,
+    responseTimeMs: latencyMs || 0,
+    error,
+    clientIpSeen,
+    timestamp: new Date().toISOString()
+  };
+}
+
   if (req.method === 'GET' && (action === 'api_overview' || action === 'api_management' || pathname === '/api/admin/api-management' || pathname === '/api/admin/api-overview')) {
     try {
       const providersConf = settingsDb.getApiProviders(true); // masked secrets
@@ -89,24 +206,42 @@ module.exports = async function handler(req, res) {
 
       // Parallel health probes to real upstream providers
       const [shubdxHealth, diamondHealth] = await Promise.all([
-        shubdx.checkHealth().catch(err => ({ status: 'error', isAuthorized: false, message: err.message })),
-        diamondProvider.checkHealth().catch(err => ({ status: 'error', isAuthorized: false, message: err.message }))
+        shubdx.checkHealth().catch(err => ({ status: 'error', isAuthorized: false, httpStatus: 0, message: err.message })),
+        diamondProvider.checkHealth().catch(err => ({ status: 'error', isAuthorized: false, statusCode: 0, message: err.message }))
       ]);
 
       const isShubdxLive = shubdxHealth.isAuthorized === true;
       const isDiamondLive = diamondHealth.isAuthorized === true;
+
+      const shubdxDiag = evaluateDiagnostics(
+        'shubdx',
+        'Shubdx International',
+        shubdxHealth.endpointTested || 'https://shubdxinternational.com/sports/cricket/allmatches',
+        shubdxHealth,
+        0
+      );
+
+      const diamondDiag = evaluateDiagnostics(
+        'diamond',
+        'Diamond Betting API',
+        `${providersConf.diamond?.baseUrl || 'http://77.37.44.135:3009'}/allSportid`,
+        diamondHealth,
+        diamondHealth.latencyMs || 0
+      );
+
+      const activeDiag = activeProvider === 'diamond' ? diamondDiag : shubdxDiag;
 
       const overview = {
         status: 'success',
         activeProvider: activeProvider,
         activeProviderName: activeProvider === 'diamond' ? 'Diamond Betting API' : 'Shubdx International',
         activeBaseUrl: activeProvider === 'diamond' ? providersConf.diamond?.baseUrl : providersConf.shubdx?.baseUrl,
-        activeStatus: activeProvider === 'diamond'
-          ? (isDiamondLive ? 'CONNECTED' : (diamondHealth.isAccessDenied ? 'DORMANT / NOT AUTHORIZED (HTTP 401)' : 'ERROR'))
-          : (isShubdxLive ? 'CONNECTED' : (shubdxHealth.isAccessDenied ? 'UNAUTHORIZED (IP Whitelist Required)' : 'ERROR')),
-        dataSource: activeProvider === 'diamond'
-          ? (isDiamondLive ? 'LIVE_API' : 'FALLBACK_OFFLINE')
-          : (isShubdxLive ? 'LIVE_API' : 'FALLBACK_OFFLINE'),
+        activeStatus: activeDiag.overallStatus,
+        activeConnectionStatus: activeDiag.connectionStatus,
+        activeNetwork: activeDiag.networkReachability,
+        activeAuth: activeDiag.authentication,
+        activeLiveData: activeDiag.liveData,
+        dataSource: activeDiag.dataSource,
         serverEgressIp: shubdxHealth.serverPublicEgressIp || diamondHealth.clientSeenByDiamond || null,
         providers: {
           shubdx: {
@@ -118,10 +253,18 @@ module.exports = async function handler(req, res) {
             authType: 'Server Egress IP Whitelist',
             hasKey: providersConf.shubdx?.hasKey || false,
             maskedKey: providersConf.shubdx?.apiKey || 'Not Configured',
-            status: isShubdxLive ? 'CONNECTED' : (shubdxHealth.isAccessDenied ? 'UNAUTHORIZED (IP Whitelist Required)' : 'ERROR'),
+            overallStatus: shubdxDiag.overallStatus,
+            connectionStatus: shubdxDiag.connectionStatus,
+            networkReachability: shubdxDiag.networkReachability,
+            authentication: shubdxDiag.authentication,
+            liveData: shubdxDiag.liveData,
+            dataAvailability: shubdxDiag.dataAvailability,
+            dataSource: shubdxDiag.dataSource,
+            httpStatus: shubdxDiag.httpStatus,
+            status: shubdxDiag.overallStatus,
             isAuthorized: isShubdxLive,
-            clientIpSeen: shubdxHealth.clientSeenByShubdx || null,
-            upstreamMessage: shubdxHealth.upstreamMessage || (isShubdxLive ? 'OK' : 'Access denied: Your IP address is not authorized.'),
+            clientIpSeen: shubdxDiag.clientIpSeen,
+            upstreamMessage: shubdxDiag.error || 'OK',
             lastTest: shubdxHealth.timestamp || new Date().toISOString(),
             endpoints: [
               { method: 'GET', path: '/sports/{sport}/allmatches', purpose: 'All matches fixture feed' },
@@ -142,10 +285,18 @@ module.exports = async function handler(req, res) {
             authType: 'Query Key (?key=) OR Server IP Whitelist',
             hasKey: providersConf.diamond?.hasKey || false,
             maskedKey: providersConf.diamond?.apiKey || 'Not Configured',
-            status: isDiamondLive ? 'CONNECTED' : (diamondHealth.isAccessDenied ? 'DORMANT / NOT AUTHORIZED (HTTP 401)' : 'ERROR'),
+            overallStatus: diamondDiag.overallStatus,
+            connectionStatus: diamondDiag.connectionStatus,
+            networkReachability: diamondDiag.networkReachability,
+            authentication: diamondDiag.authentication,
+            liveData: diamondDiag.liveData,
+            dataAvailability: diamondDiag.dataAvailability,
+            dataSource: diamondDiag.dataSource,
+            httpStatus: diamondDiag.httpStatus,
+            status: diamondDiag.overallStatus,
             isAuthorized: isDiamondLive,
-            clientIpSeen: diamondHealth.clientSeenByDiamond || null,
-            upstreamMessage: diamondHealth.message || 'Access denied: Valid Diamond API key or IP whitelist required',
+            clientIpSeen: diamondDiag.clientIpSeen,
+            upstreamMessage: diamondDiag.error || 'OK',
             lastTest: diamondHealth.timestamp || new Date().toISOString(),
             endpoints: [
               { method: 'GET', path: '/allSportid', purpose: 'All Sport IDs list' },
@@ -208,51 +359,25 @@ module.exports = async function handler(req, res) {
         const start = Date.now();
         const resHealth = await diamondProvider.checkHealth();
         const latency = Date.now() - start;
-        const isAuthorized = resHealth.isAuthorized === true;
-
-        testResult = {
-          connection: resHealth.statusCode < 500 ? 'SUCCESS' : 'FAILED',
-          httpStatus: resHealth.statusCode,
-          provider: 'Diamond Betting API',
-          endpoint: `${resHealth.baseUrl}/allSportid`,
-          responseTimeMs: latency,
-          authentication: resHealth.hasApiKeyConfigured ? 'Configured' : 'Missing (IP check)',
-          data: isAuthorized ? 'REAL DATA' : 'NO DATA',
-          error: resHealth.isAccessDenied ? 'Access denied: Valid Diamond API key or IP whitelist required (HTTP 401)' : (resHealth.message || null),
-          clientIpSeen: resHealth.clientSeenByDiamond || null,
-          timestamp: new Date().toISOString()
-        };
+        testResult = evaluateDiagnostics('diamond', 'Diamond Betting API', `${resHealth.baseUrl}/allSportid`, resHealth, latency);
 
         settingsDb.addApiAuditLog({
           admin: adminUser,
           action: 'API connection tested',
           provider: 'diamond',
-          result: `Tested Diamond API: Status ${resHealth.statusCode} (${testResult.error || 'OK'})`
+          result: `Tested Diamond API: Connection=${testResult.connectionStatus}, HTTP ${testResult.httpStatus}, Auth=${testResult.authentication}`
         });
       } else {
         const start = Date.now();
         const resHealth = await shubdx.checkHealth();
         const latency = Date.now() - start;
-        const isAuthorized = resHealth.isAuthorized === true;
-
-        testResult = {
-          connection: resHealth.httpStatus < 500 ? 'SUCCESS' : 'FAILED',
-          httpStatus: resHealth.httpStatus,
-          provider: 'Shubdx International',
-          endpoint: resHealth.endpointTested || 'https://shubdxinternational.com/sports/cricket/allmatches',
-          responseTimeMs: latency,
-          authentication: resHealth.hasApiKeyConfigured ? 'Configured' : 'Missing (IP check)',
-          data: isAuthorized ? 'REAL DATA' : 'NO DATA',
-          error: resHealth.upstreamMessage || (isAuthorized ? null : 'Access denied: Your IP address is not authorized.'),
-          clientIpSeen: resHealth.clientSeenByShubdx || null,
-          timestamp: new Date().toISOString()
-        };
+        testResult = evaluateDiagnostics('shubdx', 'Shubdx International', resHealth.endpointTested || 'https://shubdxinternational.com/sports/cricket/allmatches', resHealth, latency);
 
         settingsDb.addApiAuditLog({
           admin: adminUser,
           action: 'API connection tested',
           provider: 'shubdx',
-          result: `Tested Shubdx API: Status ${resHealth.httpStatus} (${testResult.error || 'OK'})`
+          result: `Tested Shubdx API: Connection=${testResult.connectionStatus}, HTTP ${testResult.httpStatus}, Auth=${testResult.authentication}`
         });
       }
 
