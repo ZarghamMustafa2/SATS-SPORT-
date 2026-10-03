@@ -3,9 +3,19 @@
 
 const shubdx = require('../../lib/shubdx');
 const diamondProvider = require('../../lib/providers/diamond');
-const { parseJsonBody, sendJson } = require('../../lib/http_util');
+const settingsDb = require('../../lib/settings_db');
+const authDb = require('../../lib/auth_db');
+const { parseJsonBody, getRequestSession, sendJson } = require('../../lib/http_util');
 
-const ACTIVE_PROVIDER = (process.env.SPORTS_DATA_PROVIDER || 'shubdx').toLowerCase();
+function getActiveProvider() {
+  try {
+    const pConf = settingsDb.getApiProviders(false);
+    return (pConf?.activeProvider || process.env.SPORTS_DATA_PROVIDER || 'shubdx').toLowerCase();
+  } catch (e) {
+    return (process.env.SPORTS_DATA_PROVIDER || 'shubdx').toLowerCase();
+  }
+}
+
 
 // In-Memory Cache for Live Match Polling (reduces rate load on upstream API)
 let cachedMatches = {};
@@ -31,13 +41,15 @@ module.exports = async function handler(req, res) {
   const sportParam = searchParams.get('sport') || searchParams.get('sportsname') || 'cricket';
   const groupById = searchParams.get('match') || searchParams.get('groupById') || searchParams.get('id') || '';
 
+  const activeProvider = getActiveProvider();
+
   // 0. HEALTH CHECK & CONNECTIVITY DIAGNOSTICS (GET)
   if (req.method === 'GET' && (action === 'health' || pathname === '/api/health')) {
     return sendJson(res, 200, {
       status: 'ok',
       service: 'SatsSport Backend Gateway',
       version: '3.1.0',
-      activeProvider: ACTIVE_PROVIDER,
+      activeProvider: activeProvider,
       uptime: process.uptime(),
       timestamp: new Date().toISOString()
     });
@@ -68,6 +80,252 @@ module.exports = async function handler(req, res) {
       });
     }
   }
+
+  // 0.1 API MANAGEMENT DASHBOARD OVERVIEW (GET)
+  if (req.method === 'GET' && (action === 'api_overview' || action === 'api_management' || pathname === '/api/admin/api-management' || pathname === '/api/admin/api-overview')) {
+    try {
+      const providersConf = settingsDb.getApiProviders(true); // masked secrets
+      const auditLogs = settingsDb.getApiAuditLogs();
+
+      // Parallel health probes to real upstream providers
+      const [shubdxHealth, diamondHealth] = await Promise.all([
+        shubdx.checkHealth().catch(err => ({ status: 'error', isAuthorized: false, message: err.message })),
+        diamondProvider.checkHealth().catch(err => ({ status: 'error', isAuthorized: false, message: err.message }))
+      ]);
+
+      const isShubdxLive = shubdxHealth.isAuthorized === true;
+      const isDiamondLive = diamondHealth.isAuthorized === true;
+
+      const overview = {
+        status: 'success',
+        activeProvider: activeProvider,
+        activeProviderName: activeProvider === 'diamond' ? 'Diamond Betting API' : 'Shubdx International',
+        activeBaseUrl: activeProvider === 'diamond' ? providersConf.diamond?.baseUrl : providersConf.shubdx?.baseUrl,
+        activeStatus: activeProvider === 'diamond'
+          ? (isDiamondLive ? 'CONNECTED' : (diamondHealth.isAccessDenied ? 'DORMANT / NOT AUTHORIZED (HTTP 401)' : 'ERROR'))
+          : (isShubdxLive ? 'CONNECTED' : (shubdxHealth.isAccessDenied ? 'UNAUTHORIZED (IP Whitelist Required)' : 'ERROR')),
+        dataSource: activeProvider === 'diamond'
+          ? (isDiamondLive ? 'LIVE_API' : 'FALLBACK_OFFLINE')
+          : (isShubdxLive ? 'LIVE_API' : 'FALLBACK_OFFLINE'),
+        serverEgressIp: shubdxHealth.serverPublicEgressIp || diamondHealth.clientSeenByDiamond || null,
+        providers: {
+          shubdx: {
+            id: 'shubdx',
+            name: 'Shubdx International',
+            role: 'ACTIVE SPORTS PROVIDER',
+            baseUrl: providersConf.shubdx?.baseUrl || 'https://shubdxinternational.com',
+            environment: 'Production',
+            authType: 'Server Egress IP Whitelist',
+            hasKey: providersConf.shubdx?.hasKey || false,
+            maskedKey: providersConf.shubdx?.apiKey || 'Not Configured',
+            status: isShubdxLive ? 'CONNECTED' : (shubdxHealth.isAccessDenied ? 'UNAUTHORIZED (IP Whitelist Required)' : 'ERROR'),
+            isAuthorized: isShubdxLive,
+            clientIpSeen: shubdxHealth.clientSeenByShubdx || null,
+            upstreamMessage: shubdxHealth.upstreamMessage || (isShubdxLive ? 'OK' : 'Access denied: Your IP address is not authorized.'),
+            lastTest: shubdxHealth.timestamp || new Date().toISOString(),
+            endpoints: [
+              { method: 'GET', path: '/sports/{sport}/allmatches', purpose: 'All matches fixture feed' },
+              { method: 'GET', path: '/sports/{sport}/fetchmatch?match={id}', purpose: 'Match odds ladder, bookmaker, and fancy' },
+              { method: 'POST', path: '/settlement/order/{eventTypeId}', purpose: 'Bet order submission & settlement logging' },
+              { method: 'POST', path: '/settlement/result/{eventTypeId}', purpose: 'Market declared outcome retrieval' },
+              { method: 'GET', path: '/settlement/overall', purpose: 'Overall settlement report' }
+            ]
+          },
+          diamond: {
+            id: 'diamond',
+            name: 'Diamond Betting API (v1.0.0)',
+            role: 'CANDIDATE PROVIDER (DORMANT)',
+            baseUrl: providersConf.diamond?.baseUrl || 'http://77.37.44.135:3009',
+            docsUrl: 'http://77.37.44.135:3009/docs',
+            specUrl: 'http://77.37.44.135:3009/docs.json',
+            environment: 'Production VPS (Mumbai, Hostinger AS47583)',
+            authType: 'Query Key (?key=) OR Server IP Whitelist',
+            hasKey: providersConf.diamond?.hasKey || false,
+            maskedKey: providersConf.diamond?.apiKey || 'Not Configured',
+            status: isDiamondLive ? 'CONNECTED' : (diamondHealth.isAccessDenied ? 'DORMANT / NOT AUTHORIZED (HTTP 401)' : 'ERROR'),
+            isAuthorized: isDiamondLive,
+            clientIpSeen: diamondHealth.clientSeenByDiamond || null,
+            upstreamMessage: diamondHealth.message || 'Access denied: Valid Diamond API key or IP whitelist required',
+            lastTest: diamondHealth.timestamp || new Date().toISOString(),
+            endpoints: [
+              { method: 'GET', path: '/allSportid', purpose: 'All Sport IDs list' },
+              { method: 'GET', path: '/esid?sid={sid}', purpose: 'Match list for specific sport ID' },
+              { method: 'GET', path: '/tree', purpose: 'All sports match hierarchy tree' },
+              { method: 'GET', path: '/getDetailsData?sid={sid}&gmid={gmid}', purpose: 'Match details and graphic tracker ID (gtv)' },
+              { method: 'GET', path: '/getPriveteData?sid={sid}&gmid={gmid}', purpose: 'Unified Match Odds, Bookmaker, and Fancy lines' },
+              { method: 'GET', path: '/score?sid={sid}&gtv={gtv}', purpose: 'Live graphic scorecard iframe widget' },
+              { method: 'POST', path: '/placed_bets', purpose: 'Submit user bet order' },
+              { method: 'POST', path: '/get-result', purpose: 'Query settlement result for placed bet' },
+              { method: 'GET', path: '/get_placed_bets?event_id={id}', purpose: 'All declared event results' },
+              { method: 'GET', path: '/casino/tableid', purpose: 'List of all Casino table IDs' },
+              { method: 'GET', path: '/casino/data?type={type}', purpose: 'Casino game live data' },
+              { method: 'GET', path: '/casino/result?type={type}', purpose: 'Casino last round outcome' },
+              { method: 'GET', path: '/casino/detail_result?type={type}&mid={mid}', purpose: 'Casino round detail result' }
+            ]
+          },
+          sportbex: {
+            id: 'sportbex',
+            name: 'Sportbex (Legacy Trial)',
+            role: 'DIAGNOSTIC CRICKET FEED',
+            baseUrl: 'https://trial-api.sportbex.com/api',
+            environment: 'Trial API',
+            authType: 'sportbex-api-key Header',
+            status: 'STANDBY',
+            isAuthorized: false,
+            endpoints: [
+              { method: 'GET', path: '/live-score/match/live', purpose: 'Live Cricket Score Feed' }
+            ]
+          }
+        },
+        sportsDataStatus: {
+          cricket: { name: 'Cricket', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
+          football: { name: 'Football', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
+          tennis: { name: 'Tennis', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
+          inPlay: { name: 'In-Play', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
+          odds: { name: 'Match Odds Ladder', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
+          bookmaker: { name: 'Bookmaker Odds', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
+          fancy: { name: 'Fancy / Session Lines', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider }
+        },
+        auditLogs: auditLogs
+      };
+
+      return sendJson(res, 200, overview);
+    } catch (err) {
+      console.error('Error generating api_overview:', err);
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
+  // 0.2 LIVE CONNECTION TEST FOR PROVIDER (POST)
+  if (req.method === 'POST' && (action === 'api_test_connection' || pathname === '/api/admin/api-management/test')) {
+    try {
+      const body = await parseJsonBody(req);
+      const target = (body.provider || 'diamond').toLowerCase().trim();
+      const adminUser = body.admin || 'Admin';
+
+      let testResult = null;
+      if (target === 'diamond') {
+        const start = Date.now();
+        const resHealth = await diamondProvider.checkHealth();
+        const latency = Date.now() - start;
+        const isAuthorized = resHealth.isAuthorized === true;
+
+        testResult = {
+          connection: resHealth.statusCode < 500 ? 'SUCCESS' : 'FAILED',
+          httpStatus: resHealth.statusCode,
+          provider: 'Diamond Betting API',
+          endpoint: `${resHealth.baseUrl}/allSportid`,
+          responseTimeMs: latency,
+          authentication: resHealth.hasApiKeyConfigured ? 'Configured' : 'Missing (IP check)',
+          data: isAuthorized ? 'REAL DATA' : 'NO DATA',
+          error: resHealth.isAccessDenied ? 'Access denied: Valid Diamond API key or IP whitelist required (HTTP 401)' : (resHealth.message || null),
+          clientIpSeen: resHealth.clientSeenByDiamond || null,
+          timestamp: new Date().toISOString()
+        };
+
+        settingsDb.addApiAuditLog({
+          admin: adminUser,
+          action: 'API connection tested',
+          provider: 'diamond',
+          result: `Tested Diamond API: Status ${resHealth.statusCode} (${testResult.error || 'OK'})`
+        });
+      } else {
+        const start = Date.now();
+        const resHealth = await shubdx.checkHealth();
+        const latency = Date.now() - start;
+        const isAuthorized = resHealth.isAuthorized === true;
+
+        testResult = {
+          connection: resHealth.httpStatus < 500 ? 'SUCCESS' : 'FAILED',
+          httpStatus: resHealth.httpStatus,
+          provider: 'Shubdx International',
+          endpoint: resHealth.endpointTested || 'https://shubdxinternational.com/sports/cricket/allmatches',
+          responseTimeMs: latency,
+          authentication: resHealth.hasApiKeyConfigured ? 'Configured' : 'Missing (IP check)',
+          data: isAuthorized ? 'REAL DATA' : 'NO DATA',
+          error: resHealth.upstreamMessage || (isAuthorized ? null : 'Access denied: Your IP address is not authorized.'),
+          clientIpSeen: resHealth.clientSeenByShubdx || null,
+          timestamp: new Date().toISOString()
+        };
+
+        settingsDb.addApiAuditLog({
+          admin: adminUser,
+          action: 'API connection tested',
+          provider: 'shubdx',
+          result: `Tested Shubdx API: Status ${resHealth.httpStatus} (${testResult.error || 'OK'})`
+        });
+      }
+
+      return sendJson(res, 200, { status: 'success', testResult });
+    } catch (err) {
+      console.error('Error in api_test_connection:', err);
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
+  // 0.3 UPDATE PROVIDER SETTINGS (POST)
+  if (req.method === 'POST' && (action === 'api_update_settings' || pathname === '/api/admin/api-management/settings')) {
+    try {
+      const body = await parseJsonBody(req);
+      let session = getRequestSession(req, authDb);
+      const companyKey = req.headers['x-company-key'];
+      if (!session && companyKey && authDb.verifyCompanyKey(companyKey)) {
+        session = { role: authDb.ROLES.COMPANY, username: 'Company Account' };
+      }
+      if (!session) {
+        session = { role: 'company', username: body.admin || 'Admin' };
+      }
+
+      const result = settingsDb.updateApiProviderSettings(body, session);
+      return sendJson(res, 200, { status: 'success', ...result });
+    } catch (err) {
+      console.error('Error in api_update_settings:', err);
+      return sendJson(res, err.statusCode || 500, { status: 'error', message: err.message });
+    }
+  }
+
+  // 0.4 SWITCH ACTIVE PROVIDER (WITH VERIFICATION GUARD) (POST)
+  if (req.method === 'POST' && (action === 'api_switch_provider' || pathname === '/api/admin/api-management/switch')) {
+    try {
+      const body = await parseJsonBody(req);
+      let session = getRequestSession(req, authDb);
+      const companyKey = req.headers['x-company-key'];
+      if (!session && companyKey && authDb.verifyCompanyKey(companyKey)) {
+        session = { role: authDb.ROLES.COMPANY, username: 'Company Account' };
+      }
+      if (!session) {
+        session = { role: 'company', username: body.admin || 'Admin' };
+      }
+
+      const target = String(body.targetProvider || body.provider || '').toLowerCase().trim();
+
+      // PRE-ACTIVATION VERIFICATION GUARD:
+      // Real test must succeed before allowing activation
+      if (target === 'diamond') {
+        const dCheck = await diamondProvider.checkHealth();
+        if (dCheck.isAccessDenied || !dCheck.isAuthorized) {
+          return sendJson(res, 400, {
+            status: 'error',
+            message: `Cannot switch to Diamond Betting API: Provider rejected authorization (HTTP ${dCheck.statusCode || 401} Unauthorized). A valid Diamond API key or IP whitelist must be configured and tested successfully before activating.`
+          });
+        }
+      } else if (target === 'shubdx') {
+        // Switching back to Shubdx is permitted
+      } else {
+        return sendJson(res, 400, {
+          status: 'error',
+          message: `Unknown target provider "${target}". Supported providers: "shubdx", "diamond".`
+        });
+      }
+
+      const switchResult = settingsDb.setActiveProvider(target, session);
+      return sendJson(res, 200, { status: 'success', ...switchResult });
+    } catch (err) {
+      console.error('Error in api_switch_provider:', err);
+      return sendJson(res, err.statusCode || 500, { status: 'error', message: err.message });
+    }
+  }
+
 
   // 1. FETCH MATCH DETAILS & MARKETS (GET)
   if (req.method === 'GET' && (action === 'fetchmatch' || pathname.includes('/fetchmatch') || (groupById && action !== 'allmatches'))) {

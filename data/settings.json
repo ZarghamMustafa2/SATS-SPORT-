@@ -1,5 +1,54 @@
 {
   "depositWithdrawWhatsapp": "447846062779",
+  "apiProviders": {
+    "activeProvider": "shubdx",
+    "shubdx": {
+      "name": "Shubdx International",
+      "baseUrl": "https://shubdxinternational.com",
+      "apiKey": "",
+      "timeoutMs": 8000,
+      "retryCount": 1,
+      "enabled": true
+    },
+    "diamond": {
+      "name": "Diamond Betting API",
+      "baseUrl": "http://77.37.44.135:3009",
+      "apiKey": "",
+      "timeoutMs": 8000,
+      "retryCount": 1,
+      "enabled": false
+    }
+  },
+  "apiAuditLogs": [
+    {
+      "timestamp": "2026-10-03T16:21:06.330Z",
+      "admin": "Admin",
+      "action": "API connection tested",
+      "provider": "diamond",
+      "result": "Tested Diamond API: Status 401 (Access denied: Valid Diamond API key or IP whitelist required (HTTP 401))"
+    },
+    {
+      "timestamp": "2026-10-03T16:18:13.163Z",
+      "admin": "Admin",
+      "action": "API connection tested",
+      "provider": "diamond",
+      "result": "Tested Diamond API: Status 401 (Access denied: Valid Diamond API key or IP whitelist required (HTTP 401))"
+    },
+    {
+      "timestamp": "2026-10-03T16:06:26.640Z",
+      "admin": "Admin",
+      "action": "API connection tested",
+      "provider": "diamond",
+      "result": "Tested Diamond API: Status 401 (Access denied: Valid Diamond API key or IP whitelist required (HTTP 401))"
+    },
+    {
+      "timestamp": "2026-10-03T16:06:22.616Z",
+      "admin": "System",
+      "action": "API provider initialized",
+      "provider": "shubdx",
+      "result": "Active production provider set to Shubdx International"
+    }
+  ],
   "updatedAt": "2026-10-01T19:33:22.130Z",
   "updatedBy": "superadmin_1"
 }
