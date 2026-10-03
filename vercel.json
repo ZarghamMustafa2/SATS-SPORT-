@@ -4,6 +4,7 @@
   "rewrites": [
     { "source": "/api/health", "destination": "/api/sports" },
     { "source": "/api/shubdx/health", "destination": "/api/sports" },
+    { "source": "/api/diamond/health", "destination": "/api/sports" },
     { "source": "/api/sports/(.*)", "destination": "/api/sports" },
     { "source": "/api/sports", "destination": "/api/sports" },
     { "source": "/api/admin/settings/whatsapp", "destination": "/api/settings/whatsapp" },

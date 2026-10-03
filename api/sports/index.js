@@ -2,7 +2,10 @@
 // Unified Shubdx International Sports & Bet Settlement API Controller
 
 const shubdx = require('../../lib/shubdx');
+const diamondProvider = require('../../lib/providers/diamond');
 const { parseJsonBody, sendJson } = require('../../lib/http_util');
+
+const ACTIVE_PROVIDER = (process.env.SPORTS_DATA_PROVIDER || 'shubdx').toLowerCase();
 
 // In-Memory Cache for Live Match Polling (reduces rate load on upstream API)
 let cachedMatches = {};
@@ -34,6 +37,7 @@ module.exports = async function handler(req, res) {
       status: 'ok',
       service: 'SatsSport Backend Gateway',
       version: '3.1.0',
+      activeProvider: ACTIVE_PROVIDER,
       uptime: process.uptime(),
       timestamp: new Date().toISOString()
     });
@@ -43,6 +47,19 @@ module.exports = async function handler(req, res) {
     try {
       const healthData = await shubdx.checkHealth();
       return sendJson(res, 200, healthData);
+    } catch (err) {
+      return sendJson(res, 500, {
+        status: 'error',
+        message: err.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+
+  if (req.method === 'GET' && (action === 'diamond_health' || pathname === '/api/diamond/health' || pathname.includes('/diamond/health'))) {
+    try {
+      const diamondHealth = await diamondProvider.checkHealth();
+      return sendJson(res, 200, diamondHealth);
     } catch (err) {
       return sendJson(res, 500, {
         status: 'error',

@@ -6,7 +6,6 @@ const meHandler = require('./auth/me');
 const logoutHandler = require('./auth/logout');
 const createUserHandler = require('./admin/users/create');
 const companyCreateSuperAdminHandler = require('./admin/company/create-super-admin');
-const statusUserHandler = require('./admin/users/status');
 const listUsersHandler = require('./admin/users/index');
 const sportbexHandler = require('./sportbex/cricket/live');
 const whatsappSettingsHandler = require('./settings/whatsapp');
@@ -32,8 +31,7 @@ module.exports = async function handler(req, res) {
   if (pathname === '/api/auth/logout') return logoutHandler(req, res);
   if (pathname === '/api/admin/company/create-super-admin') return companyCreateSuperAdminHandler(req, res);
   if (pathname === '/api/admin/users/create') return createUserHandler(req, res);
-  if (pathname === '/api/admin/users/status') return statusUserHandler(req, res);
-  if (pathname === '/api/admin/users') return listUsersHandler(req, res);
+  if (pathname === '/api/admin/users/status' || pathname === '/api/admin/users/finance' || pathname === '/api/admin/users') return listUsersHandler(req, res);
   if (pathname === '/api/settings/whatsapp' || pathname === '/api/admin/settings/whatsapp') return whatsappSettingsHandler(req, res);
   if (pathname === '/api/sportbex/cricket/live') return sportbexHandler(req, res);
 
