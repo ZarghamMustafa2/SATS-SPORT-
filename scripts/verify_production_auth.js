@@ -88,7 +88,7 @@ async function runProductionTests() {
 
   // TEST 2: Verify user exists in Admin Downline API
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request(`/api/admin/users?search=${encodeURIComponent(testUsername)}`, {
       headers: { 'x-admin-request': 'true' }
     });
@@ -105,7 +105,7 @@ async function runProductionTests() {
   let sessionToken = null;
   let setCookieHeader = null;
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request('/api/auth/login', {
       method: 'POST',
       body: {
@@ -126,7 +126,7 @@ async function runProductionTests() {
 
   // TEST 4: Login with incorrect password
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request('/api/auth/login', {
       method: 'POST',
       body: {
@@ -144,7 +144,7 @@ async function runProductionTests() {
 
   // TEST 5: Verify session persistence / identity on GET /api/auth/me
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request('/api/auth/me', {
       headers: { 'authorization': `Bearer ${sessionToken}` }
     });
@@ -160,7 +160,7 @@ async function runProductionTests() {
 
   // TEST 6: Unauthenticated request rejection
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request('/api/auth/me');
     report(6, 'GET /api/auth/me without session (Unauthenticated Request Check)',
       res.statusCode === 401,
@@ -172,7 +172,7 @@ async function runProductionTests() {
 
   // TEST 7: Logout authenticated user
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request('/api/auth/logout', {
       method: 'POST',
       headers: { 'authorization': `Bearer ${sessionToken}` }
@@ -189,7 +189,7 @@ async function runProductionTests() {
 
   // TEST 8: Verify old session is invalidated after logout
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request('/api/auth/me', {
       headers: { 'authorization': `Bearer ${sessionToken}` }
     });
@@ -203,7 +203,7 @@ async function runProductionTests() {
 
   // TEST 9: Duplicate username registration (case-insensitive test)
   try {
-    await sleep(600);
+    await sleep(350);
     const uppercaseUsername = testUsername.toUpperCase();
     const res = await request('/api/auth/register', {
       method: 'POST',
@@ -223,7 +223,7 @@ async function runProductionTests() {
 
   // TEST 10: Verify lastLogin timestamp in Admin Panel
   try {
-    await sleep(600);
+    await sleep(350);
     const res = await request(`/api/admin/users?search=${encodeURIComponent(testUsername)}`, {
       headers: { 'x-admin-request': 'true' }
     });
