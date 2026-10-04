@@ -10141,7 +10141,15 @@
       fetchWhatsappSettings();
       const token = localStorage.getItem('auth_token');
       const urlParams = new URLSearchParams(window.location.search);
-      const protectedArea = urlParams.get('protected');
+      const path = window.location.pathname.toLowerCase();
+      let protectedArea = urlParams.get('protected');
+      if (!protectedArea) {
+        if (path.includes('/account')) protectedArea = 'account';
+        else if (path.includes('/statement')) protectedArea = 'statement';
+        else if (path.includes('/my-bets')) protectedArea = 'bets';
+        else if (path.includes('/deposit')) protectedArea = 'deposit';
+        else if (path.includes('/withdraw')) protectedArea = 'withdraw';
+      }
 
       if (!token) {
         localStorage.removeItem('current_user');
