@@ -2064,7 +2064,7 @@ Boland v Knights                        </a>
                             </div>
 
                             <div class="col-12 col-md-6" id="editsection2" style="display: block;">
-                                <form method="post" onsubmit="event.preventDefault(); showToast('Bet sizes updated!');">
+                                <form id="formMaxBetSizes" method="post" onsubmit="saveMaxBetSizes(event)">
                                     <div class="card">
                                         <div class="card-header">
                                             <strong>Max Bet Sizes</strong>
@@ -2222,37 +2222,36 @@ Boland v Knights                        </a>
                          ======================================================== -->
                     <div id="viewAccountLedger" class="admin-view-section">
                         <div class="card">
-                            <div class="card-header" id="ledgerCardHeaderTitle">
-                                <strong>Account Ledger</strong>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span id="ledgerCardHeaderTitle"><strong>Account Ledger</strong></span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="loadAccountLedgerPage(currentEditingId); showToast('Ledger refreshed!');"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                             </div>
                             <div class="card-body">
-                                <form id="ledgerFilterForm" class="form-inline mb-3">
-                                    <label class="mr-2">From:</label>
-                                    <input type="date" class="form-control form-control-sm mr-3" value="2026-09-28">
-                                    <label class="mr-2">To:</label>
-                                    <input type="date" class="form-control form-control-sm mr-3" value="2026-09-29">
-                                    <button class="btn btn-sm btn-primary" type="button" onclick="showToast('Ledger filtered!')">Filter</button>
+                                <form id="ledgerFilterForm" class="form-inline mb-3" onsubmit="event.preventDefault(); loadAccountLedgerPage(currentEditingId);">
+                                    <label class="mr-2 font-weight-bold small">From:</label>
+                                    <input type="date" id="ledgerFromDateInput" class="form-control form-control-sm mr-3">
+                                    <label class="mr-2 font-weight-bold small">To:</label>
+                                    <input type="date" id="ledgerToDateInput" class="form-control form-control-sm mr-3">
+                                    <button class="btn btn-sm btn-primary" type="submit">Filter</button>
                                 </form>
-                                <table class="table table-bordered table-striped table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Description</th>
-                                            <th>Debit</th>
-                                            <th>Credit</th>
-                                            <th>Balance</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>9/28/2026 12:00:00 AM</td>
-                                            <td>Opening Balance</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                            <td>0</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Description</th>
+                                                <th>Debit</th>
+                                                <th>Credit</th>
+                                                <th>Balance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ledgerTableBody">
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">Select an account from Users list or load downline to view ledger.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2262,26 +2261,29 @@ Boland v Knights                        </a>
                          ======================================================== -->
                     <div id="viewCurrentPosition" class="admin-view-section">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <strong>Current Positions & Liabilities</strong>
+                                <button class="btn btn-sm btn-primary" onclick="loadAdminBets(); showToast('Positions refreshed!');"><i class="fas fa-sync-alt mr-1"></i> Refresh</button>
                             </div>
                             <div class="card-body">
-                                <table class="table table-bordered table-striped table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Event</th>
-                                            <th>Market</th>
-                                            <th>Selection</th>
-                                            <th>Position (Rs.)</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="5" class="text-center text-muted">No open active liabilities found.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Event</th>
+                                                <th>Market</th>
+                                                <th>Selection</th>
+                                                <th>Position (Rs.)</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="positionTableBody">
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">No open active liabilities found.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2317,16 +2319,17 @@ Boland v Knights                        </a>
                                 <i class="fa fa-filter"></i> <strong>Report Filter</strong>
                             </div>
                             <div class="card-body">
-                                <form class="form-inline" onsubmit="event.preventDefault(); showToast('Report filtered!');">
+                                <form class="form-inline" id="reportDateFilterForm" onsubmit="filterReportsByDate(event)">
                                     <div class="form-group mr-3">
-                                        <label class="mr-2">From Date:</label>
-                                        <input type="date" class="form-control form-control-sm" value="2026-09-28">
+                                        <label class="mr-2 font-weight-bold small">From Date:</label>
+                                        <input type="date" id="repFilterFromDate" class="form-control form-control-sm">
                                     </div>
                                     <div class="form-group mr-3">
-                                        <label class="mr-2">To Date:</label>
-                                        <input type="date" class="form-control form-control-sm" value="2026-09-29">
+                                        <label class="mr-2 font-weight-bold small">To Date:</label>
+                                        <input type="date" id="repFilterToDate" class="form-control form-control-sm">
                                     </div>
-                                    <button class="btn btn-sm btn-primary" type="submit">Submit</button>
+                                    <button class="btn btn-sm btn-primary mr-2" type="submit">Submit</button>
+                                    <button class="btn btn-sm btn-secondary" type="button" onclick="resetReportDateFilter()">Reset</button>
                                 </form>
                             </div>
                         </div>
@@ -2336,15 +2339,16 @@ Boland v Knights                        </a>
                             <div class="card">
                                 <div class="card-header"><strong>Book Detail Report</strong></div>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-sm">
-                                        <thead>
-                                            <tr><th>Sport</th><th>Match</th><th>Market</th><th>Amount (Rs.)</th><th>Net (Rs.)</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>Cricket</td><td>India v West Indies</td><td>Match Odds</td><td>294,110</td><td class="position-plus">0</td></tr>
-                                            <tr><td>Soccer</td><td>Belgium v France</td><td>Match Odds</td><td>3,024,892</td><td class="position-plus">0</td></tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-sm">
+                                            <thead>
+                                                <tr><th>Sport</th><th>Match</th><th>Market</th><th>Amount (Rs.)</th><th>Net (Rs.)</th></tr>
+                                            </thead>
+                                            <tbody id="repTbodyBookDetail">
+                                                <tr><td colspan="5" class="text-center text-muted">No book details found for the selected date range.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2353,14 +2357,16 @@ Boland v Knights                        </a>
                             <div class="card">
                                 <div class="card-header"><strong>Book Detail 2 Report</strong></div>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-sm">
-                                        <thead>
-                                            <tr><th>Sport</th><th>Match</th><th>User</th><th>Comm</th><th>Profit/Loss</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>Cricket</td><td>Dolphins v Northern Cape</td><td>Jimmy3221</td><td>2.00%</td><td class="position-plus">0.00</td></tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-sm">
+                                            <thead>
+                                                <tr><th>Sport</th><th>Match</th><th>User</th><th>Comm</th><th>Profit/Loss</th></tr>
+                                            </thead>
+                                            <tbody id="repTbodyBookDetail2">
+                                                <tr><td colspan="5" class="text-center text-muted">No bet details found for the selected date range.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2369,14 +2375,16 @@ Boland v Knights                        </a>
                             <div class="card">
                                 <div class="card-header"><strong>Daily Profit & Loss Report</strong></div>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-sm">
-                                        <thead>
-                                            <tr><th>Date</th><th>Market Count</th><th>Profit</th><th>Loss</th><th>Net Total</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>9/28/2026</td><td>2</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-sm">
+                                            <thead>
+                                                <tr><th>Date</th><th>Market Count</th><th>Profit</th><th>Loss</th><th>Net Total</th></tr>
+                                            </thead>
+                                            <tbody id="repTbodyDailyPL">
+                                                <tr><td colspan="5" class="text-center text-muted">No daily profit/loss records found.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2385,14 +2393,16 @@ Boland v Knights                        </a>
                             <div class="card">
                                 <div class="card-header"><strong>Daily Breakdown Report</strong></div>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-sm">
-                                        <thead>
-                                            <tr><th>Date</th><th>Gross Win</th><th>Gross Loss</th><th>Comm</th><th>Net Settled</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>9/28/2026</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-sm">
+                                            <thead>
+                                                <tr><th>Date</th><th>Gross Win</th><th>Gross Loss</th><th>Comm</th><th>Net Settled</th></tr>
+                                            </thead>
+                                            <tbody id="repTbodyDaily">
+                                                <tr><td colspan="5" class="text-center text-muted">No daily breakdown data available.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2404,16 +2414,16 @@ Boland v Knights                        </a>
                                     <button class="btn btn-sm btn-secondary float-right" onclick="toggleZeroAccounts()">Toggle Zero Accounts</button>
                                 </div>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-sm">
-                                        <thead>
-                                            <tr><th>Account</th><th>Type</th><th>Opening</th><th>Total Win/Loss</th><th>Closing</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>Ahmii9090x</td><td>SuperMaster</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
-                                            <tr><td>Jimmy3221</td><td>Bettor</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
-                                            <tr><td>Rana3471</td><td>Bettor</td><td>0.00</td><td>0.00</td><td>0.00</td></tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-sm">
+                                            <thead>
+                                                <tr><th>Account</th><th>Type</th><th>Opening</th><th>Total Win/Loss</th><th>Closing</th></tr>
+                                            </thead>
+                                            <tbody id="repTbodyFinalSheet">
+                                                <tr><td colspan="5" class="text-center text-muted">No accounts loaded.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2422,14 +2432,16 @@ Boland v Knights                        </a>
                             <div class="card">
                                 <div class="card-header"><strong>Commission Summary Report</strong></div>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-sm">
-                                        <thead>
-                                            <tr><th>User</th><th>Total Turnover</th><th>Rate</th><th>Gross Comm</th><th>Downline Share</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>Jimmy3221</td><td>0.00</td><td>2.00%</td><td>0.00</td><td>0.00</td></tr>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-striped table-sm">
+                                            <thead>
+                                                <tr><th>User</th><th>Total Turnover</th><th>Rate</th><th>Gross Comm</th><th>Downline Share</th></tr>
+                                            </thead>
+                                            <tbody id="repTbodyCommission">
+                                                <tr><td colspan="5" class="text-center text-muted">No commission records available.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2486,7 +2498,7 @@ Boland v Knights                        </a>
                                         <div class="form-check"><input class="form-check-input cb-horse" type="checkbox" checked> <label class="form-check-label">France</label></div>
                                     </div>
                                     <div class="card-footer">
-                                        <button class="btn btn-primary" onclick="showToast('Bet Lock settings updated!')"><strong>Submit</strong></button>
+                                        <button class="btn btn-primary" onclick="saveBetLockSettings()"><strong>Submit</strong></button>
                                     </div>
                                 </div>
                             </div>
@@ -2841,38 +2853,38 @@ Boland v Knights                        </a>
                                 <div class="card">
                                     <div class="card-header"><strong>Profile Settings</strong></div>
                                     <div class="card-body">
-                                        <form onsubmit="event.preventDefault(); showToast('Stakes updated successfully!');">
+                                        <form id="adminStakesForm" onsubmit="saveAdminStakes(event)">
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Stake 1</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="2000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakeVal1" class="form-control" value="2000"></div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Stake 2</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="5000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakeVal2" class="form-control" value="5000"></div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Stake 3</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="10000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakeVal3" class="form-control" value="10000"></div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Stake 4</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="25000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakeVal4" class="form-control" value="25000"></div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Plus 1</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="1000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakePlus1" class="form-control" value="1000"></div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Plus 2</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="5000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakePlus2" class="form-control" value="5000"></div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Plus 3</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="10000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakePlus3" class="form-control" value="10000"></div>
                                             </div>
                                             <div class="form-group row">
                                                 <label class="col-md-3 col-form-label">Plus 4</label>
-                                                <div class="col-md-6"><input type="number" class="form-control" value="25000"></div>
+                                                <div class="col-md-6"><input type="number" id="stakePlus4" class="form-control" value="25000"></div>
                                             </div>
                                             <div class="form-actions">
                                                 <button class="btn btn-primary" type="submit">Save changes</button>
@@ -2888,16 +2900,17 @@ Boland v Knights                        </a>
                                 <div class="card mb-3">
                                     <div class="card-header"><strong>Change Password</strong></div>
                                     <div class="card-body">
-                                        <form id="profileChangePassForm" onsubmit="event.preventDefault(); showToast('Master password updated!');">
+                                        <form id="profileChangePassForm" onsubmit="handleMasterPasswordChange(event)">
                                             <div class="form-group row">
-                                                <label class="col-md-3 col-form-label">NewPassword</label>
+                                                <label class="col-md-3 col-form-label">New Password</label>
                                                 <div class="col-md-6">
-                                                    <input type="password" class="form-control" placeholder="New Password" required>
+                                                    <input type="password" id="masterNewPassInput" class="form-control" placeholder="New Password (min 6 chars)" required minlength="6" autocomplete="new-password">
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <button class="btn btn-primary" type="submit">Update</button>
+                                                    <button class="btn btn-primary" id="btnUpdateMasterPass" type="submit">Update</button>
                                                 </div>
                                             </div>
+                                            <div id="masterPassNotice" style="display:none; margin-top:10px;"></div>
                                         </form>
                                     </div>
                                 </div>
@@ -3514,6 +3527,7 @@ Boland v Knights                        </a>
         // Lifecycle & Routing
         window.addEventListener('DOMContentLoaded', async function() {
             loadAdminWhatsappSettings();
+            loadSavedAdminStakes();
             renderClientsTable();
             loadMarketMatchByIdOrName('Dolphins v Northern Cape');
 
@@ -3840,17 +3854,19 @@ Boland v Knights                        </a>
                 var uname = userObj ? userObj.username : 'Jimmy3221';
                 document.getElementById('ledgerCardHeaderTitle').innerHTML = '<strong>' + uname + ' - Account Ledger</strong>';
                 document.title = 'Account Ledger | BPEXCH';
+                loadAccountLedgerPage(userId);
             } else if (lower === '/markets/liables') {
                 document.getElementById('viewCurrentPosition').style.display = 'block';
                 document.getElementById('sideNavPosition')?.classList.add('active');
-                document.getElementById('sideNavPosition')?.classList.add('active');
                 document.getElementById('topNavPosition')?.classList.add('active');
                 document.title = 'Current Position | BPEXCH';
+                renderCurrentPositionTable();
             } else if (lower.startsWith('/reports/')) {
                 document.getElementById('viewReports').style.display = 'block';
                 document.getElementById('sideNavReports')?.classList.add('active');
                 document.getElementById('topNavReports')?.classList.add('active');
                 handleReportRoute(fullPath);
+                renderReportsTables();
             } else if (lower === '/markets/betlocker') {
                 document.getElementById('viewBetLock').style.display = 'block';
                 document.getElementById('sideNavBetLock')?.classList.add('active');
@@ -3934,6 +3950,7 @@ Boland v Knights                        </a>
                 document.getElementById('repSubViewBookDetail').style.display = 'block';
                 document.title = 'Book Detail | BPEXCH';
             }
+            renderReportsTables();
         }
 
         // Render Clients Table
@@ -4266,7 +4283,7 @@ Boland v Knights                        </a>
             document.getElementById('EditBtn')?.classList.add('active');
         }
 
-        function showEditSubView(type) {
+        async function showEditSubView(type) {
             document.getElementById('editsection1').style.display = 'none';
             document.getElementById('editsection2').style.display = 'none';
             document.getElementById('iframesection').style.display = 'block';
@@ -4276,34 +4293,86 @@ Boland v Knights                        </a>
             var headerEl = document.getElementById('iframesectionHeader');
             var bodyEl = document.getElementById('iframesectionBody');
 
+            var token = getAdminAuthToken();
+            var userData = null;
+            var userBets = [];
+
+            bodyEl.innerHTML = '<div class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading real account data...</div>';
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users?id=' + encodeURIComponent(currentEditingId)), {
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                });
+                if (res.ok && res.data && res.data.status === 'success') {
+                    userData = res.data.user;
+                    userBets = Array.isArray(res.data.bets) ? res.data.bets : [];
+                }
+            } catch (err) {
+                console.warn('Error fetching user details:', err);
+            }
+
+            var uName = (userData && userData.username) || currentEditingUser;
+
             if (type === 'ledger') {
                 document.getElementById('LedgerBtn')?.classList.add('active');
-                headerEl.innerHTML = '<strong>' + currentEditingUser + ' - Ledger</strong>';
-                bodyEl.innerHTML = 
-                    '<table class="table table-bordered table-sm">' +
-                        '<thead><tr><th>#</th><th>Date</th><th>Description</th><th>Amount</th><th>Balance</th></tr></thead>' +
-                        '<tbody><tr><td>1</td><td>9/28/2026 12:00:00 AM</td><td>Opening Balance</td><td>0</td><td>0</td></tr></tbody>' +
-                    '</table>';
+                headerEl.innerHTML = '<strong>' + uName + ' - Account Ledger</strong>';
+                var txs = (userData && userData.transactions) || [];
+                if (txs.length === 0) {
+                    bodyEl.innerHTML = '<div class="table-responsive"><table class="table table-bordered table-sm table-striped"><thead><tr><th>#</th><th>Date</th><th>Description</th><th>Amount</th><th>Balance</th></tr></thead><tbody><tr><td colspan="5" class="text-center text-muted">No transactions recorded for ' + uName + '.</td></tr></tbody></table></div>';
+                } else {
+                    var rowsHtml = txs.map(function(t, idx) {
+                        var dtStr = t.createdAt ? new Date(t.createdAt).toLocaleString('en-IN') : '-';
+                        var isDebit = t.type === 'WITHDRAW';
+                        var amtStr = (isDebit ? '-' : '+') + ' Rs. ' + (parseFloat(t.amount) || 0).toLocaleString('en-IN');
+                        var balStr = t.balanceAfter !== undefined ? 'Rs. ' + Number(t.balanceAfter).toLocaleString('en-IN') : '-';
+                        return '<tr><td>' + (idx + 1) + '</td><td>' + dtStr + '</td><td>' + (t.description || t.type) + '</td><td class="' + (isDebit ? 'text-danger font-weight-bold' : 'text-success font-weight-bold') + '">' + amtStr + '</td><td>' + balStr + '</td></tr>';
+                    }).join('');
+                    bodyEl.innerHTML = '<div class="table-responsive"><table class="table table-bordered table-sm table-striped"><thead><tr><th>#</th><th>Date</th><th>Description</th><th>Amount</th><th>Balance</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+                }
             } else if (type === 'bets') {
                 document.getElementById('BetsBtn')?.classList.add('active');
-                headerEl.innerHTML = '<strong>' + currentEditingUser + ' - Bets</strong>';
-                bodyEl.innerHTML = 
-                    '<table class="table table-bordered table-sm">' +
-                        '<thead><tr><th>Bet ID</th><th>Event</th><th>Selection</th><th>Odds</th><th>Stake</th><th>Status</th></tr></thead>' +
-                        '<tbody><tr><td colspan="6" class="text-center text-muted">No placed bets found.</td></tr></tbody>' +
-                    '</table>';
+                headerEl.innerHTML = '<strong>' + uName + ' - Bets History</strong>';
+                if (userBets.length === 0) {
+                    bodyEl.innerHTML = '<div class="table-responsive"><table class="table table-bordered table-sm table-striped"><thead><tr><th>Bet ID</th><th>Event</th><th>Selection</th><th>Odds</th><th>Stake</th><th>Status</th></tr></thead><tbody><tr><td colspan="6" class="text-center text-muted">No placed bets found for ' + uName + '.</td></tr></tbody></table></div>';
+                } else {
+                    var bRows = userBets.map(function(b) {
+                        var bId = b.shubdxBetId || b.id || '-';
+                        var ev = b.event || b.match_name || '-';
+                        var sel = b.runner || b.selection_name || '-';
+                        var od = (b.odds || 0).toFixed(2);
+                        var stk = 'Rs. ' + (parseFloat(b.stake) || 0).toLocaleString('en-IN');
+                        var stClass = b.settlementStatus === 'confirmed' ? 'badge badge-success' : 'badge badge-info';
+                        return '<tr><td><code>#' + bId + '</code></td><td>' + ev + '</td><td>' + sel + '</td><td>' + od + '</td><td class="font-weight-bold">' + stk + '</td><td><span class="' + stClass + '">' + (b.settlementStatus || 'Active') + '</span></td></tr>';
+                    }).join('');
+                    bodyEl.innerHTML = '<div class="table-responsive"><table class="table table-bordered table-sm table-striped"><thead><tr><th>Bet ID</th><th>Event</th><th>Selection</th><th>Odds</th><th>Stake</th><th>Status</th></tr></thead><tbody>' + bRows + '</tbody></table></div>';
+                }
             } else if (type === 'profitloss') {
                 document.getElementById('ProfitlossBtn')?.classList.add('active');
-                headerEl.innerHTML = '<strong>' + currentEditingUser + ' - Profit / Loss</strong>';
+                headerEl.innerHTML = '<strong>' + uName + ' - Profit / Loss</strong>';
+                var plVal = (userData && userData.pl) ? parseFloat(String(userData.pl).replace(/[^0-9.-]/g, '')) || 0 : 0;
+                var profitAmt = plVal > 0 ? plVal : 0;
+                var lossAmt = plVal < 0 ? Math.abs(plVal) : 0;
                 bodyEl.innerHTML = 
                     '<div class="row">' +
-                        '<div class="col-6"><div class="card"><div class="card-header bg-primary text-white">Profit</div><div class="card-body text-center">0.00 Rs.</div></div></div>' +
-                        '<div class="col-6"><div class="card"><div class="card-header bg-danger text-white">Loss</div><div class="card-body text-center">0.00 Rs.</div></div></div>' +
-                    '</div>';
+                        '<div class="col-6"><div class="card"><div class="card-header bg-success text-white font-weight-bold"><i class="fas fa-arrow-up mr-1"></i> Profit</div><div class="card-body text-center font-weight-bold" style="font-size:18px; color:#10b981;">Rs. ' + profitAmt.toLocaleString('en-IN') + '</div></div></div>' +
+                        '<div class="col-6"><div class="card"><div class="card-header bg-danger text-white font-weight-bold"><i class="fas fa-arrow-down mr-1"></i> Loss</div><div class="card-body text-center font-weight-bold" style="font-size:18px; color:#ef4444;">Rs. ' + lossAmt.toLocaleString('en-IN') + '</div></div></div>' +
+                    '</div>' +
+                    '<div class="card mt-3"><div class="card-header font-weight-bold">Summary</div><div class="card-body">Net P/L: <strong class="' + (plVal >= 0 ? 'text-success' : 'text-danger') + '">Rs. ' + plVal.toLocaleString('en-IN') + '</strong> | Exposure: <strong>' + ((userData && userData.exp) || '0.00 Rs.') + '</strong></div></div>';
             } else if (type === 'cp') {
                 document.getElementById('CPBtn')?.classList.add('active');
-                headerEl.innerHTML = '<strong>' + currentEditingUser + ' - Current Position</strong>';
-                bodyEl.innerHTML = '<p class="text-center text-muted">No open liabilities found for ' + currentEditingUser + '.</p>';
+                headerEl.innerHTML = '<strong>' + uName + ' - Current Position</strong>';
+                var openBetsList = userBets.filter(function(b) { return b.settlementStatus !== 'settled'; });
+                if (openBetsList.length === 0) {
+                    bodyEl.innerHTML = '<div class="alert alert-light text-center text-muted border">No open liabilities or active positions found for ' + uName + '.</div>';
+                } else {
+                    var pRows = openBetsList.map(function(b) {
+                        var ev = b.event || b.match_name || 'Cricket Match';
+                        var sel = b.runner || b.selection_name || 'Runner';
+                        var pos = 'Rs. ' + (parseFloat(b.stake) || 0).toLocaleString('en-IN');
+                        return '<tr><td>' + ev + '</td><td>Match Odds</td><td>' + sel + '</td><td class="font-weight-bold text-danger">' + pos + '</td><td><span class="badge badge-warning">Active Position</span></td></tr>';
+                    }).join('');
+                    bodyEl.innerHTML = '<div class="table-responsive"><table class="table table-bordered table-sm table-striped"><thead><tr><th>Event</th><th>Market</th><th>Selection</th><th>Position (Rs.)</th><th>Status</th></tr></thead><tbody>' + pRows + '</tbody></table></div>';
+                }
             }
         }
 
@@ -4997,6 +5066,7 @@ Boland v Knights                        </a>
                         };
                     });
                     renderBetsTables();
+                    renderCurrentPositionTable();
                 }
             } catch (e) {}
         }
@@ -5024,8 +5094,461 @@ Boland v Knights                        </a>
             showToast('Sport highlights refreshed!');
         }
 
+        // ========================================================
+        // DYNAMIC ACCOUNT LEDGER CONTROLLER
+        // ========================================================
+        async function loadAccountLedgerPage(userId) {
+            var targetId = userId || currentEditingId;
+            var tbody = document.getElementById('ledgerTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading account ledger...</td></tr>';
+
+            var token = getAdminAuthToken();
+            var fromDate = document.getElementById('ledgerFromDateInput') ? document.getElementById('ledgerFromDateInput').value : '';
+            var toDate = document.getElementById('ledgerToDateInput') ? document.getElementById('ledgerToDateInput').value : '';
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users?id=' + encodeURIComponent(targetId)), {
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                });
+
+                if (res.ok && res.data && res.data.status === 'success' && res.data.user) {
+                    var u = res.data.user;
+                    var titleEl = document.getElementById('ledgerCardHeaderTitle');
+                    if (titleEl) titleEl.innerHTML = '<strong>' + u.username + ' - Account Ledger</strong>';
+
+                    var txs = Array.isArray(u.transactions) ? u.transactions : [];
+
+                    if (fromDate) {
+                        var fromTime = new Date(fromDate).setHours(0, 0, 0, 0);
+                        txs = txs.filter(function(t) { return t.createdAt && new Date(t.createdAt).getTime() >= fromTime; });
+                    }
+                    if (toDate) {
+                        var toTime = new Date(toDate).setHours(23, 59, 59, 999);
+                        txs = txs.filter(function(t) { return t.createdAt && new Date(t.createdAt).getTime() <= toTime; });
+                    }
+
+                    if (txs.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No transactions found for ' + u.username + (fromDate || toDate ? ' in the selected date range' : '') + '.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = txs.map(function(t) {
+                        var dtStr = t.createdAt ? new Date(t.createdAt).toLocaleString('en-IN') : '-';
+                        var isDebit = t.type === 'WITHDRAW';
+                        var isCredit = t.type === 'DEPOSIT';
+                        var debitStr = isDebit ? ('Rs. ' + (parseFloat(t.amount) || 0).toLocaleString('en-IN')) : '-';
+                        var creditStr = isCredit ? ('Rs. ' + (parseFloat(t.amount) || 0).toLocaleString('en-IN')) : (t.type === 'CREDIT_LIMIT' ? 'Credit: ' + t.amount : '-');
+                        var balStr = t.balanceAfter !== undefined ? ('Rs. ' + Number(t.balanceAfter).toLocaleString('en-IN')) : (u.balance || '-');
+                        return '<tr>' +
+                            '<td>' + dtStr + '</td>' +
+                            '<td>' + (t.description || t.type) + '</td>' +
+                            '<td class="' + (isDebit ? 'text-danger font-weight-bold' : '') + '">' + debitStr + '</td>' +
+                            '<td class="' + (isCredit ? 'text-success font-weight-bold' : '') + '">' + creditStr + '</td>' +
+                            '<td class="font-weight-bold">' + balStr + '</td>' +
+                        '</tr>';
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Account not found or ledger unavailable.</td></tr>';
+                }
+            } catch (err) {
+                console.error('Error loading account ledger:', err);
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load ledger: ' + err.message + '</td></tr>';
+            }
+        }
+
+        // ========================================================
+        // CURRENT POSITIONS & LIABILITIES CONTROLLER
+        // ========================================================
+        function renderCurrentPositionTable() {
+            var tbody = document.getElementById('positionTableBody');
+            if (!tbody) return;
+
+            var openItems = [];
+            var allBets = [].concat(openBets || [], matchedBets || []);
+            allBets.forEach(function(b) {
+                openItems.push({
+                    event: b.event || b.runner || 'Cricket Event',
+                    market: 'Match Odds',
+                    selection: b.runner || 'Selection',
+                    position: b.size || b.stake || 0,
+                    status: b.master || 'Active'
+                });
+            });
+
+            if (openItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No open active liabilities found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = openItems.map(function(item) {
+                return '<tr>' +
+                    '<td><strong>' + item.event + '</strong></td>' +
+                    '<td>' + item.market + '</td>' +
+                    '<td>' + item.selection + '</td>' +
+                    '<td class="text-danger font-weight-bold">Rs. ' + (parseFloat(item.position) || 0).toLocaleString('en-IN') + '</td>' +
+                    '<td><span class="badge badge-warning">' + item.status + '</span></td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        // ========================================================
+        // SYSTEMATIC REPORTS SUITE CONTROLLER
+        // ========================================================
+        var allAdminBetsCache = [];
+        var hideZeroAccounts = false;
+
         function toggleZeroAccounts() {
-            showToast('Toggled zero balance accounts view.');
+            hideZeroAccounts = !hideZeroAccounts;
+            renderReportsTables();
+            showToast(hideZeroAccounts ? 'Zero balance accounts hidden.' : 'Showing all accounts.');
+        }
+
+        async function fetchAllAdminBetsForReports() {
+            var token = getAdminAuthToken();
+            if (!token) return [];
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/bets'), {
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                });
+                if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.bets)) {
+                    allAdminBetsCache = res.data.bets;
+                    return allAdminBetsCache;
+                }
+            } catch (e) {
+                console.warn('Error fetching bets for reports:', e);
+            }
+            return allAdminBetsCache;
+        }
+
+        async function renderReportsTables(fromDate, toDate) {
+            var bets = await fetchAllAdminBetsForReports();
+
+            // Date filtering
+            if (fromDate) {
+                var fromTime = new Date(fromDate).setHours(0, 0, 0, 0);
+                bets = bets.filter(function(b) {
+                    var t = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                    return t >= fromTime;
+                });
+            }
+            if (toDate) {
+                var toTime = new Date(toDate).setHours(23, 59, 59, 999);
+                bets = bets.filter(function(b) {
+                    var t = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                    return t <= toTime;
+                });
+            }
+
+            // 1. Book Detail
+            var bdTbody = document.getElementById('repTbodyBookDetail');
+            if (bdTbody) {
+                if (bets.length === 0) {
+                    bdTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No book details found for the selected date range.</td></tr>';
+                } else {
+                    var groups = {};
+                    bets.forEach(function(b) {
+                        var key = (b.event || b.match_name || 'Match') + '::' + (b.market_id || 'Match Odds');
+                        if (!groups[key]) {
+                            groups[key] = {
+                                sport: 'Cricket',
+                                match: b.event || b.match_name || 'Match',
+                                market: b.market_id || 'Match Odds',
+                                amount: 0,
+                                net: 0
+                            };
+                        }
+                        var stk = parseFloat(b.stake) || 0;
+                        groups[key].amount += stk;
+                        groups[key].net += stk * ((b.odds || 2.0) - 1);
+                    });
+                    bdTbody.innerHTML = Object.values(groups).map(function(g) {
+                        return '<tr>' +
+                            '<td>' + g.sport + '</td>' +
+                            '<td><strong>' + g.match + '</strong></td>' +
+                            '<td>' + g.market + '</td>' +
+                            '<td class="font-weight-bold">Rs. ' + g.amount.toLocaleString('en-IN') + '</td>' +
+                            '<td class="font-weight-bold ' + (g.net >= 0 ? 'text-success' : 'text-danger') + '">Rs. ' + g.net.toLocaleString('en-IN') + '</td>' +
+                        '</tr>';
+                    }).join('');
+                }
+            }
+
+            // 2. Book Detail 2
+            var bd2Tbody = document.getElementById('repTbodyBookDetail2');
+            if (bd2Tbody) {
+                if (bets.length === 0) {
+                    bd2Tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No bet details found for the selected date range.</td></tr>';
+                } else {
+                    bd2Tbody.innerHTML = bets.map(function(b) {
+                        var stk = parseFloat(b.stake) || 0;
+                        var comm = (stk * 0.02).toFixed(2);
+                        var pl = ((b.odds || 2.0) - 1) * stk;
+                        return '<tr>' +
+                            '<td>Cricket</td>' +
+                            '<td>' + (b.event || b.match_name || 'Match') + '</td>' +
+                            '<td>' + (b.username || 'User') + '</td>' +
+                            '<td>Rs. ' + comm + '</td>' +
+                            '<td class="font-weight-bold ' + (pl >= 0 ? 'text-success' : 'text-danger') + '">Rs. ' + pl.toFixed(2) + '</td>' +
+                        '</tr>';
+                    }).join('');
+                }
+            }
+
+            // 3. Daily PL
+            var dplTbody = document.getElementById('repTbodyDailyPL');
+            if (dplTbody) {
+                if (bets.length === 0) {
+                    dplTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No daily profit/loss records found.</td></tr>';
+                } else {
+                    var byDay = {};
+                    bets.forEach(function(b) {
+                        var d = b.createdAt ? b.createdAt.split('T')[0] : new Date().toISOString().split('T')[0];
+                        if (!byDay[d]) byDay[d] = { date: d, count: 0, profit: 0, loss: 0 };
+                        byDay[d].count++;
+                        var stk = parseFloat(b.stake) || 0;
+                        var net = ((b.odds || 2.0) - 1) * stk;
+                        if (net >= 0) byDay[d].profit += net;
+                        else byDay[d].loss += Math.abs(net);
+                    });
+                    dplTbody.innerHTML = Object.values(byDay).map(function(d) {
+                        var netTot = d.profit - d.loss;
+                        return '<tr>' +
+                            '<td>' + d.date + '</td>' +
+                            '<td>' + d.count + '</td>' +
+                            '<td class="text-success font-weight-bold">Rs. ' + d.profit.toLocaleString('en-IN') + '</td>' +
+                            '<td class="text-danger font-weight-bold">Rs. ' + d.loss.toLocaleString('en-IN') + '</td>' +
+                            '<td class="font-weight-bold ' + (netTot >= 0 ? 'text-success' : 'text-danger') + '">Rs. ' + netTot.toLocaleString('en-IN') + '</td>' +
+                        '</tr>';
+                    }).join('');
+                }
+            }
+
+            // 4. Daily Breakdown
+            var dailyTbody = document.getElementById('repTbodyDaily');
+            if (dailyTbody) {
+                if (bets.length === 0) {
+                    dailyTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No daily breakdown data available.</td></tr>';
+                } else {
+                    var dMap = {};
+                    bets.forEach(function(b) {
+                        var d = b.createdAt ? b.createdAt.split('T')[0] : new Date().toISOString().split('T')[0];
+                        if (!dMap[d]) dMap[d] = { date: d, win: 0, loss: 0, comm: 0, settled: 0 };
+                        var stk = parseFloat(b.stake) || 0;
+                        dMap[d].win += stk * (b.odds || 1.95);
+                        dMap[d].loss += stk;
+                        dMap[d].comm += stk * 0.02;
+                        dMap[d].settled += stk;
+                    });
+                    dailyTbody.innerHTML = Object.values(dMap).map(function(d) {
+                        return '<tr>' +
+                            '<td>' + d.date + '</td>' +
+                            '<td class="text-success">Rs. ' + d.win.toLocaleString('en-IN') + '</td>' +
+                            '<td class="text-danger">Rs. ' + d.loss.toLocaleString('en-IN') + '</td>' +
+                            '<td>Rs. ' + d.comm.toFixed(2) + '</td>' +
+                            '<td class="font-weight-bold">Rs. ' + d.settled.toLocaleString('en-IN') + '</td>' +
+                        '</tr>';
+                    }).join('');
+                }
+            }
+
+            // 5. Final Sheet
+            var fsTbody = document.getElementById('repTbodyFinalSheet');
+            if (fsTbody) {
+                var listToShow = clientsList;
+                if (hideZeroAccounts) {
+                    listToShow = listToShow.filter(function(c) {
+                        var bNum = parseFloat(String(c.balance || '0').replace(/[^0-9.-]/g, '')) || 0;
+                        return bNum !== 0;
+                    });
+                }
+                if (listToShow.length === 0) {
+                    fsTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No accounts to display.</td></tr>';
+                } else {
+                    fsTbody.innerHTML = listToShow.map(function(c) {
+                        var bNum = parseFloat(String(c.balance || '0').replace(/[^0-9.-]/g, '')) || 0;
+                        return '<tr>' +
+                            '<td><strong>' + c.username + '</strong></td>' +
+                            '<td>' + c.type + '</td>' +
+                            '<td>Rs. ' + (c.credit || '0') + '</td>' +
+                            '<td class="' + (c.pl && c.pl.includes('-') ? 'text-danger' : 'text-success') + '">' + (c.pl || '0.00 Rs.') + '</td>' +
+                            '<td class="font-weight-bold">Rs. ' + bNum.toLocaleString('en-IN') + '</td>' +
+                        '</tr>';
+                    }).join('');
+                }
+            }
+
+            // 6. Commission Report
+            var commTbody = document.getElementById('repTbodyCommission');
+            if (commTbody) {
+                if (clientsList.length === 0) {
+                    commTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No commission records available.</td></tr>';
+                } else {
+                    commTbody.innerHTML = clientsList.map(function(c) {
+                        var userBets = bets.filter(function(b) { return b.userId === c.id || b.username === c.username; });
+                        var turnover = userBets.reduce(function(sum, b) { return sum + (parseFloat(b.stake) || 0); }, 0);
+                        var grossComm = turnover * 0.02;
+                        var sharePct = parseFloat(String(c.share || '0').replace('%', '')) || 0;
+                        var downlineShare = grossComm * (sharePct / 100);
+                        return '<tr>' +
+                            '<td><strong>' + c.username + '</strong></td>' +
+                            '<td>Rs. ' + turnover.toLocaleString('en-IN') + '</td>' +
+                            '<td>2.00%</td>' +
+                            '<td class="font-weight-bold">Rs. ' + grossComm.toFixed(2) + '</td>' +
+                            '<td class="text-primary font-weight-bold">Rs. ' + downlineShare.toFixed(2) + ' (' + sharePct + '%)</td>' +
+                        '</tr>';
+                    }).join('');
+                }
+            }
+        }
+
+        function filterReportsByDate(event) {
+            if (event) event.preventDefault();
+            var from = document.getElementById('repFilterFromDate') ? document.getElementById('repFilterFromDate').value : '';
+            var to = document.getElementById('repFilterToDate') ? document.getElementById('repFilterToDate').value : '';
+            renderReportsTables(from, to);
+            showToast('Reports filtered for date range');
+        }
+
+        function resetReportDateFilter() {
+            if (document.getElementById('repFilterFromDate')) document.getElementById('repFilterFromDate').value = '';
+            if (document.getElementById('repFilterToDate')) document.getElementById('repFilterToDate').value = '';
+            renderReportsTables();
+            showToast('Date filters reset');
+        }
+
+        // ========================================================
+        // PROFILE & SETTINGS HANDLERS
+        // ========================================================
+        async function handleMasterPasswordChange(event) {
+            if (event) event.preventDefault();
+            var input = document.getElementById('masterNewPassInput');
+            var btn = document.getElementById('btnUpdateMasterPass');
+            var notice = document.getElementById('masterPassNotice');
+
+            if (!input) return;
+            var newPass = input.value.trim();
+
+            if (!newPass || newPass.length < 6) {
+                if (notice) {
+                    notice.className = 'alert alert-danger';
+                    notice.innerText = 'New password must be at least 6 characters.';
+                    notice.style.display = 'block';
+                }
+                return;
+            }
+
+            var token = getAdminAuthToken();
+            var adminId = (currentAdminUser && currentAdminUser.id) || '8764246';
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = 'Updating...';
+            }
+            if (notice) notice.style.display = 'none';
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        action: 'reset_password',
+                        userId: adminId,
+                        newPassword: newPass
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    if (notice) {
+                        notice.className = 'alert alert-success';
+                        notice.innerText = 'Master password updated successfully!';
+                        notice.style.display = 'block';
+                    }
+                    input.value = '';
+                    showToast('Master password updated successfully!');
+                } else {
+                    var msg = (res.data && res.data.message) || 'Failed to update master password.';
+                    if (notice) {
+                        notice.className = 'alert alert-danger';
+                        notice.innerText = msg;
+                        notice.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                if (notice) {
+                    notice.className = 'alert alert-danger';
+                    notice.innerText = 'Network error: ' + err.message;
+                    notice.style.display = 'block';
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = 'Update';
+                }
+            }
+        }
+
+        function saveAdminStakes(event) {
+            if (event) event.preventDefault();
+            var stakesConfig = {
+                val1: document.getElementById('stakeVal1') ? document.getElementById('stakeVal1').value : '2000',
+                val2: document.getElementById('stakeVal2') ? document.getElementById('stakeVal2').value : '5000',
+                val3: document.getElementById('stakeVal3') ? document.getElementById('stakeVal3').value : '10000',
+                val4: document.getElementById('stakeVal4') ? document.getElementById('stakeVal4').value : '25000',
+                plus1: document.getElementById('stakePlus1') ? document.getElementById('stakePlus1').value : '1000',
+                plus2: document.getElementById('stakePlus2') ? document.getElementById('stakePlus2').value : '5000',
+                plus3: document.getElementById('stakePlus3') ? document.getElementById('stakePlus3').value : '10000',
+                plus4: document.getElementById('stakePlus4') ? document.getElementById('stakePlus4').value : '25000'
+            };
+            try {
+                localStorage.setItem('admin_stakes_config', JSON.stringify(stakesConfig));
+            } catch (e) {}
+            showToast('Stakes updated successfully!');
+        }
+
+        function loadSavedAdminStakes() {
+            try {
+                var stored = localStorage.getItem('admin_stakes_config');
+                if (stored) {
+                    var parsed = JSON.parse(stored);
+                    if (document.getElementById('stakeVal1') && parsed.val1) document.getElementById('stakeVal1').value = parsed.val1;
+                    if (document.getElementById('stakeVal2') && parsed.val2) document.getElementById('stakeVal2').value = parsed.val2;
+                    if (document.getElementById('stakeVal3') && parsed.val3) document.getElementById('stakeVal3').value = parsed.val3;
+                    if (document.getElementById('stakeVal4') && parsed.val4) document.getElementById('stakeVal4').value = parsed.val4;
+                    if (document.getElementById('stakePlus1') && parsed.plus1) document.getElementById('stakePlus1').value = parsed.plus1;
+                    if (document.getElementById('stakePlus2') && parsed.plus2) document.getElementById('stakePlus2').value = parsed.plus2;
+                    if (document.getElementById('stakePlus3') && parsed.plus3) document.getElementById('stakePlus3').value = parsed.plus3;
+                    if (document.getElementById('stakePlus4') && parsed.plus4) document.getElementById('stakePlus4').value = parsed.plus4;
+                }
+            } catch (e) {}
+        }
+
+        function saveBetLockSettings() {
+            var checks = {};
+            document.querySelectorAll('#viewBetLock input[type="checkbox"]').forEach(function(cb, i) {
+                checks[i] = cb.checked;
+            });
+            try {
+                localStorage.setItem('admin_betlock_config', JSON.stringify(checks));
+            } catch (e) {}
+            showToast('Bet Lock settings updated successfully!');
+        }
+
+        function saveMaxBetSizes(event) {
+            if (event) event.preventDefault();
+            var sizes = {};
+            document.querySelectorAll('#editsection2 input').forEach(function(inp, i) {
+                sizes[i] = inp.value;
+            });
+            try {
+                localStorage.setItem('admin_max_bets_' + currentEditingId, JSON.stringify(sizes));
+            } catch (e) {}
+            showToast('Max bet sizes updated successfully!');
         }
 
         function showToast(msg) {

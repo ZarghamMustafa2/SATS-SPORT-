@@ -42,6 +42,7 @@ module.exports = async function handler(req, res) {
     const body = await parseJsonBody(req);
     const { username, password, role, ...extra } = body;
 
+    await authDb.hydrateUsersAsync();
     const newAdmin = authDb.createAdminUser({
       requesterUser: requester,
       username,
@@ -49,6 +50,7 @@ module.exports = async function handler(req, res) {
       role,
       extra
     });
+    await authDb.saveUsersToDiskAsync();
 
     return sendJson(res, 201, {
       status: 'success',
