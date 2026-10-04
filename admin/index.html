@@ -2953,7 +2953,7 @@ Boland v Knights                        </a>
         };
 
         function getAdminAuthToken() {
-            var token = localStorage.getItem('auth_token');
+            var token = localStorage.getItem('admin_auth_token');
             if (!token && BYPASS_ADMIN_AUTH) {
                 return 'bypass_admin_token';
             }
@@ -2964,12 +2964,8 @@ Boland v Knights                        </a>
         var currentEditingUser = 'Jimmy3221';
         var currentEditingId = '8730421';
 
-        // Preloaded Clients List (fallback/default)
-        var clientsList = [
-            { id: '8730410', username: 'Ramzan1295', type: 'Bettor', credit: '0', balance: '0', pl: '0', share: '85', exp: '0', avail: '0', active: true, domain: 'betproexch.com' },
-            { id: '8730421', username: 'Jimmy3221', type: 'Bettor', credit: '0', balance: '0 Rs.', pl: '0 Rs.', share: '0%', exp: '0 Rs.', avail: '0 Rs.', active: true, domain: 'betproexch.com' },
-            { id: '8758678', username: 'Rana3471', type: 'Bettor', credit: '0', balance: '0 Rs.', pl: '0 Rs.', share: '0%', exp: '0 Rs.', avail: '0 Rs.', active: true, domain: 'betproexch.com' }
-        ];
+        // Clients List starts empty - populated strictly from real backend database
+        var clientsList = [];
 
         // Production vs Local API Base URL Resolver
         function getApiUrl(endpoint) {
@@ -3142,47 +3138,67 @@ Boland v Knights                        </a>
             }
         }
 
+        function renderClientsTableError(msg) {
+            var tbody = document.getElementById('clientsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:24px; color:#ff4d4f; font-weight:600;"><i class="fa fa-exclamation-triangle" style="margin-right:6px;"></i> ' + msg + '</td></tr>';
+            var countEl = document.getElementById('sumUsersCount');
+            if (countEl) countEl.innerText = '0';
+            var infoEl = document.getElementById('tableLedger_info');
+            if (infoEl) infoEl.innerText = 'Showing 0 entries';
+        }
+
         // Fetch Admin Users Downline from Server
         async function fetchAdminUsers() {
             var token = getAdminAuthToken();
-            if (!token) return;
+            if (!token) {
+                renderClientsTableError('No admin authentication session found.');
+                return;
+            }
 
             try {
+                var headers = { 'X-Admin-Request': 'true' };
+                if (token) {
+                    headers['Authorization'] = 'Bearer ' + token;
+                    headers['X-Admin-Token'] = token;
+                }
                 var result = await safeFetchJson(getApiUrl('/api/admin/users'), {
-                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                    headers: headers
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
-                    if (data.users.length > 0) {
-                        clientsList = data.users.map(function(u) {
-                            var balNum = parseFloat(String(u.balance || '0').replace(/[^0-9.-]/g, ''));
-                            var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
-                            var availNum = parseFloat(String(u.avail || u.balance || '0').replace(/[^0-9.-]/g, ''));
-                            var availStr = (!isNaN(availNum) ? availNum.toFixed(2) : '0.00') + ' Rs.';
-                            var expNum = parseFloat(String(u.exp || u.exposure || '0').replace(/[^0-9.-]/g, ''));
-                            var expStr = (!isNaN(expNum) ? expNum.toFixed(2) : '0.00') + ' Rs.';
-                            var shrStr = (u.share != null ? u.share.toString().replace('%', '') : '0') + '%';
-                            return {
-                                id: u.id,
-                                username: u.username,
-                                type: ROLE_LABELS[u.role] || u.role,
-                                role: u.role,
-                                credit: u.credit != null ? u.credit.toString() : '0',
-                                balance: balStr,
-                                pl: u.pl || '0.00 Rs.',
-                                share: shrStr,
-                                exp: expStr,
-                                avail: availStr,
-                                active: u.status === 'active',
-                                domain: u.domain || 'satsport.co'
-                            };
-                        });
-                    }
+                    clientsList = data.users.map(function(u) {
+                        var balNum = parseFloat(String(u.balance || '0').replace(/[^0-9.-]/g, ''));
+                        var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
+                        var availNum = parseFloat(String(u.avail || u.balance || '0').replace(/[^0-9.-]/g, ''));
+                        var availStr = (!isNaN(availNum) ? availNum.toFixed(2) : '0.00') + ' Rs.';
+                        var expNum = parseFloat(String(u.exp || u.exposure || '0').replace(/[^0-9.-]/g, ''));
+                        var expStr = (!isNaN(expNum) ? expNum.toFixed(2) : '0.00') + ' Rs.';
+                        var shrStr = (u.share != null ? u.share.toString().replace('%', '') : '0') + '%';
+                        return {
+                            id: u.id,
+                            username: u.username,
+                            type: ROLE_LABELS[u.role] || u.role,
+                            role: u.role,
+                            credit: u.credit != null ? u.credit.toString() : '0',
+                            balance: balStr,
+                            pl: u.pl || '0.00 Rs.',
+                            share: shrStr,
+                            exp: expStr,
+                            avail: availStr,
+                            active: u.status === 'active',
+                            domain: u.domain || 'satsport.co'
+                        };
+                    });
                     renderClientsTable();
                     loadAdminBets();
+                } else {
+                    var errMsg = (data && data.message) ? data.message : 'Unable to fetch user records (' + result.status + ')';
+                    renderClientsTableError(errMsg);
                 }
             } catch (err) {
                 console.error('Error fetching admin users:', err);
+                renderClientsTableError('Connection error loading users: ' + err.message);
             }
         }
 
@@ -3195,7 +3211,7 @@ Boland v Knights                        </a>
             // TEMPORARY ADMIN ACCESS: Completely Bypass Login Guard & Direct Access
             if (BYPASS_ADMIN_AUTH) {
                 var userToApply = DEFAULT_BYPASS_ADMIN_USER;
-                var stored = localStorage.getItem('current_user');
+                var stored = localStorage.getItem('admin_current_user');
                 if (stored) {
                     try {
                         var parsed = JSON.parse(stored);
@@ -3211,9 +3227,7 @@ Boland v Knights                        </a>
                 return;
             }
 
-            var token = localStorage.getItem('auth_token');
-            var p = window.location.pathname.toLowerCase();
-
+            var token = localStorage.getItem('admin_auth_token');
             if (!token) {
                 showLoginScreen();
                 return;
@@ -3221,19 +3235,19 @@ Boland v Knights                        </a>
 
             try {
                 var result = await safeFetchJson(getApiUrl('/api/auth/me'), {
-                    headers: { 'Authorization': 'Bearer ' + token }
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Token': token, 'X-Admin-Request': 'true' }
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success' && data.user) {
                     if (data.user.role === 'user') {
-                        // Normal user attempts to open /admin: Stay on /admin, display login screen with message, NEVER redirect to user website
+                        // Normal user attempts to open /admin: Stay on /admin, display login screen with message
                         var errBox = document.getElementById('errorBox');
                         if (errBox) {
                             errBox.innerText = 'Access Denied: You do not have administrator permissions.';
                             errBox.style.display = 'block';
                         }
-                        localStorage.removeItem('auth_token');
-                        localStorage.removeItem('current_user');
+                        localStorage.removeItem('admin_auth_token');
+                        localStorage.removeItem('admin_current_user');
                         showLoginScreen();
                         return;
                     }
@@ -3244,8 +3258,8 @@ Boland v Knights                        </a>
                     await fetchAdminUsers();
                     routeFromUrl();
                 } else {
-                    localStorage.removeItem('auth_token');
-                    localStorage.removeItem('current_user');
+                    localStorage.removeItem('admin_auth_token');
+                    localStorage.removeItem('admin_current_user');
                     showLoginScreen();
                 }
             } catch (err) {
@@ -3306,14 +3320,13 @@ Boland v Knights                        </a>
                         // User role attempted to login through admin portal: stay on /admin, display error
                         err.innerText = 'Access Denied: Normal user accounts cannot log in to the Admin Portal.';
                         err.style.display = 'block';
-                        localStorage.removeItem('auth_token');
-                        localStorage.removeItem('current_user');
                         return;
                     }
 
                     err.style.display = 'none';
-                    localStorage.setItem('auth_token', data.token);
-                    localStorage.setItem('current_user', JSON.stringify(data.user));
+                    var adminTok = data.adminToken || data.token;
+                    localStorage.setItem('admin_auth_token', adminTok);
+                    localStorage.setItem('admin_current_user', JSON.stringify(data.user));
 
                     // Admin roles (Company, Super Admin, Super Master)
                     applyUserRoleUI(data.user);
@@ -3333,17 +3346,21 @@ Boland v Knights                        </a>
 
         async function executeAdminLogout(e) {
             if (e) e.preventDefault();
-            var token = localStorage.getItem('auth_token');
+            var token = localStorage.getItem('admin_auth_token');
             try {
                 if (token && token !== 'bypass_admin_token') {
                     await safeFetchJson(getApiUrl('/api/auth/logout'), {
                         method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + token }
+                        headers: { 
+                            'Authorization': 'Bearer ' + token,
+                            'X-Admin-Token': token,
+                            'X-Admin-Request': 'true'
+                        }
                     });
                 }
             } catch (err) {}
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('current_user');
+            localStorage.removeItem('admin_auth_token');
+            localStorage.removeItem('admin_current_user');
             closeUserDropdown();
             if (BYPASS_ADMIN_AUTH) {
                 showToast('Temporary Admin Bypass is active. Access remains open.');
@@ -3489,7 +3506,7 @@ Boland v Knights                        </a>
                 document.getElementById('sideNavDashboard')?.classList.add('active');
                 document.getElementById('topNavDashboard')?.classList.add('active');
                 document.title = 'Dashboard | BPEXCH';
-            } else if (lower.startsWith('/accounts/chart')) {
+            } else if (lower.startsWith('/accounts/chart') || lower === '/users' || lower === '/users/' || lower === '/accounts' || lower === '/accounts/') {
                 document.getElementById('viewUsers').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.getElementById('topNavUsers')?.classList.add('active');

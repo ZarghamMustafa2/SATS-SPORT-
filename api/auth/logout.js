@@ -13,16 +13,30 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  const isAdminLogout = (
+    req.headers['x-admin-request'] === 'true' ||
+    Boolean(req.headers['x-admin-token']) ||
+    (req.url && (req.url.includes('admin') || req.url.includes('scope=admin')))
+  );
+
   let token = null;
-  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.slice(7).trim();
-  }
-  if (!token) {
-    token = getCookie(req, 'auth_token');
+  const explicitAdmin = req.headers['x-admin-token'] || req.headers['X-Admin-Token'];
+  if (explicitAdmin) {
+    token = explicitAdmin.trim();
   }
 
-  if (token) {
+  if (!token) {
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7).trim();
+    }
+  }
+
+  if (!token) {
+    token = isAdminLogout ? (getCookie(req, 'admin_auth_token') || getCookie(req, 'auth_token')) : getCookie(req, 'auth_token');
+  }
+
+  if (token && token !== 'bypass_admin_token') {
     if (authDb.destroySessionAsync) {
       await authDb.destroySessionAsync(token);
     } else {
@@ -30,7 +44,8 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  const clearCookie = 'auth_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  const cookieName = isAdminLogout ? 'admin_auth_token' : 'auth_token';
+  const clearCookie = `${cookieName}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`;
   return sendJson(res, 200, {
     status: 'success',
     message: 'Logged out successfully'

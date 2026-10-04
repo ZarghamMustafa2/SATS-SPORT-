@@ -34,12 +34,15 @@ module.exports = async function handler(req, res) {
     const session = authDb.createSession(result.user);
     const redirectTo = authDb.getRedirectForRole(result.user.role);
 
-    // Set secure HTTP-only cookie
-    const cookieVal = `auth_token=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`;
+    // Set secure HTTP-only cookie based on role
+    const isSuperRole = (result.user.role === 'super_admin' || result.user.role === 'super_master' || result.user.role === 'company');
+    const cookieName = isSuperRole ? 'admin_auth_token' : 'auth_token';
+    const cookieVal = `${cookieName}=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`;
 
     return sendJson(res, 200, {
       status: 'success',
       token: session.token,
+      adminToken: isSuperRole ? session.token : undefined,
       user: authDb.sanitizeUser(result.user),
       redirectTo
     }, {

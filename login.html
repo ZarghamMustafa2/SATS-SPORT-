@@ -518,8 +518,14 @@
         const data = res.data;
 
         if (res.ok && data.status === 'success') {
-          if (data.token) localStorage.setItem('auth_token', data.token);
-          if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
+          const isAdmin = data.user && (data.user.role === 'company' || data.user.role === 'super_admin' || data.user.role === 'super_master');
+          if (isAdmin) {
+            if (data.adminToken || data.token) localStorage.setItem('admin_auth_token', data.adminToken || data.token);
+            if (data.user) localStorage.setItem('admin_current_user', JSON.stringify(data.user));
+          } else {
+            if (data.token) localStorage.setItem('auth_token', data.token);
+            if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
+          }
 
           showAlert('Login successful! Redirecting...', true);
 
@@ -528,7 +534,7 @@
           const redirectTarget = urlParams.get('redirect') || urlParams.get('returnUrl');
 
           setTimeout(() => {
-            if (data.user && (data.user.role === 'company' || data.user.role === 'super_admin' || data.user.role === 'super_master')) {
+            if (isAdmin) {
               window.location.href = data.redirectTo || '/admin';
             } else if (redirectTarget && redirectTarget.startsWith('/')) {
               window.location.href = redirectTarget;
