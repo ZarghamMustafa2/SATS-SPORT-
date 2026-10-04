@@ -28,12 +28,46 @@ module.exports = async function handler(req, res) {
   }
 
   const urlObj = new URL(req.url, 'http://localhost');
+  const pathname = urlObj.pathname.toLowerCase();
   const searchParams = urlObj.searchParams;
+
+  // Detect route /api/admin/users/:id/dummy-balance or /api/admin/users/dummy-balance
+  const isDummyBalanceRoute = pathname.includes('/dummy-balance');
+  let routeUserId = null;
+  if (isDummyBalanceRoute) {
+    const parts = pathname.split('/').filter(Boolean);
+    const dbIndex = parts.indexOf('dummy-balance');
+    if (dbIndex > 0 && parts[dbIndex - 1] !== 'users') {
+      routeUserId = parts[dbIndex - 1];
+    }
+  }
 
   // GET: Fetch downline users or specific user details with search support
   if (req.method === 'GET') {
     try {
       await authDb.hydrateUsersAsync();
+
+      if (isDummyBalanceRoute) {
+        const targetId = routeUserId || searchParams.get('id') || searchParams.get('userId');
+        if (!targetId) {
+          return sendJson(res, 400, { status: 'error', message: 'Target user ID is required.' });
+        }
+        const user = authDb.getUserById(targetId);
+        if (!user) {
+          return sendJson(res, 404, { status: 'error', message: 'User not found' });
+        }
+        const dummyBal = typeof user.dummyBalance === 'number'
+          ? user.dummyBalance
+          : (parseFloat(String(user.dummyBalance || '0').replace(/[^0-9.-]/g, '')) || 0);
+
+        return sendJson(res, 200, {
+          status: 'success',
+          userId: user.id,
+          username: user.username,
+          dummyBalance: dummyBal,
+          transactions: user.dummyBalanceTransactions || []
+        });
+      }
 
       const singleId = searchParams.get('id') || searchParams.get('userId');
       if (singleId) {
@@ -41,9 +75,15 @@ module.exports = async function handler(req, res) {
         if (!user) {
           return sendJson(res, 404, { status: 'error', message: 'User not found' });
         }
+        const dummyBal = typeof user.dummyBalance === 'number'
+          ? user.dummyBalance
+          : (parseFloat(String(user.dummyBalance || '0').replace(/[^0-9.-]/g, '')) || 0);
+
         return sendJson(res, 200, {
           status: 'success',
           user: authDb.sanitizeUser(user),
+          dummyBalance: dummyBal,
+          dummyBalanceTransactions: user.dummyBalanceTransactions || [],
           bets: authDb.getUserBets(singleId)
         });
       }
@@ -78,7 +118,7 @@ module.exports = async function handler(req, res) {
       await authDb.hydrateUsersAsync();
       const body = await parseJsonBody(req);
       const { action, userId, targetUserId, newPassword, password, amount, description } = body;
-      const targetId = userId || targetUserId;
+      const targetId = routeUserId || userId || targetUserId || body.id;
 
       if (!targetId) {
         return sendJson(res, 400, { status: 'error', message: 'targetUserId is required' });
@@ -160,6 +200,44 @@ module.exports = async function handler(req, res) {
           status: 'success',
           message: actionLabels[action] || 'Finance updated successfully.',
           user: updatedUser
+        });
+      }
+
+      // 5. Dummy Balance Operations (Add / Deduct Demo/Test Balance)
+      if (
+        isDummyBalanceRoute ||
+        action === 'dummy_balance' ||
+        action === 'dummy-balance' ||
+        action === 'dummy_credit' ||
+        action === 'dummy_debit' ||
+        action === 'test_balance'
+      ) {
+        if (amount === undefined || amount === null || amount === '') {
+          return sendJson(res, 400, { status: 'error', message: 'Amount is required.' });
+        }
+
+        let opAction = 'credit';
+        if (action === 'dummy_credit') opAction = 'credit';
+        else if (action === 'dummy_debit') opAction = 'debit';
+        else if (body.type === 'debit' || body.action === 'debit' || body.type === 'deduct' || body.action === 'deduct') opAction = 'debit';
+        else opAction = body.action || body.type || 'credit';
+
+        const result = authDb.updateDummyBalance({
+          requesterUser: session,
+          targetUserId: targetId,
+          action: opAction,
+          amount,
+          note: body.note || body.reason || body.description
+        });
+        await authDb.saveUsersToDiskAsync();
+
+        return sendJson(res, 200, {
+          status: 'success',
+          message: `Dummy balance ${opAction === 'credit' ? 'credited' : 'deducted'} successfully. Current Dummy Balance: ${result.dummyBalance}`,
+          dummyBalance: result.dummyBalance,
+          transaction: result.transaction,
+          transactions: result.transactions,
+          user: result.user
         });
       }
 

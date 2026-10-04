@@ -1933,6 +1933,7 @@ Boland v Knights                        </a>
                                 <div class="card">
                                     <div class="card-body">
                                         <a id="EditBtn" class="btn btn-primary active" onclick="showhide()">Edit User</a>
+                                        <a id="DummyBalanceBtn" class="btn btn-warning text-dark font-weight-bold" onclick="showEditSubView('dummy_balance')"><i class="fas fa-coins mr-1"></i> Dummy Balance</a>
                                         <a id="LedgerBtn" class="btn btn-primary" onclick="showEditSubView('ledger')">Ledger</a>
                                         <a id="BetsBtn" class="btn btn-primary" onclick="showEditSubView('bets')">Bets</a>
                                         <a id="ProfitlossBtn" class="btn btn-primary" onclick="showEditSubView('profitloss')">Profit Loss</a>
@@ -1960,6 +1961,15 @@ Boland v Knights                        </a>
                                             Edit Client - <strong id="editClientHeaderUser">Jimmy3221</strong>
                                         </div>
                                         <div class="card-body">
+                                            <div class="form-group row" style="background:#fff8e1; border-left:4px solid #ffc107; padding:8px 0; margin-bottom:15px; border-radius:4px;">
+                                                <label class="col-4 col-md-3 col-form-label font-weight-bold text-dark">Dummy Balance</label>
+                                                <div class="col-8 col-md-6 d-flex align-items-center">
+                                                    <span id="editUserDummyBalField" style="font-size:16px; font-weight:800; color:#b78103; margin-right:12px;">0.00</span>
+                                                    <button type="button" class="btn btn-sm btn-warning font-weight-bold" onclick="showEditSubView('dummy_balance')">
+                                                        <i class="fas fa-coins mr-1"></i> Manage Dummy Balance
+                                                    </button>
+                                                </div>
+                                            </div>
                                             <div class="form-group row">
                                                 <label class="col-4 col-md-3 col-form-label">ID</label>
                                                 <div class="col-8 col-md-6">
@@ -3201,6 +3211,72 @@ Boland v Knights                        </a>
                         </div>
                     </div>
 
+                    <!-- Dummy Balance Management Modal -->
+                    <div id="modalAdminDummyBalance" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+                        <div style="background:#fff; border-radius:8px; width:100%; max-width:650px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 10px 25px rgba(0,0,0,0.3); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#fff8e1; border-bottom:1px solid #ffe082; display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:16px; color:#b78103;"><i class="fas fa-coins mr-1"></i> Dummy Balance Management - <span id="modalDummyBalUserTitle">User</span></strong>
+                                <button type="button" class="close" onclick="closeAdminDummyBalanceModal()" style="font-size:24px; line-height:1; border:none; background:none; cursor:pointer;">&times;</button>
+                            </div>
+                            <div style="padding:20px; overflow-y:auto;">
+                                <div class="alert alert-warning mb-3 py-2 px-3" style="font-size:12px; background:#fff8e1; border-left:4px solid #ffb300; color:#856404;">
+                                    <strong>⚠️ DEMO / TEST BALANCE ONLY:</strong> This balance is for demonstration/testing purposes only. It does <strong>NOT</strong> represent real money, is <strong>NOT</strong> withdrawable, and cannot be transferred.
+                                </div>
+                                <div id="modalDummyBalAlert" style="display:none;" class="alert"></div>
+                                <div class="row mb-3">
+                                    <div class="col-md-5">
+                                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:15px; text-align:center;">
+                                            <div style="font-size:11px; text-transform:uppercase; color:#64748b; font-weight:700;">Current Dummy Balance</div>
+                                            <div id="modalDummyBalCurrentVal" style="font-size:26px; font-weight:800; color:#b78103; margin:6px 0;">0.00</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="form-group mb-2">
+                                            <label class="small font-weight-bold mb-1">ACTION</label>
+                                            <select id="modalDummyBalAction" class="form-control form-control-sm">
+                                                <option value="credit">Add Dummy Balance (Credit)</option>
+                                                <option value="debit">Deduct Dummy Balance (Debit)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label class="small font-weight-bold mb-1">AMOUNT</label>
+                                            <input type="number" id="modalDummyBalAmt" class="form-control form-control-sm" placeholder="e.g. 1000" min="1" step="any">
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label class="small font-weight-bold mb-1">NOTE / REASON</label>
+                                            <input type="text" id="modalDummyBalNote" class="form-control form-control-sm" placeholder="e.g. Test credit">
+                                        </div>
+                                        <button type="button" class="btn btn-warning btn-sm btn-block font-weight-bold" onclick="executeModalDummyBalanceSubmit()">
+                                            <i class="fas fa-check mr-1"></i> Confirm Action
+                                        </button>
+                                    </div>
+                                </div>
+                                <h6 class="font-weight-bold mt-3 mb-2" style="font-size:13px;"><i class="fas fa-history mr-1"></i> Transaction History</h6>
+                                <div class="table-responsive" style="max-height:220px; overflow-y:auto; border:1px solid #e2e8f0;">
+                                    <table class="table table-bordered table-sm table-striped mb-0" style="font-size:12px;">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Type</th>
+                                                <th>Amount</th>
+                                                <th>Prev</th>
+                                                <th>New</th>
+                                                <th>Admin</th>
+                                                <th>Note</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="modalDummyBalHistoryTbody">
+                                            <tr><td colspan="7" class="text-center text-muted py-2">Loading...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div style="padding:10px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; text-align:right;">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminDummyBalanceModal()">Close</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Reset User Password Modal -->
                     <div id="modalResetPassword" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding:20px;">
                         <div style="background:#fff; border-radius:8px; width:100%; max-width:480px; box-shadow:0 10px 25px rgba(0,0,0,0.3); overflow:hidden;">
@@ -3513,6 +3589,8 @@ Boland v Knights                        </a>
                             phone: u.phone || '',
                             reference: u.reference || '',
                             notes: u.notes || '',
+                            dummyBalance: typeof u.dummyBalance === 'number' ? u.dummyBalance : (parseFloat(String(u.dummyBalance || '0').replace(/[^0-9.-]/g, '')) || 0),
+                            dummyBalanceTransactions: Array.isArray(u.dummyBalanceTransactions) ? u.dummyBalanceTransactions : [],
                             canBet: u.canBet !== false,
                             canSettlePL: u.canSettlePL !== false
                         };
@@ -4004,6 +4082,9 @@ Boland v Knights                        </a>
                     '<td class="exp-cell">' + client.exp + '</td>' +
                     '<td class="avail-cell">' + client.avail + '</td>' +
                     '<td align="right" style="padding-right:24px;">' +
+                        '<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); openAdminDummyBalanceModal(\'' + client.id + '\', \'' + client.username + '\')" title="Dummy Balance (Demo/Test)">' +
+                            '<i class="fas fa-coins"></i>' +
+                        '</button> ' +
                         '<a class="btn btn-warning btn-sm" href="/Accounts/Cash?id=' + client.id + '" onclick="popup_hawala(\'/Accounts/Cash\', \'' + client.id + '\', \'' + client.username + '\', event)" title="Hawala Cash">' +
                             '<strong>C</strong>' +
                         '</a> ' +
@@ -4030,6 +4111,7 @@ Boland v Knights                        </a>
                     '<td colspan="3" class="child-details-cell">' +
                         '<ul class="dtr-details">' +
                             '<li><span class="dtr-title">Balance</span> <span class="dtr-data">' + client.balance + '</span></li>' +
+                            '<li><span class="dtr-title">Dummy Balance</span> <span class="dtr-data" style="color:#b78103; font-weight:700;">' + (typeof client.dummyBalance === 'number' ? client.dummyBalance.toLocaleString('en-IN', {minimumFractionDigits: 2}) : '0.00') + ' (Demo/Test)</span></li>' +
                             '<li><span class="dtr-title">Client (P/L)</span> <span class="dtr-data">' + client.pl + '</span></li>' +
                             '<li><span class="dtr-title">Share</span> <span class="dtr-data">' + client.share + '</span></li>' +
                             '<li><span class="dtr-title">Exposure</span> <span class="dtr-data">' + client.exp + '</span></li>' +
@@ -4218,6 +4300,10 @@ Boland v Knights                        </a>
             if (document.getElementById('editClientHeaderUser')) document.getElementById('editClientHeaderUser').innerText = user.username;
             if (document.getElementById('editUsernameField')) document.getElementById('editUsernameField').innerText = user.username;
             if (document.getElementById('editUserIdField')) document.getElementById('editUserIdField').innerText = uid;
+            var dBal = typeof user.dummyBalance === 'number' ? user.dummyBalance : (parseFloat(String(user.dummyBalance || '0').replace(/[^0-9.-]/g, '')) || 0);
+            if (document.getElementById('editUserDummyBalField')) {
+                document.getElementById('editUserDummyBalField').innerText = dBal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
 
             if (document.getElementById('user_Password_Edit')) document.getElementById('user_Password_Edit').value = '';
             if (document.getElementById('user_IsActive')) document.getElementById('user_IsActive').checked = user.active !== false && user.status !== 'suspended';
@@ -4405,6 +4491,297 @@ Boland v Knights                        </a>
                     }).join('');
                     bodyEl.innerHTML = '<div class="table-responsive"><table class="table table-bordered table-sm table-striped"><thead><tr><th>Event</th><th>Market</th><th>Selection</th><th>Position (Rs.)</th><th>Status</th></tr></thead><tbody>' + pRows + '</tbody></table></div>';
                 }
+            } else if (type === 'dummy_balance') {
+                document.getElementById('DummyBalanceBtn')?.classList.add('active');
+                headerEl.innerHTML = '<strong>' + uName + ' - Dummy Balance (Demo/Test Only)</strong>';
+                
+                var dummyBal = (userData && typeof userData.dummyBalance === 'number') 
+                    ? userData.dummyBalance 
+                    : (parseFloat(String((userData && userData.dummyBalance) || '0')) || 0);
+                var txs = (userData && Array.isArray(userData.dummyBalanceTransactions)) 
+                    ? userData.dummyBalanceTransactions 
+                    : [];
+
+                var txRowsHtml = '';
+                if (txs.length === 0) {
+                    txRowsHtml = '<tr><td colspan="7" class="text-center text-muted py-3">No dummy balance transactions recorded yet.</td></tr>';
+                } else {
+                    txRowsHtml = txs.map(function(t) {
+                        var dtStr = t.createdAt ? new Date(t.createdAt).toLocaleString('en-IN') : '-';
+                        var isCredit = t.type === 'DUMMY_CREDIT';
+                        var typeBadge = isCredit ? '<span class="badge badge-success">DUMMY_CREDIT</span>' : '<span class="badge badge-danger">DUMMY_DEBIT</span>';
+                        var amtStr = (isCredit ? '+' : '-') + (parseFloat(t.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                        var prevBal = (parseFloat(t.previousBalance) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                        var newBal = (parseFloat(t.newBalance) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                        var adminName = t.adminUsername || 'Admin';
+                        var reason = t.note || '-';
+                        return '<tr>' +
+                            '<td>' + dtStr + '</td>' +
+                            '<td>' + typeBadge + '</td>' +
+                            '<td class="font-weight-bold ' + (isCredit ? 'text-success' : 'text-danger') + '">' + amtStr + '</td>' +
+                            '<td>' + prevBal + '</td>' +
+                            '<td class="font-weight-bold">' + newBal + '</td>' +
+                            '<td>' + adminName + '</td>' +
+                            '<td>' + reason + '</td>' +
+                        '</tr>';
+                    }).join('');
+                }
+
+                bodyEl.innerHTML = 
+                    '<div class="alert alert-warning mb-3" style="border-left: 5px solid #ffb300; background: #fff8e1; color: #856404;">' +
+                        '<strong><i class="fas fa-exclamation-triangle mr-1"></i> DEMO / TEST BALANCE ONLY:</strong> ' +
+                        'This system is strictly for demonstration and testing. It does <strong>NOT</strong> represent real money, is <strong>NOT</strong> withdrawable, and cannot be transferred.' +
+                    '</div>' +
+                    '<div class="row mb-4">' +
+                        '<div class="col-md-5">' +
+                            '<div class="card border-warning mb-3">' +
+                                '<div class="card-header bg-warning text-dark font-weight-bold">' +
+                                    '<i class="fas fa-coins mr-1"></i> Current Dummy Balance' +
+                                '</div>' +
+                                '<div class="card-body text-center py-4">' +
+                                    '<div style="font-size: 13px; color: #666; text-transform: uppercase;">Current Balance</div>' +
+                                    '<div id="subViewCurrentDummyBal" style="font-size: 32px; font-weight: 800; color: #b78103; margin: 8px 0;">' +
+                                        dummyBal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) +
+                                    '</div>' +
+                                    '<div class="text-muted small">User: <strong>' + uName + '</strong></div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="col-md-7">' +
+                            '<div class="card border-primary">' +
+                                '<div class="card-header bg-primary text-white font-weight-bold">' +
+                                    '<i class="fas fa-exchange-alt mr-1"></i> Add / Deduct Dummy Balance' +
+                                '</div>' +
+                                '<div class="card-body">' +
+                                    '<div id="subViewDummyAlert" style="display: none;" class="alert alert-info"></div>' +
+                                    '<div class="form-group">' +
+                                        '<label class="font-weight-bold">Action</label>' +
+                                        '<select id="subViewDummyAction" class="form-control">' +
+                                            '<option value="credit">Add Dummy Balance (Credit)</option>' +
+                                            '<option value="debit">Deduct Dummy Balance (Debit)</option>' +
+                                        '</select>' +
+                                    '</div>' +
+                                    '<div class="form-group">' +
+                                        '<label class="font-weight-bold">Amount</label>' +
+                                        '<input type="number" id="subViewDummyAmount" class="form-control" placeholder="Enter amount (e.g. 1000)" min="1" step="any">' +
+                                    '</div>' +
+                                    '<div class="form-group">' +
+                                        '<label class="font-weight-bold">Note / Reason</label>' +
+                                        '<input type="text" id="subViewDummyNote" class="form-control" placeholder="Optional note or reason (e.g. Test credit)">' +
+                                    '</div>' +
+                                    '<button class="btn btn-success font-weight-bold btn-block" onclick="executeSubViewDummyBalanceAction(\'' + currentEditingId + '\', \'' + uName + '\')">' +
+                                        '<i class="fas fa-check mr-1"></i> Confirm Action' +
+                                    '</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="card">' +
+                        '<div class="card-header font-weight-bold">' +
+                            '<i class="fas fa-history mr-1"></i> Dummy Balance History' +
+                        '</div>' +
+                        '<div class="card-body p-0">' +
+                            '<div class="table-responsive">' +
+                                '<table class="table table-bordered table-striped table-hover mb-0" style="font-size: 13px;">' +
+                                    '<thead class="thead-light">' +
+                                        '<tr>' +
+                                            '<th>Date</th>' +
+                                            '<th>Type</th>' +
+                                            '<th>Amount</th>' +
+                                            '<th>Previous Balance</th>' +
+                                            '<th>New Balance</th>' +
+                                            '<th>Admin</th>' +
+                                            '<th>Reason</th>' +
+                                        '</tr>' +
+                                    '</thead>' +
+                                    '<tbody id="subViewDummyHistoryTbody">' +
+                                        txRowsHtml +
+                                    '</tbody>' +
+                                '</table>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+            }
+        }
+
+        async function executeSubViewDummyBalanceAction(uid, uname) {
+            var actionSelect = document.getElementById('subViewDummyAction');
+            var amountInput = document.getElementById('subViewDummyAmount');
+            var noteInput = document.getElementById('subViewDummyNote');
+            var alertBox = document.getElementById('subViewDummyAlert');
+
+            var action = actionSelect ? actionSelect.value : 'credit';
+            var amount = amountInput ? amountInput.value.trim() : '';
+            var note = noteInput ? noteInput.value.trim() : '';
+
+            var numAmt = parseFloat(amount);
+            if (!amount || isNaN(numAmt) || numAmt <= 0) {
+                if (alertBox) {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.innerText = 'Please enter a valid positive number for amount.';
+                    alertBox.style.display = 'block';
+                } else {
+                    alert('Please enter a valid positive number for amount.');
+                }
+                return;
+            }
+
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        userId: uid,
+                        action: 'dummy_balance',
+                        type: action,
+                        amount: numAmt,
+                        note: note
+                    })
+                });
+
+                var data = res.data;
+                if (res.ok && data.status === 'success') {
+                    showToast(data.message || 'Dummy balance updated successfully.');
+                    await fetchAdminUsers();
+                    showEditSubView('dummy_balance');
+                } else {
+                    var errMsg = (data && data.message) || 'Operation failed.';
+                    if (alertBox) {
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.innerText = errMsg;
+                        alertBox.style.display = 'block';
+                    } else {
+                        alert(errMsg);
+                    }
+                }
+            } catch (err) {
+                if (alertBox) {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.innerText = 'Network error: ' + err.message;
+                    alertBox.style.display = 'block';
+                } else {
+                    alert('Network error: ' + err.message);
+                }
+            }
+        }
+
+        async function openAdminDummyBalanceModal(uid, uname) {
+            currentEditingId = uid;
+            currentEditingUser = uname;
+            var modal = document.getElementById('modalAdminDummyBalance');
+            if (!modal) return;
+            modal.style.display = 'flex';
+            document.getElementById('modalDummyBalUserTitle').innerText = uname;
+            document.getElementById('modalDummyBalAmt').value = '';
+            document.getElementById('modalDummyBalNote').value = '';
+            document.getElementById('modalDummyBalAlert').style.display = 'none';
+
+            var token = getAdminAuthToken();
+            var dummyBal = 0;
+            var txs = [];
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users?id=' + encodeURIComponent(uid)), {
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                });
+                if (res.ok && res.data && res.data.user) {
+                    dummyBal = typeof res.data.user.dummyBalance === 'number' ? res.data.user.dummyBalance : (parseFloat(res.data.user.dummyBalance) || 0);
+                    txs = res.data.user.dummyBalanceTransactions || res.data.dummyBalanceTransactions || [];
+                }
+            } catch (e) {}
+
+            document.getElementById('modalDummyBalCurrentVal').innerText = dummyBal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            renderModalDummyBalHistory(txs);
+        }
+
+        function closeAdminDummyBalanceModal() {
+            var modal = document.getElementById('modalAdminDummyBalance');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function renderModalDummyBalHistory(txs) {
+            var tbody = document.getElementById('modalDummyBalHistoryTbody');
+            if (!tbody) return;
+            if (!txs || txs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-2">No transactions recorded yet.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = txs.map(function(t) {
+                var dtStr = t.createdAt ? new Date(t.createdAt).toLocaleString('en-IN') : '-';
+                var isCredit = t.type === 'DUMMY_CREDIT';
+                var badge = isCredit ? '<span class="badge badge-success">CREDIT</span>' : '<span class="badge badge-danger">DEBIT</span>';
+                var amt = (isCredit ? '+' : '-') + (parseFloat(t.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                var prev = (parseFloat(t.previousBalance) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                var next = (parseFloat(t.newBalance) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                return '<tr>' +
+                    '<td>' + dtStr + '</td>' +
+                    '<td>' + badge + '</td>' +
+                    '<td class="font-weight-bold ' + (isCredit ? 'text-success' : 'text-danger') + '">' + amt + '</td>' +
+                    '<td>' + prev + '</td>' +
+                    '<td class="font-weight-bold">' + next + '</td>' +
+                    '<td>' + (t.adminUsername || 'Admin') + '</td>' +
+                    '<td>' + (t.note || '-') + '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        async function executeModalDummyBalanceSubmit() {
+            var action = document.getElementById('modalDummyBalAction').value;
+            var amt = document.getElementById('modalDummyBalAmt').value.trim();
+            var note = document.getElementById('modalDummyBalNote').value.trim();
+            var alertEl = document.getElementById('modalDummyBalAlert');
+
+            var numAmt = parseFloat(amt);
+            if (!amt || isNaN(numAmt) || numAmt <= 0) {
+                alertEl.className = 'alert alert-danger';
+                alertEl.innerText = 'Please enter a valid positive number for amount.';
+                alertEl.style.display = 'block';
+                return;
+            }
+
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        userId: currentEditingId,
+                        action: 'dummy_balance',
+                        type: action,
+                        amount: numAmt,
+                        note: note
+                    })
+                });
+                var data = res.data;
+                if (res.ok && data.status === 'success') {
+                    showToast(data.message || 'Dummy balance updated successfully.');
+                    document.getElementById('modalDummyBalCurrentVal').innerText = (parseFloat(data.dummyBalance) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    document.getElementById('modalDummyBalAmt').value = '';
+                    document.getElementById('modalDummyBalNote').value = '';
+                    alertEl.className = 'alert alert-success';
+                    alertEl.innerText = data.message;
+                    alertEl.style.display = 'block';
+                    renderModalDummyBalHistory(data.transactions || []);
+                    await fetchAdminUsers();
+                } else {
+                    alertEl.className = 'alert alert-danger';
+                    alertEl.innerText = (data && data.message) || 'Operation failed.';
+                    alertEl.style.display = 'block';
+                }
+            } catch (err) {
+                alertEl.className = 'alert alert-danger';
+                alertEl.innerText = 'Network error: ' + err.message;
+                alertEl.style.display = 'block';
             }
         }
 

@@ -36,6 +36,7 @@ module.exports = async function handler(req, res) {
     role: user.role,
     userStatus: user.status,
     balance: user.balance || '0 Rs.',
+    dummyBalance: sanitized.dummyBalance !== undefined ? sanitized.dummyBalance : 0,
     exposure: user.exp || user.exposure || '0 Rs.',
     availableBalance: user.avail || user.availableBalance || user.balance || '0 Rs.',
     lastLogin: user.lastLogin || null,
