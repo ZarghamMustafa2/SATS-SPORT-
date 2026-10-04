@@ -220,10 +220,13 @@ module.exports = async function handler(req, res) {
         }
 
         let opAction = 'credit';
-        if (action === 'dummy_credit') opAction = 'credit';
-        else if (action === 'dummy_debit') opAction = 'debit';
-        else if (body.type === 'debit' || body.action === 'debit' || body.type === 'deduct' || body.action === 'deduct') opAction = 'debit';
-        else opAction = body.action || body.type || 'credit';
+        const rawType = (body.type || '').toString().toLowerCase();
+        const rawAction = (action || '').toString().toLowerCase();
+        if (rawType === 'debit' || rawType === 'deduct' || rawAction === 'dummy_debit' || rawAction === 'debit' || rawAction === 'deduct') {
+          opAction = 'debit';
+        } else {
+          opAction = 'credit';
+        }
 
         const result = authDb.updateDummyBalance({
           requesterUser: session,
