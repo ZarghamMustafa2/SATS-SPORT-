@@ -3828,7 +3828,7 @@ Boland v Knights                        </a>
                 document.getElementById('sideNavDashboard')?.classList.add('active');
                 document.getElementById('topNavDashboard')?.classList.add('active');
                 document.title = 'Dashboard | BPEXCH';
-            } else if (lower.startsWith('/accounts/chart')) {
+            } else if (lower.startsWith('/accounts/chart') || lower === '/users' || lower === '/users/' || lower === '/accounts' || lower === '/accounts/') {
                 document.getElementById('viewUsers').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.getElementById('topNavUsers')?.classList.add('active');
@@ -3855,13 +3855,13 @@ Boland v Knights                        </a>
                 document.getElementById('ledgerCardHeaderTitle').innerHTML = '<strong>' + uname + ' - Account Ledger</strong>';
                 document.title = 'Account Ledger | BPEXCH';
                 loadAccountLedgerPage(userId);
-            } else if (lower === '/markets/liables') {
+            } else if (lower === '/markets/liables' || lower === '/markets' || lower === '/markets/') {
                 document.getElementById('viewCurrentPosition').style.display = 'block';
                 document.getElementById('sideNavPosition')?.classList.add('active');
                 document.getElementById('topNavPosition')?.classList.add('active');
                 document.title = 'Current Position | BPEXCH';
                 renderCurrentPositionTable();
-            } else if (lower.startsWith('/reports/')) {
+            } else if (lower.startsWith('/reports')) {
                 document.getElementById('viewReports').style.display = 'block';
                 document.getElementById('sideNavReports')?.classList.add('active');
                 document.getElementById('topNavReports')?.classList.add('active');
@@ -4053,24 +4053,21 @@ Boland v Knights                        </a>
             }
         }
 
-        // Load Balance Simulation
-        function LoadFullAccounts(userId, e) {
+        // Real Database Balance Refresh
+        async function LoadFullAccounts(userId, e) {
             if (e) e.preventDefault();
             var gif = document.getElementById('accountLoadGif');
             if (gif) gif.style.display = 'inline';
-            showToast('Loading balances...');
-            setTimeout(function() {
+            showToast('Loading balances from database...');
+            try {
+                await fetchAdminUsers();
+                showToast('Live database balances loaded successfully.');
+            } catch (err) {
+                console.error('Error refreshing accounts:', err);
+                showToast('Error refreshing balances.');
+            } finally {
                 if (gif) gif.style.display = 'none';
-                document.querySelectorAll('#clientsTableBody tr').forEach(function(row) {
-                    var c = row.querySelector('.credit-cell'); if (c) c.innerText = '0';
-                    var b = row.querySelector('.balance-cell'); if (b) b.innerText = '0 Rs.';
-                    var p = row.querySelector('.pl-cell'); if (p) p.innerText = '0 Rs.';
-                    var s = row.querySelector('.share-cell'); if (s) s.innerText = '0%';
-                    var ex = row.querySelector('.exp-cell'); if (ex) ex.innerText = '0 Rs.';
-                    var av = row.querySelector('.avail-cell'); if (av) av.innerText = '0 Rs.';
-                });
-                showToast('Balances loaded successfully.');
-            }, 600);
+            }
         }
 
         // Show Book Row
@@ -4177,8 +4174,20 @@ Boland v Knights                        </a>
         }
 
         // User Edit Page Setup
-        function setupUserEditPage(uid) {
-            var user = clientsList.find(function(u) { return u.id === uid; }) || { username: 'Jimmy3221', id: uid };
+        async function setupUserEditPage(uid) {
+            var user = clientsList.find(function(u) { return u.id === uid; });
+            if (!user && uid) {
+                var token = getAdminAuthToken();
+                try {
+                    var res = await safeFetchJson(getApiUrl('/api/admin/users?id=' + encodeURIComponent(uid)), {
+                        headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                    });
+                    if (res.ok && res.data && res.data.user) {
+                        user = res.data.user;
+                    }
+                } catch (e) {}
+            }
+            if (!user) user = { username: 'User ' + uid, id: uid };
             currentEditingUser = user.username;
             currentEditingId = uid;
 
@@ -4188,7 +4197,7 @@ Boland v Knights                        </a>
             if (document.getElementById('editUserIdField')) document.getElementById('editUserIdField').innerText = uid;
 
             if (document.getElementById('user_Password_Edit')) document.getElementById('user_Password_Edit').value = '';
-            if (document.getElementById('user_IsActive')) document.getElementById('user_IsActive').checked = user.active !== false;
+            if (document.getElementById('user_IsActive')) document.getElementById('user_IsActive').checked = user.active !== false && user.status !== 'suspended';
             if (document.getElementById('user_CanBet')) document.getElementById('user_CanBet').checked = user.canBet !== false;
             if (document.getElementById('user_CanSettlePL')) document.getElementById('user_CanSettlePL').checked = !!user.canSettlePL;
             if (document.getElementById('user_Phone')) document.getElementById('user_Phone').value = user.phone || '';
@@ -4377,8 +4386,20 @@ Boland v Knights                        </a>
         }
 
         // Cash / Credit Page Setup
-        function setupCashCreditPage(uid) {
-            var user = clientsList.find(function(u) { return u.id === uid; }) || { username: 'User', id: uid, balance: '0 Rs.', avail: '0 Rs.', credit: '0' };
+        async function setupCashCreditPage(uid) {
+            var user = clientsList.find(function(u) { return u.id === uid; });
+            if (!user && uid) {
+                var token = getAdminAuthToken();
+                try {
+                    var res = await safeFetchJson(getApiUrl('/api/admin/users?id=' + encodeURIComponent(uid)), {
+                        headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                    });
+                    if (res.ok && res.data && res.data.user) {
+                        user = res.data.user;
+                    }
+                } catch (e) {}
+            }
+            if (!user) user = { username: 'User ' + uid, id: uid, balance: '0 Rs.', avail: '0 Rs.', credit: '0' };
             currentEditingUser = user.username;
             currentEditingId = uid;
 
