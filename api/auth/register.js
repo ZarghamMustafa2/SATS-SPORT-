@@ -17,6 +17,7 @@ module.exports = async function handler(req, res) {
 
   // 1. GET: Real-Time Username Availability Check
   if (req.method === 'GET') {
+    await authDb.hydrateUsersAsync();
     const rawUsername = searchParams.get('username') || searchParams.get('u') || '';
     const check = authDb.checkUsernameAvailability(rawUsername);
     return sendJson(res, 200, {
@@ -29,6 +30,7 @@ module.exports = async function handler(req, res) {
   // 2. POST: Real Normal User Registration
   if (req.method === 'POST') {
     try {
+      await authDb.hydrateUsersAsync();
       const body = await parseJsonBody(req);
       const { username, password, confirmPassword } = body;
 

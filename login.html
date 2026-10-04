@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | SATSPORT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --primary-gold: #ffc21d;
+      --gold-hover: #e5a400;
+      --dark-bg: #0e1015;
+      --card-bg: #161922;
+      --input-bg: #222634;
+      --border-color: #2c3243;
+      --text-white: #ffffff;
+      --text-muted: #8c96a8;
+      --danger: #ff4d4f;
+      --success: #00e676;
+      --font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--dark-bg);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      padding: 32px 28px;
+      position: relative;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .auth-header a {
+      display: inline-block;
+    }
+
+    .auth-header img {
+      height: 38px;
+      object-fit: contain;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 22px;
+      gap: 10px;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      background: none;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+      font-family: inherit;
+    }
+
+    .auth-tab-btn.active {
+      color: var(--primary-gold);
+      font-weight: 700;
+    }
+
+    .auth-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: var(--primary-gold);
+      border-radius: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text-white);
+    }
+
+    .input-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 42px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-white);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 0 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-gold);
+      box-shadow: 0 0 0 3px rgba(255, 194, 29, 0.2);
+    }
+
+    .form-control::placeholder {
+      color: #636e82;
+      font-size: 13px;
+    }
+
+    .has-eye {
+      padding-right: 42px;
+    }
+
+    .password-eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+    }
+
+    .password-eye-btn:hover {
+      color: var(--text-white);
+    }
+
+    .form-check-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .form-check-wrap input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--primary-gold);
+      cursor: pointer;
+    }
+
+    .btn-submit {
+      width: 100%;
+      height: 44px;
+      background: var(--primary-gold);
+      color: #111111;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.1s;
+      font-family: inherit;
+      margin-top: 6px;
+    }
+
+    .btn-submit:hover {
+      background: var(--gold-hover);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.99);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .alert {
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      line-height: 1.4;
+    }
+
+    .alert-danger {
+      background: rgba(255, 77, 79, 0.12);
+      border: 1px solid rgba(255, 77, 79, 0.4);
+      color: #ff6b6d;
+    }
+
+    .alert-success {
+      background: rgba(0, 230, 118, 0.12);
+      border: 1px solid rgba(0, 230, 118, 0.4);
+      color: #00e676;
+    }
+
+    .validation-msg {
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .auth-footer a {
+      color: var(--primary-gold);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 16px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .back-home:hover {
+      color: var(--primary-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-header">
+      <a href="/" title="Go to Satsport Home">
+        <img src="assets/images/logo.png" alt="SATSPORT">
+      </a>
+    </div>
+
+    <!-- Alert Notices -->
+    <div id="authAlert" class="alert alert-danger"></div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab-btn active" id="btnTabLogin" onclick="switchMode('login')">Login</button>
+      <button class="auth-tab-btn" id="btnTabRegister" onclick="switchMode('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="formLogin" onsubmit="executeUserLogin(event)">
+      <div class="form-group">
+        <label for="loginUsername">Username</label>
+        <div class="input-wrap">
+          <input type="text" id="loginUsername" class="form-control" placeholder="Enter your username" autocomplete="username" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <div class="input-wrap">
+          <input type="password" id="loginPassword" class="form-control has-eye" placeholder="Enter your password" autocomplete="current-password" required>
+          <button type="button" class="password-eye-btn" onclick="togglePassVisibility('loginPassword', this)" title="Show/Hide Password">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-check-wrap">
+        <input type="checkbox" id="rememberMe" checked>
+        <label for="rememberMe">Remember username</label>
+      </div>
+
+      <button type="submit" class="btn-submit" id="btnLoginSubmit">Login</button>
+
+      <div class="auth-footer">
+        Don't have an account? <a onclick="switchMode('register')">Register now</a>
+      </div>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="formRegister" style="display: none;" onsubmit="executeUserRegister(event)">
+      <div class="form-group">
+        <label for="regUsername">Username</label>
+        <div class="input-wrap">
+          <input type="text" id="regUsername" class="form-control" placeholder="Choose a username" autocomplete="username" required minlength="3">
+        </div>
+        <div id="regUsernameCheckMsg" class="validation-msg"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="regPassword">Password</label>
+        <div class="input-wrap">
+          <input type="password" id="regPassword" class="form-control has-eye" placeholder="Password (min 6 characters)" autocomplete="new-password" required minlength="6">
+          <button type="button" class="password-eye-btn" onclick="togglePassVisibility('regPassword', this)" title="Show/Hide Password">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="regConfirmPassword">Confirm Password</label>
+        <div class="input-wrap">
+          <input type="password" id="regConfirmPassword" class="form-control has-eye" placeholder="Confirm your password" autocomplete="new-password" required minlength="6">
+          <button type="button" class="password-eye-btn" onclick="togglePassVisibility('regConfirmPassword', this)" title="Show/Hide Password">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="btnRegisterSubmit">Create Account</button>
+
+      <div class="auth-footer">
+        Already have an account? <a onclick="switchMode('login')">Login here</a>
+      </div>
+    </form>
+  </div>
+
+  <a href="/" class="back-home">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    Back to Satsport Home
+  </a>
+
+  <script>
+    // API URL resolver
+    function getApiUrl(endpoint) {
+      const isGitHubPages = window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:';
+      const base = isGitHubPages ? 'https://sats-sport.vercel.app' : '';
+      if (endpoint.charAt(0) !== '/') endpoint = '/' + endpoint;
+      return base + endpoint;
+    }
+
+    async function safeFetchJson(url, options) {
+      try {
+        const res = await fetch(url, options);
+        const contentType = res.headers.get('content-type') || '';
+        let data;
+        if (contentType.includes('application/json')) {
+          data = await res.json();
+        } else {
+          const text = await res.text();
+          data = { status: 'error', message: 'Unexpected server response (' + res.status + ')', raw: text };
+        }
+        return { ok: res.ok, status: res.status, data };
+      } catch (err) {
+        return { ok: false, status: 0, data: { status: 'error', message: 'Network connection error: ' + err.message } };
+      }
+    }
+
+    let currentMode = 'login';
+    let checkUsernameTimer = null;
+
+    function showAlert(msg, isSuccess = false) {
+      const el = document.getElementById('authAlert');
+      if (!el) return;
+      el.className = isSuccess ? 'alert alert-success' : 'alert alert-danger';
+      el.innerText = msg;
+      el.style.display = 'block';
+    }
+
+    function hideAlert() {
+      const el = document.getElementById('authAlert');
+      if (el) el.style.display = 'none';
+    }
+
+    function switchMode(mode) {
+      currentMode = mode;
+      hideAlert();
+      const tabLogin = document.getElementById('btnTabLogin');
+      const tabRegister = document.getElementById('btnTabRegister');
+      const formLogin = document.getElementById('formLogin');
+      const formRegister = document.getElementById('formRegister');
+
+      if (mode === 'register') {
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        formRegister.style.display = 'block';
+        formLogin.style.display = 'none';
+        document.title = 'Register | SATSPORT';
+      } else {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        formLogin.style.display = 'block';
+        formRegister.style.display = 'none';
+        document.title = 'Login | SATSPORT';
+      }
+    }
+
+    function togglePassVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.style.color = '#ffc21d';
+      } else {
+        input.type = 'password';
+        btn.style.color = '';
+      }
+    }
+
+    // Live Username Availability Check
+    async function checkUsernameLive(u) {
+      const msgEl = document.getElementById('regUsernameCheckMsg');
+      if (!msgEl) return;
+
+      if (!u) {
+        msgEl.style.display = 'none';
+        return;
+      }
+      if (u.length < 3) {
+        msgEl.innerText = 'Username must be at least 3 characters';
+        msgEl.style.color = '#faad14';
+        msgEl.style.display = 'block';
+        return;
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(u)) {
+        msgEl.innerText = 'Letters, numbers, and underscores only';
+        msgEl.style.color = '#ff4d4f';
+        msgEl.style.display = 'block';
+        return;
+      }
+
+      msgEl.innerText = 'Checking availability...';
+      msgEl.style.color = '#8c96a8';
+      msgEl.style.display = 'block';
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/auth/register?username=' + encodeURIComponent(u)));
+        if (res.ok && res.data) {
+          if (res.data.available) {
+            msgEl.innerText = '✓ Username is available';
+            msgEl.style.color = '#00e676';
+          } else {
+            msgEl.innerText = '✗ ' + (res.data.message || 'Username already exists. Please choose another username.');
+            msgEl.style.color = '#ff4d4f';
+          }
+          msgEl.style.display = 'block';
+        }
+      } catch (e) {}
+    }
+
+    // Execute Login
+    async function executeUserLogin(e) {
+      if (e) e.preventDefault();
+      hideAlert();
+
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value.trim();
+      const submitBtn = document.getElementById('btnLoginSubmit');
+
+      if (!u || !p) {
+        showAlert('Please enter both username and password.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Logging in...';
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/auth/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+
+        const data = res.data;
+
+        if (res.ok && data.status === 'success') {
+          if (data.token) localStorage.setItem('auth_token', data.token);
+          if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
+
+          showAlert('Login successful! Redirecting...', true);
+
+          // Check redirect parameter
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectTarget = urlParams.get('redirect') || urlParams.get('returnUrl');
+
+          setTimeout(() => {
+            if (data.user && (data.user.role === 'company' || data.user.role === 'super_admin' || data.user.role === 'super_master')) {
+              window.location.href = data.redirectTo || '/admin';
+            } else if (redirectTarget && redirectTarget.startsWith('/')) {
+              window.location.href = redirectTarget;
+            } else {
+              window.location.href = '/';
+            }
+          }, 300);
+        } else {
+          // Standard security message: Never reveal whether username exists
+          const errText = data.message || 'Invalid username or password.';
+          showAlert(errText);
+        }
+      } catch (err) {
+        showAlert('Network error: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Login';
+      }
+    }
+
+    // Execute Registration
+    async function executeUserRegister(e) {
+      if (e) e.preventDefault();
+      hideAlert();
+
+      const u = document.getElementById('regUsername').value.trim();
+      const p = document.getElementById('regPassword').value.trim();
+      const cp = document.getElementById('regConfirmPassword').value.trim();
+      const submitBtn = document.getElementById('btnRegisterSubmit');
+
+      if (!u || !p || !cp) {
+        showAlert('Please fill in all registration fields.');
+        return;
+      }
+      if (u.length < 3) {
+        showAlert('Username must be at least 3 characters.');
+        return;
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(u)) {
+        showAlert('Username can only contain letters, numbers, and underscores.');
+        return;
+      }
+      if (p.length < 6) {
+        showAlert('Password must be at least 6 characters.');
+        return;
+      }
+      if (p !== cp) {
+        showAlert('Password and Confirm Password do not match.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Creating Account...';
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/auth/register'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p, confirmPassword: cp })
+        });
+
+        const data = res.data;
+
+        if (res.ok && data.status === 'success') {
+          showAlert('Account registered successfully! Redirecting...', true);
+          if (data.token) localStorage.setItem('auth_token', data.token);
+          if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
+
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 400);
+        } else {
+          showAlert(data.message || 'Registration failed. Please choose another username.');
+        }
+      } catch (err) {
+        showAlert('Network error: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Create Account';
+      }
+    }
+
+    // On Load
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check query param for mode
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'register' || window.location.pathname.toLowerCase().includes('register')) {
+        switchMode('register');
+      }
+
+      // Attach live availability listener
+      const regInput = document.getElementById('regUsername');
+      if (regInput) {
+        regInput.addEventListener('input', (e) => {
+          clearTimeout(checkUsernameTimer);
+          const val = e.target.value.trim();
+          checkUsernameTimer = setTimeout(() => {
+            checkUsernameLive(val);
+          }, 350);
+        });
+      }
+
+      // Check if user is already authenticated
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        try {
+          const res = await safeFetchJson(getApiUrl('/api/auth/me'), {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
+          if (res.ok && res.data && res.data.status === 'success' && res.data.user) {
+            // Already logged in - redirect to home or requested protected route
+            const redirectTarget = params.get('redirect') || params.get('returnUrl');
+            if (redirectTarget && redirectTarget.startsWith('/')) {
+              window.location.href = redirectTarget;
+            } else {
+              window.location.href = '/';
+            }
+          }
+        } catch (e) {}
+      }
+    });
+  </script>
+</body>
+</html>

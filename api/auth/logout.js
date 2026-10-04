@@ -22,7 +22,11 @@ module.exports = async function handler(req, res) {
   }
 
   if (token) {
-    authDb.destroySession(token);
+    if (authDb.destroySessionAsync) {
+      await authDb.destroySessionAsync(token);
+    } else {
+      authDb.destroySession(token);
+    }
   }
 
   const clearCookie = 'auth_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0';

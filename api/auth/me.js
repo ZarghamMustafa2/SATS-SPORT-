@@ -16,20 +16,34 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 405, { status: 'error', message: 'Method not allowed' });
   }
 
+  await authDb.hydrateUsersAsync();
+
   const session = getRequestSession(req, authDb);
   if (!session) {
     return sendJson(res, 401, { status: 'unauthenticated', message: 'Not authenticated' });
   }
 
-  await authDb.hydrateUsersAsync();
   const user = authDb.getUserById(session.userId);
   if (!user || user.status !== 'active') {
     return sendJson(res, 401, { status: 'unauthenticated', message: 'Session expired or user inactive' });
   }
 
+  const sanitized = authDb.sanitizeUser(user);
   return sendJson(res, 200, {
     status: 'success',
-    user: authDb.sanitizeUser(user),
+    username: user.username,
+    userId: user.id,
+    role: user.role,
+    userStatus: user.status,
+    balance: user.balance || '0 Rs.',
+    exposure: user.exp || user.exposure || '0 Rs.',
+    availableBalance: user.avail || user.availableBalance || user.balance || '0 Rs.',
+    user: {
+      ...sanitized,
+      userId: user.id,
+      exposure: sanitized.exp || sanitized.exposure || '0 Rs.',
+      availableBalance: sanitized.avail || sanitized.availableBalance || sanitized.balance || '0 Rs.'
+    },
     redirectTo: authDb.getRedirectForRole(user.role)
   });
 };
