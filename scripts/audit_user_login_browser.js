@@ -44,7 +44,10 @@ async function runBrowserAudit() {
     await userField.fill('nonexistent_user_999');
     await passField.fill('WrongPass@123');
     await loginBtn.click();
-    await page.waitForTimeout(600);
+    await page.waitForFunction(() => {
+      const txt = document.querySelector('#authAlert')?.innerText || '';
+      return txt.trim().length > 0;
+    }, { timeout: 6000 });
     const alertBox = await page.locator('#authAlert');
     const alertText = (await alertBox.innerText()).trim();
     report(2, 'Invalid Credentials Rejection ("Invalid username or password.")',
@@ -54,10 +57,13 @@ async function runBrowserAudit() {
 
     // TEST 3: Switch to Register Mode & Availability Check
     await page.click('#btnTabRegister');
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(400);
     const regUserInput = await page.locator('#regUsername');
     await regUserInput.fill(testUser);
-    await page.waitForTimeout(600);
+    await page.waitForFunction(() => {
+      const msg = document.querySelector('#regUsernameCheckMsg')?.innerText || '';
+      return msg.includes('available') || msg.includes('registered') || msg.includes('characters');
+    }, { timeout: 4000 });
     const checkMsg = await page.locator('#regUsernameCheckMsg');
     const checkText = (await checkMsg.innerText()).trim();
     report(3, 'Registration Interface & Live Username Availability',
@@ -69,33 +75,50 @@ async function runBrowserAudit() {
     await page.locator('#regPassword').fill(testPass);
     await page.locator('#regConfirmPassword').fill(testPass);
     await page.click('#btnRegisterSubmit');
-    await page.waitForTimeout(1000);
+    await page.waitForFunction(() => {
+      const alert = document.querySelector('#authAlert')?.innerText || '';
+      return alert.includes('registered') || window.location.pathname === '/';
+    }, { timeout: 5000 });
     const regAlertText = (await alertBox.innerText()).trim();
     report(4, 'Real User Registration Execution',
       regAlertText.includes('registered') || page.url().includes(BASE_URL),
       `Alert: "${regAlertText}" | Current URL: ${page.url()}`
     );
 
-    // TEST 5: Login with Newly Registered User Credentials
-    await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
-    await page.locator('#loginUsername').fill(testUser);
-    await page.locator('#loginPassword').fill(testPass);
-    await page.click('#btnLoginSubmit');
+    // Wait for auto-redirect or navigate to home
     await page.waitForTimeout(1500);
-    const postLoginUrl = page.url();
-    const loggedInHeader = await page.locator('#desktopLoggedIn');
+
+    // TEST 5: Login with Credentials in a Fresh Session Context
+    const loginContext = await browser.newContext();
+    const loginPage = await loginContext.newPage();
+    await loginPage.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' });
+    await loginPage.waitForSelector('#loginUsername', { timeout: 5000 });
+    await loginPage.locator('#loginUsername').fill(testUser);
+    await loginPage.locator('#loginPassword').fill(testPass);
+    await loginPage.click('#btnLoginSubmit');
+    await loginPage.waitForFunction(() => {
+      const el = document.getElementById('desktopLoggedIn');
+      const name = document.getElementById('headerUserName');
+      return el && window.getComputedStyle(el).display !== 'none' && name && name.innerText !== 'User';
+    }, { timeout: 10000 });
+    const postLoginUrl = loginPage.url();
+    const loggedInHeader = await loginPage.locator('#desktopLoggedIn');
     const isLoggedVisible = await loggedInHeader.isVisible();
-    const userNameLabel = await page.locator('#headerUserName').innerText();
+    const userNameLabel = await loginPage.locator('#headerUserName').innerText();
     report(5, 'Login Success & Navigation to User Website',
-      (postLoginUrl === `${BASE_URL}/` || postLoginUrl === BASE_URL || isLoggedVisible) && userNameLabel.toLowerCase().includes(testUser.toLowerCase()),
+      isLoggedVisible && userNameLabel.toLowerCase().includes(testUser.toLowerCase()),
       `URL: ${postLoginUrl} | Logged In Header Visible: ${isLoggedVisible} | Displayed User: "${userNameLabel}"`
     );
 
     // TEST 6: Session Survives Page Refresh
-    await page.reload({ waitUntil: 'networkidle' });
-    await page.waitForTimeout(600);
-    const isStillLogged = await page.locator('#desktopLoggedIn').isVisible();
-    const stillUser = await page.locator('#headerUserName').innerText();
+    await loginPage.reload({ waitUntil: 'domcontentloaded' });
+    await loginPage.waitForFunction(() => {
+      const el = document.getElementById('desktopLoggedIn');
+      const name = document.getElementById('headerUserName');
+      return el && window.getComputedStyle(el).display !== 'none' && name && name.innerText !== 'User';
+    }, { timeout: 10000 });
+    const isStillLogged = await loginPage.locator('#desktopLoggedIn').isVisible();
+    const stillUser = await loginPage.locator('#headerUserName').innerText();
     report(6, 'Session Persistence Across Page Refresh',
       isStillLogged && stillUser.toLowerCase().includes(testUser.toLowerCase()),
       `Still Authenticated: YES | User: "${stillUser}"`
@@ -104,8 +127,8 @@ async function runBrowserAudit() {
     // TEST 7: Protected Route Direct Access Unauthenticated (Redirect to Login)
     const incognitoContext = await browser.newContext();
     const incognitoPage = await incognitoContext.newPage();
-    await incognitoPage.goto(`${BASE_URL}/account`, { waitUntil: 'networkidle' });
-    await incognitoPage.waitForTimeout(1000);
+    await incognitoPage.goto(`${BASE_URL}/account`, { waitUntil: 'domcontentloaded' });
+    await incognitoPage.waitForURL(url => url.pathname.includes('/login') || url.href.includes('/login'), { timeout: 8000 });
     const redirectUrl = incognitoPage.url();
     report(7, 'Direct Unauthenticated Protected Route Access Redirects to Login',
       redirectUrl.includes('/login'),
@@ -114,37 +137,44 @@ async function runBrowserAudit() {
     await incognitoContext.close();
 
     // TEST 8: Real Logout Execution
-    await page.click('#userProfileBtn');
-    await page.waitForTimeout(300);
-    await page.click('.dropdown-item.logout');
-    await page.waitForTimeout(1200);
-    const postLogoutUrl = page.url();
+    await loginPage.click('#userProfileBtn');
+    await loginPage.waitForTimeout(400);
+    await loginPage.click('.dropdown-item.logout');
+    await loginPage.waitForFunction(() => window.location.pathname.includes('/login'), { timeout: 5000 });
+    const postLogoutUrl = loginPage.url();
     report(8, 'Logout Session Invalidation & Redirection to Login',
       postLogoutUrl.includes('/login'),
       `Current URL after logout: ${postLogoutUrl}`
     );
 
     // TEST 9: Browser Back Button Protection After Logout
-    await page.goBack();
-    await page.waitForTimeout(1000);
-    const loggedInAfterBack = await page.locator('#desktopLoggedIn').isVisible();
+    await loginPage.goBack();
+    await loginPage.waitForTimeout(1200);
+    const loggedInAfterBack = await loginPage.locator('#desktopLoggedIn').isVisible();
     report(9, 'Browser Back Button Does NOT Restore Authenticated Session',
       !loggedInAfterBack,
       `Authenticated state visible after Back: ${loggedInAfterBack} (Protected content blocked)`
     );
+    await loginContext.close();
 
     // TEST 10: Duplicate Case-Insensitive Username Registration Rejection
-    await page.goto(`${BASE_URL}/login?mode=register`, { waitUntil: 'networkidle' });
-    await page.locator('#regUsername').fill(testUser.toUpperCase());
-    await page.locator('#regPassword').fill('AnyPassword@123');
-    await page.locator('#regConfirmPassword').fill('AnyPassword@123');
-    await page.click('#btnRegisterSubmit');
-    await page.waitForTimeout(800);
-    const dupAlert = (await page.locator('#authAlert').innerText()).trim();
+    const dupPage = await context.newPage();
+    await dupPage.goto(`${BASE_URL}/login?mode=register`, { waitUntil: 'domcontentloaded' });
+    await dupPage.waitForSelector('#regUsername', { timeout: 5000 });
+    await dupPage.locator('#regUsername').fill(testUser.toUpperCase());
+    await dupPage.locator('#regPassword').fill('AnyPassword@123');
+    await dupPage.locator('#regConfirmPassword').fill('AnyPassword@123');
+    await dupPage.click('#btnRegisterSubmit');
+    await dupPage.waitForFunction(() => {
+      const alert = document.querySelector('#authAlert')?.innerText || '';
+      return alert.includes('already registered');
+    }, { timeout: 5000 });
+    const dupAlert = (await dupPage.locator('#authAlert').innerText()).trim();
     report(10, 'Duplicate Username Registration Rejected (Case-Insensitive)',
       dupAlert.includes('already registered'),
       `Rejection Alert: "${dupAlert}"`
     );
+    await dupPage.close();
 
   } catch (err) {
     console.error('Browser audit error:', err);

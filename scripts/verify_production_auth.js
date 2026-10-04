@@ -2,7 +2,7 @@ const https = require('https');
 
 const BASE_URL = process.env.VERCEL_URL || 'https://sats-sport.vercel.app';
 
-function request(urlPath, options = {}) {
+function request(urlPath, options = {}, retries = 2) {
   return new Promise((resolve, reject) => {
     const fullUrl = new URL(urlPath, BASE_URL);
     const method = options.method || 'GET';
@@ -34,7 +34,16 @@ function request(urlPath, options = {}) {
       });
     });
 
-    req.on('error', reject);
+    req.on('error', (err) => {
+      if (retries > 0 && (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT')) {
+        setTimeout(() => {
+          request(urlPath, options, retries - 1).then(resolve).catch(reject);
+        }, 500);
+      } else {
+        reject(err);
+      }
+    });
+
     if (body) req.write(body);
     req.end();
   });
