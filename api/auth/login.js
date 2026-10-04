@@ -17,6 +17,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    await authDb.hydrateUsersAsync();
     const body = await parseJsonBody(req);
     const { username, password } = body;
 
@@ -26,6 +27,7 @@ module.exports = async function handler(req, res) {
       return sendJson(res, status, { status: 'error', message: result.message, reason: result.reason });
     }
 
+    await authDb.saveUsersToDiskAsync();
     const session = authDb.createSession(result.user);
     const redirectTo = authDb.getRedirectForRole(result.user.role);
 
