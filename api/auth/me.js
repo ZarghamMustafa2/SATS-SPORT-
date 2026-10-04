@@ -38,12 +38,17 @@ module.exports = async function handler(req, res) {
     balance: user.balance || '0 Rs.',
     exposure: user.exp || user.exposure || '0 Rs.',
     availableBalance: user.avail || user.availableBalance || user.balance || '0 Rs.',
+    lastLogin: user.lastLogin || null,
+    createdAt: user.createdAt || null,
     user: {
       ...sanitized,
       userId: user.id,
+      status: user.status,
       exposure: sanitized.exp || sanitized.exposure || '0 Rs.',
       availableBalance: sanitized.avail || sanitized.availableBalance || sanitized.balance || '0 Rs.'
     },
     redirectTo: authDb.getRedirectForRole(user.role)
+  }, {
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
   });
 };

@@ -379,8 +379,11 @@
       return base + endpoint;
     }
 
-    async function safeFetchJson(url, options) {
+    async function safeFetchJson(url, options = {}) {
       try {
+        if (!options.credentials) {
+          options.credentials = 'include';
+        }
         const res = await fetch(url, options);
         const contentType = res.headers.get('content-type') || '';
         let data;
@@ -628,24 +631,25 @@
         });
       }
 
-      // Check if user is already authenticated
+      // Check if user is already authenticated via session cookie or token
       const token = localStorage.getItem('auth_token');
-      if (token) {
-        try {
-          const res = await safeFetchJson(getApiUrl('/api/auth/me'), {
-            headers: { 'Authorization': 'Bearer ' + token }
-          });
-          if (res.ok && res.data && res.data.status === 'success' && res.data.user) {
-            // Already logged in - redirect to home or requested protected route
-            const redirectTarget = params.get('redirect') || params.get('returnUrl');
-            if (redirectTarget && redirectTarget.startsWith('/')) {
-              window.location.href = redirectTarget;
-            } else {
-              window.location.href = '/';
-            }
+      try {
+        const fetchHeaders = {};
+        if (token) fetchHeaders['Authorization'] = 'Bearer ' + token;
+        const res = await safeFetchJson(getApiUrl('/api/auth/me'), {
+          headers: fetchHeaders,
+          credentials: 'include'
+        });
+        if (res.ok && res.data && res.data.status === 'success' && (res.data.user || res.data.username)) {
+          // Already logged in - redirect to home or requested protected route
+          const redirectTarget = params.get('redirect') || params.get('returnUrl');
+          if (redirectTarget && redirectTarget.startsWith('/') && !redirectTarget.startsWith('//')) {
+            window.location.href = redirectTarget;
+          } else {
+            window.location.href = '/';
           }
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
     });
   </script>
 </body>

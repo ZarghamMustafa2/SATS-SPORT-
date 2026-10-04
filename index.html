@@ -8872,8 +8872,11 @@
     }
 
     // Defensive API fetch wrapper (Step 8)
-    async function safeFetchJson(url, options) {
+    async function safeFetchJson(url, options = {}) {
       try {
+        if (!options.credentials) {
+          options.credentials = 'include';
+        }
         const res = await fetch(url, options);
         const contentType = res.headers.get('content-type') || '';
         let data;
@@ -10064,6 +10067,12 @@
       if (loggedIn) loggedIn.style.display = 'flex';
       const nameEl = document.getElementById('headerUserName');
       if (nameEl) nameEl.innerText = user.username;
+
+      const mobBtn = document.getElementById('mobileHeaderLoginBtn');
+      if (mobBtn) {
+        mobBtn.innerText = user.username;
+        mobBtn.onclick = toggleUserProfileDropdown;
+      }
       
       // Update balance & exposure from real database
       const rawBal = parseFloat(String(user.balance || user.avail || '0').replace(/[^0-9.-]/g, '')) || 0;
@@ -10105,12 +10114,11 @@
     async function handleUserLogout() {
       const token = localStorage.getItem('auth_token');
       try {
-        if (token) {
-          await safeFetchJson(getApiUrl('/api/auth/logout'), {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token }
-          });
-        }
+        await safeFetchJson(getApiUrl('/api/auth/logout'), {
+          method: 'POST',
+          headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+          credentials: 'include'
+        });
       } catch (e) {}
 
       localStorage.removeItem('auth_token');
@@ -10120,6 +10128,11 @@
       const loggedOut = document.getElementById('desktopLoggedOut');
       if (loggedIn) loggedIn.style.display = 'none';
       if (loggedOut) loggedOut.style.display = 'flex';
+      const mobBtn = document.getElementById('mobileHeaderLoginBtn');
+      if (mobBtn) {
+        mobBtn.innerText = 'Login';
+        mobBtn.onclick = openMobileLogin;
+      }
       const d = document.getElementById('userProfileDropdown');
       if (d) d.classList.remove('show');
       showToast('Logged out successfully.');
@@ -10151,29 +10164,31 @@
         else if (path.includes('/withdraw')) protectedArea = 'withdraw';
       }
 
-      if (!token) {
-        localStorage.removeItem('current_user');
-        window.currentUser = null;
-        const loggedIn = document.getElementById('desktopLoggedIn');
-        const loggedOut = document.getElementById('desktopLoggedOut');
-        if (loggedIn) loggedIn.style.display = 'none';
-        if (loggedOut) loggedOut.style.display = 'flex';
-
-        if (protectedArea) {
-          const targetUrl = window.location.pathname + window.location.search;
-          window.location.replace('/login?redirect=' + encodeURIComponent(targetUrl));
-        }
-        return;
-      }
-
       try {
+        const fetchHeaders = {};
+        if (token) {
+          fetchHeaders['Authorization'] = 'Bearer ' + token;
+        }
         const result = await safeFetchJson(getApiUrl('/api/auth/me'), {
-          headers: { 'Authorization': 'Bearer ' + token }
+          headers: fetchHeaders,
+          credentials: 'include'
         });
         const data = result.data;
-        if (result.ok && data.status === 'success' && data.user) {
-          window.currentUser = data.user;
-          updateUserLoggedInState(data.user);
+        if (result.ok && data.status === 'success' && (data.user || data.username)) {
+          const authUser = data.user || {
+            username: data.username,
+            userId: data.userId,
+            role: data.role,
+            status: data.status,
+            balance: data.balance,
+            exposure: data.exposure,
+            availableBalance: data.availableBalance
+          };
+          window.currentUser = authUser;
+          if (data.token) localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('current_user', JSON.stringify(authUser));
+          updateUserLoggedInState(authUser);
+
           if (protectedArea) {
             if (protectedArea === 'deposit' || protectedArea === 'withdraw') {
               openDepositModal();
@@ -10184,6 +10199,7 @@
             }
           }
         } else {
+          // Unauthenticated
           localStorage.removeItem('auth_token');
           localStorage.removeItem('current_user');
           window.currentUser = null;
@@ -10191,12 +10207,23 @@
           const loggedOut = document.getElementById('desktopLoggedOut');
           if (loggedIn) loggedIn.style.display = 'none';
           if (loggedOut) loggedOut.style.display = 'flex';
+          const mobBtn = document.getElementById('mobileHeaderLoginBtn');
+          if (mobBtn) {
+            mobBtn.innerText = 'Login';
+            mobBtn.onclick = openMobileLogin;
+          }
+
           if (protectedArea) {
-            window.location.replace('/login?redirect=' + encodeURIComponent(window.location.pathname + window.location.search));
+            const targetUrl = window.location.pathname + window.location.search;
+            window.location.replace('/login?redirect=' + encodeURIComponent(targetUrl));
           }
         }
       } catch (e) {
         console.error('Session verify error:', e);
+        if (protectedArea) {
+          const targetUrl = window.location.pathname + window.location.search;
+          window.location.replace('/login?redirect=' + encodeURIComponent(targetUrl));
+        }
       }
     }
 

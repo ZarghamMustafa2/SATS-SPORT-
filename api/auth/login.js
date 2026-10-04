@@ -5,6 +5,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -24,7 +25,9 @@ module.exports = async function handler(req, res) {
     const result = authDb.authenticate(username, password);
     if (!result.success) {
       const status = (result.reason === 'account_inactive' || result.reason === 'unsupported_auth_method') ? 403 : 401;
-      return sendJson(res, status, { status: 'error', message: result.message, reason: result.reason });
+      return sendJson(res, status, { status: 'error', message: result.message, reason: result.reason }, {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+      });
     }
 
     await authDb.saveUsersToDiskAsync();
@@ -39,7 +42,10 @@ module.exports = async function handler(req, res) {
       token: session.token,
       user: authDb.sanitizeUser(result.user),
       redirectTo
-    }, { 'Set-Cookie': cookieVal });
+    }, {
+      'Set-Cookie': cookieVal,
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+    });
   } catch (err) {
     console.error('Login error:', err);
     return sendJson(res, 500, { status: 'error', message: 'Internal server error' });

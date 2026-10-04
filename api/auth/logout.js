@@ -5,6 +5,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -29,9 +30,12 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  const clearCookie = 'auth_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0';
+  const clearCookie = 'auth_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
   return sendJson(res, 200, {
     status: 'success',
     message: 'Logged out successfully'
-  }, { 'Set-Cookie': clearCookie });
+  }, {
+    'Set-Cookie': clearCookie,
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+  });
 };

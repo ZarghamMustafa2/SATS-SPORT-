@@ -5,6 +5,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -24,7 +25,7 @@ module.exports = async function handler(req, res) {
       status: 'success',
       available: check.available,
       message: check.message
-    });
+    }, { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' });
   }
 
   // 2. POST: Real Normal User Registration
@@ -38,7 +39,7 @@ module.exports = async function handler(req, res) {
         return sendJson(res, 400, {
           status: 'error',
           message: 'Password and Confirm Password do not match.'
-        });
+        }, { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' });
       }
 
       // Normal user self-registration ONLY - any role parameter provided by client is ignored
@@ -53,10 +54,15 @@ module.exports = async function handler(req, res) {
         token: session.token,
         user: newUser,
         redirectTo: '/'
-      }, { 'Set-Cookie': cookieVal });
+      }, {
+        'Set-Cookie': cookieVal,
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+      });
     } catch (err) {
       const statusCode = err.statusCode || (err.message && (err.message.includes('already registered') || err.message.includes('already taken')) ? 409 : 400);
-      return sendJson(res, statusCode, { status: 'error', message: err.message });
+      return sendJson(res, statusCode, { status: 'error', message: err.message }, {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+      });
     }
   }
 

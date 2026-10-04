@@ -50,6 +50,7 @@ module.exports = async function handler(req, res) {
       service: 'SatsSport Backend Gateway',
       version: '3.1.0',
       activeProvider: activeProvider,
+      hasBlobToken: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       uptime: process.uptime(),
       timestamp: new Date().toISOString()
     });
