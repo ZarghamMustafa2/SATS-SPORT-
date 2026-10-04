@@ -12,7 +12,8 @@
     "share": "100%",
     "exp": "0 Rs.",
     "avail": "10,000,000 Rs.",
-    "createdAt": "2026-09-30T17:58:28.253Z"
+    "createdAt": "2026-09-30T17:58:28.253Z",
+    "tokenVersion": 0
   },
   {
     "id": "8764246",
@@ -53,7 +54,8 @@
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T17:58:28.298Z"
+    "createdAt": "2026-09-30T17:58:28.298Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790791108314_16",
@@ -129,7 +131,8 @@
         "fancyPrice": 0,
         "placedAt": "2026-10-02T10:18:03.729Z"
       }
-    ]
+    ],
+    "tokenVersion": 0
   },
   {
     "id": "8742441",
@@ -149,7 +152,8 @@
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T17:59:02.233Z"
+    "createdAt": "2026-09-30T17:59:02.233Z",
+    "tokenVersion": 0
   },
   {
     "id": "8737929",
@@ -169,7 +173,8 @@
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T17:59:02.298Z"
+    "createdAt": "2026-09-30T17:59:02.298Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790791142397_644",
@@ -186,7 +191,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T17:59:02.397Z"
+    "createdAt": "2026-09-30T17:59:02.397Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790791142468_230",
@@ -203,7 +209,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T17:59:02.468Z"
+    "createdAt": "2026-09-30T17:59:02.468Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790791142504_501",
@@ -220,7 +227,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T17:59:02.504Z"
+    "createdAt": "2026-09-30T17:59:02.504Z",
+    "tokenVersion": 0
   },
   {
     "id": "8758378",
@@ -240,7 +248,8 @@
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T18:02:19.996Z"
+    "createdAt": "2026-09-30T18:02:19.996Z",
+    "tokenVersion": 0
   },
   {
     "id": "8773343",
@@ -260,7 +269,8 @@
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T18:02:20.063Z"
+    "createdAt": "2026-09-30T18:02:20.063Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790791340170_687",
@@ -277,7 +287,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T18:02:20.170Z"
+    "createdAt": "2026-09-30T18:02:20.170Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790791340246_557",
@@ -294,7 +305,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T18:02:20.246Z"
+    "createdAt": "2026-09-30T18:02:20.246Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790791340285_502",
@@ -311,7 +323,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T18:02:20.285Z"
+    "createdAt": "2026-09-30T18:02:20.285Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790793985271_612",
@@ -328,7 +341,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T18:46:25.271Z"
+    "createdAt": "2026-09-30T18:46:25.271Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790795111758_390",
@@ -345,7 +359,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T19:05:11.758Z"
+    "createdAt": "2026-09-30T19:05:11.758Z",
+    "tokenVersion": 0
   },
   {
     "id": "8703516",
@@ -365,7 +380,8 @@
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T19:05:40.426Z"
+    "createdAt": "2026-09-30T19:05:40.426Z",
+    "tokenVersion": 0
   },
   {
     "id": "8745805",
@@ -385,7 +401,8 @@
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T19:05:40.489Z"
+    "createdAt": "2026-09-30T19:05:40.489Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790795140570_617",
@@ -402,7 +419,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T19:05:40.570Z"
+    "createdAt": "2026-09-30T19:05:40.570Z",
+    "tokenVersion": 0
   },
   {
     "id": "8700460",
@@ -422,7 +440,8 @@
     "phone": "1234567890",
     "reference": "Headquarters",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T19:41:03.185Z"
+    "createdAt": "2026-09-30T19:41:03.185Z",
+    "tokenVersion": 0
   },
   {
     "id": "8762617",
@@ -442,7 +461,8 @@
     "phone": "9876543210",
     "reference": "",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T19:41:03.244Z"
+    "createdAt": "2026-09-30T19:41:03.244Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1790797263293_593",
@@ -459,7 +479,8 @@
     "share": "0%",
     "exp": "0 Rs.",
     "avail": "0 Rs.",
-    "createdAt": "2026-09-30T19:41:03.293Z"
+    "createdAt": "2026-09-30T19:41:03.293Z",
+    "tokenVersion": 0
   },
   {
     "id": "8735856",
@@ -479,7 +500,8 @@
     "phone": "5551234",
     "reference": "HeadOffice",
     "domain": "betproexch.com",
-    "createdAt": "2026-09-30T19:41:13.047Z"
+    "createdAt": "2026-09-30T19:41:13.047Z",
+    "tokenVersion": 0
   },
   {
     "id": "usr_1791137439190_501",
@@ -531,6 +553,32 @@
     "commission": "2.00",
     "lastLogin": "2026-10-04T18:11:55.918Z",
     "createdAt": "2026-10-04T18:11:55.878Z",
+    "tokenVersion": 1
+  },
+  {
+    "id": "usr_1791138884751_976",
+    "username": "test_rev_1791138884722",
+    "passwordHash": "16c3d7e3f28eb979e13ff1f1d503c4ab0d5e31e5bdfc86cf915296450579328b8869d35f478724578db46797419422e13f48cee14a1d7d0d5cca7136261741d2",
+    "passwordSalt": "7513ddcbc9d2d64f1ea62d9f32428892",
+    "role": "user",
+    "status": "active",
+    "parentId": null,
+    "createdBy": "SELF_REGISTER",
+    "credit": "0",
+    "balance": "0 Rs.",
+    "pl": "0 Rs.",
+    "share": "0%",
+    "exp": "0 Rs.",
+    "avail": "0 Rs.",
+    "domain": "satsport.co",
+    "phone": "",
+    "reference": "",
+    "notes": "",
+    "canBet": true,
+    "canSettlePL": false,
+    "commission": "2.00",
+    "lastLogin": "2026-10-04T18:34:44.797Z",
+    "createdAt": "2026-10-04T18:34:44.751Z",
     "tokenVersion": 1
   }
 ]
