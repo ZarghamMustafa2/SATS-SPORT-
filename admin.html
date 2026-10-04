@@ -1954,7 +1954,7 @@ Boland v Knights                        </a>
                             </div>
 
                             <div class="col-12 col-md-6" id="editsection1" style="display: block;">
-                                <form id="editClientForm" method="post" onsubmit="event.preventDefault(); showToast('User updated successfully!');">
+                                <form id="editClientForm" method="post" onsubmit="handleEditClientSubmit(event)">
                                     <div class="card">
                                         <div class="card-header">
                                             Edit Client - <strong id="editClientHeaderUser">Jimmy3221</strong>
@@ -1985,9 +1985,17 @@ Boland v Knights                        </a>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="col-4 col-md-3 col-form-label">Password</label>
+                                                <label class="col-4 col-md-3 col-form-label">Reset Password</label>
                                                 <div class="col-8 col-md-6">
-                                                    <input class="form-control" type="text" id="user_Password_Edit" value="">
+                                                    <div class="input-group">
+                                                        <input class="form-control" type="password" id="user_Password_Edit" placeholder="Leave blank to keep unchanged" autocomplete="new-password">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-warning text-dark font-weight-bold" type="button" onclick="openAdminResetPasswordModal(currentEditingId, currentEditingUser)">
+                                                                <i class="fas fa-key mr-1"></i> Reset
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <small class="text-muted">Enter a new password (min 6 chars) or click Reset.</small>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
@@ -3177,6 +3185,37 @@ Boland v Knights                        </a>
                                     <button type="submit" id="btnSaveApiSettings" class="btn btn-primary btn-sm font-weight-bold"><i class="fas fa-save mr-1"></i> Save Configuration</button>
                                 </div>
                             </form>
+                    </div>
+
+                    <!-- Reset User Password Modal -->
+                    <div id="modalResetPassword" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+                        <div style="background:#fff; border-radius:8px; width:100%; max-width:480px; box-shadow:0 10px 25px rgba(0,0,0,0.3); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#f8fafc; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:16px; color:#1e293b;"><i class="fas fa-key text-warning mr-1"></i> Reset User Password</strong>
+                                <button type="button" class="close" onclick="closeAdminResetPasswordModal()" style="font-size:24px; line-height:1; border:none; background:none; cursor:pointer;">&times;</button>
+                            </div>
+                            <form onsubmit="submitAdminResetPassword(event)">
+                                <div style="padding:20px;">
+                                    <input type="hidden" id="resetModalUserId" value="">
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold small text-muted">TARGET USER</label>
+                                        <input type="text" id="resetModalUsername" class="form-control" readonly style="background:#f1f5f9; font-weight:600;">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold small text-muted">NEW PASSWORD</label>
+                                        <input type="password" id="resetModalNewPassword" class="form-control" placeholder="Enter new password (min 6 chars)" required minlength="6" autocomplete="new-password">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold small text-muted">CONFIRM NEW PASSWORD</label>
+                                        <input type="password" id="resetModalConfirmPassword" class="form-control" placeholder="Re-enter new password" required minlength="6" autocomplete="new-password">
+                                    </div>
+                                    <div id="resetModalError" class="alert alert-danger py-2 small mb-0" style="display:none;"></div>
+                                </div>
+                                <div style="padding:12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:8px;">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminResetPasswordModal()">Cancel</button>
+                                    <button type="submit" id="resetModalSubmitBtn" class="btn btn-warning btn-sm font-weight-bold"><i class="fas fa-key mr-1"></i> Reset Password</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
@@ -3419,42 +3458,51 @@ Boland v Knights                        </a>
             }
         }
 
-        // Fetch Admin Users Downline from Server
-        async function fetchAdminUsers() {
+        // Fetch Admin Users Downline from Server (with backend search query support)
+        async function fetchAdminUsers(searchQuery) {
             var token = getAdminAuthToken();
             if (!token) return;
 
             try {
-                var result = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                var url = getApiUrl('/api/admin/users');
+                if (searchQuery && typeof searchQuery === 'string' && searchQuery.trim()) {
+                    url += '?search=' + encodeURIComponent(searchQuery.trim());
+                }
+                var result = await safeFetchJson(url, {
                     headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
-                    if (data.users.length > 0) {
-                        clientsList = data.users.map(function(u) {
-                            var balNum = parseFloat(String(u.balance || '0').replace(/[^0-9.-]/g, ''));
-                            var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
-                            var availNum = parseFloat(String(u.avail || u.balance || '0').replace(/[^0-9.-]/g, ''));
-                            var availStr = (!isNaN(availNum) ? availNum.toFixed(2) : '0.00') + ' Rs.';
-                            var expNum = parseFloat(String(u.exp || u.exposure || '0').replace(/[^0-9.-]/g, ''));
-                            var expStr = (!isNaN(expNum) ? expNum.toFixed(2) : '0.00') + ' Rs.';
-                            var shrStr = (u.share != null ? u.share.toString().replace('%', '') : '0') + '%';
-                            return {
-                                id: u.id,
-                                username: u.username,
-                                type: ROLE_LABELS[u.role] || u.role,
-                                role: u.role,
-                                credit: u.credit != null ? u.credit.toString() : '0',
-                                balance: balStr,
-                                pl: u.pl || '0.00 Rs.',
-                                share: shrStr,
-                                exp: expStr,
-                                avail: availStr,
-                                active: u.status === 'active',
-                                domain: u.domain || 'satsport.co'
-                            };
-                        });
-                    }
+                    clientsList = data.users.map(function(u) {
+                        var balNum = parseFloat(String(u.balance || '0').replace(/[^0-9.-]/g, ''));
+                        var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
+                        var availNum = parseFloat(String(u.avail || u.balance || '0').replace(/[^0-9.-]/g, ''));
+                        var availStr = (!isNaN(availNum) ? availNum.toFixed(2) : '0.00') + ' Rs.';
+                        var expNum = parseFloat(String(u.exp || u.exposure || '0').replace(/[^0-9.-]/g, ''));
+                        var expStr = (!isNaN(expNum) ? expNum.toFixed(2) : '0.00') + ' Rs.';
+                        var shrStr = (u.share != null ? u.share.toString().replace('%', '') : '0') + '%';
+                        return {
+                            id: u.id,
+                            username: u.username,
+                            type: ROLE_LABELS[u.role] || u.role,
+                            role: u.role,
+                            credit: u.credit != null ? u.credit.toString() : '0',
+                            balance: balStr,
+                            pl: u.pl || '0.00 Rs.',
+                            share: shrStr,
+                            exp: expStr,
+                            avail: availStr,
+                            active: u.status === 'active',
+                            domain: u.domain || 'satsport.co',
+                            createdAt: u.createdAt || null,
+                            lastLogin: u.lastLogin || null,
+                            phone: u.phone || '',
+                            reference: u.reference || '',
+                            notes: u.notes || '',
+                            canBet: u.canBet !== false,
+                            canSettlePL: u.canSettlePL !== false
+                        };
+                    });
                     renderClientsTable();
                     loadAdminBets();
                 }
@@ -3916,13 +3964,16 @@ Boland v Knights                        </a>
                     '<td class="exp-cell">' + client.exp + '</td>' +
                     '<td class="avail-cell">' + client.avail + '</td>' +
                     '<td align="right" style="padding-right:24px;">' +
-                        '<a class="btn btn-warning btn-sm" href="/Accounts/Cash?id=' + client.id + '" onclick="popup_hawala(\'/Accounts/Cash\', \'' + client.id + '\', \'' + client.username + '\', event)">' +
+                        '<a class="btn btn-warning btn-sm" href="/Accounts/Cash?id=' + client.id + '" onclick="popup_hawala(\'/Accounts/Cash\', \'' + client.id + '\', \'' + client.username + '\', event)" title="Hawala Cash">' +
                             '<strong>C</strong>' +
                         '</a> ' +
-                        '<a class="btn btn-primary btn-sm" href="/Users/Edit?id=' + client.id + '" onclick="navigateAdmin(\'/Users/Edit?id=' + client.id + '\', event)">' +
+                        '<a class="btn btn-primary btn-sm" href="/Users/Edit?id=' + client.id + '" onclick="navigateAdmin(\'/Users/Edit?id=' + client.id + '\', event)" title="Edit Client">' +
                             '<i class="fas fa-pencil-alt"></i>' +
                         '</a> ' +
-                        '<a class="btn btn-info btn-sm" href="/Accounts/Ledger?id=' + client.id + '" onclick="navigateAdmin(\'/Accounts/Ledger?id=' + client.id + '\', event)">' +
+                        '<button class="btn btn-dark btn-sm" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')" title="Reset Password">' +
+                            '<i class="fas fa-key"></i>' +
+                        '</button> ' +
+                        '<a class="btn btn-info btn-sm" href="/Accounts/Ledger?id=' + client.id + '" onclick="navigateAdmin(\'/Accounts/Ledger?id=' + client.id + '\', event)" title="Ledger">' +
                             '<strong>L</strong>' +
                         '</a> ' +
                         '<button class="btn btn-success btn-sm btn-status-toggle" onclick="event.stopPropagation(); toggleUserStatus(this)" title="Toggle Active/Inactive">' +
@@ -3952,6 +4003,7 @@ Boland v Knights                        </a>
                                 '</span>' +
                                 '<span class="options-line2">' +
                                     '<button class="btn-dtr btn-dtr-a" onclick="event.stopPropagation(); toggleUserStatus(this)"><strong>' + (client.active ? 'A' : 'D') + '</strong></button>' +
+                                    '<button class="btn-dtr" style="background:#343a40; color:#fff;" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')" title="Reset Password"><i class="fas fa-key"></i></button>' +
                                 '</span>' +
                             '</li>' +
                         '</ul>' +
@@ -3963,9 +4015,11 @@ Boland v Knights                        </a>
                 bookTr.id = 'bookrow-' + client.id;
                 bookTr.style.display = 'none';
                 bookTr.className = 'bg-light desktop-book-row';
+                var createdStr = client.createdAt ? new Date(client.createdAt).toLocaleDateString() : 'N/A';
+                var loginStr = client.lastLogin ? new Date(client.lastLogin).toLocaleString() : 'Never';
                 bookTr.innerHTML = 
                     '<td colspan="9" style="padding:10px 15px;">' +
-                        '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Currency:</strong> Rs. | <strong>Status:</strong> Active</small>' +
+                        '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Status:</strong> ' + (client.active ? '<span class="text-success font-weight-bold">Active</span>' : '<span class="text-danger font-weight-bold">Inactive</span>') + ' | <strong>Created:</strong> ' + createdStr + ' | <strong>Last Login:</strong> ' + loginStr + ' | <button class="btn btn-sm btn-outline-warning py-0 px-2 ml-2 text-dark font-weight-bold" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-key mr-1"></i>Reset Password</button></small>' +
                     '</td>';
                 tbody.appendChild(bookTr);
             });
@@ -4023,14 +4077,16 @@ Boland v Knights                        </a>
             navigateAdmin(url);
         }
 
-        // Users Filter
+        // Users Filter & Real Backend Database Search
+        var userSearchDebounceTimer = null;
         function filterClientsList(term) {
             var q = (term || '').toLowerCase().trim();
             var rows = document.querySelectorAll('#clientsTableBody tr[data-username]');
             var count = 0;
             rows.forEach(function(r) {
                 var u = (r.getAttribute('data-username') || '').toLowerCase();
-                if (u.includes(q)) {
+                var idAttr = (r.id || '').replace('row-', '').toLowerCase();
+                if (!q || u.includes(q) || idAttr.includes(q)) {
                     r.style.display = '';
                     count++;
                 } else {
@@ -4040,13 +4096,20 @@ Boland v Knights                        </a>
                 }
             });
             document.getElementById('tableLedger_info').innerText = 'Showing 1 to ' + count + ' of ' + rows.length + ' entries';
+
+            // Debounced query to backend database
+            clearTimeout(userSearchDebounceTimer);
+            userSearchDebounceTimer = setTimeout(function() {
+                fetchAdminUsers(q);
+            }, 350);
         }
 
-        function handleUserSearch() {
+        async function handleUserSearch() {
             var val = document.getElementById('myInput').value.trim();
             navigateAdmin('/Accounts/Chart');
-            document.getElementById('usersListSearchInput').value = val;
-            filterClientsList(val);
+            var searchInput = document.getElementById('usersListSearchInput');
+            if (searchInput) searchInput.value = val;
+            await fetchAdminUsers(val);
         }
 
         // Create User
@@ -4102,12 +4165,96 @@ Boland v Knights                        </a>
             currentEditingUser = user.username;
             currentEditingId = uid;
 
-            document.getElementById('editUserDisplayTitle').innerText = user.username;
-            document.getElementById('editClientHeaderUser').innerText = user.username;
-            document.getElementById('editUsernameField').innerText = user.username;
-            document.getElementById('editUserIdField').innerText = uid;
+            if (document.getElementById('editUserDisplayTitle')) document.getElementById('editUserDisplayTitle').innerText = user.username;
+            if (document.getElementById('editClientHeaderUser')) document.getElementById('editClientHeaderUser').innerText = user.username;
+            if (document.getElementById('editUsernameField')) document.getElementById('editUsernameField').innerText = user.username;
+            if (document.getElementById('editUserIdField')) document.getElementById('editUserIdField').innerText = uid;
+
+            if (document.getElementById('user_Password_Edit')) document.getElementById('user_Password_Edit').value = '';
+            if (document.getElementById('user_IsActive')) document.getElementById('user_IsActive').checked = user.active !== false;
+            if (document.getElementById('user_CanBet')) document.getElementById('user_CanBet').checked = user.canBet !== false;
+            if (document.getElementById('user_CanSettlePL')) document.getElementById('user_CanSettlePL').checked = !!user.canSettlePL;
+            if (document.getElementById('user_Phone')) document.getElementById('user_Phone').value = user.phone || '';
+            if (document.getElementById('user_Reference')) document.getElementById('user_Reference').value = user.reference || '';
+            if (document.getElementById('user_Notes')) document.getElementById('user_Notes').value = user.notes || '';
 
             showhide();
+        }
+
+        async function handleEditClientSubmit(e) {
+            if (e) e.preventDefault();
+            var token = getAdminAuthToken();
+            if (!token) {
+                alert('Authentication required. Please login.');
+                return;
+            }
+
+            var newPassword = document.getElementById('user_Password_Edit') ? document.getElementById('user_Password_Edit').value.trim() : '';
+            var isActive = document.getElementById('user_IsActive') ? document.getElementById('user_IsActive').checked : true;
+            var canBet = document.getElementById('user_CanBet') ? document.getElementById('user_CanBet').checked : true;
+            var canSettlePL = document.getElementById('user_CanSettlePL') ? document.getElementById('user_CanSettlePL').checked : false;
+            var phone = document.getElementById('user_Phone') ? document.getElementById('user_Phone').value.trim() : '';
+            var reference = document.getElementById('user_Reference') ? document.getElementById('user_Reference').value.trim() : '';
+            var notes = document.getElementById('user_Notes') ? document.getElementById('user_Notes').value.trim() : '';
+
+            try {
+                // If a new password was provided in the input, reset it securely
+                if (newPassword) {
+                    if (newPassword.length < 6) {
+                        alert('New password must be at least 6 characters.');
+                        return;
+                    }
+                    var pwdRes = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token,
+                            'X-Admin-Request': 'true'
+                        },
+                        body: JSON.stringify({
+                            action: 'reset_password',
+                            userId: currentEditingId,
+                            newPassword: newPassword
+                        })
+                    });
+                    if (!pwdRes.ok || !pwdRes.data || pwdRes.data.status !== 'success') {
+                        alert('Password reset failed: ' + ((pwdRes.data && pwdRes.data.message) || 'Error'));
+                        return;
+                    }
+                }
+
+                // Update client details
+                var editRes = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        action: 'edit_user',
+                        userId: currentEditingId,
+                        status: isActive ? 'active' : 'suspended',
+                        canBet: canBet,
+                        canSettlePL: canSettlePL,
+                        phone: phone,
+                        reference: reference,
+                        notes: notes
+                    })
+                });
+
+                if (editRes.ok && editRes.data && editRes.data.status === 'success') {
+                    showToast('Client ' + currentEditingUser + ' updated successfully!');
+                    if (document.getElementById('user_Password_Edit')) document.getElementById('user_Password_Edit').value = '';
+                    await fetchAdminUsers();
+                    navigateAdmin('/Accounts/Chart');
+                } else {
+                    alert('Update failed: ' + ((editRes.data && editRes.data.message) || 'Error occurred'));
+                }
+            } catch (err) {
+                console.error('Error updating client:', err);
+                alert('Network error while updating user details: ' + err.message);
+            }
         }
 
         function showhide() {
@@ -4213,7 +4360,7 @@ Boland v Knights                        </a>
             }
             var token = getAdminAuthToken();
             try {
-                var res = await safeFetchJson(getApiUrl('/api/admin/users/finance'), {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -4251,7 +4398,7 @@ Boland v Knights                        </a>
             }
             var token = getAdminAuthToken();
             try {
-                var res = await safeFetchJson(getApiUrl('/api/admin/users/finance'), {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -4288,7 +4435,7 @@ Boland v Knights                        </a>
             }
             var token = getAdminAuthToken();
             try {
-                var res = await safeFetchJson(getApiUrl('/api/admin/users/finance'), {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -4333,13 +4480,14 @@ Boland v Knights                        </a>
             }
 
             try {
-                var result = await safeFetchJson(getApiUrl('/api/admin/users/status'), {
+                var result = await safeFetchJson(getApiUrl('/api/admin/users'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
                     },
-                    body: JSON.stringify({ targetUserId: clientId })
+                    body: JSON.stringify({ action: 'status', targetUserId: clientId })
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success') {
@@ -4350,6 +4498,109 @@ Boland v Knights                        </a>
                 }
             } catch (err) {
                 alert('Network error: ' + err.message);
+            }
+        }
+
+        // Admin Password Reset Modal Handlers
+        function openAdminResetPasswordModal(userId, username) {
+            var modal = document.getElementById('modalResetPassword');
+            var idInput = document.getElementById('resetModalUserId');
+            var userInput = document.getElementById('resetModalUsername');
+            var newPass = document.getElementById('resetModalNewPassword');
+            var confPass = document.getElementById('resetModalConfirmPassword');
+            var errEl = document.getElementById('resetModalError');
+
+            if (idInput) idInput.value = userId || '';
+            if (userInput) userInput.value = username || '';
+            if (newPass) newPass.value = '';
+            if (confPass) confPass.value = '';
+            if (errEl) {
+                errEl.style.display = 'none';
+                errEl.innerText = '';
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeAdminResetPasswordModal() {
+            var modal = document.getElementById('modalResetPassword');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function submitAdminResetPassword(e) {
+            if (e) e.preventDefault();
+            var token = getAdminAuthToken();
+            if (!token) {
+                alert('Authentication required. Please login.');
+                return;
+            }
+
+            var userId = document.getElementById('resetModalUserId').value;
+            var username = document.getElementById('resetModalUsername').value;
+            var newPass = document.getElementById('resetModalNewPassword').value;
+            var confPass = document.getElementById('resetModalConfirmPassword').value;
+            var errEl = document.getElementById('resetModalError');
+            var submitBtn = document.getElementById('resetModalSubmitBtn');
+
+            if (!newPass || newPass.length < 6) {
+                if (errEl) {
+                    errEl.innerText = 'Password must be at least 6 characters.';
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
+            if (newPass !== confPass) {
+                if (errEl) {
+                    errEl.innerText = 'Passwords do not match.';
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
+            if (errEl) errEl.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Resetting...';
+            }
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        action: 'reset_password',
+                        userId: userId,
+                        newPassword: newPass
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    showToast('Password for ' + username + ' reset successfully!');
+                    closeAdminResetPasswordModal();
+                } else {
+                    var msg = (res.data && res.data.message) || 'Password reset failed.';
+                    if (errEl) {
+                        errEl.innerText = msg;
+                        errEl.style.display = 'block';
+                    } else {
+                        alert(msg);
+                    }
+                }
+            } catch (err) {
+                console.error('Password reset error:', err);
+                if (errEl) {
+                    errEl.innerText = 'Network error: ' + err.message;
+                    errEl.style.display = 'block';
+                }
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-key mr-1"></i> Reset Password';
+                }
             }
         }
 

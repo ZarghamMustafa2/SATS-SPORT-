@@ -27,14 +27,43 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
   }
 
-  // GET: Fetch downline users
+  const urlObj = new URL(req.url, 'http://localhost');
+  const searchParams = urlObj.searchParams;
+
+  // GET: Fetch downline users or specific user details with search support
   if (req.method === 'GET') {
     try {
       await authDb.hydrateUsersAsync();
-      const downline = authDb.getDownlineUsers(session);
+
+      const singleId = searchParams.get('id') || searchParams.get('userId');
+      if (singleId) {
+        const user = authDb.getUserById(singleId);
+        if (!user) {
+          return sendJson(res, 404, { status: 'error', message: 'User not found' });
+        }
+        return sendJson(res, 200, {
+          status: 'success',
+          user: authDb.sanitizeUser(user),
+          bets: authDb.getUserBets(singleId)
+        });
+      }
+
+      let downline = authDb.getDownlineUsers(session);
+
+      // Backend Database Search by Username or User ID
+      const query = (searchParams.get('search') || searchParams.get('q') || '').trim().toLowerCase();
+      if (query) {
+        downline = downline.filter(u => {
+          const matchU = u.username && u.username.toLowerCase().includes(query);
+          const matchId = u.id && String(u.id).toLowerCase().includes(query);
+          return matchU || matchId;
+        });
+      }
+
       return sendJson(res, 200, {
         status: 'success',
         currentUser: authDb.sanitizeUser(authDb.getUserById(session.userId)),
+        totalUsers: downline.length,
         users: downline
       });
     } catch (err) {
@@ -43,18 +72,56 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // POST: Dispatch between Finance (deposit, withdraw, credit) and Status (active/inactive)
+  // POST: Dispatch between Password Reset, User Edit, Status Toggle, and Finance
   if (req.method === 'POST') {
     try {
       const body = await parseJsonBody(req);
-      const { action, userId, targetUserId, amount, description } = body;
+      const { action, userId, targetUserId, newPassword, password, amount, description } = body;
       const targetId = userId || targetUserId;
 
-      // Status Toggle
-      if (action === 'status' || (!action && targetUserId)) {
-        if (!targetId) {
-          return sendJson(res, 400, { status: 'error', message: 'targetUserId is required' });
+      if (!targetId) {
+        return sendJson(res, 400, { status: 'error', message: 'targetUserId is required' });
+      }
+
+      // 1. Admin Reset Password
+      if (action === 'reset_password' || action === 'change_password') {
+        const passToSet = newPassword || password;
+        if (!passToSet || passToSet.length < 6) {
+          return sendJson(res, 400, { status: 'error', message: 'New password must be at least 6 characters' });
         }
+
+        const updatedUser = authDb.resetUserPassword({
+          requesterUser: session,
+          targetUserId: targetId,
+          newPassword: passToSet
+        });
+        await authDb.saveUsersToDiskAsync();
+
+        return sendJson(res, 200, {
+          status: 'success',
+          message: `Password for ${updatedUser.username} has been reset successfully.`,
+          user: updatedUser
+        });
+      }
+
+      // 2. Admin Edit User Details
+      if (action === 'edit_user' || action === 'update_user') {
+        const updatedUser = authDb.updateUserDetails({
+          requesterUser: session,
+          targetUserId: targetId,
+          updates: body.updates || body
+        });
+        await authDb.saveUsersToDiskAsync();
+
+        return sendJson(res, 200, {
+          status: 'success',
+          message: `User ${updatedUser.username} updated successfully.`,
+          user: updatedUser
+        });
+      }
+
+      // 3. Status Toggle (Active / Inactive)
+      if (action === 'status' || (!action && targetId && !amount)) {
         const updatedUser = authDb.toggleUserStatus({
           requesterUser: session,
           targetUserId: targetId
@@ -67,11 +134,8 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      // Finance Operations
+      // 4. Finance Operations (Deposit, Withdraw, Credit Limit)
       if (action === 'deposit' || action === 'withdraw' || action === 'credit') {
-        if (!targetId) {
-          return sendJson(res, 400, { status: 'error', message: 'Target userId is required.' });
-        }
         if (amount === undefined || amount === null || amount === '') {
           return sendJson(res, 400, { status: 'error', message: 'Amount is required.' });
         }

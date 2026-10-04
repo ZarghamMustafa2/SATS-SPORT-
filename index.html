@@ -7488,6 +7488,7 @@
         <div class="form-group">
           <label id="modalUsernameLabel">Username</label>
           <input type="text" placeholder="Enter username" id="modalUsername" class="modal-input" autocomplete="username">
+          <div id="modalUsernameCheckMsg" style="font-size: 12px; margin-top: 5px; display: none;"></div>
         </div>
         <div class="form-check-wrap" id="rememberUserWrap">
           <input type="checkbox" id="rememberUser" checked>
@@ -7498,6 +7499,15 @@
           <div class="password-wrap" style="position: relative;">
             <input type="password" placeholder="Enter password (min 6 characters)" id="modalPassword" class="modal-input" autocomplete="current-password">
             <span class="password-eye" onclick="togglePasswordVisibility()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#333333"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </span>
+          </div>
+        </div>
+        <div class="form-group" id="confirmPasswordGroup" style="display: none;">
+          <label id="modalConfirmPasswordLabel">Confirm Password</label>
+          <div class="password-wrap" style="position: relative;">
+            <input type="password" placeholder="Confirm your password" id="modalConfirmPassword" class="modal-input" autocomplete="new-password">
+            <span class="password-eye" onclick="toggleConfirmPasswordVisibility()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="#333333"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
             </span>
           </div>
@@ -8887,12 +8897,16 @@
     }
 
     let authModalMode = 'login';
+    let checkUsernameTimer = null;
+
     function switchAuthTab(mode) {
       authModalMode = mode;
       const tabLogin = document.getElementById('tabAuthLogin');
       const tabRegister = document.getElementById('tabAuthRegister');
       const submitBtn = document.getElementById('modalLoginSubmitBtn');
       const rememberWrap = document.getElementById('rememberUserWrap');
+      const confirmGroup = document.getElementById('confirmPasswordGroup');
+      const checkMsg = document.getElementById('modalUsernameCheckMsg');
       const errBox = document.getElementById('modalLoginError');
       if (errBox) errBox.style.display = 'none';
 
@@ -8909,6 +8923,11 @@
         }
         if (submitBtn) submitBtn.innerText = 'Register';
         if (rememberWrap) rememberWrap.style.display = 'none';
+        if (confirmGroup) confirmGroup.style.display = 'block';
+
+        // Trigger username check if username already entered
+        const currentU = document.getElementById('modalUsername')?.value.trim();
+        if (currentU) checkUsernameLive(currentU);
       } else {
         if (tabLogin) {
           tabLogin.style.color = '#ffc21d';
@@ -8922,12 +8941,73 @@
         }
         if (submitBtn) submitBtn.innerText = 'Login';
         if (rememberWrap) rememberWrap.style.display = 'flex';
+        if (confirmGroup) confirmGroup.style.display = 'none';
+        if (checkMsg) checkMsg.style.display = 'none';
       }
     }
+
+    async function checkUsernameLive(u) {
+      const checkMsg = document.getElementById('modalUsernameCheckMsg');
+      if (!checkMsg) return;
+
+      if (!u) {
+        checkMsg.style.display = 'none';
+        return;
+      }
+      if (u.length < 3) {
+        checkMsg.innerText = 'Username must be at least 3 characters';
+        checkMsg.style.color = '#faad14';
+        checkMsg.style.display = 'block';
+        return;
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(u)) {
+        checkMsg.innerText = 'Letters, numbers, and underscores only';
+        checkMsg.style.color = '#ff4d4f';
+        checkMsg.style.display = 'block';
+        return;
+      }
+
+      checkMsg.innerText = 'Checking availability...';
+      checkMsg.style.color = '#888888';
+      checkMsg.style.display = 'block';
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/auth/register?username=' + encodeURIComponent(u)));
+        if (res.ok && res.data) {
+          if (res.data.available) {
+            checkMsg.innerText = '✓ Username is available';
+            checkMsg.style.color = '#00e676';
+          } else {
+            checkMsg.innerText = '✗ ' + (res.data.message || 'Username already exists. Please choose another username.');
+            checkMsg.style.color = '#ff4d4f';
+          }
+          checkMsg.style.display = 'block';
+        }
+      } catch (err) {
+        // silent fail for live check
+      }
+    }
+
+    // Attach real-time input listener for live availability
+    document.addEventListener('DOMContentLoaded', () => {
+      const uInput = document.getElementById('modalUsername');
+      if (uInput) {
+        uInput.addEventListener('input', (e) => {
+          if (authModalMode !== 'register') return;
+          clearTimeout(checkUsernameTimer);
+          const val = e.target.value.trim();
+          checkUsernameTimer = setTimeout(() => {
+            checkUsernameLive(val);
+          }, 350);
+        });
+      }
+    });
 
     async function handleModalLogin() {
       const u = document.getElementById('modalUsername').value.trim();
       const p = document.getElementById('modalPassword').value.trim();
+      const cpEl = document.getElementById('modalConfirmPassword');
+      const cp = cpEl ? cpEl.value.trim() : '';
       const errBox = document.getElementById('modalLoginError');
 
       if (!u || !p) {
@@ -8938,13 +9018,54 @@
         return;
       }
 
+      if (authModalMode === 'register') {
+        if (u.length < 3) {
+          if (errBox) {
+            errBox.innerText = 'Username must be at least 3 characters';
+            errBox.style.display = 'block';
+          }
+          return;
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(u)) {
+          if (errBox) {
+            errBox.innerText = 'Username can only contain letters, numbers, and underscores';
+            errBox.style.display = 'block';
+          }
+          return;
+        }
+        if (p.length < 6) {
+          if (errBox) {
+            errBox.innerText = 'Password must be at least 6 characters';
+            errBox.style.display = 'block';
+          }
+          return;
+        }
+        if (!cp) {
+          if (errBox) {
+            errBox.innerText = 'Please confirm your password';
+            errBox.style.display = 'block';
+          }
+          return;
+        }
+        if (p !== cp) {
+          if (errBox) {
+            errBox.innerText = 'Password and Confirm Password do not match';
+            errBox.style.display = 'block';
+          }
+          return;
+        }
+      }
+
       const endpoint = (authModalMode === 'register') ? '/api/auth/register' : '/api/auth/login';
+      const postPayload = (authModalMode === 'register') 
+        ? { username: u, password: p, confirmPassword: cp }
+        : { username: u, password: p };
 
       try {
         const result = await safeFetchJson(getApiUrl(endpoint), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: u, password: p })
+          body: JSON.stringify(postPayload)
         });
         const data = result.data;
 
@@ -8982,6 +9103,11 @@
     function togglePasswordVisibility() {
       const p = document.getElementById('modalPassword');
       if (p) p.type = p.type === 'password' ? 'text' : 'password';
+    }
+
+    function toggleConfirmPasswordVisibility() {
+      const cp = document.getElementById('modalConfirmPassword');
+      if (cp) cp.type = cp.type === 'password' ? 'text' : 'password';
     }
 
     // Real-Time Game Search Filter
