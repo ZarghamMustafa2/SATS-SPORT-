@@ -75,6 +75,7 @@ module.exports = async function handler(req, res) {
   // POST: Dispatch between Password Reset, User Edit, Status Toggle, and Finance
   if (req.method === 'POST') {
     try {
+      await authDb.hydrateUsersAsync();
       const body = await parseJsonBody(req);
       const { action, userId, targetUserId, newPassword, password, amount, description } = body;
       const targetId = userId || targetUserId;
