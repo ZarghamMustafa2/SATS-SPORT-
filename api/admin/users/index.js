@@ -31,8 +31,11 @@ module.exports = async function handler(req, res) {
   const pathname = urlObj.pathname.toLowerCase();
   const searchParams = urlObj.searchParams;
 
-  // Detect route /api/admin/users/:id/dummy-balance or /api/admin/users/dummy-balance
-  const isDummyBalanceRoute = pathname.includes('/dummy-balance');
+  // Detect route /api/admin/users/:id/dummy-balance, /api/admin/users/dummy-balance, or action=dummy_balance
+  const isDummyBalanceRoute = pathname.includes('/dummy-balance') ||
+    searchParams.get('action') === 'dummy-balance' ||
+    searchParams.get('action') === 'dummy_balance' ||
+    searchParams.get('view') === 'dummy_balance';
   let routeUserId = null;
   if (isDummyBalanceRoute) {
     const parts = pathname.split('/').filter(Boolean);
