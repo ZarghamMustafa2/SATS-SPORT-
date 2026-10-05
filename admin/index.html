@@ -7322,12 +7322,13 @@ Boland v Knights                        </a>
                         else if (r.status === 'REJECTED') statusBadge = '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i> REJECTED</span>';
                         else statusBadge = '<span class="badge badge-secondary px-2 py-1">' + (r.status || '-') + '</span>';
 
+                        var bDet = r.bankDetails || r.userBankDetails;
                         var bankInfo = '-';
-                        if (r.userBankDetails) {
-                            bankInfo = '<strong>' + (r.userBankDetails.bankName || 'Bank') + '</strong><br>' +
-                                       '<small class="text-muted">' + (r.userBankDetails.accountHolderName || '') + '<br>' +
-                                       '<span class="font-weight-bold">' + (r.userBankDetails.accountNumber || '') + '</span>' +
-                                       (r.userBankDetails.iban ? '<br>IBAN: ' + r.userBankDetails.iban : '') + '</small>';
+                        if (bDet) {
+                            bankInfo = '<strong>' + (bDet.bankName || 'Bank') + '</strong><br>' +
+                                       '<small class="text-muted">' + (bDet.accountHolderName || '') + '<br>' +
+                                       '<span class="font-weight-bold">' + (bDet.accountNumber || '') + '</span>' +
+                                       (bDet.iban ? '<br>IBAN: ' + bDet.iban : '') + '</small>';
                         }
 
                         var auditNotes = '<small class="text-muted">';
