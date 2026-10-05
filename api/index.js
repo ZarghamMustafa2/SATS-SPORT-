@@ -7,7 +7,7 @@ const logoutHandler = require('./auth/logout');
 const createUserHandler = require('./admin/users/create');
 const companyCreateSuperAdminHandler = require('./admin/company/create-super-admin');
 const listUsersHandler = require('./admin/users/index');
-const sportbexHandler = require('./sportbex/cricket/live');
+const sportbexHandler = require('../lib/sportbex_live');
 const whatsappSettingsHandler = require('./settings/whatsapp');
 const paymentsHandler = require('../lib/payments_controller');
 
