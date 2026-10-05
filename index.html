@@ -5347,8 +5347,6 @@
           <span class="bal-label">Balance: </span><span class="bal-val" id="headerBalVal">0.00</span>
           <span class="bal-sep">|</span>
           <span class="out-label">outstanding: </span><span class="out-val" id="headerOutVal">0.00</span>
-          <span class="bal-sep">|</span>
-          <span class="dummy-bal-label" style="color: #ffc107; font-weight: 700;">Dummy: </span><span class="dummy-bal-val" id="headerDummyBalVal" style="color: #ffc107; font-weight: 700;">0.00</span>
           <button class="balance-refresh-btn" title="Refresh Balance" onclick="refreshUserBalance(event)">
             <img src="assets/icons/rotate-icon.svg" alt="Refresh" class="rotate-icon">
           </button>
@@ -10092,10 +10090,6 @@
       const outValEl = document.getElementById('headerOutVal');
       if (outValEl) {
         outValEl.innerText = rawExp.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      }
-      const dummyValEl = document.getElementById('headerDummyBalVal');
-      if (dummyValEl) {
-        dummyValEl.innerText = dummyBal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
 
       const dropdownInfo = document.querySelector('.dropdown-header-info div:first-child');
