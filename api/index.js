@@ -9,12 +9,13 @@ const companyCreateSuperAdminHandler = require('./admin/company/create-super-adm
 const listUsersHandler = require('./admin/users/index');
 const sportbexHandler = require('./sportbex/cricket/live');
 const whatsappSettingsHandler = require('./settings/whatsapp');
+const paymentsHandler = require('./payments/index');
 
 module.exports = async function handler(req, res) {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Company-Key, X-Admin-Request, sportbex-api-key');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Company-Key, X-Admin-Request, X-Admin-Token, sportbex-api-key');
 
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
@@ -32,6 +33,7 @@ module.exports = async function handler(req, res) {
   if (pathname === '/api/admin/company/create-super-admin') return companyCreateSuperAdminHandler(req, res);
   if (pathname === '/api/admin/users/create') return createUserHandler(req, res);
   if (pathname === '/api/admin/users' || pathname.startsWith('/api/admin/users/')) return listUsersHandler(req, res);
+  if (pathname === '/api/payments' || pathname.startsWith('/api/payments/')) return paymentsHandler(req, res);
   if (pathname === '/api/settings/whatsapp' || pathname === '/api/admin/settings/whatsapp') return whatsappSettingsHandler(req, res);
   if (pathname === '/api/sportbex/cricket/live') return sportbexHandler(req, res);
 

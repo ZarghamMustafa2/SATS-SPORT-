@@ -10392,7 +10392,15 @@
       return activeWhatsappNumber;
     }
 
-    function openDepositModal() {
+    // =========================================================================
+    // DEDICATED DATABASE-BACKED MANUAL DEPOSIT & WITHDRAWAL CONTROLLER
+    // =========================================================================
+    let activeDwBankAccounts = [];
+    let selectedDwBankId = null;
+    let selectedScreenshotDataUrl = null;
+    let currentDwHistTab = 'deposit';
+
+    function openDepositModal(initialView) {
       const token = localStorage.getItem('auth_token');
       if (!token) {
         window.location.href = '/login?redirect=/deposit';
@@ -10400,11 +10408,11 @@
       }
       const m = document.getElementById('depositModal');
       if (m) m.classList.add('show');
-      fetchWhatsappSettings();
+      showDwView(initialView || 'choice');
     }
 
-    function openDepositWithdrawModal() {
-      openDepositModal();
+    function openDepositWithdrawModal(initialView) {
+      openDepositModal(initialView);
     }
 
     function closeDepositModal() {
@@ -10412,38 +10420,540 @@
       if (m) m.classList.remove('show');
     }
 
-    async function handleDepositWithdrawAction(type) {
-      let num = activeWhatsappNumber;
-      if (!num) {
-        num = await fetchWhatsappSettings();
-      }
+    function showDwView(viewName) {
+      const titleEl = document.getElementById('dwModalTitle');
+      const choiceView = document.getElementById('dwChoiceView');
+      const depositView = document.getElementById('dwDepositView');
+      const withdrawView = document.getElementById('dwWithdrawView');
+      const historyView = document.getElementById('dwHistoryView');
 
-      if (!num) {
-        alert('WhatsApp support is currently unavailable. Please try again.');
+      if (!choiceView || !depositView || !withdrawView || !historyView) return;
+
+      choiceView.style.display = 'none';
+      depositView.style.display = 'none';
+      withdrawView.style.display = 'none';
+      historyView.style.display = 'none';
+
+      if (viewName === 'deposit') {
+        if (titleEl) titleEl.innerText = 'Deposit Funds';
+        depositView.style.display = 'block';
+        clearDwDepositAlert();
+        fetchActiveBankAccounts();
+      } else if (viewName === 'withdraw') {
+        if (titleEl) titleEl.innerText = 'Withdraw Funds';
+        withdrawView.style.display = 'block';
+        clearDwWithdrawAlert();
+        refreshUserWithdrawBalance();
+      } else if (viewName === 'history') {
+        if (titleEl) titleEl.innerText = 'My Request History';
+        historyView.style.display = 'block';
+        switchDwHistTab('deposit');
+      } else {
+        if (titleEl) titleEl.innerText = 'Deposit / Withdraw';
+        choiceView.style.display = 'block';
+      }
+    }
+
+    function clearDwDepositAlert() {
+      const alertBox = document.getElementById('dwDepositAlert');
+      if (alertBox) {
+        alertBox.style.display = 'none';
+        alertBox.className = '';
+        alertBox.innerHTML = '';
+      }
+    }
+
+    function clearDwWithdrawAlert() {
+      const alertBox = document.getElementById('dwWithdrawAlert');
+      if (alertBox) {
+        alertBox.style.display = 'none';
+        alertBox.className = '';
+        alertBox.innerHTML = '';
+      }
+    }
+
+    async function fetchActiveBankAccounts() {
+      const container = document.getElementById('dwBankAccountsList');
+      if (!container) return;
+      container.innerHTML = '<div style="text-align: center; padding: 14px; color: #6b7280; font-size: 12.5px;">Loading active bank accounts...</div>';
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/payments/banks'));
+        if (res.ok && res.data && Array.isArray(res.data.banks)) {
+          activeDwBankAccounts = res.data.banks;
+          renderBankAccountsList(activeDwBankAccounts);
+        } else {
+          container.innerHTML = '<div style="text-align: center; padding: 14px; color: #dc2626; font-size: 12px;">Failed to load bank accounts. Please try again.</div>';
+        }
+      } catch (err) {
+        container.innerHTML = '<div style="text-align: center; padding: 14px; color: #dc2626; font-size: 12px;">Network error loading bank accounts.</div>';
+      }
+    }
+
+    function renderBankAccountsList(banks) {
+      const container = document.getElementById('dwBankAccountsList');
+      if (!container) return;
+
+      if (!banks || banks.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 14px; color: #6b7280; font-size: 12.5px;">No active receiving bank accounts available right now. Please contact support.</div>';
         return;
       }
 
-      const cleanNumber = String(num).replace(/\D/g, '');
-      let username = '';
-      try {
-        const userStr = localStorage.getItem('current_user');
-        if (userStr) {
-          const userObj = JSON.parse(userStr);
-          if (userObj && userObj.username) username = userObj.username;
-        }
-      } catch (e) {}
-
-      let message = '';
-      if (type === 'deposit') {
-        message = username ? `Hello, I want to make a Deposit. (Username: ${username})` : 'Hello, I want to make a Deposit.';
-      } else {
-        message = username ? `Hello, I want to make a Withdrawal. (Username: ${username})` : 'Hello, I want to make a Withdrawal.';
+      if (!selectedDwBankId && banks.length > 0) {
+        selectedDwBankId = banks[0].id;
       }
 
-      const waUrl = 'https://api.whatsapp.com/send?phone=' + cleanNumber + '&text=' + encodeURIComponent(message);
-      closeDepositModal();
-      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      container.innerHTML = banks.map(b => {
+        const isSelected = (b.id === selectedDwBankId);
+        const borderCol = isSelected ? '#16a34a' : '#e2e8f0';
+        const bgCol = isSelected ? '#f0fdf4' : '#ffffff';
+
+        return `
+          <div class="dw-bank-card" id="dwBankCard_${b.id}" onclick="selectDwBank('${b.id}')" style="border: 2px solid ${borderCol}; background: ${bgCol}; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="dwSelectedBankRadio" id="dwRadio_${b.id}" ${isSelected ? 'checked' : ''} style="cursor: pointer; accent-color: #16a34a;">
+                <span style="font-weight: 800; font-size: 14px; color: #111827;">${escapeHtml(b.bankName)}</span>
+              </div>
+              <span style="font-size: 10.5px; font-weight: 700; color: #166534; background: #dcfce7; padding: 2px 7px; border-radius: 4px;">ACTIVE</span>
+            </div>
+
+            <div style="font-size: 12px; color: #374151; margin-left: 24px; line-height: 1.5;">
+              <div><strong>Account Title:</strong> ${escapeHtml(b.accountTitle)}</div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span><strong>Account #:</strong> <span style="font-family: monospace; font-size: 13px; font-weight: 700; color: #15803d;">${escapeHtml(b.accountNumber)}</span></span>
+                <button type="button" onclick="event.stopPropagation(); copyToClipboard('${escapeHtml(b.accountNumber)}', this)" style="padding: 2px 6px; font-size: 10.5px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer;">Copy</button>
+              </div>
+              ${b.iban ? `
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px; flex-wrap: wrap;">
+                  <span><strong>IBAN:</strong> <span style="font-family: monospace; font-size: 12px;">${escapeHtml(b.iban)}</span></span>
+                  <button type="button" onclick="event.stopPropagation(); copyToClipboard('${escapeHtml(b.iban)}', this)" style="padding: 2px 6px; font-size: 10.5px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer;">Copy</button>
+                </div>
+              ` : ''}
+              ${b.details ? `<div style="font-size: 11px; color: #64748b; margin-top: 4px;">${escapeHtml(b.details)}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
+
+    function selectDwBank(bankId) {
+      selectedDwBankId = bankId;
+      document.querySelectorAll('.dw-bank-card').forEach(c => {
+        c.style.borderColor = '#e2e8f0';
+        c.style.background = '#ffffff';
+      });
+      const card = document.getElementById(`dwBankCard_${bankId}`);
+      if (card) {
+        card.style.borderColor = '#16a34a';
+        card.style.background = '#f0fdf4';
+      }
+      const radio = document.getElementById(`dwRadio_${bankId}`);
+      if (radio) radio.checked = true;
+    }
+
+    function setDwQuickAmount(amt, type) {
+      if (type === 'deposit') {
+        const inp = document.getElementById('dwDepositAmountInput');
+        if (inp) inp.value = amt;
+      } else if (type === 'withdraw') {
+        const inp = document.getElementById('dwWithdrawAmountInput');
+        if (inp) inp.value = amt;
+      }
+    }
+
+    function handleScreenshotFileSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds 5MB limit. Please choose a smaller image.');
+        event.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectedScreenshotDataUrl = e.target.result;
+        const previewContainer = document.getElementById('dwScreenshotPreviewContainer');
+        const previewImg = document.getElementById('dwScreenshotPreviewImg');
+        const previewName = document.getElementById('dwScreenshotPreviewName');
+        const previewSize = document.getElementById('dwScreenshotPreviewSize');
+
+        if (previewImg) previewImg.src = selectedScreenshotDataUrl;
+        if (previewName) previewName.innerText = file.name;
+        if (previewSize) previewSize.innerText = (file.size / 1024).toFixed(1) + ' KB';
+        if (previewContainer) previewContainer.style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearScreenshotSelection() {
+      selectedScreenshotDataUrl = null;
+      const inp = document.getElementById('dwDepositScreenshotInput');
+      if (inp) inp.value = '';
+      const previewContainer = document.getElementById('dwScreenshotPreviewContainer');
+      if (previewContainer) previewContainer.style.display = 'none';
+    }
+
+    async function submitUserDepositRequest() {
+      const amtInput = document.getElementById('dwDepositAmountInput');
+      const noteInput = document.getElementById('dwDepositNoteInput');
+      const submitBtn = document.getElementById('dwDepositSubmitBtn');
+      const alertBox = document.getElementById('dwDepositAlert');
+
+      const amount = parseFloat(amtInput ? amtInput.value : 0);
+      if (isNaN(amount) || amount < 100) {
+        showDwAlert(alertBox, 'error', 'Please enter a valid deposit amount of at least Rs. 100.');
+        return;
+      }
+
+      if (!selectedDwBankId) {
+        showDwAlert(alertBox, 'error', 'Please select a receiving bank account from the list.');
+        return;
+      }
+
+      if (!selectedScreenshotDataUrl) {
+        showDwAlert(alertBox, 'error', 'Please upload your payment screenshot/receipt for verification.');
+        return;
+      }
+
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        showDwAlert(alertBox, 'error', 'Session expired. Please login again.');
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Submitting Request...</span>';
+      }
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/payments/deposit'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: amount,
+            bankAccountId: selectedDwBankId,
+            screenshot: selectedScreenshotDataUrl,
+            note: noteInput ? noteInput.value.trim() : ''
+          })
+        });
+
+        if (res.ok && res.data && res.data.status === 'success') {
+          const reqId = res.data.request?.id || '';
+          showDwAlert(alertBox, 'success', `
+            <div style="font-weight: 700; margin-bottom: 4px;">✓ Deposit Request Submitted Successfully!</div>
+            <div>Request ID: <span style="font-family: monospace; font-weight: 700;">${escapeHtml(reqId)}</span></div>
+            <div style="margin-top: 4px; font-size: 11.5px; opacity: 0.95;">
+              Status: <strong>PENDING</strong>. Our accounts desk will verify your payment receipt and credit your balance shortly.
+            </div>
+            <div style="margin-top: 8px;">
+              <button type="button" onclick="showDwView('history')" style="background: #166534; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 700; cursor: pointer;">View in Request History &rarr;</button>
+            </div>
+          `);
+
+          if (amtInput) amtInput.value = '';
+          if (noteInput) noteInput.value = '';
+          clearScreenshotSelection();
+        } else {
+          const msg = (res.data && res.data.message) || 'Failed to submit deposit request.';
+          showDwAlert(alertBox, 'error', msg);
+        }
+      } catch (err) {
+        showDwAlert(alertBox, 'error', 'Network error. Please check your connection and try again.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Submit Deposit Request</span>';
+        }
+      }
+    }
+
+    async function refreshUserWithdrawBalance() {
+      const token = localStorage.getItem('auth_token');
+      const balEl = document.getElementById('dwWithdrawAvailBalDisplay');
+      if (!balEl) return;
+
+      if (!token) {
+        balEl.innerText = '0 Rs.';
+        return;
+      }
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/auth/me'), {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok && res.data) {
+          const availStr = res.data.availableBalance || res.data.avail || res.data.balance || '0 Rs.';
+          balEl.innerText = availStr;
+          balEl.dataset.numericAvail = parseFloat(String(availStr).replace(/[^0-9.-]/g, '')) || 0;
+        }
+      } catch (e) {}
+    }
+
+    function setDwMaxWithdraw() {
+      const balEl = document.getElementById('dwWithdrawAvailBalDisplay');
+      const inp = document.getElementById('dwWithdrawAmountInput');
+      if (!balEl || !inp) return;
+      const num = parseFloat(balEl.dataset.numericAvail || '0') || 0;
+      if (num > 0) inp.value = Math.floor(num);
+    }
+
+    async function submitUserWithdrawalRequest() {
+      const amtInput = document.getElementById('dwWithdrawAmountInput');
+      const holderInput = document.getElementById('dwWithdrawHolderName');
+      const bankInput = document.getElementById('dwWithdrawBankName');
+      const accInput = document.getElementById('dwWithdrawAccNum');
+      const ibanInput = document.getElementById('dwWithdrawIban');
+      const noteInput = document.getElementById('dwWithdrawNote');
+      const submitBtn = document.getElementById('dwWithdrawSubmitBtn');
+      const alertBox = document.getElementById('dwWithdrawAlert');
+      const balEl = document.getElementById('dwWithdrawAvailBalDisplay');
+
+      const amount = parseFloat(amtInput ? amtInput.value : 0);
+      const holder = holderInput ? holderInput.value.trim() : '';
+      const bankName = bankInput ? bankInput.value.trim() : '';
+      const accNum = accInput ? accInput.value.trim() : '';
+      const iban = ibanInput ? ibanInput.value.trim() : '';
+      const note = noteInput ? noteInput.value.trim() : '';
+
+      if (isNaN(amount) || amount < 100) {
+        showDwAlert(alertBox, 'error', 'Please enter a valid withdrawal amount of at least Rs. 100.');
+        return;
+      }
+
+      const numAvail = parseFloat(balEl?.dataset.numericAvail || '0') || 0;
+      if (numAvail > 0 && amount > numAvail) {
+        showDwAlert(alertBox, 'error', `Requested amount (Rs. ${amount.toLocaleString('en-IN')}) exceeds your available balance (Rs. ${numAvail.toLocaleString('en-IN')}).`);
+        return;
+      }
+
+      if (!holder) {
+        showDwAlert(alertBox, 'error', 'Account Holder / Title Name is required.');
+        return;
+      }
+      if (!bankName) {
+        showDwAlert(alertBox, 'error', 'Receiving Bank Name is required.');
+        return;
+      }
+      if (!accNum) {
+        showDwAlert(alertBox, 'error', 'Account Number is required.');
+        return;
+      }
+
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        showDwAlert(alertBox, 'error', 'Session expired. Please login again.');
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Submitting Request...</span>';
+      }
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/payments/withdraw'), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            amount: amount,
+            accountHolderName: holder,
+            bankName: bankName,
+            accountNumber: accNum,
+            iban: iban,
+            note: note
+          })
+        });
+
+        if (res.ok && res.data && res.data.status === 'success') {
+          const reqId = res.data.request?.id || '';
+          showDwAlert(alertBox, 'success', `
+            <div style="font-weight: 700; margin-bottom: 4px;">✓ Withdrawal Request Submitted Successfully!</div>
+            <div>Request ID: <span style="font-family: monospace; font-weight: 700;">${escapeHtml(reqId)}</span></div>
+            <div style="margin-top: 4px; font-size: 11.5px; opacity: 0.95;">
+              Status: <strong>PENDING</strong>. Your request is queued for administrator review and processing.
+            </div>
+            <div style="margin-top: 8px;">
+              <button type="button" onclick="showDwView('history')" style="background: #1e40af; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11.5px; font-weight: 700; cursor: pointer;">View in Request History &rarr;</button>
+            </div>
+          `);
+
+          if (amtInput) amtInput.value = '';
+          if (noteInput) noteInput.value = '';
+          refreshUserWithdrawBalance();
+        } else {
+          const msg = (res.data && res.data.message) || 'Failed to submit withdrawal request.';
+          showDwAlert(alertBox, 'error', msg);
+        }
+      } catch (err) {
+        showDwAlert(alertBox, 'error', 'Network error submitting withdrawal request.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Submit Withdrawal Request</span>';
+        }
+      }
+    }
+
+    function switchDwHistTab(type) {
+      currentDwHistTab = type;
+      const tabDep = document.getElementById('dwHistTabDep');
+      const tabWith = document.getElementById('dwHistTabWith');
+
+      if (type === 'deposit') {
+        if (tabDep) { tabDep.style.background = '#166534'; tabDep.style.color = '#fff'; tabDep.style.border = 'none'; }
+        if (tabWith) { tabWith.style.background = '#f9fafb'; tabWith.style.color = '#374151'; tabWith.style.border = '1px solid #d1d5db'; }
+      } else {
+        if (tabDep) { tabDep.style.background = '#f9fafb'; tabDep.style.color = '#374151'; tabDep.style.border = '1px solid #d1d5db'; }
+        if (tabWith) { tabWith.style.background = '#1e40af'; tabWith.style.color = '#fff'; tabWith.style.border = 'none'; }
+      }
+
+      loadUserPaymentHistory(type);
+    }
+
+    async function loadUserPaymentHistory(type) {
+      const container = document.getElementById('dwHistoryListContainer');
+      if (!container) return;
+
+      container.innerHTML = '<div style="text-align: center; padding: 20px; color: #6b7280; font-size: 13px;">Loading requests...</div>';
+
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #dc2626; font-size: 13px;">Please login to view your requests.</div>';
+        return;
+      }
+
+      const endpoint = type === 'deposit' ? '/api/payments/deposit' : '/api/payments/withdraw';
+      try {
+        const res = await safeFetchJson(getApiUrl(endpoint), {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (res.ok && res.data && Array.isArray(res.data.requests)) {
+          const list = res.data.requests;
+          if (list.length === 0) {
+            container.innerHTML = `<div style="text-align: center; padding: 30px 20px; color: #6b7280; font-size: 13px;">No ${type} requests found.</div>`;
+            return;
+          }
+
+          container.innerHTML = list.map(r => {
+            const isApproved = (r.status === 'APPROVED');
+            const isRejected = (r.status === 'REJECTED');
+            const isPending = (r.status === 'PENDING');
+
+            let badgeHtml = '';
+            if (isApproved) badgeHtml = '<span style="background: #dcfce7; color: #166534; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px;">APPROVED</span>';
+            else if (isRejected) badgeHtml = '<span style="background: #fee2e2; color: #991b1b; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px;">REJECTED</span>';
+            else badgeHtml = '<span style="background: #fef3c7; color: #92400e; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px;">PENDING</span>';
+
+            const dtStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '-';
+            const amtStr = (r.type === 'DEPOSIT' ? '+' : '-') + ' Rs. ' + (parseFloat(r.amount) || 0).toLocaleString('en-IN');
+            const amtColor = r.type === 'DEPOSIT' ? '#16a34a' : '#2563eb';
+
+            let bankInfo = '';
+            if (r.type === 'DEPOSIT' && r.selectedBank) {
+              bankInfo = `To: <strong>${escapeHtml(r.selectedBank.bankName || 'Bank')}</strong> (${escapeHtml(r.selectedBank.accountNumber || '')})`;
+            } else if (r.bankDetails) {
+              bankInfo = `To: <strong>${escapeHtml(r.bankDetails.bankName || '')}</strong> - ${escapeHtml(r.bankDetails.accountHolderName || '')} (${escapeHtml(r.bankDetails.accountNumber || '')})`;
+            }
+
+            return `
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 12.5px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                  <div>
+                    <span style="font-family: monospace; font-weight: 700; color: #475569;">${escapeHtml(r.id)}</span>
+                    <span style="font-size: 11px; color: #94a3b8; margin-left: 6px;">${dtStr}</span>
+                  </div>
+                  <div>${badgeHtml}</div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                  <div style="font-size: 12px; color: #334155;">${bankInfo}</div>
+                  <div style="font-weight: 800; font-size: 15px; color: ${amtColor};">${amtStr}</div>
+                </div>
+
+                ${isRejected && r.rejectionReason ? `
+                  <div style="margin-top: 8px; padding: 6px 10px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 4px; font-size: 11.5px; color: #9f1239;">
+                    <strong>Rejection Reason:</strong> ${escapeHtml(r.rejectionReason)}
+                  </div>
+                ` : ''}
+
+                ${isApproved && r.handledAt ? `
+                  <div style="margin-top: 6px; font-size: 11px; color: #15803d;">
+                    Verified &amp; Processed on ${new Date(r.handledAt).toLocaleString('en-IN')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #dc2626; font-size: 13px;">Error loading history.</div>';
+      }
+    }
+
+    function showDwAlert(alertEl, type, html) {
+      if (!alertEl) return;
+      alertEl.style.display = 'block';
+      if (type === 'error') {
+        alertEl.style.background = '#fef2f2';
+        alertEl.style.color = '#991b1b';
+        alertEl.style.border = '1px solid #f87171';
+      } else {
+        alertEl.style.background = '#f0fdf4';
+        alertEl.style.color = '#166534';
+        alertEl.style.border = '1px solid #86efac';
+      }
+      alertEl.innerHTML = html;
+    }
+
+    function copyToClipboard(text, btnEl) {
+      if (!text) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          flashCopiedBtn(btnEl);
+        }).catch(() => {
+          fallbackCopyText(text, btnEl);
+        });
+      } else {
+        fallbackCopyText(text, btnEl);
+      }
+    }
+
+    function fallbackCopyText(text, btnEl) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        flashCopiedBtn(btnEl);
+      } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    function flashCopiedBtn(btnEl) {
+      if (!btnEl) return;
+      const orig = btnEl.innerText;
+      btnEl.innerText = '✓ Copied';
+      btnEl.style.background = '#bbf7d0';
+      btnEl.style.color = '#15803d';
+      setTimeout(() => {
+        btnEl.innerText = orig;
+        btnEl.style.background = '#f3f4f6';
+        btnEl.style.color = '#374151';
+      }, 1500);
+    }
+
 
     // DEDICATED LIVE TV MODAL CONTROLLER
     function openLiveTvModal() {
@@ -12550,67 +13060,264 @@
     </div>
   </div>
 
-  <!-- DEDICATED DEPOSIT / WITHDRAW MODAL -->
+  <!-- DEDICATED DEPOSIT / WITHDRAW MODAL (Database-Backed Manual Flow) -->
   <div class="generic-dialog-modal" id="depositModal">
-    <div class="generic-dialog-card" style="max-width: 440px; width: 92%; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.35);">
-      <div class="generic-dialog-header" style="background: #1f1f1f; color: #ffc21d; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffc21d;">
+    <div class="generic-dialog-card" style="max-width: 540px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.45); background: #ffffff;">
+      <div class="generic-dialog-header" style="background: #1f1f1f; color: #ffc21d; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffc21d; flex-shrink: 0;">
         <div style="font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 8px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12C2 13.82 2.49 15.525 3.344 17L2 22L7.15 20.686C8.59 21.517 10.244 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2ZM16.48 14.83C16.29 15.35 15.34 15.79 14.88 15.86C14.43 15.93 13.87 15.95 11.96 15.17C9.53 14.18 7.95 11.75 7.83 11.59C7.71 11.43 6.85 10.29 6.85 9.11C6.85 7.93 7.45 7.35 7.69 7.1C7.89 6.89 8.16 6.8 8.42 6.8C8.51 6.8 8.59 6.8 8.67 6.81C8.9 6.82 9.02 6.84 9.17 7.21C9.36 7.67 9.83 8.81 9.89 8.92C9.94 9.04 9.99 9.18 9.91 9.33C9.84 9.49 9.77 9.56 9.66 9.69C9.55 9.82 9.44 9.91 9.33 10.05C9.21 10.18 9.08 10.32 9.22 10.56C9.36 10.8 9.85 11.6 10.57 12.24C11.5 13.07 12.27 13.33 12.54 13.44C12.75 13.53 12.97 13.51 13.13 13.34C13.33 13.12 13.58 12.77 13.81 12.45C13.98 12.21 14.19 12.18 14.41 12.26C14.64 12.34 15.86 12.94 16.11 13.06C16.36 13.18 16.52 13.24 16.58 13.34C16.64 13.44 16.64 13.99 16.48 14.83Z" fill="#25D366"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffc21d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
           </svg>
-          <span>Deposit / Withdraw</span>
+          <span id="dwModalTitle">Deposit / Withdraw</span>
         </div>
         <span class="generic-dialog-close" onclick="closeDepositModal()" style="font-size: 24px; font-weight: 700; cursor: pointer; color: #ffc21d; line-height: 1;">&times;</span>
       </div>
-      <div style="padding: 24px 20px; background: #ffffff;">
-        <p style="margin: 0 0 18px 0; font-size: 13.5px; color: #4b5563; text-align: center; line-height: 1.5;">
-          Please select an option below to connect with our official accounts desk directly on WhatsApp:
-        </p>
 
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          <!-- Option 1: Deposit -->
-          <button type="button" class="dw-modal-option-btn" id="modalDepositOptionBtn" onclick="handleDepositWithdrawAction('deposit')" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 18px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; text-align: left; box-sizing: border-box;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-              <div style="width: 44px; height: 44px; border-radius: 50%; background: #22c55e; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(34,197,94,0.35);">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-              </div>
-              <div>
-                <div style="font-size: 16px; font-weight: 800; color: #166534; margin-bottom: 2px;">Deposit</div>
-                <div style="font-size: 12px; color: #15803d;">Contact WhatsApp Support to deposit</div>
-              </div>
-            </div>
-            <div style="display: flex; align-items: center;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12C2 13.82 2.49 15.525 3.344 17L2 22L7.15 20.686C8.59 21.517 10.244 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2ZM16.48 14.83C16.29 15.35 15.34 15.79 14.88 15.86C14.43 15.93 13.87 15.95 11.96 15.17C9.53 14.18 7.95 11.75 7.83 11.59C7.71 11.43 6.85 10.29 6.85 9.11C6.85 7.93 7.45 7.35 7.69 7.1C7.89 6.89 8.16 6.8 8.42 6.8C8.51 6.8 8.59 6.8 8.67 6.81C8.9 6.82 9.02 6.84 9.17 7.21C9.36 7.67 9.83 8.81 9.89 8.92C9.94 9.04 9.99 9.18 9.91 9.33C9.84 9.49 9.77 9.56 9.66 9.69C9.55 9.82 9.44 9.91 9.33 10.05C9.21 10.18 9.08 10.32 9.22 10.56C9.36 10.8 9.85 11.6 10.57 12.24C11.5 13.07 12.27 13.33 12.54 13.44C12.75 13.53 12.97 13.51 13.13 13.34C13.33 13.12 13.58 12.77 13.81 12.45C13.98 12.21 14.19 12.18 14.41 12.26C14.64 12.34 15.86 12.94 16.11 13.06C16.36 13.18 16.52 13.24 16.58 13.34C16.64 13.44 16.64 13.99 16.48 14.83Z" fill="#25D366"/>
-              </svg>
-            </div>
-          </button>
+      <div style="padding: 20px; overflow-y: auto; flex: 1;">
+        <!-- VIEW 1: SELECTION (DEPOSIT vs WITHDRAW) -->
+        <div id="dwChoiceView">
+          <p style="margin: 0 0 18px 0; font-size: 13.5px; color: #4b5563; text-align: center; line-height: 1.5;">
+            Select an option below to proceed with your real account balance transaction:
+          </p>
 
-          <!-- Option 2: Withdraw -->
-          <button type="button" class="dw-modal-option-btn" id="modalWithdrawOptionBtn" onclick="handleDepositWithdrawAction('withdraw')" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 18px; background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; text-align: left; box-sizing: border-box;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-              <div style="width: 44px; height: 44px; border-radius: 50%; background: #3b82f6; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(59,130,246,0.35);">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <!-- Option 1: Deposit -->
+            <button type="button" class="dw-modal-option-btn" id="modalDepositOptionBtn" onclick="showDwView('deposit')" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 18px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; text-align: left; box-sizing: border-box;">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #22c55e; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(34,197,94,0.35);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                </div>
+                <div>
+                  <div style="font-size: 16px; font-weight: 800; color: #166534; margin-bottom: 2px;">Deposit</div>
+                  <div style="font-size: 12px; color: #15803d;">Transfer via Bank &amp; upload payment receipt</div>
+                </div>
               </div>
-              <div>
-                <div style="font-size: 16px; font-weight: 800; color: #1e40af; margin-bottom: 2px;">Withdraw</div>
-                <div style="font-size: 12px; color: #1d4ed8;">Contact WhatsApp Support to withdraw</div>
+              <div style="color: #166534; font-weight: 800; font-size: 18px;">&rarr;</div>
+            </button>
+
+            <!-- Option 2: Withdraw -->
+            <button type="button" class="dw-modal-option-btn" id="modalWithdrawOptionBtn" onclick="showDwView('withdraw')" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px 18px; background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; text-align: left; box-sizing: border-box;">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #3b82f6; color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(59,130,246,0.35);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                </div>
+                <div>
+                  <div style="font-size: 16px; font-weight: 800; color: #1e40af; margin-bottom: 2px;">Withdraw</div>
+                  <div style="font-size: 12px; color: #1d4ed8;">Withdraw available balance to your bank account</div>
+                </div>
               </div>
+              <div style="color: #1e40af; font-weight: 800; font-size: 18px;">&rarr;</div>
+            </button>
+          </div>
+
+          <div style="margin-top: 20px; padding-top: 14px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" onclick="showDwView('history')" style="background: none; border: none; color: #4b5563; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              View My Request History
+            </button>
+            <span style="font-size: 11px; color: #9ca3af;">Manual Verification</span>
+          </div>
+        </div>
+
+        <!-- VIEW 2: DEPOSIT FLOW -->
+        <div id="dwDepositView" style="display: none;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <button type="button" onclick="showDwView('choice')" style="background: #f3f4f6; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; color: #374151; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+              &larr; Back
+            </button>
+            <span style="font-size: 12px; font-weight: 700; color: #166534; background: #dcfce7; padding: 4px 10px; border-radius: 12px;">Manual Deposit</span>
+          </div>
+
+          <div id="dwDepositAlert" style="display: none; padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 13px;"></div>
+
+          <!-- Step 1: Amount -->
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 13px; font-weight: 700; color: #1f2937; margin-bottom: 6px;">
+              1. Deposit Amount (Rs.) <span style="color: #dc2626;">*</span>
+            </label>
+            <div style="position: relative;">
+              <span style="position: absolute; left: 12px; top: 10px; font-weight: 700; color: #6b7280; font-size: 14px;">Rs.</span>
+              <input type="number" id="dwDepositAmountInput" placeholder="Enter amount (min. 100)" min="100" step="1" style="width: 100%; padding: 9px 12px 9px 42px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 15px; font-weight: 700; box-sizing: border-box;">
             </div>
-            <div style="display: flex; align-items: center;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12C2 13.82 2.49 15.525 3.344 17L2 22L7.15 20.686C8.59 21.517 10.244 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2ZM16.48 14.83C16.29 15.35 15.34 15.79 14.88 15.86C14.43 15.93 13.87 15.95 11.96 15.17C9.53 14.18 7.95 11.75 7.83 11.59C7.71 11.43 6.85 10.29 6.85 9.11C6.85 7.93 7.45 7.35 7.69 7.1C7.89 6.89 8.16 6.8 8.42 6.8C8.51 6.8 8.59 6.8 8.67 6.81C8.9 6.82 9.02 6.84 9.17 7.21C9.36 7.67 9.83 8.81 9.89 8.92C9.94 9.04 9.99 9.18 9.91 9.33C9.84 9.49 9.77 9.56 9.66 9.69C9.55 9.82 9.44 9.91 9.33 10.05C9.21 10.18 9.08 10.32 9.22 10.56C9.36 10.8 9.85 11.6 10.57 12.24C11.5 13.07 12.27 13.33 12.54 13.44C12.75 13.53 12.97 13.51 13.13 13.34C13.33 13.12 13.58 12.77 13.81 12.45C13.98 12.21 14.19 12.18 14.41 12.26C14.64 12.34 15.86 12.94 16.11 13.06C16.36 13.18 16.52 13.24 16.58 13.34C16.64 13.44 16.64 13.99 16.48 14.83Z" fill="#25D366"/>
-              </svg>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+              <button type="button" onclick="setDwQuickAmount(500, 'deposit')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">+500</button>
+              <button type="button" onclick="setDwQuickAmount(1000, 'deposit')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">+1,000</button>
+              <button type="button" onclick="setDwQuickAmount(5000, 'deposit')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">+5,000</button>
+              <button type="button" onclick="setDwQuickAmount(10000, 'deposit')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">+10,000</button>
+              <button type="button" onclick="setDwQuickAmount(25000, 'deposit')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">+25,000</button>
+              <button type="button" onclick="setDwQuickAmount(50000, 'deposit')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">+50,000</button>
             </div>
+          </div>
+
+          <!-- Step 2: Receiving Bank Selection -->
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 13px; font-weight: 700; color: #1f2937; margin-bottom: 6px;">
+              2. Select Satsport Receiving Bank <span style="color: #dc2626;">*</span>
+            </label>
+            <div id="dwBankAccountsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;">
+              <div style="text-align: center; padding: 14px; color: #6b7280; font-size: 12.5px;">Loading bank accounts...</div>
+            </div>
+          </div>
+
+          <!-- Step 3: Instructions & Screenshot Upload -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <div style="font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              Payment Instructions:
+            </div>
+            <div style="font-size: 11.5px; color: #475569; line-height: 1.4;">
+              Transfer the exact amount to the selected bank account above. After payment, take a clear screenshot or receipt showing transaction ID, and upload it below.
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 13px; font-weight: 700; color: #1f2937; margin-bottom: 6px;">
+              3. Upload Payment Screenshot <span style="color: #dc2626;">*</span>
+            </label>
+            <input type="file" id="dwDepositScreenshotInput" accept="image/png, image/jpeg, image/jpg, image/webp" onchange="handleScreenshotFileSelect(event)" style="display: block; width: 100%; font-size: 12px; color: #4b5563; border: 1.5px dashed #cbd5e1; padding: 10px; border-radius: 8px; box-sizing: border-box; background: #fff; cursor: pointer;">
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Supported: JPG, PNG, WEBP (Max 5MB)</div>
+
+            <div id="dwScreenshotPreviewContainer" style="display: none; margin-top: 10px; padding: 8px; background: #f1f5f9; border-radius: 6px; align-items: center; gap: 10px;">
+              <img id="dwScreenshotPreviewImg" src="" alt="Screenshot Preview" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1;">
+              <div style="flex: 1; min-width: 0;">
+                <div id="dwScreenshotPreviewName" style="font-size: 12px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="dwScreenshotPreviewSize" style="font-size: 11px; color: #64748b;"></div>
+              </div>
+              <button type="button" onclick="clearScreenshotSelection()" style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; font-weight: 700;">&times;</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 18px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+              Optional Note / Transaction Reference ID
+            </label>
+            <input type="text" id="dwDepositNoteInput" placeholder="e.g. TID-982341 or Sender Name" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+          </div>
+
+          <button type="button" id="dwDepositSubmitBtn" onclick="submitUserDepositRequest()" style="width: 100%; padding: 12px; background: #16a34a; color: #ffffff; border: none; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(22,163,74,0.3);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Submit Deposit Request</span>
           </button>
         </div>
 
-        <div style="margin-top: 18px; text-align: center; font-size: 11.5px; color: #6b7280; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <span>Official 24/7 Verified Manual WhatsApp Service</span>
+        <!-- VIEW 3: WITHDRAWAL FLOW -->
+        <div id="dwWithdrawView" style="display: none;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <button type="button" onclick="showDwView('choice')" style="background: #f3f4f6; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; color: #374151; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+              &larr; Back
+            </button>
+            <span style="font-size: 12px; font-weight: 700; color: #1e40af; background: #dbeafe; padding: 4px 10px; border-radius: 12px;">Manual Withdrawal</span>
+          </div>
+
+          <div id="dwWithdrawAlert" style="display: none; padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 13px;"></div>
+
+          <!-- Available Balance Card -->
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 12px; color: #1e40af; font-weight: 600;">Available Real Balance</div>
+              <div id="dwWithdrawAvailBalDisplay" style="font-size: 18px; font-weight: 800; color: #1e3a8a;">0 Rs.</div>
+            </div>
+            <button type="button" onclick="refreshUserWithdrawBalance()" style="background: #ffffff; border: 1px solid #93c5fd; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #1d4ed8; cursor: pointer;">
+              Refresh
+            </button>
+          </div>
+
+          <!-- Amount -->
+          <div style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="font-size: 13px; font-weight: 700; color: #1f2937; margin: 0;">
+                Withdrawal Amount (Rs.) <span style="color: #dc2626;">*</span>
+              </label>
+              <button type="button" onclick="setDwMaxWithdraw()" style="background: none; border: none; color: #2563eb; font-size: 11.5px; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                Use Max Available
+              </button>
+            </div>
+            <div style="position: relative;">
+              <span style="position: absolute; left: 12px; top: 10px; font-weight: 700; color: #6b7280; font-size: 14px;">Rs.</span>
+              <input type="number" id="dwWithdrawAmountInput" placeholder="Enter amount" min="100" step="1" style="width: 100%; padding: 9px 12px 9px 42px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 15px; font-weight: 700; box-sizing: border-box;">
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+              <button type="button" onclick="setDwQuickAmount(500, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">500</button>
+              <button type="button" onclick="setDwQuickAmount(1000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">1,000</button>
+              <button type="button" onclick="setDwQuickAmount(5000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">5,000</button>
+              <button type="button" onclick="setDwQuickAmount(10000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">10,000</button>
+              <button type="button" onclick="setDwQuickAmount(25000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">25,000</button>
+            </div>
+          </div>
+
+          <!-- User Receiving Bank Details -->
+          <div style="background: #fdfdfd; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+            <div style="font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 10px;">
+              Your Receiving Bank Details <span style="color: #dc2626;">*</span>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                Account Holder / Title Name <span style="color: #dc2626;">*</span>
+              </label>
+              <input type="text" id="dwWithdrawHolderName" placeholder="Full name as on bank account" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                Bank Name <span style="color: #dc2626;">*</span>
+              </label>
+              <input type="text" id="dwWithdrawBankName" placeholder="e.g. HBL, Meezan Bank, JazzCash, EasyPaisa" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                Account Number <span style="color: #dc2626;">*</span>
+              </label>
+              <input type="text" id="dwWithdrawAccNum" placeholder="Bank Account or Wallet Number" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 6px;">
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                IBAN (Optional)
+              </label>
+              <input type="text" id="dwWithdrawIban" placeholder="e.g. PK36MEZN..." style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 18px;">
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+              Optional Note
+            </label>
+            <input type="text" id="dwWithdrawNote" placeholder="Optional notes for accounts desk" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+          </div>
+
+          <button type="button" id="dwWithdrawSubmitBtn" onclick="submitUserWithdrawalRequest()" style="width: 100%; padding: 12px; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Submit Withdrawal Request</span>
+          </button>
+        </div>
+
+        <!-- VIEW 4: USER REQUEST HISTORY -->
+        <div id="dwHistoryView" style="display: none;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+            <button type="button" onclick="showDwView('choice')" style="background: #f3f4f6; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; color: #374151; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+              &larr; Back
+            </button>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" id="dwHistTabDep" onclick="switchDwHistTab('deposit')" style="padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; border: none; background: #166534; color: #fff; cursor: pointer;">
+                Deposits
+              </button>
+              <button type="button" id="dwHistTabWith" onclick="switchDwHistTab('withdrawal')" style="padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; border: 1px solid #d1d5db; background: #f9fafb; color: #374151; cursor: pointer;">
+                Withdrawals
+              </button>
+            </div>
+          </div>
+
+          <div id="dwHistoryListContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto;">
+            <div style="text-align: center; padding: 20px; color: #6b7280; font-size: 13px;">Loading history...</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
 
   <!-- DEDICATED LIVE TV / VIDEO STREAM MODAL -->
   <div class="generic-dialog-modal" id="liveTvModal">

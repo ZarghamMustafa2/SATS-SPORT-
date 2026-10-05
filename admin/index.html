@@ -719,6 +719,26 @@
             <li class="nav-item px-3">
                 <a class="nav-link" id="topNavUsers" href="/Accounts/Chart" onclick="navigateAdmin('/Accounts/Chart', event)">Users</a>
             </li>
+            <li class="nav-item px-3 dropdown" id="topNavFinanceContainer">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleNavDropdown(event, this)" id="topNavFinance">
+                    <i class="fas fa-wallet mr-1" style="color: #10b981;"></i> Finance
+                    <span class="badge badge-warning ml-1" id="topNavPendingBadge" style="display:none; font-size:10px; border-radius: 10px;">0</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/Finance/Deposits" onclick="navigateAdmin('/Finance/Deposits', event)">
+                        <i class="fas fa-arrow-circle-down text-success mr-2"></i> Deposit Requests
+                        <span class="badge badge-warning ml-auto" id="topNavPendingDepBadge" style="display:none; border-radius: 10px;">0</span>
+                    </a>
+                    <a class="dropdown-item" href="/Finance/Withdrawals" onclick="navigateAdmin('/Finance/Withdrawals', event)">
+                        <i class="fas fa-arrow-circle-up text-primary mr-2"></i> Withdrawal Requests
+                        <span class="badge badge-warning ml-auto" id="topNavPendingWithBadge" style="display:none; border-radius: 10px;">0</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/Settings/Banks" onclick="navigateAdmin('/Settings/Banks', event)">
+                        <i class="fas fa-university text-warning mr-2"></i> Receiving Bank Accounts
+                    </a>
+                </div>
+            </li>
             <li class="nav-item px-3">
                 <a class="nav-link" id="topNavReports" href="/Reports/BookDetail" onclick="navigateAdmin('/Reports/BookDetail', event)">Reports</a>
             </li>
@@ -780,6 +800,23 @@
         <li class="nav-item">
             <a class="nav-link" href="/Accounts/Chart" id="sideNavUsers" onclick="navigateAdmin('/Accounts/Chart', event)">
                 <i class="nav-icon fas fa-users fa-inverse"></i> Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Finance/Deposits" id="sideNavDeposits" onclick="navigateAdmin('/Finance/Deposits', event)">
+                <i class="nav-icon fas fa-arrow-circle-down fa-inverse" style="color: #4ade80 !important;"></i> Deposit Requests
+                <span class="badge badge-warning ml-auto" id="sidePendingDepBadge" style="display:none; border-radius: 10px;">0</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Finance/Withdrawals" id="sideNavWithdrawals" onclick="navigateAdmin('/Finance/Withdrawals', event)">
+                <i class="nav-icon fas fa-arrow-circle-up fa-inverse" style="color: #60a5fa !important;"></i> Withdrawal Requests
+                <span class="badge badge-warning ml-auto" id="sidePendingWithBadge" style="display:none; border-radius: 10px;">0</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Settings/Banks" id="sideNavBanks" onclick="navigateAdmin('/Settings/Banks', event)">
+                <i class="nav-icon fas fa-university fa-inverse" style="color: #facc15 !important;"></i> Bank Settings
             </a>
         </li>
         <li class="nav-item">
@@ -1483,6 +1520,62 @@ Boland v Knights                        </a>
                                         <nav aria-label="breadcrumb" id="breadcrumbcustom" class="col-12 bccustom2" style="display: none;">
                                             <ol class="breadcrumb" style="max-height: 40px;"></ol>
                                         </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Finance & Request Statistics Row -->
+                        <div class="row mb-3" id="dashboardFinanceStatsRow">
+                            <div class="col-12 col-sm-6 col-lg-3 mb-2 mb-lg-0">
+                                <div class="card text-white bg-success" style="box-shadow: 0 2px 8px rgba(34,197,94,0.3); margin-bottom: 0;">
+                                    <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-value" id="dashPendingDepCount" style="font-size: 22px; font-weight: 800;">0</div>
+                                            <div class="text-uppercase text-white-50 font-weight-bold small">Pending Deposits</div>
+                                        </div>
+                                        <a href="/Finance/Deposits" onclick="navigateAdmin('/Finance/Deposits', event)" class="btn btn-sm btn-light font-weight-bold" style="color: #166534; font-size: 11px;">
+                                            Review &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3 mb-2 mb-lg-0">
+                                <div class="card text-white bg-primary" style="box-shadow: 0 2px 8px rgba(37,99,235,0.3); margin-bottom: 0;">
+                                    <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-value" id="dashPendingWithCount" style="font-size: 22px; font-weight: 800;">0</div>
+                                            <div class="text-uppercase text-white-50 font-weight-bold small">Pending Withdrawals</div>
+                                        </div>
+                                        <a href="/Finance/Withdrawals" onclick="navigateAdmin('/Finance/Withdrawals', event)" class="btn btn-sm btn-light font-weight-bold" style="color: #1e40af; font-size: 11px;">
+                                            Review &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3 mb-2 mb-lg-0">
+                                <div class="card text-white bg-warning" style="box-shadow: 0 2px 8px rgba(245,158,11,0.3); margin-bottom: 0;">
+                                    <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-value text-dark" id="dashActiveBanksCount" style="font-size: 22px; font-weight: 800;">2</div>
+                                            <div class="text-uppercase text-dark font-weight-bold small">Receiving Banks</div>
+                                        </div>
+                                        <a href="/Settings/Banks" onclick="navigateAdmin('/Settings/Banks', event)" class="btn btn-sm btn-dark font-weight-bold" style="font-size: 11px;">
+                                            Manage &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6 col-lg-3">
+                                <div class="card text-white bg-info" style="box-shadow: 0 2px 8px rgba(14,165,233,0.3); margin-bottom: 0;">
+                                    <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-value" id="dashApprovedTotalCount" style="font-size: 22px; font-weight: 800;">0</div>
+                                            <div class="text-uppercase text-white-50 font-weight-bold small">Approved Requests</div>
+                                        </div>
+                                        <button type="button" onclick="updateAdminPaymentStats()" class="btn btn-sm btn-light font-weight-bold text-info" style="font-size: 11px;" title="Refresh counts">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -3141,6 +3234,330 @@ Boland v Knights                        </a>
                         </div>
                     </div>
 
+                    <!-- ========================================================
+                         VIEW: DEPOSIT REQUESTS
+                         ======================================================== -->
+                    <div id="viewDepositRequests" class="admin-view-section" style="display: none; padding-bottom: 40px;">
+                        <div class="card" style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1.5px solid #86efac;">
+                            <div class="card-header" style="background: #f0fdf4; border-bottom: 2px solid #86efac; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 20px;">
+                                <div>
+                                    <strong style="color: #166534; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-arrow-circle-down text-success"></i>
+                                        Deposit Requests
+                                    </strong>
+                                    <small class="text-muted" style="font-size: 12px;">Real-time manual deposit verification queue with payment receipts</small>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                    <select id="adminDepFilterStatus" class="form-control form-control-sm" style="width: 140px; font-weight: 600;" onchange="loadAdminDepositRequests()">
+                                        <option value="">All Statuses</option>
+                                        <option value="PENDING" selected>Pending</option>
+                                        <option value="APPROVED">Approved</option>
+                                        <option value="REJECTED">Rejected</option>
+                                    </select>
+                                    <input type="text" id="adminDepSearchInput" class="form-control form-control-sm" placeholder="Search user or ID..." style="width: 160px;" onkeyup="if(event.key==='Enter') loadAdminDepositRequests()">
+                                    <button class="btn btn-sm btn-success font-weight-bold" onclick="loadAdminDepositRequests()">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover table-sm mb-0" style="font-size: 12.5px;">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th style="width: 150px;">Request ID</th>
+                                                <th style="width: 150px;">User</th>
+                                                <th style="width: 130px;">Amount</th>
+                                                <th>Selected Bank Snapshot</th>
+                                                <th style="width: 110px;">Payment Proof</th>
+                                                <th style="width: 140px;">Created At</th>
+                                                <th style="width: 100px;">Status</th>
+                                                <th>Audit / Notes</th>
+                                                <th style="width: 150px;" class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminDepositRequestsTbody">
+                                            <tr><td colspan="9" class="text-center py-4 text-muted">Loading deposit requests...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         VIEW: WITHDRAWAL REQUESTS
+                         ======================================================== -->
+                    <div id="viewWithdrawalRequests" class="admin-view-section" style="display: none; padding-bottom: 40px;">
+                        <div class="card" style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1.5px solid #93c5fd;">
+                            <div class="card-header" style="background: #eff6ff; border-bottom: 2px solid #93c5fd; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 20px;">
+                                <div>
+                                    <strong style="color: #1e40af; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-arrow-circle-up text-primary"></i>
+                                        Withdrawal Requests
+                                    </strong>
+                                    <small class="text-muted" style="font-size: 12px;">Real-time manual withdrawal verification and balance deduction queue</small>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                    <select id="adminWithFilterStatus" class="form-control form-control-sm" style="width: 140px; font-weight: 600;" onchange="loadAdminWithdrawalRequests()">
+                                        <option value="">All Statuses</option>
+                                        <option value="PENDING" selected>Pending</option>
+                                        <option value="APPROVED">Approved</option>
+                                        <option value="REJECTED">Rejected</option>
+                                    </select>
+                                    <input type="text" id="adminWithSearchInput" class="form-control form-control-sm" placeholder="Search user or ID..." style="width: 160px;" onkeyup="if(event.key==='Enter') loadAdminWithdrawalRequests()">
+                                    <button class="btn btn-sm btn-primary font-weight-bold" onclick="loadAdminWithdrawalRequests()">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover table-sm mb-0" style="font-size: 12.5px;">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th style="width: 150px;">Request ID</th>
+                                                <th style="width: 150px;">User</th>
+                                                <th style="width: 130px;">Amount</th>
+                                                <th>User Receiving Bank Details</th>
+                                                <th style="width: 140px;">Created At</th>
+                                                <th style="width: 100px;">Status</th>
+                                                <th>Audit / Notes</th>
+                                                <th style="width: 150px;" class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminWithdrawalRequestsTbody">
+                                            <tr><td colspan="8" class="text-center py-4 text-muted">Loading withdrawal requests...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         VIEW: RECEIVING BANK SETTINGS
+                         ======================================================== -->
+                    <div id="viewBankSettings" class="admin-view-section" style="display: none; padding-bottom: 40px;">
+                        <div class="card" style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1.5px solid #facc15;">
+                            <div class="card-header" style="background: #fefce8; border-bottom: 2px solid #facc15; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px 20px;">
+                                <div>
+                                    <strong style="color: #854d0e; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-university text-warning"></i>
+                                        Receiving Bank Accounts (Deposit Methods)
+                                    </strong>
+                                    <small class="text-muted" style="font-size: 12px;">Accounts displayed to users on their deposit page. Only Active accounts appear to users.</small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-success font-weight-bold" onclick="openBankEditModal()">
+                                        <i class="fas fa-plus mr-1"></i> Add Bank Account
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover table-sm mb-0" style="font-size: 12.5px;">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Bank Name</th>
+                                                <th>Account Title</th>
+                                                <th>Account Number</th>
+                                                <th>IBAN</th>
+                                                <th>Branch / Details</th>
+                                                <th style="width: 90px;">Status</th>
+                                                <th style="width: 180px;" class="text-center">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminBankAccountsTbody">
+                                            <tr><td colspan="7" class="text-center py-4 text-muted">Loading bank accounts...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: APPROVE DEPOSIT -->
+                    <div id="modalAdminApproveDeposit" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center; padding:15px;">
+                        <div style="background:#fff; border-radius:10px; width:100%; max-width:520px; box-shadow:0 12px 30px rgba(0,0,0,0.4); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#166534; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:16px;"><i class="fas fa-check-circle mr-2"></i> Approve Deposit Request</strong>
+                                <span onclick="closeModal('modalAdminApproveDeposit')" style="font-size:22px; cursor:pointer; color:#fff;">&times;</span>
+                            </div>
+                            <div style="padding:20px;">
+                                <div id="modalApproveDepDetails" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin-bottom:14px; font-size:13px;">
+                                    <!-- Populated dynamically -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Optional Admin Note / Reference</label>
+                                    <input type="text" id="modalApproveDepNote" class="form-control" placeholder="e.g. Verified via Bank App">
+                                </div>
+                                <div class="alert alert-warning" style="font-size:12px; margin-bottom:18px;">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Confirming approval will <strong>credit the real account balance</strong> of the user immediately and mark the request as APPROVED.
+                                </div>
+                                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalAdminApproveDeposit')">Cancel</button>
+                                    <button type="button" id="btnConfirmApproveDep" class="btn btn-success font-weight-bold" onclick="executeApproveDeposit()">
+                                        <i class="fas fa-check mr-1"></i> Confirm Approval
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: REJECT DEPOSIT -->
+                    <div id="modalAdminRejectDeposit" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center; padding:15px;">
+                        <div style="background:#fff; border-radius:10px; width:100%; max-width:500px; box-shadow:0 12px 30px rgba(0,0,0,0.4); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#991b1b; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:16px;"><i class="fas fa-times-circle mr-2"></i> Reject Deposit Request</strong>
+                                <span onclick="closeModal('modalAdminRejectDeposit')" style="font-size:22px; cursor:pointer; color:#fff;">&times;</span>
+                            </div>
+                            <div style="padding:20px;">
+                                <div id="modalRejectDepDetails" style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px; margin-bottom:14px; font-size:13px;">
+                                    <!-- Populated dynamically -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Rejection Reason <span class="text-danger">*</span></label>
+                                    <textarea id="modalRejectDepReason" class="form-control" rows="3" placeholder="Explain why this request is being rejected (e.g. Invalid receipt, Amount mismatch, Duplicate transaction ID)"></textarea>
+                                </div>
+                                <div class="alert alert-danger" style="font-size:12px; margin-bottom:18px;">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    The request will be marked as REJECTED. <strong>No balance will be credited.</strong> The user will see this rejection reason in their history.
+                                </div>
+                                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalAdminRejectDeposit')">Cancel</button>
+                                    <button type="button" id="btnConfirmRejectDep" class="btn btn-danger font-weight-bold" onclick="executeRejectDeposit()">
+                                        <i class="fas fa-times mr-1"></i> Reject Request
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: APPROVE WITHDRAWAL -->
+                    <div id="modalAdminApproveWithdrawal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center; padding:15px;">
+                        <div style="background:#fff; border-radius:10px; width:100%; max-width:520px; box-shadow:0 12px 30px rgba(0,0,0,0.4); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#1e40af; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:16px;"><i class="fas fa-check-circle mr-2"></i> Approve Withdrawal Request</strong>
+                                <span onclick="closeModal('modalAdminApproveWithdrawal')" style="font-size:22px; cursor:pointer; color:#fff;">&times;</span>
+                            </div>
+                            <div style="padding:20px;">
+                                <div id="modalApproveWithDetails" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; margin-bottom:14px; font-size:13px;">
+                                    <!-- Populated dynamically -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Optional Admin Note / Transfer Reference</label>
+                                    <input type="text" id="modalApproveWithNote" class="form-control" placeholder="e.g. Transferred via 1Link Ref #99231">
+                                </div>
+                                <div class="alert alert-warning" style="font-size:12px; margin-bottom:18px;">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Confirming approval will <strong>deduct the withdrawal amount from the user's real balance</strong> and mark the request as APPROVED.
+                                </div>
+                                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalAdminApproveWithdrawal')">Cancel</button>
+                                    <button type="button" id="btnConfirmApproveWith" class="btn btn-primary font-weight-bold" onclick="executeApproveWithdrawal()">
+                                        <i class="fas fa-check mr-1"></i> Confirm Approval
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: REJECT WITHDRAWAL -->
+                    <div id="modalAdminRejectWithdrawal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center; padding:15px;">
+                        <div style="background:#fff; border-radius:10px; width:100%; max-width:500px; box-shadow:0 12px 30px rgba(0,0,0,0.4); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#991b1b; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:16px;"><i class="fas fa-times-circle mr-2"></i> Reject Withdrawal Request</strong>
+                                <span onclick="closeModal('modalAdminRejectWithdrawal')" style="font-size:22px; cursor:pointer; color:#fff;">&times;</span>
+                            </div>
+                            <div style="padding:20px;">
+                                <div id="modalRejectWithDetails" style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px; margin-bottom:14px; font-size:13px;">
+                                    <!-- Populated dynamically -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Rejection Reason <span class="text-danger">*</span></label>
+                                    <textarea id="modalRejectWithReason" class="form-control" rows="3" placeholder="Explain why this withdrawal is being rejected (e.g. Incorrect bank account number, KYC required)"></textarea>
+                                </div>
+                                <div class="alert alert-danger" style="font-size:12px; margin-bottom:18px;">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    The request will be marked as REJECTED. <strong>No balance will be deducted.</strong>
+                                </div>
+                                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalAdminRejectWithdrawal')">Cancel</button>
+                                    <button type="button" id="btnConfirmRejectWith" class="btn btn-danger font-weight-bold" onclick="executeRejectWithdrawal()">
+                                        <i class="fas fa-times mr-1"></i> Reject Request
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: ADD / EDIT BANK ACCOUNT -->
+                    <div id="modalAdminBankEdit" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:10000; align-items:center; justify-content:center; padding:15px;">
+                        <div style="background:#fff; border-radius:10px; width:100%; max-width:540px; box-shadow:0 12px 30px rgba(0,0,0,0.4); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#1e293b; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                                <strong id="modalBankEditTitle" style="font-size:16px;">Add Receiving Bank Account</strong>
+                                <span onclick="closeModal('modalAdminBankEdit')" style="font-size:22px; cursor:pointer; color:#fff;">&times;</span>
+                            </div>
+                            <div style="padding:20px;">
+                                <input type="hidden" id="bankEditId" value="">
+                                <div class="form-group mb-2">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Bank Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="bankEditName" class="form-control form-control-sm" placeholder="e.g. Meezan Bank, HBL, Bank Alfalah">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Account Title / Holder Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="bankEditTitle" class="form-control form-control-sm" placeholder="e.g. Satsport Operations Pvt Ltd">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Account Number <span class="text-danger">*</span></label>
+                                    <input type="text" id="bankEditNumber" class="form-control form-control-sm" placeholder="e.g. 01020304050607">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">IBAN (Optional)</label>
+                                    <input type="text" id="bankEditIban" class="form-control form-control-sm" placeholder="e.g. PK36MEZN0001020304050607">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Branch / Instructions (Optional)</label>
+                                    <textarea id="bankEditDetails" class="form-control form-control-sm" rows="2" placeholder="e.g. Gulberg Branch, Lahore. Fast interbank transfer."></textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold" style="font-size:12.5px;">Account Status</label>
+                                    <select id="bankEditStatus" class="form-control form-control-sm">
+                                        <option value="active">Active (Visible to Users)</option>
+                                        <option value="inactive">Inactive (Hidden from Users)</option>
+                                    </select>
+                                </div>
+                                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('modalAdminBankEdit')">Cancel</button>
+                                    <button type="button" id="btnSaveBank" class="btn btn-primary btn-sm font-weight-bold" onclick="executeSaveBank()">
+                                        <i class="fas fa-save mr-1"></i> Save Bank Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: PAYMENT SCREENSHOT VIEWER -->
+                    <div id="modalAdminScreenshotViewer" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; align-items:center; justify-content:center; padding:15px;">
+                        <div style="background:#fff; border-radius:10px; width:100%; max-width:700px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 12px 35px rgba(0,0,0,0.5); overflow:hidden;">
+                            <div style="padding:12px 18px; background:#1e293b; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                                <strong id="modalScreenshotViewerTitle" style="font-size:15px;">Payment Receipt Proof</strong>
+                                <span onclick="closeModal('modalAdminScreenshotViewer')" style="font-size:24px; cursor:pointer; color:#fff;">&times;</span>
+                            </div>
+                            <div style="padding:16px; overflow-y:auto; flex:1; text-align:center; background:#0f172a;">
+                                <img id="modalScreenshotImg" src="" alt="Payment Receipt" style="max-width:100%; max-height:70vh; object-fit:contain; border-radius:6px; box-shadow:0 4px 15px rgba(0,0,0,0.4);">
+                            </div>
+                            <div style="padding:10px 18px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                                <a id="modalScreenshotDownloadLink" href="" target="_blank" class="btn btn-sm btn-outline-primary font-weight-bold">
+                                    <i class="fas fa-external-link-alt mr-1"></i> Open Full Image
+                                </a>
+                                <button type="button" class="btn btn-sm btn-secondary font-weight-bold" onclick="closeModal('modalAdminScreenshotViewer')">Close</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Endpoints Modal -->
                     <div id="modalApiEndpoints" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding:20px;">
                         <div style="background:#fff; border-radius:8px; width:100%; max-width:850px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 10px 25px rgba(0,0,0,0.3); overflow:hidden;">
@@ -3711,6 +4128,9 @@ Boland v Knights                        </a>
             var appFooter = document.querySelector('.app-footer');
             if (appFooter) appFooter.style.display = 'flex';
             document.title = 'BPEXCH';
+            if (typeof updateAdminPaymentStats === 'function') {
+                updateAdminPaymentStats();
+            }
         }
 
         async function executeAdminLogin() {
@@ -3986,6 +4406,21 @@ Boland v Knights                        </a>
                 document.getElementById('topNavApiManagement')?.classList.add('active');
                 document.title = 'API Management | BPEXCH';
                 loadAdminApiManagement();
+            } else if (lower.startsWith('/finance/deposits') || lower === '/deposits' || lower === '/deposits/') {
+                document.getElementById('viewDepositRequests').style.display = 'block';
+                document.getElementById('sideNavDeposits')?.classList.add('active');
+                document.title = 'Deposit Requests | BPEXCH';
+                loadAdminDepositRequests();
+            } else if (lower.startsWith('/finance/withdrawals') || lower === '/withdrawals' || lower === '/withdrawals/') {
+                document.getElementById('viewWithdrawalRequests').style.display = 'block';
+                document.getElementById('sideNavWithdrawals')?.classList.add('active');
+                document.title = 'Withdrawal Requests | BPEXCH';
+                loadAdminWithdrawalRequests();
+            } else if (lower.startsWith('/settings/banks') || lower === '/banks' || lower === '/banks/') {
+                document.getElementById('viewBankSettings').style.display = 'block';
+                document.getElementById('sideNavBanks')?.classList.add('active');
+                document.title = 'Bank Settings | BPEXCH';
+                loadAdminBankAccounts();
             } else if (
                 lower === '/settings' || lower === '/settings/' || lower.startsWith('/settings') ||
                 lower === '/common/settings' || lower === '/common/settings/' || lower.startsWith('/common/settings') ||
@@ -6549,6 +6984,724 @@ Boland v Knights                        </a>
             } catch (err) {
                 alert('Switch error: ' + err.message);
             }
+        }
+
+        // ========================================================
+        // MANUAL DEPOSIT & WITHDRAWAL SYSTEM CONTROLLER
+        // ========================================================
+        function closeModal(modalId) {
+            var el = document.getElementById(modalId);
+            if (el) el.style.display = 'none';
+        }
+
+        function openModal(modalId) {
+            var el = document.getElementById(modalId);
+            if (el) el.style.display = 'flex';
+        }
+
+        async function updateAdminPaymentStats() {
+            var token = getAdminAuthToken();
+            if (!token) return;
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/stats'), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    }
+                });
+                if (res.ok && res.data && res.data.status === 'success' && res.data.stats) {
+                    var s = res.data.stats;
+                    
+                    // Side & Nav badges for deposits
+                    var depBadges = [document.getElementById('sideBadgeDeposits'), document.getElementById('navBadgeDeposits')];
+                    depBadges.forEach(function(b) {
+                        if (b) {
+                            b.innerText = s.pendingDeposits || 0;
+                            b.style.display = (s.pendingDeposits > 0) ? 'inline-block' : 'none';
+                        }
+                    });
+
+                    // Side & Nav badges for withdrawals
+                    var withBadges = [document.getElementById('sideBadgeWithdrawals'), document.getElementById('navBadgeWithdrawals')];
+                    withBadges.forEach(function(b) {
+                        if (b) {
+                            b.innerText = s.pendingWithdrawals || 0;
+                            b.style.display = (s.pendingWithdrawals > 0) ? 'inline-block' : 'none';
+                        }
+                    });
+
+                    // Dashboard cards
+                    var dDep = document.getElementById('dashPendingDeposits');
+                    if (dDep) dDep.innerText = s.pendingDeposits || 0;
+                    var dWith = document.getElementById('dashPendingWithdrawals');
+                    if (dWith) dWith.innerText = s.pendingWithdrawals || 0;
+                    var dBanks = document.getElementById('dashActiveBanks');
+                    if (dBanks) dBanks.innerText = s.activeBanks || 0;
+                    var dAppr = document.getElementById('dashApprovedTotal');
+                    if (dAppr) dAppr.innerText = 'Rs. ' + (s.totalApprovedAmount || 0).toLocaleString('en-IN');
+                }
+            } catch (e) {
+                console.warn('Failed to update admin payment stats:', e);
+            }
+        }
+
+        // Polling interval for live badges
+        setInterval(function() {
+            if (typeof getAdminAuthToken === 'function' && getAdminAuthToken()) {
+                updateAdminPaymentStats();
+            }
+        }, 30000);
+
+        // --- Deposit Requests ---
+        var _adminDepositRequestsCache = [];
+        var _activeDepApproveId = null;
+        var _activeDepRejectId = null;
+
+        async function loadAdminDepositRequests() {
+            var tbody = document.getElementById('adminDepositRequestsTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading deposit requests...</td></tr>';
+
+            var token = getAdminAuthToken();
+            if (!token) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">Administrator authentication required.</td></tr>';
+                return;
+            }
+
+            var statusFilter = document.getElementById('adminDepFilterStatus') ? document.getElementById('adminDepFilterStatus').value : '';
+            var searchVal = document.getElementById('adminDepSearchInput') ? document.getElementById('adminDepSearchInput').value.trim() : '';
+
+            var queryUrl = '/api/payments/admin/requests?type=DEPOSIT';
+            if (statusFilter) queryUrl += '&status=' + encodeURIComponent(statusFilter);
+            if (searchVal) queryUrl += '&search=' + encodeURIComponent(searchVal);
+
+            try {
+                var res = await safeFetchJson(getApiUrl(queryUrl), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    }
+                });
+
+                if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.requests)) {
+                    _adminDepositRequestsCache = res.data.requests;
+                    if (_adminDepositRequestsCache.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">No deposit requests found' + (statusFilter ? ' with status ' + statusFilter : '') + '.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = _adminDepositRequestsCache.map(function(r) {
+                        var dtStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '-';
+                        var amtStr = 'Rs. ' + (parseFloat(r.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                        
+                        var statusBadge = '';
+                        if (r.status === 'PENDING') statusBadge = '<span class="badge badge-warning px-2 py-1"><i class="fas fa-clock mr-1"></i> PENDING</span>';
+                        else if (r.status === 'APPROVED') statusBadge = '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> APPROVED</span>';
+                        else if (r.status === 'REJECTED') statusBadge = '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i> REJECTED</span>';
+                        else statusBadge = '<span class="badge badge-secondary px-2 py-1">' + (r.status || '-') + '</span>';
+
+                        var bankInfo = '-';
+                        if (r.selectedBank) {
+                            bankInfo = '<strong>' + (r.selectedBank.bankName || 'Bank') + '</strong><br>' +
+                                       '<small class="text-muted">' + (r.selectedBank.accountTitle || '') + '<br>' +
+                                       '<span class="font-weight-bold">' + (r.selectedBank.accountNumber || '') + '</span>' +
+                                       (r.selectedBank.iban ? '<br>IBAN: ' + r.selectedBank.iban : '') + '</small>';
+                        }
+
+                        var proofCol = '<span class="text-muted small">No screenshot</span>';
+                        if (r.screenshot) {
+                            var safeUser = (r.username || '').replace(/'/g, "\\'");
+                            proofCol = '<button class="btn btn-xs btn-outline-info font-weight-bold" onclick="openAdminScreenshotModal(\'' + r.id + '\', \'' + (parseFloat(r.amount) || 0) + '\', \'' + safeUser + '\')">' +
+                                       '<i class="fas fa-image mr-1"></i> View Proof</button>';
+                        }
+
+                        var auditNotes = '<small class="text-muted">';
+                        if (r.userNote) auditNotes += '<div><strong>User Note:</strong> ' + r.userNote + '</div>';
+                        if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + r.adminNote + '</div>';
+                        if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + r.rejectionReason + '</div>';
+                        if (r.processedBy) auditNotes += '<div>Processed by: ' + r.processedBy + (r.processedAt ? ' (' + new Date(r.processedAt).toLocaleString('en-IN') + ')' : '') + '</div>';
+                        if (!r.userNote && !r.adminNote && !r.rejectionReason && !r.processedBy) auditNotes += '-';
+                        auditNotes += '</small>';
+
+                        var actionCol = '';
+                        if (r.status === 'PENDING') {
+                            actionCol = '<div class="btn-group btn-group-sm">' +
+                                        '<button class="btn btn-success btn-sm font-weight-bold" onclick="openApproveDepositModal(\'' + r.id + '\')"><i class="fas fa-check mr-1"></i> Approve</button>' +
+                                        '<button class="btn btn-danger btn-sm font-weight-bold" onclick="openRejectDepositModal(\'' + r.id + '\')"><i class="fas fa-times mr-1"></i> Reject</button>' +
+                                        '</div>';
+                        } else if (r.status === 'APPROVED') {
+                            actionCol = '<span class="text-success small font-weight-bold"><i class="fas fa-check-double mr-1"></i> Completed</span>';
+                        } else if (r.status === 'REJECTED') {
+                            actionCol = '<span class="text-danger small font-weight-bold"><i class="fas fa-ban mr-1"></i> Rejected</span>';
+                        }
+
+                        return '<tr>' +
+                               '<td><span class="badge badge-light border font-weight-bold" style="font-family:monospace;">' + r.id + '</span></td>' +
+                               '<td><strong>' + (r.username || '-') + '</strong><br><small class="text-muted">UID: ' + (r.userId || '-') + '</small></td>' +
+                               '<td class="font-weight-bold text-success" style="font-size:13px;">' + amtStr + '</td>' +
+                               '<td>' + bankInfo + '</td>' +
+                               '<td>' + proofCol + '</td>' +
+                               '<td><small>' + dtStr + '</small></td>' +
+                               '<td>' + statusBadge + '</td>' +
+                               '<td>' + auditNotes + '</td>' +
+                               '<td class="text-center">' + actionCol + '</td>' +
+                               '</tr>';
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">' + ((res.data && res.data.message) || 'Failed to load deposit requests.') + '</td></tr>';
+                }
+            } catch (err) {
+                console.error('loadAdminDepositRequests error:', err);
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">Error: ' + err.message + '</td></tr>';
+            }
+        }
+
+        function openApproveDepositModal(requestId) {
+            var req = _adminDepositRequestsCache.find(function(r) { return r.id === requestId; });
+            _activeDepApproveId = requestId;
+            var container = document.getElementById('modalApproveDepDetails');
+            if (container && req) {
+                container.innerHTML = '<div><strong>Request ID:</strong> <code>' + req.id + '</code></div>' +
+                                      '<div><strong>User:</strong> ' + req.username + ' (ID: ' + req.userId + ')</div>' +
+                                      '<div><strong>Amount:</strong> <span class="text-success font-weight-bold">Rs. ' + (parseFloat(req.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) + '</span></div>' +
+                                      (req.selectedBank ? '<div><strong>Receiving Bank:</strong> ' + req.selectedBank.bankName + ' (' + req.selectedBank.accountNumber + ')</div>' : '');
+            }
+            var noteInput = document.getElementById('modalApproveDepNote');
+            if (noteInput) noteInput.value = '';
+            openModal('modalAdminApproveDeposit');
+        }
+
+        async function executeApproveDeposit() {
+            if (!_activeDepApproveId) return;
+            var btn = document.getElementById('btnConfirmApproveDep');
+            var origHtml = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Approving...'; }
+
+            var note = document.getElementById('modalApproveDepNote') ? document.getElementById('modalApproveDepNote').value.trim() : '';
+            var token = getAdminAuthToken();
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/admin/approve'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        requestId: _activeDepApproveId,
+                        adminNote: note
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    closeModal('modalAdminApproveDeposit');
+                    showToast(res.data.message || 'Deposit approved successfully!');
+                    await loadAdminDepositRequests();
+                    await updateAdminPaymentStats();
+                    if (typeof fetchAdminUsers === 'function') fetchAdminUsers();
+                } else {
+                    alert('Approval failed: ' + ((res.data && res.data.message) || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Network error approving deposit: ' + e.message);
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+            }
+        }
+
+        function openRejectDepositModal(requestId) {
+            var req = _adminDepositRequestsCache.find(function(r) { return r.id === requestId; });
+            _activeDepRejectId = requestId;
+            var container = document.getElementById('modalRejectDepDetails');
+            if (container && req) {
+                container.innerHTML = '<div><strong>Request ID:</strong> <code>' + req.id + '</code></div>' +
+                                      '<div><strong>User:</strong> ' + req.username + ' (ID: ' + req.userId + ')</div>' +
+                                      '<div><strong>Amount:</strong> <span class="text-danger font-weight-bold">Rs. ' + (parseFloat(req.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) + '</span></div>';
+            }
+            var reasonInput = document.getElementById('modalRejectDepReason');
+            if (reasonInput) reasonInput.value = '';
+            openModal('modalAdminRejectDeposit');
+        }
+
+        async function executeRejectDeposit() {
+            if (!_activeDepRejectId) return;
+            var reasonInput = document.getElementById('modalRejectDepReason');
+            var reason = reasonInput ? reasonInput.value.trim() : '';
+            if (!reason) {
+                alert('Please enter a rejection reason.');
+                if (reasonInput) reasonInput.focus();
+                return;
+            }
+
+            var btn = document.getElementById('btnConfirmRejectDep');
+            var origHtml = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Rejecting...'; }
+
+            var token = getAdminAuthToken();
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/admin/reject'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        requestId: _activeDepRejectId,
+                        reason: reason
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    closeModal('modalAdminRejectDeposit');
+                    showToast(res.data.message || 'Deposit rejected.');
+                    await loadAdminDepositRequests();
+                    await updateAdminPaymentStats();
+                } else {
+                    alert('Rejection failed: ' + ((res.data && res.data.message) || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Network error rejecting deposit: ' + e.message);
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+            }
+        }
+
+        // --- Withdrawal Requests ---
+        var _adminWithdrawalRequestsCache = [];
+        var _activeWithApproveId = null;
+        var _activeWithRejectId = null;
+
+        async function loadAdminWithdrawalRequests() {
+            var tbody = document.getElementById('adminWithdrawalRequestsTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading withdrawal requests...</td></tr>';
+
+            var token = getAdminAuthToken();
+            if (!token) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Administrator authentication required.</td></tr>';
+                return;
+            }
+
+            var statusFilter = document.getElementById('adminWithFilterStatus') ? document.getElementById('adminWithFilterStatus').value : '';
+            var searchVal = document.getElementById('adminWithSearchInput') ? document.getElementById('adminWithSearchInput').value.trim() : '';
+
+            var queryUrl = '/api/payments/admin/requests?type=WITHDRAWAL';
+            if (statusFilter) queryUrl += '&status=' + encodeURIComponent(statusFilter);
+            if (searchVal) queryUrl += '&search=' + encodeURIComponent(searchVal);
+
+            try {
+                var res = await safeFetchJson(getApiUrl(queryUrl), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    }
+                });
+
+                if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.requests)) {
+                    _adminWithdrawalRequestsCache = res.data.requests;
+                    if (_adminWithdrawalRequestsCache.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No withdrawal requests found' + (statusFilter ? ' with status ' + statusFilter : '') + '.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = _adminWithdrawalRequestsCache.map(function(r) {
+                        var dtStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '-';
+                        var amtStr = 'Rs. ' + (parseFloat(r.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+
+                        var statusBadge = '';
+                        if (r.status === 'PENDING') statusBadge = '<span class="badge badge-warning px-2 py-1"><i class="fas fa-clock mr-1"></i> PENDING</span>';
+                        else if (r.status === 'APPROVED') statusBadge = '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> APPROVED</span>';
+                        else if (r.status === 'REJECTED') statusBadge = '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i> REJECTED</span>';
+                        else statusBadge = '<span class="badge badge-secondary px-2 py-1">' + (r.status || '-') + '</span>';
+
+                        var bankInfo = '-';
+                        if (r.userBankDetails) {
+                            bankInfo = '<strong>' + (r.userBankDetails.bankName || 'Bank') + '</strong><br>' +
+                                       '<small class="text-muted">' + (r.userBankDetails.accountHolderName || '') + '<br>' +
+                                       '<span class="font-weight-bold">' + (r.userBankDetails.accountNumber || '') + '</span>' +
+                                       (r.userBankDetails.iban ? '<br>IBAN: ' + r.userBankDetails.iban : '') + '</small>';
+                        }
+
+                        var auditNotes = '<small class="text-muted">';
+                        if (r.userNote) auditNotes += '<div><strong>User Note:</strong> ' + r.userNote + '</div>';
+                        if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + r.adminNote + '</div>';
+                        if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + r.rejectionReason + '</div>';
+                        if (r.processedBy) auditNotes += '<div>Processed by: ' + r.processedBy + (r.processedAt ? ' (' + new Date(r.processedAt).toLocaleString('en-IN') + ')' : '') + '</div>';
+                        if (!r.userNote && !r.adminNote && !r.rejectionReason && !r.processedBy) auditNotes += '-';
+                        auditNotes += '</small>';
+
+                        var actionCol = '';
+                        if (r.status === 'PENDING') {
+                            actionCol = '<div class="btn-group btn-group-sm">' +
+                                        '<button class="btn btn-primary btn-sm font-weight-bold" onclick="openApproveWithdrawalModal(\'' + r.id + '\')"><i class="fas fa-check mr-1"></i> Approve</button>' +
+                                        '<button class="btn btn-danger btn-sm font-weight-bold" onclick="openRejectWithdrawalModal(\'' + r.id + '\')"><i class="fas fa-times mr-1"></i> Reject</button>' +
+                                        '</div>';
+                        } else if (r.status === 'APPROVED') {
+                            actionCol = '<span class="text-success small font-weight-bold"><i class="fas fa-check-double mr-1"></i> Completed</span>';
+                        } else if (r.status === 'REJECTED') {
+                            actionCol = '<span class="text-danger small font-weight-bold"><i class="fas fa-ban mr-1"></i> Rejected</span>';
+                        }
+
+                        return '<tr>' +
+                               '<td><span class="badge badge-light border font-weight-bold" style="font-family:monospace;">' + r.id + '</span></td>' +
+                               '<td><strong>' + (r.username || '-') + '</strong><br><small class="text-muted">UID: ' + (r.userId || '-') + '</small></td>' +
+                               '<td class="font-weight-bold text-primary" style="font-size:13px;">' + amtStr + '</td>' +
+                               '<td>' + bankInfo + '</td>' +
+                               '<td><small>' + dtStr + '</small></td>' +
+                               '<td>' + statusBadge + '</td>' +
+                               '<td>' + auditNotes + '</td>' +
+                               '<td class="text-center">' + actionCol + '</td>' +
+                               '</tr>';
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">' + ((res.data && res.data.message) || 'Failed to load withdrawal requests.') + '</td></tr>';
+                }
+            } catch (err) {
+                console.error('loadAdminWithdrawalRequests error:', err);
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Error: ' + err.message + '</td></tr>';
+            }
+        }
+
+        function openApproveWithdrawalModal(requestId) {
+            var req = _adminWithdrawalRequestsCache.find(function(r) { return r.id === requestId; });
+            _activeWithApproveId = requestId;
+            var container = document.getElementById('modalApproveWithDetails');
+            if (container && req) {
+                container.innerHTML = '<div><strong>Request ID:</strong> <code>' + req.id + '</code></div>' +
+                                      '<div><strong>User:</strong> ' + req.username + ' (ID: ' + req.userId + ')</div>' +
+                                      '<div><strong>Amount:</strong> <span class="text-primary font-weight-bold">Rs. ' + (parseFloat(req.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) + '</span></div>' +
+                                      (req.userBankDetails ? '<div><strong>Transfer Target:</strong> ' + req.userBankDetails.bankName + ' - ' + req.userBankDetails.accountHolderName + ' (' + req.userBankDetails.accountNumber + ')</div>' : '');
+            }
+            var noteInput = document.getElementById('modalApproveWithNote');
+            if (noteInput) noteInput.value = '';
+            openModal('modalAdminApproveWithdrawal');
+        }
+
+        async function executeApproveWithdrawal() {
+            if (!_activeWithApproveId) return;
+            var btn = document.getElementById('btnConfirmApproveWith');
+            var origHtml = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Processing...'; }
+
+            var note = document.getElementById('modalApproveWithNote') ? document.getElementById('modalApproveWithNote').value.trim() : '';
+            var token = getAdminAuthToken();
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/admin/approve'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        requestId: _activeWithApproveId,
+                        adminNote: note
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    closeModal('modalAdminApproveWithdrawal');
+                    showToast(res.data.message || 'Withdrawal approved successfully!');
+                    await loadAdminWithdrawalRequests();
+                    await updateAdminPaymentStats();
+                    if (typeof fetchAdminUsers === 'function') fetchAdminUsers();
+                } else {
+                    alert('Approval failed: ' + ((res.data && res.data.message) || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Network error approving withdrawal: ' + e.message);
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+            }
+        }
+
+        function openRejectWithdrawalModal(requestId) {
+            var req = _adminWithdrawalRequestsCache.find(function(r) { return r.id === requestId; });
+            _activeWithRejectId = requestId;
+            var container = document.getElementById('modalRejectWithDetails');
+            if (container && req) {
+                container.innerHTML = '<div><strong>Request ID:</strong> <code>' + req.id + '</code></div>' +
+                                      '<div><strong>User:</strong> ' + req.username + ' (ID: ' + req.userId + ')</div>' +
+                                      '<div><strong>Amount:</strong> <span class="text-danger font-weight-bold">Rs. ' + (parseFloat(req.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2}) + '</span></div>';
+            }
+            var reasonInput = document.getElementById('modalRejectWithReason');
+            if (reasonInput) reasonInput.value = '';
+            openModal('modalAdminRejectWithdrawal');
+        }
+
+        async function executeRejectWithdrawal() {
+            if (!_activeWithRejectId) return;
+            var reasonInput = document.getElementById('modalRejectWithReason');
+            var reason = reasonInput ? reasonInput.value.trim() : '';
+            if (!reason) {
+                alert('Please enter a rejection reason.');
+                if (reasonInput) reasonInput.focus();
+                return;
+            }
+
+            var btn = document.getElementById('btnConfirmRejectWith');
+            var origHtml = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Rejecting...'; }
+
+            var token = getAdminAuthToken();
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/admin/reject'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        requestId: _activeWithRejectId,
+                        reason: reason
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    closeModal('modalAdminRejectWithdrawal');
+                    showToast(res.data.message || 'Withdrawal rejected.');
+                    await loadAdminWithdrawalRequests();
+                    await updateAdminPaymentStats();
+                } else {
+                    alert('Rejection failed: ' + ((res.data && res.data.message) || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Network error rejecting withdrawal: ' + e.message);
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+            }
+        }
+
+        // --- Bank Accounts Management ---
+        var _adminBanksCache = [];
+
+        async function loadAdminBankAccounts() {
+            var tbody = document.getElementById('adminBankAccountsTbody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading bank accounts...</td></tr>';
+
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/banks'), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    }
+                });
+
+                if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.banks)) {
+                    _adminBanksCache = res.data.banks;
+                    if (_adminBanksCache.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No bank accounts configured yet. Click "Add Bank Account" to configure one.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = _adminBanksCache.map(function(b) {
+                        var isActive = b.status === 'active';
+                        var statusBadge = isActive ? '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> Active</span>' :
+                                                     '<span class="badge badge-secondary px-2 py-1"><i class="fas fa-eye-slash mr-1"></i> Inactive</span>';
+                        var toggleText = isActive ? 'Deactivate' : 'Activate';
+                        var toggleClass = isActive ? 'btn-outline-warning' : 'btn-outline-success';
+
+                        return '<tr>' +
+                               '<td><strong>' + (b.bankName || '-') + '</strong></td>' +
+                               '<td>' + (b.accountTitle || '-') + '</td>' +
+                               '<td><span style="font-family:monospace; font-weight:bold;">' + (b.accountNumber || '-') + '</span></td>' +
+                               '<td><span style="font-family:monospace; font-size:11.5px;">' + (b.iban || '-') + '</span></td>' +
+                               '<td><small class="text-muted">' + (b.details || '-') + '</small></td>' +
+                               '<td>' + statusBadge + '</td>' +
+                               '<td class="text-center">' +
+                                   '<div class="btn-group btn-group-sm">' +
+                                       '<button class="btn btn-sm btn-outline-info" onclick="openBankEditModal(\'' + b.id + '\')"><i class="fas fa-edit"></i> Edit</button>' +
+                                       '<button class="btn btn-sm ' + toggleClass + '" onclick="executeToggleBank(\'' + b.id + '\')">' + toggleText + '</button>' +
+                                       '<button class="btn btn-sm btn-outline-danger" onclick="executeDeleteBank(\'' + b.id + '\')"><i class="fas fa-trash-alt"></i></button>' +
+                                   '</div>' +
+                               '</td>' +
+                               '</tr>';
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">' + ((res.data && res.data.message) || 'Failed to load bank accounts.') + '</td></tr>';
+                }
+            } catch (e) {
+                console.error('loadAdminBankAccounts error:', e);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">Error: ' + e.message + '</td></tr>';
+            }
+        }
+
+        function openBankEditModal(bankId) {
+            var idInput = document.getElementById('bankEditId');
+            var titleModal = document.getElementById('modalBankEditTitle');
+            var nameInput = document.getElementById('bankEditName');
+            var titleInput = document.getElementById('bankEditTitle');
+            var numInput = document.getElementById('bankEditNumber');
+            var ibanInput = document.getElementById('bankEditIban');
+            var detInput = document.getElementById('bankEditDetails');
+            var statInput = document.getElementById('bankEditStatus');
+
+            if (bankId) {
+                var b = _adminBanksCache.find(function(x) { return x.id === bankId; });
+                if (titleModal) titleModal.innerText = 'Edit Receiving Bank Account';
+                if (idInput) idInput.value = bankId;
+                if (nameInput) nameInput.value = b ? b.bankName || '' : '';
+                if (titleInput) titleInput.value = b ? b.accountTitle || '' : '';
+                if (numInput) numInput.value = b ? b.accountNumber || '' : '';
+                if (ibanInput) ibanInput.value = b ? b.iban || '' : '';
+                if (detInput) detInput.value = b ? b.details || '' : '';
+                if (statInput) statInput.value = b ? b.status || 'active' : 'active';
+            } else {
+                if (titleModal) titleModal.innerText = 'Add Receiving Bank Account';
+                if (idInput) idInput.value = '';
+                if (nameInput) nameInput.value = '';
+                if (titleInput) titleInput.value = '';
+                if (numInput) numInput.value = '';
+                if (ibanInput) ibanInput.value = '';
+                if (detInput) detInput.value = '';
+                if (statInput) statInput.value = 'active';
+            }
+            openModal('modalAdminBankEdit');
+        }
+
+        async function executeSaveBank() {
+            var idInput = document.getElementById('bankEditId');
+            var nameInput = document.getElementById('bankEditName');
+            var titleInput = document.getElementById('bankEditTitle');
+            var numInput = document.getElementById('bankEditNumber');
+            var ibanInput = document.getElementById('bankEditIban');
+            var detInput = document.getElementById('bankEditDetails');
+            var statInput = document.getElementById('bankEditStatus');
+
+            var bankName = nameInput ? nameInput.value.trim() : '';
+            var accountTitle = titleInput ? titleInput.value.trim() : '';
+            var accountNumber = numInput ? numInput.value.trim() : '';
+            var iban = ibanInput ? ibanInput.value.trim() : '';
+            var details = detInput ? detInput.value.trim() : '';
+            var status = statInput ? statInput.value : 'active';
+            var bankId = idInput ? idInput.value.trim() : '';
+
+            if (!bankName || !accountTitle || !accountNumber) {
+                alert('Please fill in Bank Name, Account Title, and Account Number.');
+                return;
+            }
+
+            var btn = document.getElementById('btnSaveBank');
+            var origHtml = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving...'; }
+
+            var token = getAdminAuthToken();
+            var isEdit = Boolean(bankId);
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/banks'), {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        id: bankId,
+                        bankName: bankName,
+                        accountTitle: accountTitle,
+                        accountNumber: accountNumber,
+                        iban: iban,
+                        details: details,
+                        status: status
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    closeModal('modalAdminBankEdit');
+                    showToast(isEdit ? 'Bank account updated successfully!' : 'Bank account added successfully!');
+                    await loadAdminBankAccounts();
+                    await updateAdminPaymentStats();
+                } else {
+                    alert('Save failed: ' + ((res.data && res.data.message) || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Network error saving bank: ' + e.message);
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
+            }
+        }
+
+        async function executeToggleBank(bankId) {
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/banks/toggle'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({ id: bankId })
+                });
+                if (res.ok && res.data && res.data.status === 'success') {
+                    showToast(res.data.message || 'Status updated');
+                    await loadAdminBankAccounts();
+                    await updateAdminPaymentStats();
+                } else {
+                    alert('Toggle failed: ' + ((res.data && res.data.message) || 'Error'));
+                }
+            } catch (e) {
+                alert('Toggle error: ' + e.message);
+            }
+        }
+
+        async function executeDeleteBank(bankId) {
+            if (!confirm('Are you sure you want to delete this bank account?')) return;
+            var token = getAdminAuthToken();
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/payments/banks?id=' + encodeURIComponent(bankId)), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    }
+                });
+                if (res.ok && res.data && res.data.status === 'success') {
+                    showToast(res.data.message || 'Bank account removed');
+                    await loadAdminBankAccounts();
+                    await updateAdminPaymentStats();
+                } else {
+                    alert('Delete failed: ' + ((res.data && res.data.message) || 'Error'));
+                }
+            } catch (e) {
+                alert('Delete error: ' + e.message);
+            }
+        }
+
+        function openAdminScreenshotModal(requestId, amount, username) {
+            var titleEl = document.getElementById('modalScreenshotViewerTitle');
+            if (titleEl) titleEl.innerText = 'Payment Proof Receipt - Rs. ' + (parseFloat(amount) || 0).toLocaleString('en-IN') + ' (' + username + ')';
+
+            var token = getAdminAuthToken();
+            var streamUrl = getApiUrl('/api/payments/screenshot?id=' + encodeURIComponent(requestId) + '&token=' + encodeURIComponent(token));
+
+            var img = document.getElementById('modalScreenshotImg');
+            if (img) img.src = streamUrl;
+
+            var link = document.getElementById('modalScreenshotDownloadLink');
+            if (link) link.href = streamUrl;
+
+            openModal('modalAdminScreenshotViewer');
         }
     </script>
 </body>

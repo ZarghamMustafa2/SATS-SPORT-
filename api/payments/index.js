@@ -1,0 +1,416 @@
+// api/payments/index.js - Unified Manual Deposit & Withdrawal API Controller
+const url = require('url');
+const authDb = require('../../lib/auth_db');
+const paymentsDb = require('../../lib/payments_db');
+const { parseJsonBody, getRequestSession, sendJson } = require('../../lib/http_util');
+
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Request, X-Admin-Token, X-Company-Key');
+
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
+
+  const parsedUrl = new URL(req.url, 'http://localhost');
+  const pathname = (parsedUrl.pathname || '').toLowerCase().replace(/\/+$/, '');
+  const searchParams = parsedUrl.searchParams;
+
+  // Resolve authenticated session (supporting Bearer token, query token for media, headers, and cookies)
+  let session = getRequestSession(req, authDb);
+  if (!session) {
+    const queryToken = searchParams.get('token') || searchParams.get('auth_token') || searchParams.get('admin_token');
+    if (queryToken) {
+      session = authDb.getSession(queryToken);
+    }
+  }
+
+  // Support Company Key
+  const companyKey = req.headers['x-company-key'];
+  if (!session && companyKey && authDb.verifyCompanyKey(companyKey)) {
+    session = {
+      role: authDb.ROLES.COMPANY,
+      username: 'Company Account'
+    };
+  }
+
+  const isAdmin = session && (
+    session.role === authDb.ROLES.COMPANY ||
+    session.role === authDb.ROLES.SUPER_ADMIN ||
+    session.role === authDb.ROLES.SUPER_MASTER
+  );
+
+  try {
+    // -----------------------------------------------------------
+    // 1. BANK ACCOUNTS
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/banks' || pathname === '/api/payments/bank-accounts') {
+      if (req.method === 'GET') {
+        // Normal users only see active receiving banks; Admins see all
+        const banks = paymentsDb.getBankAccounts({ activeOnly: !isAdmin });
+        return sendJson(res, 200, {
+          status: 'success',
+          banks,
+          isAdmin: Boolean(isAdmin)
+        });
+      }
+
+      if (req.method === 'POST') {
+        if (!isAdmin) {
+          return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+        }
+        const body = await parseJsonBody(req);
+        const newBank = paymentsDb.addBankAccount({
+          requesterUser: session,
+          bankName: body.bankName,
+          accountTitle: body.accountTitle,
+          accountNumber: body.accountNumber,
+          iban: body.iban,
+          details: body.details,
+          status: body.status
+        });
+        return sendJson(res, 201, {
+          status: 'success',
+          message: 'Bank account added successfully',
+          bank: newBank
+        });
+      }
+
+      if (req.method === 'PUT') {
+        if (!isAdmin) {
+          return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+        }
+        const body = await parseJsonBody(req);
+        const updated = paymentsDb.updateBankAccount({
+          requesterUser: session,
+          id: body.id,
+          updates: body.updates || body
+        });
+        return sendJson(res, 200, {
+          status: 'success',
+          message: 'Bank account updated successfully',
+          bank: updated
+        });
+      }
+
+      if (req.method === 'DELETE') {
+        if (!isAdmin) {
+          return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+        }
+        const body = await parseJsonBody(req);
+        const id = searchParams.get('id') || body.id;
+        if (!id) {
+          return sendJson(res, 400, { status: 'error', message: 'Bank account ID is required' });
+        }
+        const removed = paymentsDb.deleteBankAccount({ requesterUser: session, id });
+        return sendJson(res, 200, {
+          status: 'success',
+          message: 'Bank account deleted successfully',
+          bank: removed
+        });
+      }
+    }
+
+    // Toggle Bank Account Status
+    if (pathname === '/api/payments/banks/toggle' && req.method === 'POST') {
+      if (!isAdmin) {
+        return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+      }
+      const body = await parseJsonBody(req);
+      const id = searchParams.get('id') || body.id;
+      if (!id) {
+        return sendJson(res, 400, { status: 'error', message: 'Bank account ID is required' });
+      }
+      const toggled = paymentsDb.toggleBankAccountStatus({ requesterUser: session, id });
+      return sendJson(res, 200, {
+        status: 'success',
+        message: `Bank account status changed to ${toggled.status}`,
+        bank: toggled
+      });
+    }
+
+    // -----------------------------------------------------------
+    // 2. USER DEPOSIT FLOW
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/deposit' || pathname === '/api/payments/deposits') {
+      if (req.method === 'POST') {
+        if (!session) {
+          return sendJson(res, 401, { status: 'error', message: 'Please login to submit a deposit request' });
+        }
+        const body = await parseJsonBody(req);
+        const requestRecord = paymentsDb.createDepositRequest({
+          user: session,
+          amount: body.amount,
+          bankAccountId: body.bankAccountId || body.bankId,
+          screenshotBase64: body.screenshot || body.screenshotBase64 || body.image,
+          note: body.note
+        });
+
+        return sendJson(res, 201, {
+          status: 'success',
+          message: 'Deposit request submitted successfully. Awaiting administrator verification.',
+          request: {
+            id: requestRecord.id,
+            amount: requestRecord.amount,
+            status: requestRecord.status,
+            createdAt: requestRecord.createdAt,
+            selectedBank: requestRecord.selectedBank
+          }
+        });
+      }
+
+      if (req.method === 'GET') {
+        if (!session) {
+          return sendJson(res, 401, { status: 'error', message: 'Authentication required' });
+        }
+        const requests = paymentsDb.getPaymentRequests({
+          user: session,
+          type: 'DEPOSIT',
+          status: searchParams.get('status'),
+          search: searchParams.get('search') || searchParams.get('q') || ''
+        });
+
+        // Strip heavy base64 data from list queries
+        const sanitized = requests.map(r => {
+          const c = { ...r };
+          if (c.screenshot) {
+            c.screenshot = {
+              filename: c.screenshot.filename,
+              mimeType: c.screenshot.mimeType,
+              sizeBytes: c.screenshot.sizeBytes
+            };
+          }
+          return c;
+        });
+
+        return sendJson(res, 200, {
+          status: 'success',
+          total: sanitized.length,
+          requests: sanitized
+        });
+      }
+    }
+
+    // -----------------------------------------------------------
+    // 3. USER WITHDRAWAL FLOW
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/withdraw' || pathname === '/api/payments/withdrawals') {
+      if (req.method === 'POST') {
+        if (!session) {
+          return sendJson(res, 401, { status: 'error', message: 'Please login to submit a withdrawal request' });
+        }
+        const body = await parseJsonBody(req);
+        const requestRecord = paymentsDb.createWithdrawalRequest({
+          user: session,
+          amount: body.amount,
+          accountHolderName: body.accountHolderName || body.accountTitle,
+          bankName: body.bankName,
+          accountNumber: body.accountNumber,
+          iban: body.iban,
+          note: body.note
+        });
+
+        return sendJson(res, 201, {
+          status: 'success',
+          message: 'Withdrawal request submitted successfully. Awaiting administrator review.',
+          request: requestRecord
+        });
+      }
+
+      if (req.method === 'GET') {
+        if (!session) {
+          return sendJson(res, 401, { status: 'error', message: 'Authentication required' });
+        }
+        const requests = paymentsDb.getPaymentRequests({
+          user: session,
+          type: 'WITHDRAWAL',
+          status: searchParams.get('status'),
+          search: searchParams.get('search') || searchParams.get('q') || ''
+        });
+
+        return sendJson(res, 200, {
+          status: 'success',
+          total: requests.length,
+          requests
+        });
+      }
+    }
+
+    // -----------------------------------------------------------
+    // 4. ADMIN REQUESTS LIST (Both Deposits and Withdrawals)
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/admin/requests') {
+      if (!isAdmin) {
+        return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+      }
+
+      const requests = paymentsDb.getPaymentRequests({
+        user: session,
+        type: searchParams.get('type') || null,
+        status: searchParams.get('status') || null,
+        search: searchParams.get('search') || searchParams.get('q') || ''
+      });
+
+      const sanitized = requests.map(r => {
+        const c = { ...r };
+        if (c.screenshot) {
+          c.screenshot = {
+            filename: c.screenshot.filename,
+            mimeType: c.screenshot.mimeType,
+            sizeBytes: c.screenshot.sizeBytes
+          };
+        }
+        return c;
+      });
+
+      return sendJson(res, 200, {
+        status: 'success',
+        total: sanitized.length,
+        requests: sanitized
+      });
+    }
+
+    // -----------------------------------------------------------
+    // 5. ADMIN APPROVAL
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/admin/approve' && req.method === 'POST') {
+      if (!isAdmin) {
+        return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+      }
+      const body = await parseJsonBody(req);
+      const requestId = body.requestId || body.id;
+      if (!requestId) {
+        return sendJson(res, 400, { status: 'error', message: 'Request ID is required' });
+      }
+
+      const reqObj = paymentsDb.getRequestById(requestId);
+      if (!reqObj) {
+        return sendJson(res, 404, { status: 'error', message: 'Payment request not found' });
+      }
+
+      if (reqObj.type === 'DEPOSIT') {
+        const result = paymentsDb.approveDepositRequest({
+          requesterUser: session,
+          requestId,
+          adminNote: body.adminNote || body.note || ''
+        });
+        await authDb.saveUsersToDiskAsync();
+
+        return sendJson(res, 200, {
+          status: 'success',
+          message: `Deposit request ${requestId} approved successfully. Rs. ${result.request.amount.toLocaleString('en-IN')} credited to ${result.request.username}.`,
+          request: result.request,
+          user: result.user
+        });
+      } else if (reqObj.type === 'WITHDRAWAL') {
+        const result = paymentsDb.approveWithdrawalRequest({
+          requesterUser: session,
+          requestId,
+          adminNote: body.adminNote || body.note || ''
+        });
+        await authDb.saveUsersToDiskAsync();
+
+        return sendJson(res, 200, {
+          status: 'success',
+          message: `Withdrawal request ${requestId} approved successfully. Rs. ${result.request.amount.toLocaleString('en-IN')} deducted from ${result.request.username}.`,
+          request: result.request,
+          user: result.user
+        });
+      } else {
+        return sendJson(res, 400, { status: 'error', message: 'Unknown request type: ' + reqObj.type });
+      }
+    }
+
+    // -----------------------------------------------------------
+    // 6. ADMIN REJECTION
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/admin/reject' && req.method === 'POST') {
+      if (!isAdmin) {
+        return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+      }
+      const body = await parseJsonBody(req);
+      const requestId = body.requestId || body.id;
+      const reason = body.rejectionReason || body.reason;
+
+      if (!requestId) {
+        return sendJson(res, 400, { status: 'error', message: 'Request ID is required' });
+      }
+      if (!reason || !String(reason).trim()) {
+        return sendJson(res, 400, { status: 'error', message: 'Rejection reason is required' });
+      }
+
+      const reqObj = paymentsDb.getRequestById(requestId);
+      if (!reqObj) {
+        return sendJson(res, 404, { status: 'error', message: 'Payment request not found' });
+      }
+
+      let rejectedReq = null;
+      if (reqObj.type === 'DEPOSIT') {
+        rejectedReq = paymentsDb.rejectDepositRequest({
+          requesterUser: session,
+          requestId,
+          rejectionReason: reason
+        });
+      } else if (reqObj.type === 'WITHDRAWAL') {
+        rejectedReq = paymentsDb.rejectWithdrawalRequest({
+          requesterUser: session,
+          requestId,
+          rejectionReason: reason
+        });
+      }
+
+      return sendJson(res, 200, {
+        status: 'success',
+        message: `${reqObj.type} request ${requestId} has been rejected.`,
+        request: rejectedReq
+      });
+    }
+
+    // -----------------------------------------------------------
+    // 7. ADMIN STATS
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/stats' && req.method === 'GET') {
+      if (!isAdmin) {
+        return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+      }
+      const stats = paymentsDb.getPaymentStats({ requesterUser: session });
+      return sendJson(res, 200, {
+        status: 'success',
+        stats
+      });
+    }
+
+    // -----------------------------------------------------------
+    // 8. SECURE SCREENSHOT ACCESS CONTROL
+    // -----------------------------------------------------------
+    if (pathname === '/api/payments/screenshot' && req.method === 'GET') {
+      const requestId = searchParams.get('id') || searchParams.get('requestId');
+      if (!requestId) {
+        return sendJson(res, 400, { status: 'error', message: 'Request ID is required' });
+      }
+
+      const { buffer, mimeType } = paymentsDb.getScreenshotBuffer({
+        requesterUser: session,
+        requestId
+      });
+
+      res.statusCode = 200;
+      res.setHeader('Content-Type', mimeType);
+      res.setHeader('Content-Length', buffer.length);
+      res.setHeader('Content-Disposition', `inline; filename="screenshot_${requestId}.${mimeType.split('/')[1] || 'jpg'}"`);
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+      res.end(buffer);
+      return;
+    }
+
+    // Unmatched subpath
+    return sendJson(res, 404, { status: 'error', message: `Payments endpoint ${pathname} not found` });
+
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    return sendJson(res, statusCode, { status: 'error', message: err.message });
+  }
+};
