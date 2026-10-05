@@ -10444,6 +10444,7 @@
         withdrawView.style.display = 'block';
         clearDwWithdrawAlert();
         refreshUserWithdrawBalance();
+        checkUserActiveWithdrawal();
       } else if (viewName === 'history') {
         if (titleEl) titleEl.innerText = 'My Request History';
         historyView.style.display = 'block';
@@ -10800,9 +10801,13 @@
           if (amtInput) amtInput.value = '';
           if (noteInput) noteInput.value = '';
           refreshUserWithdrawBalance();
+          checkUserActiveWithdrawal();
         } else {
           const msg = (res.data && res.data.message) || 'Failed to submit withdrawal request.';
           showDwAlert(alertBox, 'error', msg);
+          if (res.status === 409 || msg.toLowerCase().includes('pending') || msg.toLowerCase().includes('already')) {
+            checkUserActiveWithdrawal();
+          }
         }
       } catch (err) {
         showDwAlert(alertBox, 'error', 'Network error submitting withdrawal request.');
@@ -10811,6 +10816,63 @@
           submitBtn.disabled = false;
           submitBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Submit Withdrawal Request</span>';
         }
+      }
+    }
+
+    async function checkUserActiveWithdrawal(forceAlert) {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+
+      const pendingCard = document.getElementById('dwWithdrawPendingCard');
+      const formContainer = document.getElementById('dwWithdrawFormContainer');
+      const alertBox = document.getElementById('dwWithdrawAlert');
+
+      try {
+        const res = await safeFetchJson(getApiUrl('/api/payments/withdraw'), {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        if (res.ok && res.data && res.data.status === 'success') {
+          const activeReq = res.data.activeWithdrawal;
+          if (activeReq && ['PENDING', 'PROCESSING', 'UNDER_REVIEW'].includes(activeReq.status)) {
+            if (pendingCard) {
+              pendingCard.style.display = 'block';
+              const idEl = document.getElementById('dwActiveWithId');
+              const amtEl = document.getElementById('dwActiveWithAmount');
+              const bankEl = document.getElementById('dwActiveWithBank');
+              const accEl = document.getElementById('dwActiveWithAcc');
+              const dateEl = document.getElementById('dwActiveWithDate');
+              const statusEl = document.getElementById('dwActiveWithStatusBadge');
+
+              if (idEl) idEl.innerText = activeReq.id || '-';
+              if (amtEl) amtEl.innerText = 'Rs. ' + (parseFloat(activeReq.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+              const bDet = activeReq.bankDetails || activeReq.userBankDetails || {};
+              if (bankEl) bankEl.innerText = bDet.bankName || '-';
+              if (accEl) accEl.innerText = (bDet.accountHolderName || bDet.accountTitle || '-') + ' (' + (bDet.accountNumber || '-') + ')';
+              if (dateEl) dateEl.innerText = activeReq.createdAt ? new Date(activeReq.createdAt).toLocaleString('en-IN') : '-';
+              if (statusEl) {
+                statusEl.innerText = activeReq.status || 'PENDING';
+                statusEl.style.background = activeReq.status === 'PENDING' ? '#f59e0b' : '#3b82f6';
+              }
+            }
+            if (formContainer) {
+              formContainer.style.display = 'none';
+            }
+            if (forceAlert && alertBox) {
+              showDwAlert(alertBox, 'info', 'Status refreshed: Your withdrawal request ' + escapeHtml(activeReq.id) + ' is currently ' + escapeHtml(activeReq.status) + '.');
+            }
+          } else {
+            if (pendingCard) pendingCard.style.display = 'none';
+            if (formContainer) formContainer.style.display = 'block';
+            if (forceAlert && alertBox) {
+              showDwAlert(alertBox, 'success', 'You currently have no active withdrawal requests. You may submit a new withdrawal request below.');
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Could not check active withdrawal:', e);
       }
     }
 
@@ -13222,86 +13284,137 @@
 
           <div id="dwWithdrawAlert" style="display: none; padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 13px;"></div>
 
-          <!-- Available Balance Card -->
-          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-size: 12px; color: #1e40af; font-weight: 600;">Available Real Balance</div>
-              <div id="dwWithdrawAvailBalDisplay" style="font-size: 18px; font-weight: 800; color: #1e3a8a;">0 Rs.</div>
+          <!-- Active Pending Withdrawal Card -->
+          <div id="dwWithdrawPendingCard" style="display: none; background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(245,158,11,0.12);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></span>
+                <strong style="color: #92400e; font-size: 14px;">Withdrawal Request Pending</strong>
+              </div>
+              <span id="dwActiveWithStatusBadge" style="background: #f59e0b; color: #fff; font-size: 11px; padding: 3px 9px; border-radius: 12px; font-weight: 800; letter-spacing: 0.5px;">PENDING</span>
             </div>
-            <button type="button" onclick="refreshUserWithdrawBalance()" style="background: #ffffff; border: 1px solid #93c5fd; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #1d4ed8; cursor: pointer;">
-              Refresh
-            </button>
-          </div>
 
-          <!-- Amount -->
-          <div style="margin-bottom: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label style="font-size: 13px; font-weight: 700; color: #1f2937; margin: 0;">
-                Withdrawal Amount (Rs.) <span style="color: #dc2626;">*</span>
-              </label>
-              <button type="button" onclick="setDwMaxWithdraw()" style="background: none; border: none; color: #2563eb; font-size: 11.5px; font-weight: 700; cursor: pointer; text-decoration: underline;">
-                Use Max Available
+            <div style="background: #ffffff; border: 1px solid #fde68a; border-radius: 6px; padding: 12px; margin-bottom: 12px; font-size: 12.5px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="color: #6b7280;">Request ID:</span>
+                <span id="dwActiveWithId" style="font-family: monospace; font-weight: 700; color: #1f2937;">-</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="color: #6b7280;">Requested Amount:</span>
+                <span id="dwActiveWithAmount" style="font-weight: 800; color: #1e40af; font-size: 14.5px;">Rs. 0</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="color: #6b7280;">Destination Bank:</span>
+                <span id="dwActiveWithBank" style="font-weight: 600; color: #1f2937;">-</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="color: #6b7280;">Account:</span>
+                <span id="dwActiveWithAcc" style="font-weight: 600; color: #1f2937;">-</span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #6b7280;">Submitted At:</span>
+                <span id="dwActiveWithDate" style="color: #4b5563;">-</span>
+              </div>
+            </div>
+
+            <div style="font-size: 12px; color: #92400e; line-height: 1.4; margin-bottom: 12px; background: rgba(245,158,11,0.08); padding: 8px 10px; border-radius: 4px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              You currently have an active withdrawal request in queue. Our accounts desk is reviewing your transfer. You cannot submit another withdrawal until this request has been processed.
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button type="button" onclick="showDwView('history'); switchDwHistTab('withdrawal');" style="flex: 1; padding: 8px; background: #1e40af; color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                View in History &rarr;
+              </button>
+              <button type="button" onclick="checkUserActiveWithdrawal(true)" style="padding: 8px 14px; background: #ffffff; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                Refresh Status
               </button>
             </div>
-            <div style="position: relative;">
-              <span style="position: absolute; left: 12px; top: 10px; font-weight: 700; color: #6b7280; font-size: 14px;">Rs.</span>
-              <input type="number" id="dwWithdrawAmountInput" placeholder="Enter amount" min="100" step="1" style="width: 100%; padding: 9px 12px 9px 42px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 15px; font-weight: 700; box-sizing: border-box;">
-            </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
-              <button type="button" onclick="setDwQuickAmount(500, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">500</button>
-              <button type="button" onclick="setDwQuickAmount(1000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">1,000</button>
-              <button type="button" onclick="setDwQuickAmount(5000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">5,000</button>
-              <button type="button" onclick="setDwQuickAmount(10000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">10,000</button>
-              <button type="button" onclick="setDwQuickAmount(25000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">25,000</button>
-            </div>
           </div>
 
-          <!-- User Receiving Bank Details -->
-          <div style="background: #fdfdfd; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-            <div style="font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 10px;">
-              Your Receiving Bank Details <span style="color: #dc2626;">*</span>
+          <!-- Withdrawal Input Form Container -->
+          <div id="dwWithdrawFormContainer">
+            <!-- Available Balance Card -->
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 12px; color: #1e40af; font-weight: 600;">Available Real Balance</div>
+                <div id="dwWithdrawAvailBalDisplay" style="font-size: 18px; font-weight: 800; color: #1e3a8a;">0 Rs.</div>
+              </div>
+              <button type="button" onclick="refreshUserWithdrawBalance()" style="background: #ffffff; border: 1px solid #93c5fd; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #1d4ed8; cursor: pointer;">
+                Refresh
+              </button>
             </div>
 
-            <div style="margin-bottom: 10px;">
-              <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
-                Account Holder / Title Name <span style="color: #dc2626;">*</span>
-              </label>
-              <input type="text" id="dwWithdrawHolderName" placeholder="Full name as on bank account" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+            <!-- Amount -->
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 13px; font-weight: 700; color: #1f2937; margin: 0;">
+                  Withdrawal Amount (Rs.) <span style="color: #dc2626;">*</span>
+                </label>
+                <button type="button" onclick="setDwMaxWithdraw()" style="background: none; border: none; color: #2563eb; font-size: 11.5px; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                  Use Max Available
+                </button>
+              </div>
+              <div style="position: relative;">
+                <span style="position: absolute; left: 12px; top: 10px; font-weight: 700; color: #6b7280; font-size: 14px;">Rs.</span>
+                <input type="number" id="dwWithdrawAmountInput" placeholder="Enter amount" min="100" step="1" style="width: 100%; padding: 9px 12px 9px 42px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 15px; font-weight: 700; box-sizing: border-box;">
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+                <button type="button" onclick="setDwQuickAmount(500, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">500</button>
+                <button type="button" onclick="setDwQuickAmount(1000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">1,000</button>
+                <button type="button" onclick="setDwQuickAmount(5000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">5,000</button>
+                <button type="button" onclick="setDwQuickAmount(10000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">10,000</button>
+                <button type="button" onclick="setDwQuickAmount(25000, 'withdraw')" style="padding: 4px 9px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; font-size: 11.5px; font-weight: 600; cursor: pointer;">25,000</button>
+              </div>
             </div>
 
-            <div style="margin-bottom: 10px;">
-              <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
-                Bank Name <span style="color: #dc2626;">*</span>
-              </label>
-              <input type="text" id="dwWithdrawBankName" placeholder="e.g. HBL, Meezan Bank, JazzCash, EasyPaisa" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+            <!-- User Receiving Bank Details -->
+            <div style="background: #fdfdfd; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+              <div style="font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 10px;">
+                Your Receiving Bank Details <span style="color: #dc2626;">*</span>
+              </div>
+
+              <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                  Account Holder / Title Name <span style="color: #dc2626;">*</span>
+                </label>
+                <input type="text" id="dwWithdrawHolderName" placeholder="Full name as on bank account" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+              </div>
+
+              <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                  Bank Name <span style="color: #dc2626;">*</span>
+                </label>
+                <input type="text" id="dwWithdrawBankName" placeholder="e.g. HBL, Meezan Bank, JazzCash, EasyPaisa" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+              </div>
+
+              <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                  Account Number <span style="color: #dc2626;">*</span>
+                </label>
+                <input type="text" id="dwWithdrawAccNum" placeholder="Bank Account or Wallet Number" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+              </div>
+
+              <div style="margin-bottom: 6px;">
+                <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
+                  IBAN (Optional)
+                </label>
+                <input type="text" id="dwWithdrawIban" placeholder="e.g. PK36MEZN..." style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+              </div>
             </div>
 
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 18px;">
               <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
-                Account Number <span style="color: #dc2626;">*</span>
+                Optional Note
               </label>
-              <input type="text" id="dwWithdrawAccNum" placeholder="Bank Account or Wallet Number" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+              <input type="text" id="dwWithdrawNote" placeholder="Optional notes for accounts desk" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
             </div>
 
-            <div style="margin-bottom: 6px;">
-              <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
-                IBAN (Optional)
-              </label>
-              <input type="text" id="dwWithdrawIban" placeholder="e.g. PK36MEZN..." style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
-            </div>
+            <button type="button" id="dwWithdrawSubmitBtn" onclick="submitUserWithdrawalRequest()" style="width: 100%; padding: 12px; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Submit Withdrawal Request</span>
+            </button>
           </div>
-
-          <div style="margin-bottom: 18px;">
-            <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">
-              Optional Note
-            </label>
-            <input type="text" id="dwWithdrawNote" placeholder="Optional notes for accounts desk" style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
-          </div>
-
-          <button type="button" id="dwWithdrawSubmitBtn" onclick="submitUserWithdrawalRequest()" style="width: 100%; padding: 12px; background: #2563eb; color: #ffffff; border: none; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>Submit Withdrawal Request</span>
-          </button>
         </div>
 
         <!-- VIEW 4: USER REQUEST HISTORY -->

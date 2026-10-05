@@ -3775,8 +3775,21 @@ Boland v Knights                        </a>
             exp: '0.00 Rs.'
         };
 
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function getAdminAuthToken() {
-            var token = localStorage.getItem('admin_auth_token');
+            var token = localStorage.getItem('admin_auth_token') ||
+                        sessionStorage.getItem('admin_auth_token') ||
+                        localStorage.getItem('auth_token') ||
+                        localStorage.getItem('admin_token');
             if (!token && BYPASS_ADMIN_AUTH) {
                 return 'bypass_admin_token';
             }
@@ -4314,13 +4327,15 @@ Boland v Knights                        </a>
         function routeFromUrl() {
             var fullPath = window.location.pathname;
             var lower = fullPath.toLowerCase();
+            var cleanPath = lower.replace(/^\/sats-sport-/, '');
+            if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
             var search = window.location.search;
 
             // Extract ID if any
             var urlParams = new URLSearchParams(search);
             var userId = urlParams.get('id') || urlParams.get('accountId') || '8730421';
 
-            if (lower === '/users/login' || lower === '/login' || lower === '/admin/login') {
+            if (cleanPath === '/users/login' || cleanPath === '/login' || cleanPath === '/admin/login') {
                 if (BYPASS_ADMIN_AUTH) {
                     document.getElementById('viewDashboard').style.display = 'block';
                     document.getElementById('sideNavDashboard')?.classList.add('active');
@@ -4338,31 +4353,31 @@ Boland v Knights                        </a>
             document.querySelectorAll('.sidebar .nav-link').forEach(function(a) { a.classList.remove('active'); });
             document.querySelectorAll('.app-header .nav-link').forEach(function(a) { a.classList.remove('active'); });
 
-            if (lower === '/admin' || lower === '/admin/' || lower === '/admin/index' || lower === '/admin/dashboard' || lower === '/index' || lower === '/') {
+            if (cleanPath === '/admin' || cleanPath === '/admin/' || cleanPath === '/admin/index' || cleanPath === '/admin/dashboard' || cleanPath === '/index' || cleanPath === '/') {
                 document.getElementById('viewDashboard').style.display = 'block';
                 document.getElementById('sideNavDashboard')?.classList.add('active');
                 document.getElementById('topNavDashboard')?.classList.add('active');
                 document.title = 'Dashboard | BPEXCH';
-            } else if (lower.startsWith('/accounts/chart') || lower === '/users' || lower === '/users/' || lower === '/accounts' || lower === '/accounts/') {
+            } else if (cleanPath.startsWith('/accounts/chart') || cleanPath === '/users' || cleanPath === '/users/' || cleanPath === '/accounts' || cleanPath === '/accounts/') {
                 document.getElementById('viewUsers').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.getElementById('topNavUsers')?.classList.add('active');
                 document.title = 'Users | BPEXCH';
-            } else if (lower === '/users/create') {
+            } else if (cleanPath === '/users/create') {
                 document.getElementById('viewUsersCreate').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.title = 'Create User | BPEXCH';
-            } else if (lower.startsWith('/users/edit')) {
+            } else if (cleanPath.startsWith('/users/edit')) {
                 setupUserEditPage(userId);
                 document.getElementById('viewUsersEdit').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.title = 'Edit Client | BPEXCH';
-            } else if (lower.startsWith('/accounts/cash') || lower.startsWith('/accounts/credit')) {
+            } else if (cleanPath.startsWith('/accounts/cash') || cleanPath.startsWith('/accounts/credit')) {
                 setupCashCreditPage(userId);
                 document.getElementById('viewCashCredit').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.title = 'Hawala (Cash) | BPEXCH';
-            } else if (lower.startsWith('/accounts/ledger')) {
+            } else if (cleanPath.startsWith('/accounts/ledger')) {
                 document.getElementById('viewAccountLedger').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 var userObj = clientsList.find(function(u) { return u.id === userId; });
@@ -4370,35 +4385,35 @@ Boland v Knights                        </a>
                 document.getElementById('ledgerCardHeaderTitle').innerHTML = '<strong>' + uname + ' - Account Ledger</strong>';
                 document.title = 'Account Ledger | BPEXCH';
                 loadAccountLedgerPage(userId);
-            } else if (lower === '/markets/liables' || lower === '/markets' || lower === '/markets/') {
+            } else if (cleanPath === '/markets/liables' || cleanPath === '/markets' || cleanPath === '/markets/') {
                 document.getElementById('viewCurrentPosition').style.display = 'block';
                 document.getElementById('sideNavPosition')?.classList.add('active');
                 document.getElementById('topNavPosition')?.classList.add('active');
                 document.title = 'Current Position | BPEXCH';
                 renderCurrentPositionTable();
-            } else if (lower.startsWith('/reports')) {
+            } else if (cleanPath.startsWith('/reports')) {
                 document.getElementById('viewReports').style.display = 'block';
                 document.getElementById('sideNavReports')?.classList.add('active');
                 document.getElementById('topNavReports')?.classList.add('active');
                 handleReportRoute(fullPath);
                 renderReportsTables();
-            } else if (lower === '/markets/betlocker') {
+            } else if (cleanPath === '/markets/betlocker') {
                 document.getElementById('viewBetLock').style.display = 'block';
                 document.getElementById('sideNavBetLock')?.classList.add('active');
                 document.title = 'Bet Lock | BPEXCH';
-            } else if (lower === '/markets/games' || lower === '/markets/worldcasino' || lower === '/markets/exgames') {
+            } else if (cleanPath === '/markets/games' || cleanPath === '/markets/worldcasino' || cleanPath === '/markets/exgames') {
                 document.getElementById('viewCasinoConsole').style.display = 'block';
-                if (lower === '/markets/games') document.getElementById('sideNavStarCasino')?.classList.add('active');
-                if (lower === '/markets/worldcasino') document.getElementById('sideNavWorldCasino')?.classList.add('active');
-                if (lower === '/markets/exgames') document.getElementById('sideNavBetFairGames')?.classList.add('active');
+                if (cleanPath === '/markets/games') document.getElementById('sideNavStarCasino')?.classList.add('active');
+                if (cleanPath === '/markets/worldcasino') document.getElementById('sideNavWorldCasino')?.classList.add('active');
+                if (cleanPath === '/markets/exgames') document.getElementById('sideNavBetFairGames')?.classList.add('active');
                 document.title = 'Casino | BPEXCH';
-            } else if (lower.startsWith('/markets/')) {
+            } else if (cleanPath.startsWith('/markets/')) {
                 document.getElementById('viewMarketDetail').style.display = 'block';
                 document.title = 'Market Odds | BPEXCH';
                 var mId = (window.location.href.match(/1\.\d+/) || [''])[0];
                 loadMarketMatchByIdOrName(mId || 'Dolphins v Northern Cape');
             } else if (
-                lower === '/settings/api' || lower === '/settings/api/' || lower === '/api-management' || lower === '/api-management/' ||
+                cleanPath === '/settings/api' || cleanPath === '/settings/api/' || cleanPath === '/api-management' || cleanPath === '/api-management/' ||
                 (window.location.hash && (window.location.hash.toLowerCase().includes('api') || window.location.hash.toLowerCase().includes('provider')))
             ) {
                 document.getElementById('viewApiManagement').style.display = 'block';
@@ -4406,25 +4421,25 @@ Boland v Knights                        </a>
                 document.getElementById('topNavApiManagement')?.classList.add('active');
                 document.title = 'API Management | BPEXCH';
                 loadAdminApiManagement();
-            } else if (lower.startsWith('/finance/deposits') || lower === '/deposits' || lower === '/deposits/' || (window.location.hash && window.location.hash.toLowerCase().includes('deposit'))) {
+            } else if (cleanPath.startsWith('/finance/deposits') || cleanPath === '/deposits' || cleanPath === '/deposits/' || (window.location.hash && window.location.hash.toLowerCase().includes('deposit'))) {
                 document.getElementById('viewDepositRequests').style.display = 'block';
                 document.getElementById('sideNavDeposits')?.classList.add('active');
                 document.title = 'Deposit Requests | BPEXCH';
                 loadAdminDepositRequests();
-            } else if (lower.startsWith('/finance/withdrawals') || lower === '/withdrawals' || lower === '/withdrawals/' || (window.location.hash && window.location.hash.toLowerCase().includes('withdraw'))) {
+            } else if (cleanPath.startsWith('/finance/withdrawals') || cleanPath === '/withdrawals' || cleanPath === '/withdrawals/' || (window.location.hash && window.location.hash.toLowerCase().includes('withdraw'))) {
                 document.getElementById('viewWithdrawalRequests').style.display = 'block';
                 document.getElementById('sideNavWithdrawals')?.classList.add('active');
                 document.title = 'Withdrawal Requests | BPEXCH';
                 loadAdminWithdrawalRequests();
-            } else if (lower.startsWith('/settings/banks') || lower === '/banks' || lower === '/banks/' || (window.location.hash && window.location.hash.toLowerCase().includes('bank'))) {
+            } else if (cleanPath.startsWith('/settings/banks') || cleanPath === '/banks' || cleanPath === '/banks/' || (window.location.hash && window.location.hash.toLowerCase().includes('bank'))) {
                 document.getElementById('viewBankSettings').style.display = 'block';
                 document.getElementById('sideNavBanks')?.classList.add('active');
                 document.title = 'Bank Settings | BPEXCH';
                 loadAdminBankAccounts();
             } else if (
-                lower === '/settings' || lower === '/settings/' || lower.startsWith('/settings') ||
-                lower === '/common/settings' || lower === '/common/settings/' || lower.startsWith('/common/settings') ||
-                lower === '/common/profile' || lower === '/common/profile/' || lower.startsWith('/common/profile') ||
+                cleanPath === '/settings' || cleanPath === '/settings/' || cleanPath.startsWith('/settings') ||
+                cleanPath === '/common/settings' || cleanPath === '/common/settings/' || cleanPath.startsWith('/common/settings') ||
+                cleanPath === '/common/profile' || cleanPath === '/common/profile/' || cleanPath.startsWith('/common/profile') ||
                 (window.location.hash && window.location.hash.toLowerCase().includes('settings')) ||
                 (window.location.hash && window.location.hash.toLowerCase().includes('profile'))
             ) {
@@ -7012,30 +7027,50 @@ Boland v Knights                        </a>
                 });
                 if (res.ok && res.data && res.data.status === 'success' && res.data.stats) {
                     var s = res.data.stats;
-                    
+                    var pDep = s.pendingDeposits !== undefined ? s.pendingDeposits : (s.deposits && s.deposits.pending) || 0;
+                    var pWith = s.pendingWithdrawals !== undefined ? s.pendingWithdrawals : (s.withdrawals && s.withdrawals.pending) || 0;
+                    var pTotal = s.totalPending !== undefined ? s.totalPending : (pDep + pWith);
+
                     // Side & Nav badges for deposits
-                    var depBadges = [document.getElementById('sideBadgeDeposits'), document.getElementById('navBadgeDeposits')];
+                    var depBadges = [
+                        document.getElementById('sidePendingDepBadge'),
+                        document.getElementById('topNavPendingDepBadge'),
+                        document.getElementById('sideBadgeDeposits'),
+                        document.getElementById('navBadgeDeposits')
+                    ];
                     depBadges.forEach(function(b) {
                         if (b) {
-                            b.innerText = s.pendingDeposits || 0;
-                            b.style.display = (s.pendingDeposits > 0) ? 'inline-block' : 'none';
+                            b.innerText = pDep;
+                            b.style.display = (pDep > 0) ? 'inline-block' : 'none';
                         }
                     });
 
                     // Side & Nav badges for withdrawals
-                    var withBadges = [document.getElementById('sideBadgeWithdrawals'), document.getElementById('navBadgeWithdrawals')];
+                    var withBadges = [
+                        document.getElementById('sidePendingWithBadge'),
+                        document.getElementById('topNavPendingWithBadge'),
+                        document.getElementById('sideBadgeWithdrawals'),
+                        document.getElementById('navBadgeWithdrawals')
+                    ];
                     withBadges.forEach(function(b) {
                         if (b) {
-                            b.innerText = s.pendingWithdrawals || 0;
-                            b.style.display = (s.pendingWithdrawals > 0) ? 'inline-block' : 'none';
+                            b.innerText = pWith;
+                            b.style.display = (pWith > 0) ? 'inline-block' : 'none';
                         }
                     });
 
+                    // Combined Top Nav Badge
+                    var topTotalBadge = document.getElementById('topNavPendingBadge');
+                    if (topTotalBadge) {
+                        topTotalBadge.innerText = pTotal;
+                        topTotalBadge.style.display = (pTotal > 0) ? 'inline-block' : 'none';
+                    }
+
                     // Dashboard cards
                     var dDep = document.getElementById('dashPendingDeposits');
-                    if (dDep) dDep.innerText = s.pendingDeposits || 0;
+                    if (dDep) dDep.innerText = pDep;
                     var dWith = document.getElementById('dashPendingWithdrawals');
-                    if (dWith) dWith.innerText = s.pendingWithdrawals || 0;
+                    if (dWith) dWith.innerText = pWith;
                     var dBanks = document.getElementById('dashActiveBanks');
                     if (dBanks) dBanks.innerText = s.activeBanks || 0;
                     var dAppr = document.getElementById('dashApprovedTotal');
@@ -7046,12 +7081,20 @@ Boland v Knights                        </a>
             }
         }
 
-        // Polling interval for live badges
+        // Live auto-refresh polling interval (every 15 seconds)
         setInterval(function() {
             if (typeof getAdminAuthToken === 'function' && getAdminAuthToken()) {
                 updateAdminPaymentStats();
+                var withSec = document.getElementById('viewWithdrawalRequests');
+                if (withSec && withSec.style.display !== 'none' && typeof loadAdminWithdrawalRequests === 'function') {
+                    loadAdminWithdrawalRequests();
+                }
+                var depSec = document.getElementById('viewDepositRequests');
+                if (depSec && depSec.style.display !== 'none' && typeof loadAdminDepositRequests === 'function') {
+                    loadAdminDepositRequests();
+                }
             }
-        }, 30000);
+        }, 15000);
 
         // --- Deposit Requests ---
         var _adminDepositRequestsCache = [];
@@ -7325,18 +7368,24 @@ Boland v Knights                        </a>
                         var bDet = r.bankDetails || r.userBankDetails;
                         var bankInfo = '-';
                         if (bDet) {
-                            bankInfo = '<strong>' + (bDet.bankName || 'Bank') + '</strong><br>' +
-                                       '<small class="text-muted">' + (bDet.accountHolderName || '') + '<br>' +
-                                       '<span class="font-weight-bold">' + (bDet.accountNumber || '') + '</span>' +
-                                       (bDet.iban ? '<br>IBAN: ' + bDet.iban : '') + '</small>';
+                            var hName = bDet.accountHolderName || bDet.accountTitle || '-';
+                            var bName = bDet.bankName || 'Bank';
+                            var accNo = bDet.accountNumber || '-';
+                            bankInfo = '<strong>' + escapeHtml(bName) + '</strong><br>' +
+                                       '<small class="text-muted">' + escapeHtml(hName) + '<br>' +
+                                       '<span class="font-weight-bold" style="font-family:monospace;">' + escapeHtml(accNo) + '</span>' +
+                                       (bDet.iban ? '<br>IBAN: <span style="font-family:monospace;">' + escapeHtml(bDet.iban) + '</span>' : '') + '</small>';
                         }
 
                         var auditNotes = '<small class="text-muted">';
-                        if (r.userNote) auditNotes += '<div><strong>User Note:</strong> ' + r.userNote + '</div>';
-                        if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + r.adminNote + '</div>';
-                        if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + r.rejectionReason + '</div>';
-                        if (r.processedBy) auditNotes += '<div>Processed by: ' + r.processedBy + (r.processedAt ? ' (' + new Date(r.processedAt).toLocaleString('en-IN') + ')' : '') + '</div>';
-                        if (!r.userNote && !r.adminNote && !r.rejectionReason && !r.processedBy) auditNotes += '-';
+                        var uNote = r.note || r.userNote;
+                        var procBy = r.handledByAdminUsername || r.processedBy;
+                        var procAt = r.handledAt || r.processedAt;
+                        if (uNote) auditNotes += '<div><strong>User Note:</strong> ' + escapeHtml(uNote) + '</div>';
+                        if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + escapeHtml(r.adminNote) + '</div>';
+                        if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + escapeHtml(r.rejectionReason) + '</div>';
+                        if (procBy) auditNotes += '<div>Processed by: ' + escapeHtml(procBy) + (procAt ? ' (' + new Date(procAt).toLocaleString('en-IN') + ')' : '') + '</div>';
+                        if (!uNote && !r.adminNote && !r.rejectionReason && !procBy) auditNotes += '-';
                         auditNotes += '</small>';
 
                         var actionCol = '';
