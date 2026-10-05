@@ -364,6 +364,12 @@
       color: #ff0000;
       font-weight: 700;
     }
+    .bal-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      white-space: nowrap;
+    }
 
     .balance-refresh-btn {
       background: transparent;
@@ -4137,21 +4143,31 @@
         flex-direction: column !important;
         justify-content: center !important;
         align-items: flex-start !important;
-        height: 34px !important;
+        height: auto !important;
+        min-height: 32px !important;
         border-radius: 6px !important;
-        padding: 2px 7px !important;
-        font-size: 10px !important;
-        line-height: 1.15 !important;
-        gap: 1px !important;
+        padding: 3px 8px !important;
         white-space: nowrap !important;
         background: #ffffff !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        flex-shrink: 0 !important;
       }
       .header-balance-pill .bal-sep {
         display: none !important;
       }
       .header-balance-pill .balance-refresh-btn {
         display: none !important;
+      }
+      .header-balance-pill .bal-row {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 3px !important;
+        white-space: nowrap !important;
+        line-height: 1.15 !important;
+      }
+      .header-balance-pill .bal-row-main {
+        margin-bottom: 1px !important;
       }
       .header-balance-pill .bal-label,
       .header-balance-pill .bal-val {
@@ -5305,56 +5321,75 @@
 
     @media (max-width: 480px) {
       .header-balance-pill {
-        font-size: 10px !important;
-        padding: 0 5px !important;
-        height: 28px !important;
+        padding: 2px 6px !important;
+        height: auto !important;
+        min-height: 30px !important;
+      }
+      .header-balance-pill .bal-label,
+      .header-balance-pill .bal-val {
+        font-size: 9.5px !important;
+      }
+      .header-balance-pill .out-label,
+      .header-balance-pill .out-val {
+        font-size: 9px !important;
       }
       .user-name-label {
         display: none !important;
       }
       .header-deposit-btn {
-        font-size: 10.5px !important;
+        font-size: 10px !important;
         padding: 0 6px !important;
         height: 28px !important;
       }
       .header-logo img {
-        height: 26px !important;
-        max-width: 105px !important;
+        height: 25px !important;
+        max-width: 95px !important;
       }
-      .top-header {
-        padding: 0 8px !important;
-      }
-      .header-left {
-        gap: 8px !important;
-      }
-    }
-
-    @media (max-width: 360px) {
       .top-header {
         padding: 0 6px !important;
       }
       .header-left {
         gap: 6px !important;
       }
-      .header-logo img {
-        height: 22px !important;
-        max-width: 85px !important;
-      }
       .header-right {
         gap: 4px !important;
       }
+    }
+
+    @media (max-width: 360px) {
+      .top-header {
+        padding: 0 4px !important;
+      }
+      .header-left {
+        gap: 4px !important;
+      }
+      .header-logo img {
+        height: 22px !important;
+        max-width: 80px !important;
+      }
+      .header-right {
+        gap: 3px !important;
+      }
       .header-balance-pill {
+        padding: 2px 4px !important;
+        height: auto !important;
+        min-height: 28px !important;
+      }
+      .header-balance-pill .bal-label,
+      .header-balance-pill .bal-val {
         font-size: 9px !important;
-        padding: 0 3px !important;
-        height: 26px !important;
+      }
+      .header-balance-pill .out-label,
+      .header-balance-pill .out-val {
+        font-size: 8.5px !important;
       }
       .header-deposit-btn {
         padding: 0 4px !important;
-        font-size: 9.5px !important;
+        font-size: 9px !important;
         height: 26px !important;
       }
       .header-deposit-btn span {
-        font-size: 9.5px !important;
+        font-size: 9px !important;
       }
       .header-bell-btn {
         width: 26px !important;
@@ -5371,7 +5406,20 @@
         display: none !important;
       }
       .header-logo img {
-        max-width: 75px !important;
+        max-width: 70px !important;
+      }
+      .header-balance-pill {
+        padding: 2px 3px !important;
+        height: auto !important;
+        min-height: 26px !important;
+      }
+      .header-balance-pill .bal-label,
+      .header-balance-pill .bal-val {
+        font-size: 8.5px !important;
+      }
+      .header-balance-pill .out-label,
+      .header-balance-pill .out-val {
+        font-size: 8px !important;
       }
     }
 
@@ -5490,9 +5538,9 @@
       <div id="desktopLoggedIn" class="user-section-logged" style="display: none; align-items: center; gap: 8px;">
         <!-- Balance Pill -->
         <div class="header-balance-pill" title="Account Balance" onclick="refreshUserBalance(event)">
-          <span class="bal-label">Balance: </span><span class="bal-val" id="headerBalVal">0.00</span>
+          <div class="bal-row bal-row-main"><span class="bal-label">Balance: </span><span class="bal-val" id="headerBalVal">0.00</span></div>
           <span class="bal-sep">|</span>
-          <span class="out-label">outstanding: </span><span class="out-val" id="headerOutVal">0.00</span>
+          <div class="bal-row bal-row-sub"><span class="out-label">outstanding: </span><span class="out-val" id="headerOutVal">0.00</span></div>
           <button class="balance-refresh-btn" title="Refresh Balance" onclick="refreshUserBalance(event)">
             <img src="assets/icons/rotate-icon.svg" alt="Refresh" class="rotate-icon">
           </button>
