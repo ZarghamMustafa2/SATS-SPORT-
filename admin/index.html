@@ -3788,8 +3788,8 @@ Boland v Knights                        </a>
         function getAdminAuthToken() {
             var token = localStorage.getItem('admin_auth_token') ||
                         sessionStorage.getItem('admin_auth_token') ||
-                        localStorage.getItem('auth_token') ||
-                        localStorage.getItem('admin_token');
+                        localStorage.getItem('admin_token') ||
+                        sessionStorage.getItem('admin_token');
             if (!token && BYPASS_ADMIN_AUTH) {
                 return 'bypass_admin_token';
             }
@@ -5137,7 +5137,11 @@ Boland v Knights                        </a>
             var txs = [];
             try {
                 var res = await safeFetchJson(getApiUrl('/api/admin/users?id=' + encodeURIComponent(uid)), {
-                    headers: { 'Authorization': 'Bearer ' + token, 'X-Admin-Request': 'true' }
+                    headers: { 
+                        'Authorization': 'Bearer ' + token, 
+                        'X-Admin-Token': token, 
+                        'X-Admin-Request': 'true' 
+                    }
                 });
                 if (res.ok && res.data && res.data.user) {
                     dummyBal = typeof res.data.user.dummyBalance === 'number' ? res.data.user.dummyBalance : (parseFloat(res.data.user.dummyBalance) || 0);
