@@ -4406,17 +4406,17 @@ Boland v Knights                        </a>
                 document.getElementById('topNavApiManagement')?.classList.add('active');
                 document.title = 'API Management | BPEXCH';
                 loadAdminApiManagement();
-            } else if (lower.startsWith('/finance/deposits') || lower === '/deposits' || lower === '/deposits/') {
+            } else if (lower.startsWith('/finance/deposits') || lower === '/deposits' || lower === '/deposits/' || (window.location.hash && window.location.hash.toLowerCase().includes('deposit'))) {
                 document.getElementById('viewDepositRequests').style.display = 'block';
                 document.getElementById('sideNavDeposits')?.classList.add('active');
                 document.title = 'Deposit Requests | BPEXCH';
                 loadAdminDepositRequests();
-            } else if (lower.startsWith('/finance/withdrawals') || lower === '/withdrawals' || lower === '/withdrawals/') {
+            } else if (lower.startsWith('/finance/withdrawals') || lower === '/withdrawals' || lower === '/withdrawals/' || (window.location.hash && window.location.hash.toLowerCase().includes('withdraw'))) {
                 document.getElementById('viewWithdrawalRequests').style.display = 'block';
                 document.getElementById('sideNavWithdrawals')?.classList.add('active');
                 document.title = 'Withdrawal Requests | BPEXCH';
                 loadAdminWithdrawalRequests();
-            } else if (lower.startsWith('/settings/banks') || lower === '/banks' || lower === '/banks/') {
+            } else if (lower.startsWith('/settings/banks') || lower === '/banks' || lower === '/banks/' || (window.location.hash && window.location.hash.toLowerCase().includes('bank'))) {
                 document.getElementById('viewBankSettings').style.display = 'block';
                 document.getElementById('sideNavBanks')?.classList.add('active');
                 document.title = 'Bank Settings | BPEXCH';
