@@ -34,7 +34,7 @@ const adminUsersCreateHandler = require('./api/admin/users/create');
 const adminCompanyHandler = require('./api/admin/company/create-super-admin');
 const settingsWhatsappHandler = require('./api/settings/whatsapp');
 const sportbexLiveHandler = require('./api/sportbex/cricket/live');
-const paymentsHandler = require('./api/payments/index');
+const paymentsHandler = require('./lib/payments_controller');
 
 // MIME types dictionary for static file serving
 const MIME_TYPES = {
