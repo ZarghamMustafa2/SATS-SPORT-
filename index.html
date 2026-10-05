@@ -4099,9 +4099,9 @@
         align-items: center !important;
       }
       .header-logo img {
-        height: 34px !important;
+        height: 28px !important;
         width: auto !important;
-        max-width: 140px !important;
+        max-width: 105px !important;
         display: block !important;
       }
       .header-nav,
@@ -4118,25 +4118,127 @@
         display: none !important;
       }
       .header-right {
-        display: none !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        margin-left: auto !important;
+        flex-shrink: 0 !important;
       }
       .mobile-header-login-btn {
+        display: none !important;
+      }
+      .user-section-logged {
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+      }
+      .header-balance-pill {
+        display: inline-flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        height: 34px !important;
+        border-radius: 6px !important;
+        padding: 2px 7px !important;
+        font-size: 10px !important;
+        line-height: 1.15 !important;
+        gap: 1px !important;
+        white-space: nowrap !important;
+        background: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+      }
+      .header-balance-pill .bal-sep {
+        display: none !important;
+      }
+      .header-balance-pill .balance-refresh-btn {
+        display: none !important;
+      }
+      .header-balance-pill .bal-label,
+      .header-balance-pill .bal-val {
+        font-size: 10px !important;
+        color: #111111 !important;
+        font-weight: 700 !important;
+      }
+      .header-balance-pill .out-label,
+      .header-balance-pill .out-val {
+        font-size: 9.5px !important;
+        color: #dc2626 !important;
+        font-weight: 700 !important;
+      }
+      .header-bell-btn {
+        width: 30px !important;
+        height: 30px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background: transparent !important;
-        color: #000000 !important;
-        border: 1px solid #000000 !important;
-        border-radius: 6px !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
-        padding: 6px 10px !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        border: none !important;
+        border-radius: 50% !important;
         cursor: pointer !important;
-        height: 35px !important;
-        min-width: 60px !important;
-        width: 60px !important;
-        margin-left: auto !important;
-        letter-spacing: 0.3px !important;
+      }
+      .header-bell-btn svg {
+        width: 15px !important;
+        height: 15px !important;
+      }
+      .header-user-btn {
+        height: 30px !important;
+        padding: 0 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        background: #ffffff !important;
+        border: none !important;
+        border-radius: 15px !important;
+        cursor: pointer !important;
+      }
+      .header-user-icon {
+        width: 15px !important;
+        height: 15px !important;
+      }
+      .header-deposit-btn {
+        height: 30px !important;
+        padding: 0 8px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        white-space: nowrap !important;
+        background: #111111 !important;
+        color: #ffc21d !important;
+        border: none !important;
+        cursor: pointer !important;
+      }
+      .header-mymarkets-btn {
+        display: none !important;
+      }
+      #desktopLoggedOut[style*="display: none"] {
+        display: none !important;
+      }
+      #desktopLoggedIn[style*="display: none"] {
+        display: none !important;
+      }
+      #desktopLoggedOut {
+        align-items: center !important;
+        gap: 6px !important;
+      }
+      #desktopLoggedOut .auth-btn {
+        height: 32px !important;
+        padding: 0 10px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        border-radius: 6px !important;
+        white-space: nowrap !important;
+      }
+      input[type="text"],
+      input[type="number"],
+      input[type="password"],
+      input[type="tel"],
+      input[type="search"],
+      select,
+      textarea {
+        font-size: 16px !important;
       }
       html, body {
         overflow-x: hidden !important;
@@ -5201,31 +5303,75 @@
       }
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 480px) {
+      .header-balance-pill {
+        font-size: 10px !important;
+        padding: 0 5px !important;
+        height: 28px !important;
+      }
       .user-name-label {
-        display: none;
+        display: none !important;
+      }
+      .header-deposit-btn {
+        font-size: 10.5px !important;
+        padding: 0 6px !important;
+        height: 28px !important;
       }
       .header-logo img {
-        height: 24px;
+        height: 26px !important;
+        max-width: 105px !important;
+      }
+      .top-header {
+        padding: 0 8px !important;
       }
       .header-left {
-        gap: 6px;
-      }
-      .header-right {
-        gap: 4px;
+        gap: 8px !important;
       }
     }
 
-    @media (max-width: 340px) {
-      .balance-label {
-        display: none;
+    @media (max-width: 360px) {
+      .top-header {
+        padding: 0 6px !important;
       }
-      .deposit-btn span {
-        display: none;
+      .header-left {
+        gap: 6px !important;
+      }
+      .header-logo img {
+        height: 22px !important;
+        max-width: 85px !important;
+      }
+      .header-right {
+        gap: 4px !important;
       }
       .header-balance-pill {
-        font-size: 9.5px;
-        padding: 3px 5px;
+        font-size: 9px !important;
+        padding: 0 3px !important;
+        height: 26px !important;
+      }
+      .header-deposit-btn {
+        padding: 0 4px !important;
+        font-size: 9.5px !important;
+        height: 26px !important;
+      }
+      .header-deposit-btn span {
+        font-size: 9.5px !important;
+      }
+      .header-bell-btn {
+        width: 26px !important;
+        height: 26px !important;
+      }
+      .header-user-btn {
+        height: 26px !important;
+        padding: 0 4px !important;
+      }
+    }
+
+    @media (max-width: 325px) {
+      .header-bell-btn {
+        display: none !important;
+      }
+      .header-logo img {
+        max-width: 75px !important;
       }
     }
 
