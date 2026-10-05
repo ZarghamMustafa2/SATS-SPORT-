@@ -34,6 +34,7 @@ const adminUsersCreateHandler = require('./api/admin/users/create');
 const adminCompanyHandler = require('./api/admin/company/create-super-admin');
 const settingsWhatsappHandler = require('./api/settings/whatsapp');
 const sportbexLiveHandler = require('./api/sportbex/cricket/live');
+const paymentsHandler = require('./api/payments/index');
 
 // MIME types dictionary for static file serving
 const MIME_TYPES = {
@@ -121,6 +122,11 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/admin/company/create-super-admin') return adminCompanyHandler(req, res);
   if (pathname.startsWith('/api/settings/whatsapp') || pathname.startsWith('/api/admin/settings/whatsapp')) {
     return settingsWhatsappHandler(req, res);
+  }
+
+  // 6. PAYMENTS (MANUAL DEPOSIT & WITHDRAWAL)
+  if (pathname.startsWith('/api/payments')) {
+    return paymentsHandler(req, res);
   }
 
   // 6. LEGACY FEED
