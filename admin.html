@@ -56,26 +56,18 @@
         .login100-form-logo {
             display: flex;
             justify-content: center;
-            margin-top: -15px;
+            align-items: center;
+            margin-top: 0;
             margin-bottom: 25px;
         }
 
-        .login-logo-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #5ce1e6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 3px solid rgba(255,255,255,0.2);
-        }
-
-        .login-logo-circle img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .login-logo-img {
+            max-width: 180px;
+            max-height: 48px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .login-input-group {
@@ -629,9 +621,7 @@
     <div id="adminLoginScreen" class="login-container-wrap" style="display: none;">
         <div class="wrap-login100">
             <div class="login100-form-logo">
-                <div class="login-logo-circle">
-                    <img src="assets/admin/b2.jpg" alt="BPEXCH">
-                </div>
+                <img src="assets/images/satsport_logo_header.png" alt="SATSPORT" class="login-logo-img">
             </div>
 
             <form id="adminLoginForm" onsubmit="event.preventDefault(); executeAdminLogin();">
