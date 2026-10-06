@@ -720,6 +720,12 @@
         </ul>
 
         <ul class="nav navbar-nav ml-auto">
+            <li class="nav-item px-2" id="headerWhatsappQuickBtnContainer" style="display: none;">
+                <a class="nav-link" id="headerWhatsappQuickBtn" href="/Settings" onclick="navigateAdmin('/Settings', event)" style="padding: 4px 10px; font-weight: 700; border-radius: 4px; border: 1.5px solid #25d366; color: #15803d; background: #f0fdf4; display: inline-flex; align-items: center; gap: 6px; font-size: 12px;" title="Deposit / Withdraw WhatsApp Setting">
+                    <i class="fab fa-whatsapp" style="color: #25d366; font-size: 15px;"></i>
+                    <span>WhatsApp Setting</span>
+                </a>
+            </li>
             <li class="nav-item px-2 dropdown" id="headerUserDropdownContainer">
                 <a class="nav-link user-dropdown-btn" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleUserDropdown(event)">
                     <span id="headerUserDisplayName">Ahmii9090x</span> <i class="fas fa-caret-down"></i>
@@ -765,19 +771,19 @@
                 <i class="nav-icon fas fa-users fa-inverse"></i> Users
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="sideNavDepositsContainer">
             <a class="nav-link" href="/Finance/Deposits" id="sideNavDeposits" onclick="navigateAdmin('/Finance/Deposits', event)">
                 <i class="nav-icon fas fa-arrow-circle-down fa-inverse" style="color: #4ade80 !important;"></i> Deposit Requests
                 <span class="badge badge-warning ml-auto" id="sidePendingDepBadge" style="display:none; border-radius: 10px;">0</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="sideNavWithdrawalsContainer">
             <a class="nav-link" href="/Finance/Withdrawals" id="sideNavWithdrawals" onclick="navigateAdmin('/Finance/Withdrawals', event)">
                 <i class="nav-icon fas fa-arrow-circle-up fa-inverse" style="color: #60a5fa !important;"></i> Withdrawal Requests
                 <span class="badge badge-warning ml-auto" id="sidePendingWithBadge" style="display:none; border-radius: 10px;">0</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="sideNavBanksContainer">
             <a class="nav-link" href="/Settings/Banks" id="sideNavBanks" onclick="navigateAdmin('/Settings/Banks', event)">
                 <i class="nav-icon fas fa-university fa-inverse" style="color: #facc15 !important;"></i> Bank Settings
             </a>
@@ -2872,7 +2878,7 @@ Boland v Knights                        </a>
                          ======================================================== -->
                     <div id="viewProfile" class="admin-view-section">
                         <!-- TOP ROW: Deposit / Withdraw WhatsApp Configuration -->
-                        <div class="row mb-3">
+                        <div class="row mb-3" id="adminWhatsappSettingsRow">
                             <div class="col-12">
                                 <div class="card" id="adminWhatsappSettingsCard" style="border: 2px solid #25d366; box-shadow: 0 3px 12px rgba(37,211,102,0.18);">
                                     <div class="card-header" style="background: #f0fdf4; border-bottom: 1.5px solid #86efac; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px;">
@@ -3720,6 +3726,14 @@ Boland v Knights                        </a>
             'user': 'Normal User'
         };
 
+        function isCompanyAccount(role) {
+            return role === 'company' || role === 'super_admin';
+        }
+
+        function isAdminAccount(role) {
+            return role === 'super_master' || role === 'admin';
+        }
+
         // ==============================================================================
         // TEMPORARY ADMIN ACCESS CONFIGURATION (Direct Admin Access Without Login Guard)
         // Can be toggled back to false at any time to re-enable authentication requirements
@@ -3882,6 +3896,8 @@ Boland v Knights                        </a>
         function applyUserRoleUI(user) {
             currentAdminUser = user;
             var roleLabel = ROLE_LABELS[user.role] || user.role;
+            var isCompany = isCompanyAccount(user.role);
+            var isAdmin = isAdminAccount(user.role);
 
             // Header username (clean without role badge)
             var headerDisplay = document.getElementById('headerUserDisplayName');
@@ -3900,7 +3916,7 @@ Boland v Knights                        </a>
             var submitBtn = document.getElementById('createUserSubmitBtn');
 
             if (roleSelect && submitBtn) {
-                if (user.role === 'super_admin' || user.role === 'company') {
+                if (isCompany) {
                     // Company Account creates Admin
                     roleSelect.innerHTML = '<option value="super_master">Admin</option>';
                     roleSelect.disabled = false;
@@ -3911,7 +3927,7 @@ Boland v Knights                        </a>
                         roleNotice.style.display = 'block';
                         roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> As <b>Company Account</b>, you can create <b>Admin</b> accounts.';
                     }
-                } else if (user.role === 'super_master') {
+                } else if (isAdmin) {
                     // Admin cannot create another admin level
                     roleSelect.innerHTML = '<option value="">No Admin Creation Allowed</option>';
                     roleSelect.disabled = true;
@@ -3923,6 +3939,42 @@ Boland v Knights                        </a>
                         roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> <b>Admin</b> cannot create another admin level.';
                     }
                 }
+            }
+
+            // =========================================================================
+            // ROLE-SPECIFIC PAYMENT & WHATSAPP VISIBILITY LOGIC
+            // Company Account: HIDE all payment, banking, requests, and WhatsApp options
+            // Admin: SHOW all existing payment, banking, requests, and WhatsApp options
+            // =========================================================================
+            var headerWhatsapp = document.getElementById('headerWhatsappQuickBtnContainer');
+            var topNavFinance = document.getElementById('topNavFinanceContainer');
+            var sideDeposits = document.getElementById('sideNavDepositsContainer');
+            var sideWithdrawals = document.getElementById('sideNavWithdrawalsContainer');
+            var sideBanks = document.getElementById('sideNavBanksContainer');
+            var dashFinanceRow = document.getElementById('dashboardFinanceStatsRow');
+            var settingsWhatsappRow = document.getElementById('adminWhatsappSettingsRow');
+
+            if (isCompany) {
+                // Remove / hide payment and WhatsApp management options for Company Account
+                if (headerWhatsapp) headerWhatsapp.style.display = 'none';
+                if (topNavFinance) topNavFinance.style.display = 'none';
+                if (sideDeposits) sideDeposits.style.display = 'none';
+                if (sideWithdrawals) sideWithdrawals.style.display = 'none';
+                if (sideBanks) sideBanks.style.display = 'none';
+                if (dashFinanceRow) dashFinanceRow.style.display = 'none';
+                if (settingsWhatsappRow) settingsWhatsappRow.style.display = 'none';
+            } else {
+                // Show all payment and WhatsApp management options for Admin (both existing and newly created)
+                if (headerWhatsapp) headerWhatsapp.style.display = '';
+                if (topNavFinance) topNavFinance.style.display = '';
+                if (sideDeposits) sideDeposits.style.display = '';
+                if (sideWithdrawals) sideWithdrawals.style.display = '';
+                if (sideBanks) sideBanks.style.display = '';
+                if (dashFinanceRow) dashFinanceRow.style.display = '';
+                if (settingsWhatsappRow) settingsWhatsappRow.style.display = '';
+
+                if (typeof loadAdminWhatsappSettings === 'function') loadAdminWhatsappSettings();
+                if (typeof updateAdminPaymentStats === 'function') updateAdminPaymentStats();
             }
         }
 
@@ -4377,16 +4429,43 @@ Boland v Knights                        </a>
                 document.title = 'API Management | BPEXCH';
                 loadAdminApiManagement();
             } else if (cleanPath.startsWith('/finance/deposits') || cleanPath === '/deposits' || cleanPath === '/deposits/' || (window.location.hash && window.location.hash.toLowerCase().includes('deposit'))) {
+                if (isCompanyAccount(currentAdminUser?.role)) {
+                    document.getElementById('viewDashboard').style.display = 'block';
+                    document.getElementById('sideNavDashboard')?.classList.add('active');
+                    document.getElementById('topNavDashboard')?.classList.add('active');
+                    document.title = 'Dashboard | BPEXCH';
+                    showToast('Access Denied: Deposit requests management is restricted to Admin accounts.');
+                    navigateAdmin('/admin');
+                    return;
+                }
                 document.getElementById('viewDepositRequests').style.display = 'block';
                 document.getElementById('sideNavDeposits')?.classList.add('active');
                 document.title = 'Deposit Requests | BPEXCH';
                 loadAdminDepositRequests();
             } else if (cleanPath.startsWith('/finance/withdrawals') || cleanPath === '/withdrawals' || cleanPath === '/withdrawals/' || (window.location.hash && window.location.hash.toLowerCase().includes('withdraw'))) {
+                if (isCompanyAccount(currentAdminUser?.role)) {
+                    document.getElementById('viewDashboard').style.display = 'block';
+                    document.getElementById('sideNavDashboard')?.classList.add('active');
+                    document.getElementById('topNavDashboard')?.classList.add('active');
+                    document.title = 'Dashboard | BPEXCH';
+                    showToast('Access Denied: Withdrawal requests management is restricted to Admin accounts.');
+                    navigateAdmin('/admin');
+                    return;
+                }
                 document.getElementById('viewWithdrawalRequests').style.display = 'block';
                 document.getElementById('sideNavWithdrawals')?.classList.add('active');
                 document.title = 'Withdrawal Requests | BPEXCH';
                 loadAdminWithdrawalRequests();
             } else if (cleanPath.startsWith('/settings/banks') || cleanPath === '/banks' || cleanPath === '/banks/' || (window.location.hash && window.location.hash.toLowerCase().includes('bank'))) {
+                if (isCompanyAccount(currentAdminUser?.role)) {
+                    document.getElementById('viewDashboard').style.display = 'block';
+                    document.getElementById('sideNavDashboard')?.classList.add('active');
+                    document.getElementById('topNavDashboard')?.classList.add('active');
+                    document.title = 'Dashboard | BPEXCH';
+                    showToast('Access Denied: Bank settings are restricted to Admin accounts.');
+                    navigateAdmin('/admin');
+                    return;
+                }
                 document.getElementById('viewBankSettings').style.display = 'block';
                 document.getElementById('sideNavBanks')?.classList.add('active');
                 document.title = 'Bank Settings | BPEXCH';
@@ -4402,7 +4481,9 @@ Boland v Knights                        </a>
                 document.getElementById('sideNavSettings')?.classList.add('active');
                 document.getElementById('topNavSettings')?.classList.add('active');
                 document.title = 'Settings | BPEXCH';
-                loadAdminWhatsappSettings();
+                if (!isCompanyAccount(currentAdminUser?.role)) {
+                    loadAdminWhatsappSettings();
+                }
             } else {
                 document.getElementById('viewDashboard').style.display = 'block';
                 document.getElementById('sideNavDashboard')?.classList.add('active');
@@ -6406,6 +6487,7 @@ Boland v Knights                        </a>
         // MANUAL DEPOSIT & WITHDRAW WHATSAPP SETTINGS
         // ========================================================
         async function loadAdminWhatsappSettings() {
+            if (!currentAdminUser || isCompanyAccount(currentAdminUser.role)) return;
             var input = document.getElementById('adminWhatsappNumberInput');
             if (!input) return;
             try {
@@ -6987,6 +7069,7 @@ Boland v Knights                        </a>
         }
 
         async function updateAdminPaymentStats() {
+            if (!currentAdminUser || isCompanyAccount(currentAdminUser.role)) return;
             var token = getAdminAuthToken();
             if (!token) return;
             try {

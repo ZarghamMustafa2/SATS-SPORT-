@@ -40,10 +40,10 @@ module.exports = async function handler(req, res) {
       };
     }
 
-    if (!session || (session.role !== authDb.ROLES.COMPANY && session.role !== authDb.ROLES.SUPER_ADMIN && session.role !== authDb.ROLES.SUPER_MASTER)) {
+    if (!session || (session.role !== authDb.ROLES.SUPER_MASTER && session.role !== 'super_master' && session.role !== 'admin')) {
       return sendJson(res, 403, {
         status: 'error',
-        message: 'Forbidden: Only authorized Admin or Company Account users can update the Deposit/Withdraw WhatsApp number.'
+        message: 'Forbidden: Access denied. WhatsApp number configuration is restricted to Admin accounts.'
       });
     }
 
