@@ -36,7 +36,7 @@
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.284Z",
     "tokenVersion": 3,
-    "lastLogin": "2026-10-06T14:44:03.752Z"
+    "lastLogin": "2026-10-06T15:22:30.069Z"
   },
   {
     "id": "8728498",
@@ -136,7 +136,7 @@
       }
     ],
     "tokenVersion": 0,
-    "lastLogin": "2026-10-06T14:43:29.641Z"
+    "lastLogin": "2026-10-06T15:22:30.238Z"
   },
   {
     "id": "8742441",
@@ -647,5 +647,27 @@
     "createdAt": "2026-10-06T14:44:04.557Z",
     "tokenVersion": 0,
     "lastLogin": "2026-10-06T14:44:06.942Z"
+  },
+  {
+    "id": "8740461",
+    "username": "sm_test_1791300149940",
+    "passwordHash": "eede489f10878b1d528911fda9adbbb3ef1e25b479c9f9e7f00e0f1d808e5e714c5a953b4b3c2fd9cef45443c2045d7f1b9f899bec8668de4bb346a59d4ad3d1",
+    "passwordSalt": "46b9dcc44c78176cce8ef3f64ca92aef",
+    "role": "super_master",
+    "status": "active",
+    "parentId": "8764246",
+    "createdBy": "superadmin_1",
+    "credit": "0",
+    "balance": "0 Rs.",
+    "pl": "0 Rs.",
+    "share": "85%",
+    "exp": "0 Rs.",
+    "avail": "0 Rs.",
+    "phone": "03001234567",
+    "reference": "RefTest",
+    "domain": "betproexch.com",
+    "createdAt": "2026-10-06T15:22:30.113Z",
+    "tokenVersion": 1,
+    "lastLogin": "2026-10-06T15:22:30.145Z"
   }
 ]

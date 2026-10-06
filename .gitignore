@@ -20,3 +20,4 @@ test-results/
 .env*
 sportbex_config.json
 *.key
+.vercel
