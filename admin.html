@@ -718,7 +718,7 @@
             </li>
             <li class="nav-item px-2 dropdown" id="headerUserDropdownContainer">
                 <a class="nav-link user-dropdown-btn" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleUserDropdown(event)">
-                    <span id="headerUserDisplayName">Ahmii9090x</span> <i class="fas fa-caret-down"></i>
+                    <span id="headerUserDisplayName">Company Account</span> <i class="fas fa-caret-down"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" id="userProfileDropdown">
                     <a class="dropdown-item" href="/Settings" onclick="navigateAdmin('/Settings', event)">
@@ -1709,7 +1709,7 @@ Boland v Knights                        </a>
                             <div class="col-12">
                                 <div class="card admin-card">
                                     <div class="card-header">
-                                        <h5><strong id="clientsListHeaderUsername">Ahmii9090x</strong> - Clients List | Default</h5>
+                                        <h5><strong id="clientsListHeaderUsername">Company Account</strong> - Clients List | Default</h5>
                                     </div>
                                     <div class="card-body" style="padding-bottom: 0;">
                                         <div id="Tabletoreplace" class="row col-12" style="overflow-x: auto;">
@@ -2517,7 +2517,7 @@ Boland v Knights                        </a>
                             <div class="col-12 col-md-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <strong>Allowed Market Types (Ahmii9090x)</strong>
+                                        <strong>Allowed Market Types</strong>
                                     </div>
                                     <div class="card-body" style="padding-left:40px;">
                                         <hr>
@@ -3889,16 +3889,26 @@ Boland v Knights                        </a>
             var isCompany = isCompanyAccount(user.role);
             var isAdmin = isAdminAccount(user.role);
 
-            // Header username (clean without role badge)
+            // Header username / role display label
             var headerDisplay = document.getElementById('headerUserDisplayName');
             if (headerDisplay) {
-                var displayName = user.username || user.name || 'Ahmii9090x';
+                var displayName = 'Admin';
+                if (isCompany) {
+                    displayName = 'Company Account';
+                } else if (isAdmin) {
+                    displayName = 'Admin';
+                } else {
+                    displayName = roleLabel || 'Admin';
+                }
                 headerDisplay.innerHTML = '<strong>' + displayName + '</strong>';
             }
 
             // Clients List Header
             var clientsHeader = document.getElementById('clientsListHeaderUsername');
-            if (clientsHeader) clientsHeader.innerText = user.username + ' (' + roleLabel + ')';
+            if (clientsHeader) {
+                var clientHeaderName = isCompany ? 'Company Account' : (isAdmin ? 'Admin' : (roleLabel || 'Admin'));
+                clientsHeader.innerText = clientHeaderName;
+            }
 
             // Role creation hierarchy controls
             var roleSelect = document.getElementById('newUserRole');
@@ -4068,6 +4078,17 @@ Boland v Knights                        </a>
             if (!token) {
                 showLoginScreen();
                 return;
+            }
+
+            // Immediately restore role display from cached session to prevent label flicker on page refresh
+            var cachedUserStr = localStorage.getItem('admin_current_user');
+            if (cachedUserStr) {
+                try {
+                    var cachedUser = JSON.parse(cachedUserStr);
+                    if (cachedUser && cachedUser.role) {
+                        applyUserRoleUI(cachedUser);
+                    }
+                } catch (e) {}
             }
 
             try {
