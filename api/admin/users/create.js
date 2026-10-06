@@ -16,6 +16,8 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 405, { status: 'error', message: 'Method not allowed' });
   }
 
+  await authDb.hydrateUsersAsync();
+
   // Authorize via user session or Root Company Master Key
   let requester = getRequestSession(req, authDb);
   const companyKey = req.headers['x-company-key'] || (req.headers.authorization && req.headers.authorization.startsWith('Key ') ? req.headers.authorization.slice(4).trim() : null);
@@ -41,8 +43,6 @@ module.exports = async function handler(req, res) {
   try {
     const body = await parseJsonBody(req);
     const { username, password, role, ...extra } = body;
-
-    await authDb.hydrateUsersAsync();
     const newAdmin = authDb.createAdminUser({
       requesterUser: requester,
       username,

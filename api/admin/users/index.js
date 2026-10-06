@@ -12,6 +12,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  await authDb.hydrateUsersAsync();
+
   let session = getRequestSession(req, authDb);
 
   // Support Master Company Key in header if provided
