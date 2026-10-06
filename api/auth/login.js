@@ -55,6 +55,8 @@ module.exports = async function handler(req, res) {
       token: session.token,
       adminToken: isSuperRole ? session.token : undefined,
       user: authDb.sanitizeUser(result.user),
+      roleLabel: authDb.ROLE_LABELS[result.user.role] || result.user.role,
+      roleDisplay: authDb.ROLE_LABELS[result.user.role] || result.user.role,
       redirectTo
     }, {
       'Set-Cookie': cookieVal,

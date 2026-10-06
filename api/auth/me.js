@@ -34,6 +34,8 @@ module.exports = async function handler(req, res) {
     username: user.username,
     userId: user.id,
     role: user.role,
+    roleLabel: authDb.ROLE_LABELS[user.role] || user.role,
+    roleDisplay: authDb.ROLE_LABELS[user.role] || user.role,
     userStatus: user.status,
     balance: user.balance || '0 Rs.',
     dummyBalance: sanitized.dummyBalance !== undefined ? sanitized.dummyBalance : 0,

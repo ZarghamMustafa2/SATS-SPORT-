@@ -1753,8 +1753,8 @@ Boland v Knights                        </a>
                                             </table>
                                         </div>
 
-                                        <a href="/Users/Create" type="button" class="btn btn-sm btn-primary" onclick="navigateAdmin('/Users/Create', event)">
-                                            <i class="fa fa-user-o"></i> <strong>New User</strong>
+                                        <a href="/Users/Create" type="button" class="btn btn-sm btn-primary" id="btnCreateAdmin" onclick="navigateAdmin('/Users/Create', event)">
+                                            <i class="fa fa-user-o"></i> <strong>Create Admin</strong>
                                         </a>
 
                                         <a href="/Accounts/Ledger" type="button" class="btn btn-sm btn-primary" onclick="navigateAdmin('/Accounts/Ledger', event)">
@@ -2223,7 +2223,7 @@ Boland v Knights                        </a>
                             <div class="col-12 col-md-8">
                                 <div class="card">
                                     <div class="card-header">
-                                        <strong>Create New User</strong>
+                                        <strong>Create Admin</strong>
                                     </div>
                                     <div class="card-body">
                                         <div id="userRoleHierarchyNotice" class="alert alert-info" style="display:none; margin-bottom: 20px;"></div>
@@ -2262,7 +2262,7 @@ Boland v Knights                        </a>
                                                 <label class="col-md-3 col-form-label">Role</label>
                                                 <div class="col-md-9">
                                                     <select class="form-control" id="newUserRole">
-                                                        <option value="super_master">Super Master</option>
+                                                        <option value="super_master">Admin</option>
                                                     </select>
                                                     <small class="form-text text-muted" id="userRoleHelperText"></small>
                                                 </div>
@@ -2280,7 +2280,7 @@ Boland v Knights                        </a>
                                                 </div>
                                             </div>
                                             <div class="form-actions">
-                                                <button class="btn btn-primary" type="submit" id="createUserSubmitBtn"><strong>Submit New User</strong></button>
+                                                <button class="btn btn-primary" type="submit" id="createUserSubmitBtn"><strong>Create Admin</strong></button>
                                             </div>
                                         </form>
                                     </div>
@@ -3721,8 +3721,8 @@ Boland v Knights                        </a>
         // State & Auth Roles
         var ROLE_LABELS = {
             'company': 'Company Account',
-            'super_admin': 'Super Admin',
-            'super_master': 'Super Master',
+            'super_admin': 'Company Account',
+            'super_master': 'Admin',
             'user': 'Normal User'
         };
 
@@ -3735,7 +3735,7 @@ Boland v Knights                        </a>
         var DEFAULT_BYPASS_ADMIN_USER = {
             id: '8764246',
             username: 'superadmin_1',
-            name: 'Super Admin',
+            name: 'Company Account',
             role: 'super_admin',
             status: 'active',
             credit: '100,000',
@@ -3907,18 +3907,18 @@ Boland v Knights                        </a>
 
             if (roleSelect && submitBtn) {
                 if (user.role === 'super_admin' || user.role === 'company') {
-                    // Super Admin creates Super Master
-                    roleSelect.innerHTML = '<option value="super_master">Super Master</option>';
+                    // Company Account creates Admin
+                    roleSelect.innerHTML = '<option value="super_master">Admin</option>';
                     roleSelect.disabled = false;
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<strong>Submit New Super Master</strong>';
+                    submitBtn.innerHTML = '<strong>Create Admin</strong>';
                     if (roleNotice) {
                         roleNotice.className = 'alert alert-info';
                         roleNotice.style.display = 'block';
-                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> As <b>Super Admin</b>, you can create <b>Super Master</b> accounts.';
+                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> As <b>Company Account</b>, you can create <b>Admin</b> accounts.';
                     }
                 } else if (user.role === 'super_master') {
-                    // Super Master cannot create another admin level
+                    // Admin cannot create another admin level
                     roleSelect.innerHTML = '<option value="">No Admin Creation Allowed</option>';
                     roleSelect.disabled = true;
                     submitBtn.disabled = true;
@@ -3926,7 +3926,7 @@ Boland v Knights                        </a>
                     if (roleNotice) {
                         roleNotice.className = 'alert alert-danger';
                         roleNotice.style.display = 'block';
-                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> <b>Super Master</b> cannot create another admin level.';
+                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> <b>Admin</b> cannot create another admin level.';
                     }
                 }
             }
@@ -4139,7 +4139,7 @@ Boland v Knights                        </a>
                     localStorage.setItem('admin_auth_token', adminTok);
                     localStorage.setItem('admin_current_user', JSON.stringify(data.user));
 
-                    // Admin roles (Company, Super Admin, Super Master)
+                    // Admin roles (Company Account, Admin)
                     applyUserRoleUI(data.user);
                     showAdminApp();
                     await fetchAdminUsers();
@@ -4689,7 +4689,7 @@ Boland v Knights                        </a>
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success') {
-                    showToast(data.message || ('User ' + u + ' created successfully!'));
+                    showToast(data.message || ('Admin ' + u + ' created successfully!'));
                     document.getElementById('createNewUserForm').reset();
                     await fetchAdminUsers();
                     navigateAdmin('/Accounts/Chart');

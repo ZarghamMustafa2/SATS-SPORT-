@@ -54,7 +54,7 @@ module.exports = async function handler(req, res) {
 
     return sendJson(res, 201, {
       status: 'success',
-      message: `${authDb.ROLE_LABELS[role] || role} created successfully`,
+      message: `${authDb.ROLE_LABELS[newAdmin.role] || newAdmin.role} created successfully`,
       user: newAdmin
     });
   } catch (err) {
