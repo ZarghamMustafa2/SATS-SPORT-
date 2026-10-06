@@ -655,37 +655,6 @@
                     Invalid username or password!
                 </div>
             </form>
-
-            <form id="adminRegisterForm" style="display: none;" onsubmit="event.preventDefault(); executeNormalRegister();">
-                <div class="login-input-group">
-                    <i class="fa fa-user"></i>
-                    <input type="text" id="reg_Username" placeholder="Choose Username" required autocomplete="username">
-                </div>
-
-                <div class="login-input-group">
-                    <i class="fa fa-lock"></i>
-                    <input type="password" id="reg_Password" placeholder="Password (min 6 chars)" required autocomplete="new-password">
-                </div>
-
-                <div class="login-input-group">
-                    <i class="fa fa-lock"></i>
-                    <input type="password" id="reg_ConfirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
-                </div>
-
-                <div class="login100-form-btn-wrap">
-                    <button type="submit" class="login100-form-btn" id="normalRegSubmitBtn">
-                        Register Account
-                    </button>
-                </div>
-
-                <div class="login-error-msg" id="regErrorBox" style="color: #f86c6b;"></div>
-                <div class="login-error-msg" id="regSuccessBox" style="color: #4dbd74; display: none;"></div>
-            </form>
-
-            <div id="loginScreenToggleWrap" style="text-align: center; margin-top: 18px; font-size: 13px; color: #ced4da;">
-                <span id="loginTogglePrompt">Don't have an account?</span> 
-                <a href="javascript:void(0)" id="loginToggleLink" onclick="toggleAuthMode()" style="color: #5ce1e6; text-decoration: underline; font-weight: 600; cursor: pointer;">Register User</a>
-            </div>
         </div>
     </div>
 
@@ -2293,7 +2262,7 @@ Boland v Knights                        </a>
                                                 <label class="col-md-3 col-form-label">Role</label>
                                                 <div class="col-md-9">
                                                     <select class="form-control" id="newUserRole">
-                                                        <option value="super_admin">Super Admin</option>
+                                                        <option value="super_master">Super Master</option>
                                                     </select>
                                                     <small class="form-text text-muted" id="userRoleHelperText"></small>
                                                 </div>
@@ -3761,7 +3730,7 @@ Boland v Knights                        </a>
         // TEMPORARY ADMIN ACCESS CONFIGURATION (Direct Admin Access Without Login Guard)
         // Can be toggled back to false at any time to re-enable authentication requirements
         // ==============================================================================
-        var BYPASS_ADMIN_AUTH = true;
+        var BYPASS_ADMIN_AUTH = false;
 
         var DEFAULT_BYPASS_ADMIN_USER = {
             id: '8764246',
@@ -3937,20 +3906,9 @@ Boland v Knights                        </a>
             var submitBtn = document.getElementById('createUserSubmitBtn');
 
             if (roleSelect && submitBtn) {
-                if (user.role === 'company') {
-                    // Level 1: Company Account creates Super Admin
-                    roleSelect.innerHTML = '<option value="super_admin">Super Admin (Level 2)</option>';
-                    roleSelect.disabled = false;
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<strong>Submit New Super Admin</strong>';
-                    if (roleNotice) {
-                        roleNotice.className = 'alert alert-info';
-                        roleNotice.style.display = 'block';
-                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> As <b>Company Account</b>, you can create <b>Super Admin</b> accounts.';
-                    }
-                } else if (user.role === 'super_admin') {
-                    // Level 2: Super Admin creates Super Master
-                    roleSelect.innerHTML = '<option value="super_master">Super Master (Level 3)</option>';
+                if (user.role === 'super_admin' || user.role === 'company') {
+                    // Super Admin creates Super Master
+                    roleSelect.innerHTML = '<option value="super_master">Super Master</option>';
                     roleSelect.disabled = false;
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<strong>Submit New Super Master</strong>';
@@ -3960,7 +3918,7 @@ Boland v Knights                        </a>
                         roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> As <b>Super Admin</b>, you can create <b>Super Master</b> accounts.';
                     }
                 } else if (user.role === 'super_master') {
-                    // Level 3: Super Master cannot create another admin level
+                    // Super Master cannot create another admin level
                     roleSelect.innerHTML = '<option value="">No Admin Creation Allowed</option>';
                     roleSelect.disabled = true;
                     submitBtn.disabled = true;
@@ -3968,7 +3926,7 @@ Boland v Knights                        </a>
                     if (roleNotice) {
                         roleNotice.className = 'alert alert-danger';
                         roleNotice.style.display = 'block';
-                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> <b>Super Master</b> cannot create another admin level. The admin hierarchy ends here.';
+                        roleNotice.innerHTML = '<strong>Hierarchy Rule:</strong> <b>Super Master</b> cannot create another admin level.';
                     }
                 }
             }
@@ -4160,8 +4118,11 @@ Boland v Knights                        </a>
             try {
                 var result = await safeFetchJson(getApiUrl('/api/auth/login'), {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({ username: u, password: p, isAdminLogin: true })
                 });
                 var data = result.data;
 
@@ -4686,8 +4647,14 @@ Boland v Knights                        </a>
             e.preventDefault();
             var u = document.getElementById('newUserName').value.trim();
             var p = document.getElementById('newUserPass').value.trim();
+            var cp = document.getElementById('newUserConfirmPass') ? document.getElementById('newUserConfirmPass').value.trim() : '';
             var roleSelect = document.getElementById('newUserRole');
-            var targetRole = roleSelect ? roleSelect.value : '';
+            var targetRole = roleSelect ? roleSelect.value : 'super_master';
+
+            if (cp && p !== cp) {
+                alert('Passwords do not match');
+                return;
+            }
 
             if (!targetRole) {
                 alert('You are not authorized to create new admin users.');
@@ -4702,16 +4669,22 @@ Boland v Knights                        </a>
             }
 
             try {
+                var phone = document.getElementById('newUserPhone') ? document.getElementById('newUserPhone').value.trim() : '';
+                var ref = document.getElementById('newUserRef') ? document.getElementById('newUserRef').value.trim() : '';
                 var result = await safeFetchJson(getApiUrl('/api/admin/users/create'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
                     },
                     body: JSON.stringify({
                         username: u,
                         password: p,
-                        role: targetRole
+                        role: targetRole,
+                        phone: phone,
+                        reference: ref
                     })
                 });
                 var data = result.data;
@@ -4721,7 +4694,7 @@ Boland v Knights                        </a>
                     await fetchAdminUsers();
                     navigateAdmin('/Accounts/Chart');
                 } else {
-                    alert('Creation rejected: ' + (data.message || 'Unauthorized'));
+                    alert(data.message || 'Creation rejected: Unauthorized');
                 }
             } catch (err) {
                 alert('Network error: ' + err.message);
@@ -5429,6 +5402,7 @@ Boland v Knights                        </a>
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
                         'X-Admin-Request': 'true'
                     },
                     body: JSON.stringify({ action: 'status', targetUserId: clientId })

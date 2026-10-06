@@ -4,7 +4,7 @@ const { parseJsonBody, sendJson } = require('../../lib/http_util');
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Request, X-Admin-Token');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
   if (req.method === 'OPTIONS') {
@@ -20,7 +20,8 @@ module.exports = async function handler(req, res) {
   try {
     await authDb.hydrateUsersAsync();
     const body = await parseJsonBody(req);
-    const { username, password } = body;
+    const { username, password, isAdminLogin } = body;
+    const isAdminReq = isAdminLogin === true || req.headers['x-admin-request'] === 'true';
 
     const result = authDb.authenticate(username, password);
     if (!result.success) {
@@ -30,12 +31,22 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    const isSuperRole = (result.user.role === 'super_admin' || result.user.role === 'super_master' || result.user.role === 'company');
+
+    if (isAdminReq && !isSuperRole) {
+      return sendJson(res, 403, {
+        status: 'error',
+        message: 'Access denied: Normal user accounts cannot log in to the Admin Portal.'
+      }, {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+      });
+    }
+
     await authDb.saveUsersToDiskAsync();
     const session = authDb.createSession(result.user);
     const redirectTo = authDb.getRedirectForRole(result.user.role);
 
     // Set secure HTTP-only cookie based on role
-    const isSuperRole = (result.user.role === 'super_admin' || result.user.role === 'super_master' || result.user.role === 'company');
     const cookieName = isSuperRole ? 'admin_auth_token' : 'auth_token';
     const cookieVal = `${cookieName}=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`;
 
