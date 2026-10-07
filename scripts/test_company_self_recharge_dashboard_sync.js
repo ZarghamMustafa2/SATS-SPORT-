@@ -195,6 +195,19 @@ async function main() {
   await page.screenshot({ path: shot70kPath, fullPage: false });
   console.log('📸 Saved 70k Dashboard Screenshot:', shot70kPath);
 
+  // Capture targeted screenshot of the exact table shown in user screenshot
+  await page.evaluate(() => navigateAdmin('/Accounts/Chart'));
+  await page.waitForSelector('#Tabletoreplace', { state: 'visible', timeout: 10000 });
+  await sleep(1500);
+  const tableEl = await page.$('#Tabletoreplace');
+  const tableShotPath = path.join(ARTIFACTS_DIR, 'live_company_accounts_chart_table_70k.png');
+  if (tableEl) {
+    await tableEl.screenshot({ path: tableShotPath });
+    console.log('📸 Saved 70k Summary Table Screenshot:', tableShotPath);
+  }
+  await page.evaluate(() => navigateAdmin('/admin'));
+  await sleep(1000);
+
   // =========================================================================
   // TEST 3: Refresh page -> Both remain 70,000
   // =========================================================================

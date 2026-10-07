@@ -6,12 +6,12 @@
     "status": "active",
     "parentId": null,
     "createdBy": "SYSTEM",
-    "credit": "10,000,000",
-    "balance": "10,000,000 Rs.",
+    "credit": "0",
+    "balance": "0 Rs.",
     "pl": "0 Rs.",
     "share": "100%",
     "exp": "0 Rs.",
-    "avail": "10,000,000 Rs.",
+    "avail": "0 Rs.",
     "createdAt": "2026-09-30T17:58:28.253Z",
     "tokenVersion": 0,
     "lastLogin": null
@@ -26,18 +26,30 @@
     "parentId": "usr_company_001",
     "createdBy": "Company Account",
     "credit": "0",
-    "balance": "3,71,100 Rs.",
+    "balance": "0 Rs.",
     "pl": "0 Rs.",
     "share": "90",
     "exp": "0 Rs.",
-    "avail": "3,71,100 Rs.",
+    "avail": "0 Rs.",
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.284Z",
     "tokenVersion": 14,
-    "lastLogin": "2026-10-07T17:22:54.027Z",
+    "lastLogin": "2026-10-07T18:05:31.382Z",
     "transactions": [
+      {
+        "id": "tx_sr_1791396229175_1orbl",
+        "transactionId": "TXSR1791396229175",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 0,
+        "newBalance": 50000,
+        "note": "Testing 50k",
+        "timestamp": "2026-10-07T18:03:49.175Z"
+      },
       {
         "id": "tx_sr_1791365310475_arifn",
         "transactionId": "TXSR1791365310475",
@@ -172,6 +184,18 @@
       }
     ],
     "selfRechargeHistory": [
+      {
+        "id": "tx_sr_1791396229175_1orbl",
+        "transactionId": "TXSR1791396229175",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 0,
+        "newBalance": 50000,
+        "note": "Testing 50k",
+        "timestamp": "2026-10-07T18:03:49.175Z"
+      },
       {
         "id": "tx_sr_1791365310475_arifn",
         "transactionId": "TXSR1791365310475",
@@ -326,7 +350,7 @@
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.298Z",
     "tokenVersion": 2,
-    "lastLogin": "2026-10-07T17:22:54.057Z"
+    "lastLogin": "2026-10-07T17:39:45.137Z"
   },
   {
     "id": "usr_1790791108314_16",
@@ -3255,5 +3279,27 @@
     "lastLogin": "2026-10-07T12:51:26.786Z",
     "createdAt": "2026-10-07T12:51:25.198Z",
     "tokenVersion": 0
+  },
+  {
+    "id": "8716576",
+    "username": "newadmin_791342",
+    "passwordHash": "0e0652e5377ef21718e3edabdef600de6b00be94da29304e06519f2c64835aac51fba061564aaf63f159cd83cb6bdbe39eeefa68b62f3e28bcb22a08df505fb8",
+    "passwordSalt": "db10081e2ca3954d1598b636fde278a4",
+    "role": "super_master",
+    "status": "active",
+    "parentId": "8764246",
+    "createdBy": "superadmin_1",
+    "credit": "0",
+    "balance": "0 Rs.",
+    "pl": "0 Rs.",
+    "share": "85%",
+    "exp": "0 Rs.",
+    "avail": "0 Rs.",
+    "phone": "",
+    "reference": "",
+    "domain": "betproexch.com",
+    "createdAt": "2026-10-07T17:39:52.187Z",
+    "tokenVersion": 0,
+    "lastLogin": "2026-10-07T17:39:57.720Z"
   }
 ]
