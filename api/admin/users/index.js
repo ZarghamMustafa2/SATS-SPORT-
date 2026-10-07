@@ -92,9 +92,30 @@ module.exports = async function handler(req, res) {
       const singleId = searchParams.get('id') || searchParams.get('userId');
       if (singleId) {
         const user = authDb.getUserById(singleId);
-        if (!user) {
+        if (!user || user.status === 'deleted' || user.isDeleted) {
           return sendJson(res, 404, { status: 'error', message: 'User not found' });
         }
+
+        // Security role-based enforcement
+        if (session.role === authDb.ROLES.SUPER_MASTER) {
+          // Admin can ONLY query Normal Users
+          if (user.role !== authDb.ROLES.USER) {
+            return sendJson(res, 403, { status: 'error', message: 'Access denied: Admins can only view Normal User records' });
+          }
+        } else if (session.role === authDb.ROLES.COMPANY || session.role === authDb.ROLES.SUPER_ADMIN) {
+          // Company Account can ONLY query Admin accounts belonging to it
+          if (user.role === authDb.ROLES.USER) {
+            return sendJson(res, 403, { status: 'error', message: 'Access denied: Company Account cannot view Normal User records' });
+          }
+          if (user.role === authDb.ROLES.SUPER_MASTER) {
+            const isRoot = session.role === authDb.ROLES.COMPANY || session.userId === 'usr_company_001';
+            const isOwned = user.parentId === session.userId || user.parentId === session.id || user.createdBy === session.username || (isRoot && (!user.parentId || user.parentId === 'usr_company_001' || user.parentId === '8764246' || user.createdBy === 'superadmin_1' || user.createdBy === 'Company Account' || user.createdBy === 'SYSTEM'));
+            if (!isOwned) {
+              return sendJson(res, 403, { status: 'error', message: 'Access denied: Admin does not belong to this Company Account' });
+            }
+          }
+        }
+
         const dummyBal = typeof user.dummyBalance === 'number'
           ? user.dummyBalance
           : (parseFloat(String(user.dummyBalance || '0').replace(/[^0-9.-]/g, '')) || 0);

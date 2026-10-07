@@ -6,12 +6,12 @@
     "status": "active",
     "parentId": null,
     "createdBy": "SYSTEM",
-    "credit": "0",
-    "balance": "0 Rs.",
+    "credit": "70,000",
+    "balance": "70,000 Rs.",
     "pl": "0 Rs.",
     "share": "100%",
     "exp": "0 Rs.",
-    "avail": "0 Rs.",
+    "avail": "70,000 Rs.",
     "createdAt": "2026-09-30T17:58:28.253Z",
     "tokenVersion": 0,
     "lastLogin": null
@@ -25,19 +25,67 @@
     "status": "active",
     "parentId": "usr_company_001",
     "createdBy": "Company Account",
-    "credit": "0",
-    "balance": "0 Rs.",
+    "credit": "70,000",
+    "balance": "70,000 Rs.",
     "pl": "0 Rs.",
     "share": "90",
     "exp": "0 Rs.",
-    "avail": "0 Rs.",
+    "avail": "70,000 Rs.",
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.284Z",
-    "tokenVersion": 14,
-    "lastLogin": "2026-10-07T18:05:31.382Z",
+    "tokenVersion": 16,
+    "lastLogin": "2026-10-07T19:05:30.808Z",
     "transactions": [
+      {
+        "id": "tx_sr_1791396779766_zxply",
+        "transactionId": "TXSR1791396779766",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 20000,
+        "previousBalance": 50000,
+        "newBalance": 70000,
+        "note": "Test Additional Liquidity 20k",
+        "timestamp": "2026-10-07T18:12:59.766Z"
+      },
+      {
+        "id": "tx_sr_1791396772570_ioq99",
+        "transactionId": "TXSR1791396772570",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 0,
+        "newBalance": 50000,
+        "note": "Test Initial Liquidity 50k",
+        "timestamp": "2026-10-07T18:12:52.570Z"
+      },
+      {
+        "id": "tx_sr_1791396594053_653sa",
+        "transactionId": "TXSR1791396594053",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 20000,
+        "previousBalance": 50000,
+        "newBalance": 70000,
+        "note": "Test Additional Liquidity 20k",
+        "timestamp": "2026-10-07T18:09:54.053Z"
+      },
+      {
+        "id": "tx_sr_1791396586594_ws7bn",
+        "transactionId": "TXSR1791396586595",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 0,
+        "newBalance": 50000,
+        "note": "Test Initial Liquidity 50k",
+        "timestamp": "2026-10-07T18:09:46.595Z"
+      },
       {
         "id": "tx_sr_1791396229175_1orbl",
         "transactionId": "TXSR1791396229175",
@@ -184,6 +232,54 @@
       }
     ],
     "selfRechargeHistory": [
+      {
+        "id": "tx_sr_1791396779766_zxply",
+        "transactionId": "TXSR1791396779766",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 20000,
+        "previousBalance": 50000,
+        "newBalance": 70000,
+        "note": "Test Additional Liquidity 20k",
+        "timestamp": "2026-10-07T18:12:59.766Z"
+      },
+      {
+        "id": "tx_sr_1791396772570_ioq99",
+        "transactionId": "TXSR1791396772570",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 0,
+        "newBalance": 50000,
+        "note": "Test Initial Liquidity 50k",
+        "timestamp": "2026-10-07T18:12:52.570Z"
+      },
+      {
+        "id": "tx_sr_1791396594053_653sa",
+        "transactionId": "TXSR1791396594053",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 20000,
+        "previousBalance": 50000,
+        "newBalance": 70000,
+        "note": "Test Additional Liquidity 20k",
+        "timestamp": "2026-10-07T18:09:54.053Z"
+      },
+      {
+        "id": "tx_sr_1791396586594_ws7bn",
+        "transactionId": "TXSR1791396586595",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 0,
+        "newBalance": 50000,
+        "note": "Test Initial Liquidity 50k",
+        "timestamp": "2026-10-07T18:09:46.595Z"
+      },
       {
         "id": "tx_sr_1791396229175_1orbl",
         "transactionId": "TXSR1791396229175",
@@ -350,7 +446,7 @@
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.298Z",
     "tokenVersion": 2,
-    "lastLogin": "2026-10-07T17:39:45.137Z"
+    "lastLogin": "2026-10-07T19:03:50.970Z"
   },
   {
     "id": "usr_1790791108314_16",
@@ -3301,5 +3397,53 @@
     "createdAt": "2026-10-07T17:39:52.187Z",
     "tokenVersion": 0,
     "lastLogin": "2026-10-07T17:39:57.720Z"
+  },
+  {
+    "id": "usr_1791398472225_128",
+    "username": "test_del_470854",
+    "passwordHash": null,
+    "passwordSalt": null,
+    "role": "user",
+    "status": "deleted",
+    "parentId": null,
+    "createdBy": "SELF_REGISTER",
+    "credit": "0",
+    "balance": "0 Rs.",
+    "pl": "0 Rs.",
+    "share": "0%",
+    "exp": "0 Rs.",
+    "avail": "0 Rs.",
+    "domain": "satsport.co",
+    "phone": "",
+    "reference": "",
+    "notes": "",
+    "canBet": false,
+    "canSettlePL": false,
+    "commission": "2.00",
+    "lastLogin": null,
+    "createdAt": "2026-10-07T18:41:12.225Z",
+    "tokenVersion": 2,
+    "isDeleted": true,
+    "deletedAt": "2026-10-07T18:41:46.006Z",
+    "deletedBy": {
+      "id": "8764246",
+      "username": "superadmin_1",
+      "role": "super_admin",
+      "reason": "Automated end-to-end verification test"
+    },
+    "auditLogs": [
+      {
+        "action": "USER_DELETED",
+        "deletedUserId": "usr_1791398472225_128",
+        "deletedUsername": "test_del_470854",
+        "deletedBy": {
+          "id": "8764246",
+          "username": "superadmin_1",
+          "role": "super_admin"
+        },
+        "reason": "Automated end-to-end verification test",
+        "timestamp": "2026-10-07T18:41:46.006Z"
+      }
+    ]
   }
 ]

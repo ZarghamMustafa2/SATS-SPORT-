@@ -1725,7 +1725,7 @@ Boland v Knights                        </a>
                         <div class="card col-12" style="height:140px;">
                             <div class="card-header">
                                 <i class="fa fa-filter"></i>
-                                <strong>Search-Users</strong>
+                                <strong id="usersSearchCardHeader">Search-Users</strong>
                             </div>
                             <div class="card-body" style="padding-bottom:0px; margin:0px;">
                                 <div class="row">
@@ -1754,7 +1754,7 @@ Boland v Knights                        </a>
                             <div class="col-12">
                                 <div class="card admin-card">
                                     <div class="card-header">
-                                        <h5><strong id="clientsListHeaderUsername">Company Account</strong> - Clients List | Default</h5>
+                                        <h5><strong id="clientsListHeaderUsername">Company Account</strong> - <span id="clientsListHeaderSubtitle">Clients List</span> | Default</h5>
                                     </div>
                                     <div class="card-body" style="padding-bottom: 0;">
                                         <div id="Tabletoreplace" class="row col-12" style="overflow-x: auto;">
@@ -1764,7 +1764,7 @@ Boland v Knights                        </a>
                                                         <th>Credit Remaining</th>
                                                         <th>Cash</th>
                                                         <th>P/L Downline</th>
-                                                        <th>Users</th>
+                                                        <th id="thUsersColHeader">Users</th>
                                                     </tr>
                                                     <tr>
                                                         <th>
@@ -1802,7 +1802,7 @@ Boland v Knights                        </a>
                                             <span class="btn btn-sm btn-info"><strong>L</strong></span> Ledger
                                             <span class="btn btn-sm btn-success"><strong>A</strong></span> Active
                                             <span class="btn btn-sm btn-outline-danger"><strong>D</strong></span> InActive
-                                            <span class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></span> Delete
+                                            <span id="legendDeleteWrap"><span class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></span> Delete</span>
                                         </p>
                                     </div>
 
@@ -4156,11 +4156,31 @@ Boland v Knights                        </a>
                 headerDisplay.innerHTML = '<strong>' + displayName + '</strong>';
             }
 
-            // Clients List Header
+            // Clients List Header & Role-Scoped Labels
             var clientsHeader = document.getElementById('clientsListHeaderUsername');
             if (clientsHeader) {
                 var clientHeaderName = isCompany ? 'Company Account' : (isAdmin ? 'Admin' : (roleLabel || 'Admin'));
                 clientsHeader.innerText = clientHeaderName;
+            }
+            var subTitle = document.getElementById('clientsListHeaderSubtitle');
+            if (subTitle) {
+                subTitle.innerText = isCompany ? 'Admin Accounts' : 'Clients List';
+            }
+            var thUsers = document.getElementById('thUsersColHeader');
+            if (thUsers) {
+                thUsers.innerText = isCompany ? 'Admins' : 'Users';
+            }
+            var searchHeader = document.getElementById('usersSearchCardHeader');
+            if (searchHeader) {
+                searchHeader.innerText = isCompany ? 'Search-Admins' : 'Search-Users';
+            }
+            var btnCreateAdmin = document.getElementById('btnCreateAdmin');
+            if (btnCreateAdmin) {
+                btnCreateAdmin.style.display = isCompany ? 'inline-block' : 'none';
+            }
+            var legendDelete = document.getElementById('legendDeleteWrap');
+            if (legendDelete) {
+                legendDelete.style.display = isCompany ? 'none' : 'inline-block';
             }
 
             // Role creation hierarchy controls
@@ -4280,8 +4300,9 @@ Boland v Knights                        </a>
             if (!token) return { success: false, error: 'Not authenticated' };
 
             var tbody = document.getElementById('clientsTableBody');
-            if (tbody && isBalancesLoaded && (!clientsList || clientsList.length === 0)) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:24px; color:#73818f;"><i class="fas fa-spinner fa-spin mr-2"></i>Loading live users from database...</td></tr>';
+            var isCompany = currentAdminUser && isCompanyAccount(currentAdminUser.role);
+            if (tbody && (isCompany || isBalancesLoaded) && (!clientsList || clientsList.length === 0)) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:24px; color:#73818f;"><i class="fas fa-spinner fa-spin mr-2"></i>Loading live ' + (isCompany ? 'admin accounts' : 'users') + ' from database...</td></tr>';
             }
 
             try {
@@ -4334,7 +4355,7 @@ Boland v Knights                        </a>
                             canSettlePL: u.canSettlePL !== false
                         };
                     });
-                    if (isBalancesLoaded) {
+                    if (isCompany || isBalancesLoaded) {
                         renderClientsTable();
                     }
                     if (typeof loadAdminBets === 'function') {
@@ -4343,14 +4364,14 @@ Boland v Knights                        </a>
                     return { success: true, count: clientsList.length };
                 } else {
                     var errMsg = (data && data.message) || ('Server returned HTTP ' + (result ? result.status : 'error'));
-                    if (isBalancesLoaded) {
+                    if (isCompany || isBalancesLoaded) {
                         renderClientsTableError(errMsg);
                     }
                     return { success: false, error: errMsg };
                 }
             } catch (err) {
                 console.error('Error fetching admin users:', err);
-                if (isBalancesLoaded) {
+                if (isCompany || isBalancesLoaded) {
                     renderClientsTableError('Network error loading users: ' + err.message);
                 }
                 return { success: false, error: err.message || 'Network error' };
@@ -4698,8 +4719,13 @@ Boland v Knights                        </a>
                 document.getElementById('viewUsers').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.getElementById('topNavUsers')?.classList.add('active');
-                document.title = 'Users | BPEXCH';
-                renderClientsTable();
+                var isCompany = currentAdminUser && isCompanyAccount(currentAdminUser.role);
+                if (isCompany) {
+                    isBalancesLoaded = true;
+                    fetchAdminUsers();
+                } else {
+                    renderClientsTable();
+                }
             } else if (cleanPath === '/users/create') {
                 document.getElementById('viewUsersCreate').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
@@ -4902,30 +4928,40 @@ Boland v Knights                        </a>
             var rowColumns = document.getElementById('rowAccountsColumns');
             var tbody = document.getElementById('clientsTableBody');
             var info = document.getElementById('tableLedger_info');
+            var isCompany = currentAdminUser && isCompanyAccount(currentAdminUser.role);
 
-            // If balances have not been loaded yet, keep table details completely hidden
-            if (!isBalancesLoaded) {
-                if (table) table.classList.add('balances-hidden');
+            if (isCompany) {
+                // Company Account: Display Admin accounts directly, hide Load Balance row
+                if (table) table.classList.remove('balances-hidden');
+                if (rowLoad) rowLoad.style.display = 'none';
+                if (rowTotal) rowTotal.style.display = '';
+                if (rowColumns) rowColumns.style.display = '';
+            } else {
+                // Admin Account: If balances have not been loaded yet, keep table details completely hidden
+                if (!isBalancesLoaded) {
+                    if (table) table.classList.add('balances-hidden');
+                    if (rowLoad) rowLoad.style.display = '';
+                    if (rowTotal) rowTotal.style.display = 'none';
+                    if (rowColumns) rowColumns.style.display = 'none';
+                    if (tbody) tbody.innerHTML = '';
+                    if (info) info.innerText = '';
+                    return;
+                }
+
+                // Admin Account with balances loaded: display table headers and user rows
+                if (table) table.classList.remove('balances-hidden');
                 if (rowLoad) rowLoad.style.display = '';
-                if (rowTotal) rowTotal.style.display = 'none';
-                if (rowColumns) rowColumns.style.display = 'none';
-                if (tbody) tbody.innerHTML = '';
-                if (info) info.innerText = '';
-                return;
+                if (rowTotal) rowTotal.style.display = '';
+                if (rowColumns) rowColumns.style.display = '';
             }
-
-            // Balances are loaded: display table headers and user rows
-            if (table) table.classList.remove('balances-hidden');
-            if (rowLoad) rowLoad.style.display = '';
-            if (rowTotal) rowTotal.style.display = '';
-            if (rowColumns) rowColumns.style.display = '';
 
             if (!tbody) return;
             tbody.innerHTML = '';
 
             if (!clientsList || clientsList.length === 0) {
                 var emptyTr = document.createElement('tr');
-                emptyTr.innerHTML = '<td colspan="9" style="text-align:center; padding:24px; color:#73818f;"><i class="fas fa-users" style="font-size:24px; margin-bottom:8px; display:block;"></i>No users found.</td>';
+                var emptyMsg = isCompany ? 'No Admin accounts found.' : 'No users found.';
+                emptyTr.innerHTML = '<td colspan="9" style="text-align:center; padding:24px; color:#73818f;"><i class="fas fa-users" style="font-size:24px; margin-bottom:8px; display:block;"></i>' + emptyMsg + '</td>';
                 tbody.appendChild(emptyTr);
                 if (info) info.innerText = 'Showing 0 to 0 of 0 entries';
                 return;
@@ -5015,10 +5051,10 @@ Boland v Knights                        </a>
                 bookTr.style.display = 'none';
                 bookTr.className = 'bg-light desktop-book-row';
                 var createdStr = client.createdAt ? new Date(client.createdAt).toLocaleDateString() : 'N/A';
-                var loginStr = client.lastLogin ? new Date(client.lastLogin).toLocaleString() : 'Never';
+                var idLabel = (isCompany || isAdminAccount(client.role)) ? 'Admin ID:' : 'User ID:';
                 bookTr.innerHTML = 
                     '<td colspan="9" style="padding:10px 15px;">' +
-                        '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Status:</strong> ' + (client.active ? '<span class="text-success font-weight-bold">Active</span>' : '<span class="text-danger font-weight-bold">Inactive</span>') + ' | <strong>Created:</strong> ' + createdStr + ' | <strong>Last Login:</strong> ' + loginStr + ' | <button class="btn btn-sm btn-outline-warning py-0 px-2 ml-2 text-dark font-weight-bold" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-key mr-1"></i>Reset Password</button>' +
+                        '<small><strong>' + idLabel + '</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Status:</strong> ' + (client.active ? '<span class="text-success font-weight-bold">Active</span>' : '<span class="text-danger font-weight-bold">Inactive</span>') + ' | <strong>Created:</strong> ' + createdStr + ' | <strong>Last Login:</strong> ' + loginStr + ' | <button class="btn btn-sm btn-outline-warning py-0 px-2 ml-2 text-dark font-weight-bold" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-key mr-1"></i>Reset Password</button>' +
                         (isNormalUser(client.role) ? ' | <button class="btn btn-sm btn-outline-danger py-0 px-2 ml-1 font-weight-bold" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-trash-alt mr-1"></i>Delete User</button>' : '') +
                         '</small>' +
                     '</td>';
@@ -5113,7 +5149,8 @@ Boland v Knights                        </a>
         // Users Filter & Real Backend Database Search
         var userSearchDebounceTimer = null;
         function filterClientsList(term) {
-            if (!isBalancesLoaded) {
+            var isCompany = currentAdminUser && isCompanyAccount(currentAdminUser.role);
+            if (!isCompany && !isBalancesLoaded) {
                 showToast('Please click "Load Balance" to load and filter accounts.');
                 return;
             }
@@ -5146,7 +5183,8 @@ Boland v Knights                        </a>
             navigateAdmin('/Accounts/Chart');
             var searchInput = document.getElementById('usersListSearchInput');
             if (searchInput) searchInput.value = val;
-            if (isBalancesLoaded) {
+            var isCompany = currentAdminUser && isCompanyAccount(currentAdminUser.role);
+            if (isCompany || isBalancesLoaded) {
                 await fetchAdminUsers(val);
             } else {
                 showToast('Please click "Load Balance" to view user accounts.');
