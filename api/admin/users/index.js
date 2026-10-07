@@ -148,6 +148,24 @@ module.exports = async function handler(req, res) {
         return selfRechargeHandler(req, res);
       }
 
+      // Handle Admin / Sub-admin creation
+      if (pathname.includes('/create') || action === 'create' || action === 'create_admin') {
+        const { username, password: userPassword, role, ...extra } = body;
+        const newAdmin = authDb.createAdminUser({
+          requesterUser: session,
+          username,
+          password: userPassword,
+          role,
+          extra
+        });
+        await authDb.saveUsersToDiskAsync();
+        return sendJson(res, 201, {
+          status: 'success',
+          message: `${authDb.ROLE_LABELS[newAdmin.role] || newAdmin.role} created successfully`,
+          user: newAdmin
+        });
+      }
+
       const targetId = routeUserId || userId || targetUserId || body.id;
 
       if (!targetId) {
