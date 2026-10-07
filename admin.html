@@ -5051,6 +5051,7 @@ Boland v Knights                        </a>
                 bookTr.style.display = 'none';
                 bookTr.className = 'bg-light desktop-book-row';
                 var createdStr = client.createdAt ? new Date(client.createdAt).toLocaleDateString() : 'N/A';
+                var loginStr = client.lastLogin ? new Date(client.lastLogin).toLocaleString() : 'Never';
                 var idLabel = (isCompany || isAdminAccount(client.role)) ? 'Admin ID:' : 'User ID:';
                 bookTr.innerHTML = 
                     '<td colspan="9" style="padding:10px 15px;">' +
