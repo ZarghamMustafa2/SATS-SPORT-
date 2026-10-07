@@ -26,17 +26,117 @@
     "parentId": "usr_company_001",
     "createdBy": "Company Account",
     "credit": "0",
-    "balance": "0 Rs.",
+    "balance": "1,51,000 Rs.",
     "pl": "0 Rs.",
     "share": "90",
     "exp": "0 Rs.",
-    "avail": "0 Rs.",
+    "avail": "1,51,000 Rs.",
     "phone": "",
     "reference": "",
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.284Z",
-    "tokenVersion": 8,
-    "lastLogin": "2026-10-07T04:49:33.012Z"
+    "tokenVersion": 10,
+    "lastLogin": "2026-10-07T06:01:36.705Z",
+    "transactions": [
+      {
+        "id": "tx_sr_1791352707035_6h9eh",
+        "transactionId": "TXSR1791352707035",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 101000,
+        "newBalance": 151000,
+        "note": "E2E Automated Liquidity Inflow Test",
+        "timestamp": "2026-10-07T05:58:27.035Z"
+      },
+      {
+        "id": "tx_sr_1791352353167_6tbqc",
+        "transactionId": "TXSR1791352353167",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 51000,
+        "newBalance": 101000,
+        "note": "E2E Automated Liquidity Inflow Test",
+        "timestamp": "2026-10-07T05:52:33.168Z"
+      },
+      {
+        "id": "tx_sr_1791352145849_2z6by",
+        "transactionId": "TXSR1791352145849",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 1000,
+        "newBalance": 51000,
+        "note": "E2E Automated Liquidity Inflow Test",
+        "timestamp": "2026-10-07T05:49:05.849Z"
+      },
+      {
+        "id": "tx_sr_1791350771248_433jp",
+        "transactionId": "TXSR1791350771248",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 1000,
+        "previousBalance": 0,
+        "newBalance": 1000,
+        "note": "Test recharge",
+        "timestamp": "2026-10-07T05:26:11.248Z"
+      }
+    ],
+    "selfRechargeHistory": [
+      {
+        "id": "tx_sr_1791352707035_6h9eh",
+        "transactionId": "TXSR1791352707035",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 101000,
+        "newBalance": 151000,
+        "note": "E2E Automated Liquidity Inflow Test",
+        "timestamp": "2026-10-07T05:58:27.035Z"
+      },
+      {
+        "id": "tx_sr_1791352353167_6tbqc",
+        "transactionId": "TXSR1791352353167",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 51000,
+        "newBalance": 101000,
+        "note": "E2E Automated Liquidity Inflow Test",
+        "timestamp": "2026-10-07T05:52:33.168Z"
+      },
+      {
+        "id": "tx_sr_1791352145849_2z6by",
+        "transactionId": "TXSR1791352145849",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 50000,
+        "previousBalance": 1000,
+        "newBalance": 51000,
+        "note": "E2E Automated Liquidity Inflow Test",
+        "timestamp": "2026-10-07T05:49:05.849Z"
+      },
+      {
+        "id": "tx_sr_1791350771248_433jp",
+        "transactionId": "TXSR1791350771248",
+        "companyAccountId": "8764246",
+        "username": "superadmin_1",
+        "type": "SELF_RECHARGE",
+        "amount": 1000,
+        "previousBalance": 0,
+        "newBalance": 1000,
+        "note": "Test recharge",
+        "timestamp": "2026-10-07T05:26:11.248Z"
+      }
+    ]
   },
   {
     "id": "8728498",
@@ -58,7 +158,7 @@
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.298Z",
     "tokenVersion": 0,
-    "lastLogin": "2026-10-07T04:49:26.919Z"
+    "lastLogin": "2026-10-07T05:58:42.976Z"
   },
   {
     "id": "usr_1790791108314_16",
@@ -941,5 +1041,27 @@
     "createdAt": "2026-10-07T04:42:45.739Z",
     "tokenVersion": 0,
     "lastLogin": "2026-10-07T04:43:09.189Z"
+  },
+  {
+    "id": "8763412",
+    "username": "Vince82x",
+    "passwordHash": "53ae00e155d40bb4a6a0b1df3c32edbc054ba3a2b485ae8f9107ebbbcdee1f5f7b4eaf639da9d57217149b394c30149db2ef3d8c2f51272ca3eabb5ff47806aa",
+    "passwordSalt": "d06cdcf971bcdf2ce50200aa49017f41",
+    "role": "super_master",
+    "status": "active",
+    "parentId": "8764246",
+    "createdBy": "superadmin_1",
+    "credit": "0",
+    "balance": "0 Rs.",
+    "pl": "0 Rs.",
+    "share": "85%",
+    "exp": "0 Rs.",
+    "avail": "0 Rs.",
+    "phone": "",
+    "reference": "",
+    "domain": "betproexch.com",
+    "createdAt": "2026-10-07T04:54:08.126Z",
+    "tokenVersion": 0,
+    "lastLogin": "2026-10-07T04:55:06.851Z"
   }
 ]

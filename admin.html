@@ -678,6 +678,11 @@
             <li class="nav-item px-3">
                 <a class="nav-link" id="topNavUsers" href="/Accounts/Chart" onclick="navigateAdmin('/Accounts/Chart', event)">Users</a>
             </li>
+            <li class="nav-item px-3" id="topNavSelfRechargeContainer" style="display: none;">
+                <a class="nav-link" id="topNavSelfRecharge" href="/Finance/SelfRecharge" onclick="navigateAdmin('/Finance/SelfRecharge', event)">
+                    <i class="fas fa-bolt mr-1" style="color: #10b981;"></i> Self Recharge
+                </a>
+            </li>
             <li class="nav-item px-3 dropdown" id="topNavFinanceContainer">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" onclick="toggleNavDropdown(event, this)" id="topNavFinance">
                     <i class="fas fa-wallet mr-1" style="color: #10b981;"></i> Finance
@@ -715,6 +720,9 @@
                     <span id="headerUserDisplayName">Company Account</span> <i class="fas fa-caret-down"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" id="userProfileDropdown">
+                    <a class="dropdown-item" id="dropdownSelfRechargeLink" href="/Finance/SelfRecharge" onclick="navigateAdmin('/Finance/SelfRecharge', event)" style="display: none;">
+                        <i class="fa fa-bolt mr-1 text-success"></i> Self Recharge
+                    </a>
                     <a class="dropdown-item" href="/Settings" onclick="navigateAdmin('/Settings', event)">
                         <i class="fa fa-cog mr-1"></i> Settings
                     </a>
@@ -753,6 +761,11 @@
         <li class="nav-item">
             <a class="nav-link" href="/Accounts/Chart" id="sideNavUsers" onclick="navigateAdmin('/Accounts/Chart', event)">
                 <i class="nav-icon fas fa-users fa-inverse"></i> Users
+            </a>
+        </li>
+        <li class="nav-item" id="sideNavSelfRechargeContainer" style="display: none;">
+            <a class="nav-link" href="/Finance/SelfRecharge" id="sideNavSelfRecharge" onclick="navigateAdmin('/Finance/SelfRecharge', event)">
+                <i class="nav-icon fas fa-bolt fa-inverse" style="color: #10b981 !important;"></i> Self Recharge
             </a>
         </li>
         <li class="nav-item" id="sideNavDepositsContainer">
@@ -1473,6 +1486,23 @@ Boland v Knights                        </a>
                                         <nav aria-label="breadcrumb" id="breadcrumbcustom" class="col-12 bccustom2" style="display: none;">
                                             <ol class="breadcrumb" style="max-height: 40px;"></ol>
                                         </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Company Account Vault & Self Recharge Banner Row -->
+                        <div class="row mb-3" id="dashboardCompanyRechargeRow" style="display: none;">
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card text-white" style="background: linear-gradient(135deg, #065f46 0%, #047857 100%); box-shadow: 0 4px 12px rgba(6,95,70,0.25); border: none; border-radius: 8px;">
+                                    <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="text-uppercase text-white-50 font-weight-bold small">Company Vault Balance</div>
+                                            <div class="text-value" id="dashCompanyBalanceDisplay" style="font-size: 22px; font-weight: 800; color: #fff;">0 Rs.</div>
+                                        </div>
+                                        <a href="/Finance/SelfRecharge" onclick="navigateAdmin('/Finance/SelfRecharge', event)" class="btn btn-sm btn-light font-weight-bold" style="color: #065f46; font-size: 11.5px; border-radius: 6px; padding: 6px 14px;">
+                                            <i class="fas fa-bolt mr-1 text-warning"></i> Self Recharge &rarr;
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -3188,6 +3218,114 @@ Boland v Knights                        </a>
                     </div>
 
                     <!-- ========================================================
+                         VIEW: SELF RECHARGE (COMPANY ACCOUNT ONLY)
+                         ======================================================== -->
+                    <div id="viewSelfRecharge" class="admin-view-section" style="display: none; padding-bottom: 40px;">
+                        <div class="row">
+                            <!-- Left Column: Recharge Card -->
+                            <div class="col-12 col-lg-5 mb-4">
+                                <div class="card" style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1.5px solid #10b981; border-radius: 8px;">
+                                    <div class="card-header" style="background: #ecfdf5; border-bottom: 2px solid #a7f3d0; padding: 14px 20px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                                            <div>
+                                                <strong style="color: #065f46; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+                                                    <i class="fas fa-bolt text-success"></i>
+                                                    Self Recharge
+                                                </strong>
+                                                <small class="text-muted" style="font-size: 12px;">Authoritative balance replenishment for Company Account</small>
+                                            </div>
+                                            <span class="badge badge-success px-2 py-1" style="font-size: 11px;">Company Vault</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <!-- Current Balance Box -->
+                                        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; border-radius: 8px; padding: 16px; margin-bottom: 20px; text-align: center;">
+                                            <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #166534; letter-spacing: 0.5px;">Current Balance</div>
+                                            <div id="selfRechargeCurrentBalDisplay" style="font-size: 32px; font-weight: 800; color: #15803d; margin: 4px 0;">0.00 Rs.</div>
+                                            <small class="text-muted" style="font-size: 11.5px;">Persistent Authoritative Vault Balance</small>
+                                        </div>
+
+                                        <form id="formSelfRecharge" onsubmit="event.preventDefault(); executeSelfRecharge();">
+                                            <div class="form-group mb-3">
+                                                <label class="font-weight-bold" style="font-size: 13px; color: #374151;">
+                                                    Recharge Amount (Rs.) <span class="text-danger">*</span>
+                                                </label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text font-weight-bold" style="background: #f3f4f6;">₹</span>
+                                                    </div>
+                                                    <input type="number" id="selfRechargeAmountInput" class="form-control form-control-lg font-weight-bold" placeholder="e.g. 10000" min="1" step="any" required style="font-size: 18px; color: #111827;">
+                                                </div>
+                                                <small class="form-text text-muted">Enter positive numeric amount (must be greater than 0).</small>
+                                                
+                                                <!-- Quick Amount Chips -->
+                                                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setQuickRechargeAmount(1000)">+1,000</button>
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setQuickRechargeAmount(5000)">+5,000</button>
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setQuickRechargeAmount(10000)">+10,000</button>
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setQuickRechargeAmount(50000)">+50,000</button>
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setQuickRechargeAmount(100000)">+100,000</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label class="font-weight-bold" style="font-size: 13px; color: #374151;">
+                                                    Optional Note / Reason
+                                                </label>
+                                                <input type="text" id="selfRechargeNoteInput" class="form-control" placeholder="e.g. Daily Liquidity Top-Up, Testing Reserve" maxlength="255">
+                                            </div>
+
+                                            <div id="selfRechargeAlertMsg" style="display: none; font-size: 13px; padding: 10px; border-radius: 6px; margin-bottom: 15px;"></div>
+
+                                            <button type="submit" id="selfRechargeSubmitBtn" class="btn btn-success btn-lg btn-block font-weight-bold" style="box-shadow: 0 4px 10px rgba(16,185,129,0.35); padding: 12px; font-size: 16px; border-radius: 6px;">
+                                                <i class="fas fa-check-circle mr-1"></i> Confirm Recharge
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Audit History Table -->
+                            <div class="col-12 col-lg-7">
+                                <div class="card" style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; border-radius: 8px;">
+                                    <div class="card-header" style="background: #f9fafb; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
+                                        <div>
+                                            <strong style="color: #1f2937; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-history text-muted"></i>
+                                                Self Recharge History
+                                            </strong>
+                                            <small class="text-muted" style="font-size: 12px;">Audit trail of all Company Account recharge transactions</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-secondary font-weight-bold" onclick="loadSelfRechargeData()" title="Refresh History">
+                                            <i class="fas fa-sync-alt"></i> Refresh
+                                        </button>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover table-sm mb-0" style="font-size: 12.5px;">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th style="width: 140px;">Date &amp; Time</th>
+                                                        <th style="width: 120px;">Tx ID</th>
+                                                        <th style="width: 100px;">Type</th>
+                                                        <th style="width: 110px;" class="text-right">Amount</th>
+                                                        <th style="width: 110px;" class="text-right">Prev Balance</th>
+                                                        <th style="width: 110px;" class="text-right">New Balance</th>
+                                                        <th>Note / Reason</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="selfRechargeHistoryTableBody">
+                                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading recharge history...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
                          VIEW: DEPOSIT REQUESTS
                          ======================================================== -->
                     <div id="viewDepositRequests" class="admin-view-section" style="display: none; padding-bottom: 40px;">
@@ -3936,9 +4074,9 @@ Boland v Knights                        </a>
             }
 
             // =========================================================================
-            // ROLE-SPECIFIC PAYMENT & WHATSAPP VISIBILITY LOGIC
-            // Company Account: HIDE all payment, banking, requests, and WhatsApp options
-            // Admin: SHOW all existing payment, banking, requests, and WhatsApp options
+            // ROLE-SPECIFIC PAYMENT, WHATSAPP & SELF RECHARGE VISIBILITY LOGIC
+            // Company Account: HIDE payments/WhatsApp, SHOW Self Recharge
+            // Admin: SHOW payments/WhatsApp, HIDE Self Recharge
             // =========================================================================
             var topNavFinance = document.getElementById('topNavFinanceContainer');
             var sideDeposits = document.getElementById('sideNavDepositsContainer');
@@ -3946,6 +4084,11 @@ Boland v Knights                        </a>
             var sideBanks = document.getElementById('sideNavBanksContainer');
             var dashFinanceRow = document.getElementById('dashboardFinanceStatsRow');
             var settingsWhatsappRow = document.getElementById('adminWhatsappSettingsRow');
+
+            var sideSelfRecharge = document.getElementById('sideNavSelfRechargeContainer');
+            var topSelfRecharge = document.getElementById('topNavSelfRechargeContainer');
+            var dropSelfRecharge = document.getElementById('dropdownSelfRechargeLink');
+            var dashCompanyRow = document.getElementById('dashboardCompanyRechargeRow');
 
             if (isCompany) {
                 // Remove / hide payment and WhatsApp management options for Company Account
@@ -3955,6 +4098,29 @@ Boland v Knights                        </a>
                 if (sideBanks) sideBanks.style.display = 'none';
                 if (dashFinanceRow) dashFinanceRow.style.display = 'none';
                 if (settingsWhatsappRow) settingsWhatsappRow.style.display = 'none';
+
+                // SHOW Self Recharge ONLY for Company Account
+                if (sideSelfRecharge) sideSelfRecharge.style.display = '';
+                if (topSelfRecharge) topSelfRecharge.style.display = '';
+                if (dropSelfRecharge) dropSelfRecharge.style.display = '';
+                if (dashCompanyRow) dashCompanyRow.style.display = '';
+
+                // Sync balance in header and vault card
+                if (user && user.balance != null) {
+                    var hBal = document.getElementById('headerWalletBal');
+                    if (hBal) {
+                        var bNum = parseFloat(String(user.balance).replace(/[^0-9.-]/g, ''));
+                        hBal.innerText = !isNaN(bNum) ? bNum.toLocaleString() : String(user.balance);
+                    }
+                    var dBal = document.getElementById('dashCompanyBalanceDisplay');
+                    if (dBal) {
+                        var bNum = parseFloat(String(user.balance).replace(/[^0-9.-]/g, ''));
+                        dBal.innerText = (!isNaN(bNum) ? bNum.toLocaleString() : String(user.balance)) + ' Rs.';
+                    }
+                }
+                if (typeof loadSelfRechargeData === 'function') {
+                    loadSelfRechargeData();
+                }
             } else {
                 // Show all payment and WhatsApp management options for Admin (both existing and newly created)
                 if (topNavFinance) topNavFinance.style.display = '';
@@ -3963,6 +4129,12 @@ Boland v Knights                        </a>
                 if (sideBanks) sideBanks.style.display = '';
                 if (dashFinanceRow) dashFinanceRow.style.display = '';
                 if (settingsWhatsappRow) settingsWhatsappRow.style.display = '';
+
+                // HIDE Self Recharge completely for Admin accounts
+                if (sideSelfRecharge) sideSelfRecharge.style.display = 'none';
+                if (topSelfRecharge) topSelfRecharge.style.display = 'none';
+                if (dropSelfRecharge) dropSelfRecharge.style.display = 'none';
+                if (dashCompanyRow) dashCompanyRow.style.display = 'none';
 
                 if (typeof loadAdminWhatsappSettings === 'function') loadAdminWhatsappSettings();
                 if (typeof updateAdminPaymentStats === 'function') updateAdminPaymentStats();
@@ -4430,6 +4602,27 @@ Boland v Knights                        </a>
                 document.getElementById('topNavApiManagement')?.classList.add('active');
                 document.title = 'API Management | BPEXCH';
                 loadAdminApiManagement();
+            } else if (
+                cleanPath === '/finance/selfrecharge' || cleanPath === '/finance/self-recharge' ||
+                cleanPath === '/selfrecharge' || cleanPath === '/self-recharge' ||
+                cleanPath === '/company/self-recharge' || cleanPath === '/company/selfrecharge' ||
+                (window.location.hash && window.location.hash.toLowerCase().includes('selfrecharge')) ||
+                (window.location.hash && window.location.hash.toLowerCase().includes('self-recharge'))
+            ) {
+                if (!isCompanyAccount(currentAdminUser?.role)) {
+                    document.getElementById('viewDashboard').style.display = 'block';
+                    document.getElementById('sideNavDashboard')?.classList.add('active');
+                    document.getElementById('topNavDashboard')?.classList.add('active');
+                    document.title = 'Dashboard | BPEXCH';
+                    showToast('Access Denied: Self Recharge is reserved for Company Account only.');
+                    navigateAdmin('/admin');
+                    return;
+                }
+                document.getElementById('viewSelfRecharge').style.display = 'block';
+                document.getElementById('sideNavSelfRecharge')?.classList.add('active');
+                document.getElementById('topNavSelfRecharge')?.classList.add('active');
+                document.title = 'Self Recharge | BPEXCH';
+                loadSelfRechargeData();
             } else if (cleanPath.startsWith('/finance/deposits') || cleanPath === '/deposits' || cleanPath === '/deposits/' || (window.location.hash && window.location.hash.toLowerCase().includes('deposit'))) {
                 if (isCompanyAccount(currentAdminUser?.role)) {
                     document.getElementById('viewDashboard').style.display = 'block';
@@ -7809,6 +8002,249 @@ Boland v Knights                        </a>
             if (link) link.href = streamUrl;
 
             openModal('modalAdminScreenshotViewer');
+        }
+
+        // =========================================================================
+        // SELF RECHARGE FUNCTIONS (COMPANY ACCOUNT ONLY)
+        // =========================================================================
+        var _isSelfRechargeSubmitting = false;
+
+        function setQuickRechargeAmount(amount) {
+            var input = document.getElementById('selfRechargeAmountInput');
+            if (input) {
+                input.value = amount;
+                input.focus();
+            }
+        }
+
+        async function loadSelfRechargeData() {
+            var token = getAdminAuthToken();
+            if (!token) return;
+
+            var tbody = document.getElementById('selfRechargeHistoryTableBody');
+            if (tbody && (!tbody.children || tbody.children.length === 0 || tbody.innerText.includes('Loading'))) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-3 text-muted"><i class="fas fa-spinner fa-spin mr-1"></i> Loading recharge history...</td></tr>';
+            }
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/company/self-recharge'), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    }
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    var data = res.data;
+                    var balNum = (data.numericBalance != null && !isNaN(data.numericBalance))
+                        ? Number(data.numericBalance)
+                        : (parseFloat(String(data.balance || 0).replace(/[^0-9.-]/g, '')) || 0);
+                    var balFormatted = balNum.toLocaleString('en-IN') + ' Rs.';
+
+                    var curBalEl = document.getElementById('selfRechargeCurrentBalDisplay');
+                    if (curBalEl) curBalEl.innerText = balFormatted;
+
+                    var hBal = document.getElementById('headerWalletBal');
+                    if (hBal) hBal.innerText = balNum.toLocaleString('en-IN');
+
+                    var dBal = document.getElementById('dashCompanyBalanceDisplay');
+                    if (dBal) dBal.innerText = balFormatted;
+
+                    // Sync with cached session user in localStorage
+                    var cachedUserStr = localStorage.getItem('admin_current_user');
+                    if (cachedUserStr) {
+                        try {
+                            var cu = JSON.parse(cachedUserStr);
+                            cu.balance = balNum;
+                            cu.avail = balNum;
+                            localStorage.setItem('admin_current_user', JSON.stringify(cu));
+                        } catch(e) {}
+                    }
+
+                    renderSelfRechargeHistory(data.history || []);
+                } else {
+                    if (tbody) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-3 text-danger"><i class="fas fa-exclamation-circle mr-1"></i> ' + escapeHtml((res.data && res.data.message) || 'Failed to load recharge history.') + '</td></tr>';
+                    }
+                }
+            } catch (err) {
+                console.error('loadSelfRechargeData error:', err);
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-3 text-danger"><i class="fas fa-exclamation-circle mr-1"></i> Error loading recharge data: ' + escapeHtml(err.message) + '</td></tr>';
+                }
+            }
+        }
+
+        function renderSelfRechargeHistory(historyList) {
+            var tbody = document.getElementById('selfRechargeHistoryTableBody');
+            if (!tbody) return;
+
+            if (!Array.isArray(historyList) || historyList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No self recharge transactions found.</td></tr>';
+                return;
+            }
+
+            var html = '';
+            historyList.forEach(function(tx) {
+                var dateStr = tx.timestamp || tx.createdAt || tx.date || '';
+                try {
+                    var d = new Date(dateStr);
+                    if (!isNaN(d.getTime())) {
+                        dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
+                } catch(e) {}
+
+                var amtNum = parseFloat(tx.amount) || 0;
+                var prevNum = parseFloat(tx.previousBalance != null ? tx.previousBalance : (tx.prevBalance || 0)) || 0;
+                var newNum = parseFloat(tx.newBalance != null ? tx.newBalance : (tx.balance || 0)) || 0;
+
+                var txId = tx.transactionId || tx.id || '-';
+                var note = tx.note || tx.narration || '-';
+
+                html += '<tr>' +
+                    '<td style="white-space:nowrap; font-size:12px; color:#4b5563;">' + escapeHtml(dateStr) + '</td>' +
+                    '<td><code style="font-size:11px; color:#065f46; background:#ecfdf5; padding:2px 5px; border-radius:4px;">' + escapeHtml(txId) + '</code></td>' +
+                    '<td><span class="badge badge-success" style="font-size:10.5px; font-weight:700;">SELF_RECHARGE</span></td>' +
+                    '<td class="text-right font-weight-bold" style="color:#059669; font-size:13px;">+' + amtNum.toLocaleString() + ' Rs.</td>' +
+                    '<td class="text-right text-muted" style="font-size:12px;">' + prevNum.toLocaleString() + ' Rs.</td>' +
+                    '<td class="text-right font-weight-bold" style="color:#111827; font-size:12.5px;">' + newNum.toLocaleString() + ' Rs.</td>' +
+                    '<td style="font-size:12px; color:#6b7280; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="' + escapeHtml(note) + '">' + escapeHtml(note) + '</td>' +
+                    '</tr>';
+            });
+            tbody.innerHTML = html;
+        }
+
+        async function executeSelfRecharge() {
+            if (_isSelfRechargeSubmitting) return;
+
+            var amtInput = document.getElementById('selfRechargeAmountInput');
+            var noteInput = document.getElementById('selfRechargeNoteInput');
+            var submitBtn = document.getElementById('selfRechargeSubmitBtn');
+            var alertBox = document.getElementById('selfRechargeAlertMsg');
+
+            if (!amtInput) return;
+            var rawAmount = amtInput.value.trim();
+            var note = noteInput ? noteInput.value.trim() : '';
+
+            if (!rawAmount || isNaN(rawAmount)) {
+                if (alertBox) {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.innerText = 'Please enter a valid numeric recharge amount.';
+                    alertBox.style.display = 'block';
+                }
+                amtInput.focus();
+                return;
+            }
+
+            var amount = parseFloat(rawAmount);
+            if (amount <= 0) {
+                if (alertBox) {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.innerText = 'Recharge amount must be greater than zero.';
+                    alertBox.style.display = 'block';
+                }
+                amtInput.focus();
+                return;
+            }
+
+            var token = getAdminAuthToken();
+            if (!token) {
+                alert('Authentication required. Please login again.');
+                return;
+            }
+
+            // Double submission prevention: lock & update button
+            _isSelfRechargeSubmitting = true;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Processing Recharge...';
+            }
+            if (alertBox) alertBox.style.display = 'none';
+
+            var requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/company/self-recharge'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        note: note,
+                        requestId: requestId
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    var data = res.data;
+                    var newBal = (data.numericBalance != null && !isNaN(data.numericBalance))
+                        ? Number(data.numericBalance)
+                        : (parseFloat(String(data.newBalance != null ? data.newBalance : data.balance).replace(/[^0-9.-]/g, '')) || 0);
+                    var balFormatted = newBal.toLocaleString('en-IN') + ' Rs.';
+
+                    // Immediate UI Balance Updates
+                    var curBalEl = document.getElementById('selfRechargeCurrentBalDisplay');
+                    if (curBalEl) curBalEl.innerText = balFormatted;
+
+                    var hBal = document.getElementById('headerWalletBal');
+                    if (hBal) hBal.innerText = newBal.toLocaleString('en-IN');
+
+                    var dBal = document.getElementById('dashCompanyBalanceDisplay');
+                    if (dBal) dBal.innerText = balFormatted;
+
+                    // Update user cache in localStorage
+                    var cachedUserStr = localStorage.getItem('admin_current_user');
+                    if (cachedUserStr) {
+                        try {
+                            var cu = JSON.parse(cachedUserStr);
+                            cu.balance = newBal;
+                            cu.avail = newBal;
+                            localStorage.setItem('admin_current_user', JSON.stringify(cu));
+                        } catch(e) {}
+                    }
+
+                    // Reset Form
+                    amtInput.value = '';
+                    if (noteInput) noteInput.value = '';
+
+                    // Show Success Notification
+                    if (alertBox) {
+                        alertBox.className = 'alert alert-success';
+                        alertBox.innerHTML = '<i class="fas fa-check-circle mr-1"></i> <strong>Recharge Successful!</strong> Added <b>' + amount.toLocaleString() + ' Rs.</b> New balance: <b>' + balFormatted + '</b>';
+                        alertBox.style.display = 'block';
+                    }
+                    showToast('Self recharge of ' + amount.toLocaleString() + ' Rs. successful!');
+
+                    // Reload history to show newly created transaction
+                    await loadSelfRechargeData();
+                } else {
+                    var errMsg = (res.data && res.data.message) || 'Failed to execute recharge.';
+                    if (alertBox) {
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> ' + escapeHtml(errMsg);
+                        alertBox.style.display = 'block';
+                    }
+                    alert(errMsg);
+                }
+            } catch (err) {
+                console.error('executeSelfRecharge error:', err);
+                if (alertBox) {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Network or server error: ' + escapeHtml(err.message);
+                    alertBox.style.display = 'block';
+                }
+            } finally {
+                _isSelfRechargeSubmitting = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Confirm Recharge';
+                }
+            }
         }
     </script>
 </body>

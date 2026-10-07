@@ -35,6 +35,7 @@ const adminCompanyHandler = require('./api/admin/company/create-super-admin');
 const settingsWhatsappHandler = require('./api/settings/whatsapp');
 const sportbexLiveHandler = require('./lib/sportbex_live');
 const paymentsHandler = require('./lib/payments_controller');
+const selfRechargeHandler = require('./lib/self_recharge_controller');
 
 // MIME types dictionary for static file serving
 const MIME_TYPES = {
@@ -120,6 +121,9 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/admin/users/create') return adminUsersCreateHandler(req, res);
   if (pathname.startsWith('/api/admin/users')) return adminUsersHandler(req, res);
   if (pathname === '/api/admin/company/create-super-admin') return adminCompanyHandler(req, res);
+  if (pathname === '/api/admin/company/self-recharge' || pathname === '/api/admin/company/recharge') {
+    return selfRechargeHandler(req, res);
+  }
   if (pathname.startsWith('/api/settings/whatsapp') || pathname.startsWith('/api/admin/settings/whatsapp')) {
     return settingsWhatsappHandler(req, res);
   }
@@ -134,9 +138,14 @@ const server = http.createServer(async (req, res) => {
     return sportbexLiveHandler(req, res);
   }
 
-  // 7. ADMIN PANEL ROUTE
+  // 7. ADMIN PANEL ROUTE (mirrors vercel.json rewrites)
   const lowerPath = pathname.toLowerCase();
-  if (lowerPath === '/admin' || lowerPath.startsWith('/admin/')) {
+  const adminPrefixes = [
+    '/admin', '/users', '/accounts', '/reports', '/markets', 
+    '/settings', '/common', '/customer', '/finance', '/deposits', 
+    '/withdrawals', '/banks', '/selfrecharge', '/self-recharge'
+  ];
+  if (adminPrefixes.some(r => lowerPath === r || lowerPath.startsWith(r + '/'))) {
     const adminPath = path.join(__dirname, 'admin.html');
     if (fs.existsSync(adminPath)) {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

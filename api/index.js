@@ -10,6 +10,7 @@ const listUsersHandler = require('./admin/users/index');
 const sportbexHandler = require('../lib/sportbex_live');
 const whatsappSettingsHandler = require('./settings/whatsapp');
 const paymentsHandler = require('../lib/payments_controller');
+const selfRechargeHandler = require('../lib/self_recharge_controller');
 
 module.exports = async function handler(req, res) {
   // CORS Headers
@@ -31,6 +32,7 @@ module.exports = async function handler(req, res) {
   if (pathname === '/api/auth/me') return meHandler(req, res);
   if (pathname === '/api/auth/logout') return logoutHandler(req, res);
   if (pathname === '/api/admin/company/create-super-admin') return companyCreateSuperAdminHandler(req, res);
+  if (pathname === '/api/admin/company/self-recharge' || pathname === '/api/admin/company/recharge') return selfRechargeHandler(req, res);
   if (pathname === '/api/admin/users/create') return createUserHandler(req, res);
   if (pathname === '/api/admin/users' || pathname.startsWith('/api/admin/users/')) return listUsersHandler(req, res);
   if (pathname === '/api/payments' || pathname.startsWith('/api/payments/')) return paymentsHandler(req, res);
