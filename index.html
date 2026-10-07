@@ -11511,16 +11511,19 @@
           }
         });
 
-        if (res && res.status === 'success' && Array.isArray(res.statement)) {
-          window._cachedUserStatement = res.statement;
+        const data = (res && res.data) ? res.data : res;
+
+        if (data && data.status === 'success' && Array.isArray(data.statement)) {
+          window._cachedUserStatement = data.statement;
           updateStatementFilterCounts();
           renderUserStatementView(window._userStatementFilter);
         } else {
           const tCont = document.getElementById('statementTableContainer');
           if (tCont) {
+            const errMsg = (data && data.message) || (res && res.message) || 'Unknown error';
             tCont.innerHTML = `
               <div style="text-align: center; padding: 24px 12px; color: #c62828;">
-                <p>Failed to load statement: ${escapeHtml((res && res.message) || 'Unknown error')}</p>
+                <p>Failed to load statement: ${escapeHtml(errMsg)}</p>
                 <button onclick="refreshUserAccountStatement()" style="margin-top: 8px; background: #ffc21d; border: none; padding: 6px 14px; font-weight: 700; border-radius: 4px; cursor: pointer;">Try Again</button>
               </div>
             `;
