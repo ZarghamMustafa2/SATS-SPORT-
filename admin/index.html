@@ -3604,24 +3604,9 @@ Boland v Knights                        </a>
                                     <label class="font-weight-bold" style="font-size:12.5px;">Account Title / Holder Name <span class="text-danger">*</span></label>
                                     <input type="text" id="bankEditTitle" class="form-control form-control-sm" placeholder="e.g. Satsport Operations Pvt Ltd">
                                 </div>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-3">
                                     <label class="font-weight-bold" style="font-size:12.5px;">Account Number <span class="text-danger">*</span></label>
                                     <input type="text" id="bankEditNumber" class="form-control form-control-sm" placeholder="e.g. 01020304050607">
-                                </div>
-                                <div class="form-group mb-2">
-                                    <label class="font-weight-bold" style="font-size:12.5px;">IBAN (Optional)</label>
-                                    <input type="text" id="bankEditIban" class="form-control form-control-sm" placeholder="e.g. PK36MEZN0001020304050607">
-                                </div>
-                                <div class="form-group mb-2">
-                                    <label class="font-weight-bold" style="font-size:12.5px;">Branch / Instructions (Optional)</label>
-                                    <textarea id="bankEditDetails" class="form-control form-control-sm" rows="2" placeholder="e.g. Gulberg Branch, Lahore. Fast interbank transfer."></textarea>
-                                </div>
-                                <div class="form-group mb-3">
-                                    <label class="font-weight-bold" style="font-size:12.5px;">Account Status</label>
-                                    <select id="bankEditStatus" class="form-control form-control-sm">
-                                        <option value="active">Active (Visible to Users)</option>
-                                        <option value="inactive">Inactive (Hidden from Users)</option>
-                                    </select>
                                 </div>
                                 <div style="display:flex; justify-content:flex-end; gap:10px;">
                                     <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('modalAdminBankEdit')">Cancel</button>
@@ -8013,9 +7998,6 @@ Boland v Knights                        </a>
             var nameInput = document.getElementById('bankEditName');
             var titleInput = document.getElementById('bankEditTitle');
             var numInput = document.getElementById('bankEditNumber');
-            var ibanInput = document.getElementById('bankEditIban');
-            var detInput = document.getElementById('bankEditDetails');
-            var statInput = document.getElementById('bankEditStatus');
 
             if (bankId) {
                 var b = _adminBanksCache.find(function(x) { return x.id === bankId; });
@@ -8024,18 +8006,12 @@ Boland v Knights                        </a>
                 if (nameInput) nameInput.value = b ? b.bankName || '' : '';
                 if (titleInput) titleInput.value = b ? b.accountTitle || '' : '';
                 if (numInput) numInput.value = b ? b.accountNumber || '' : '';
-                if (ibanInput) ibanInput.value = b ? b.iban || '' : '';
-                if (detInput) detInput.value = b ? b.details || '' : '';
-                if (statInput) statInput.value = b ? b.status || 'active' : 'active';
             } else {
                 if (titleModal) titleModal.innerText = 'Add Receiving Bank Account';
                 if (idInput) idInput.value = '';
                 if (nameInput) nameInput.value = '';
                 if (titleInput) titleInput.value = '';
                 if (numInput) numInput.value = '';
-                if (ibanInput) ibanInput.value = '';
-                if (detInput) detInput.value = '';
-                if (statInput) statInput.value = 'active';
             }
             openModal('modalAdminBankEdit');
         }
@@ -8045,17 +8021,13 @@ Boland v Knights                        </a>
             var nameInput = document.getElementById('bankEditName');
             var titleInput = document.getElementById('bankEditTitle');
             var numInput = document.getElementById('bankEditNumber');
-            var ibanInput = document.getElementById('bankEditIban');
-            var detInput = document.getElementById('bankEditDetails');
-            var statInput = document.getElementById('bankEditStatus');
 
             var bankName = nameInput ? nameInput.value.trim() : '';
             var accountTitle = titleInput ? titleInput.value.trim() : '';
             var accountNumber = numInput ? numInput.value.trim() : '';
-            var iban = ibanInput ? ibanInput.value.trim() : '';
-            var details = detInput ? detInput.value.trim() : '';
-            var status = statInput ? statInput.value : 'active';
             var bankId = idInput ? idInput.value.trim() : '';
+            var isEdit = Boolean(bankId);
+            var existingBank = isEdit ? _adminBanksCache.find(function(x) { return x.id === bankId; }) : null;
 
             if (!bankName || !accountTitle || !accountNumber) {
                 alert('Please fill in Bank Name, Account Title, and Account Number.');
@@ -8067,7 +8039,6 @@ Boland v Knights                        </a>
             if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving...'; }
 
             var token = getAdminAuthToken();
-            var isEdit = Boolean(bankId);
 
             try {
                 var res = await safeFetchJson(getApiUrl('/api/payments/banks'), {
@@ -8083,9 +8054,9 @@ Boland v Knights                        </a>
                         bankName: bankName,
                         accountTitle: accountTitle,
                         accountNumber: accountNumber,
-                        iban: iban,
-                        details: details,
-                        status: status
+                        iban: existingBank && existingBank.iban ? existingBank.iban : '',
+                        details: existingBank && existingBank.details ? existingBank.details : '',
+                        status: existingBank && existingBank.status ? existingBank.status : 'active'
                     })
                 });
 
