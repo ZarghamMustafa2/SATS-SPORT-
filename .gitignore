@@ -21,3 +21,4 @@ test-results/
 sportbex_config.json
 *.key
 .vercel
+data/

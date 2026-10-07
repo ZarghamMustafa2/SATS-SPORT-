@@ -3342,6 +3342,7 @@ Boland v Knights                        </a>
                                     <small class="text-muted" style="font-size: 12px;">Real-time manual deposit verification queue with payment receipts</small>
                                 </div>
                                 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                    <span id="adminDepPollWarning" class="badge badge-warning" style="display:none; font-size: 11px; padding: 5px 8px; font-weight: 600;"><i class="fas fa-exclamation-triangle mr-1"></i> Sync warning</span>
                                     <select id="adminDepFilterStatus" class="form-control form-control-sm" style="width: 140px; font-weight: 600;" onchange="loadAdminDepositRequests()">
                                         <option value="">All Statuses</option>
                                         <option value="PENDING" selected>Pending</option>
@@ -3349,7 +3350,7 @@ Boland v Knights                        </a>
                                         <option value="REJECTED">Rejected</option>
                                     </select>
                                     <input type="text" id="adminDepSearchInput" class="form-control form-control-sm" placeholder="Search user or ID..." style="width: 160px;" onkeyup="if(event.key==='Enter') loadAdminDepositRequests()">
-                                    <button class="btn btn-sm btn-success font-weight-bold" onclick="loadAdminDepositRequests()">
+                                    <button id="adminDepRefreshBtn" class="btn btn-sm btn-success font-weight-bold" onclick="loadAdminDepositRequests()">
                                         <i class="fas fa-sync-alt"></i> Refresh
                                     </button>
                                 </div>
@@ -3393,6 +3394,7 @@ Boland v Knights                        </a>
                                     <small class="text-muted" style="font-size: 12px;">Real-time manual withdrawal verification and balance deduction queue</small>
                                 </div>
                                 <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                    <span id="adminWithPollWarning" class="badge badge-warning" style="display:none; font-size: 11px; padding: 5px 8px; font-weight: 600;"><i class="fas fa-exclamation-triangle mr-1"></i> Sync warning</span>
                                     <select id="adminWithFilterStatus" class="form-control form-control-sm" style="width: 140px; font-weight: 600;" onchange="loadAdminWithdrawalRequests()">
                                         <option value="">All Statuses</option>
                                         <option value="PENDING" selected>Pending</option>
@@ -3400,7 +3402,7 @@ Boland v Knights                        </a>
                                         <option value="REJECTED">Rejected</option>
                                     </select>
                                     <input type="text" id="adminWithSearchInput" class="form-control form-control-sm" placeholder="Search user or ID..." style="width: 160px;" onkeyup="if(event.key==='Enter') loadAdminWithdrawalRequests()">
-                                    <button class="btn btn-sm btn-primary font-weight-bold" onclick="loadAdminWithdrawalRequests()">
+                                    <button id="adminWithRefreshBtn" class="btn btn-sm btn-primary font-weight-bold" onclick="loadAdminWithdrawalRequests()">
                                         <i class="fas fa-sync-alt"></i> Refresh
                                     </button>
                                 </div>
@@ -7496,11 +7498,11 @@ Boland v Knights                        </a>
                 updateAdminPaymentStats();
                 var withSec = document.getElementById('viewWithdrawalRequests');
                 if (withSec && withSec.style.display !== 'none' && typeof loadAdminWithdrawalRequests === 'function') {
-                    loadAdminWithdrawalRequests();
+                    loadAdminWithdrawalRequests(true);
                 }
                 var depSec = document.getElementById('viewDepositRequests');
                 if (depSec && depSec.style.display !== 'none' && typeof loadAdminDepositRequests === 'function') {
-                    loadAdminDepositRequests();
+                    loadAdminDepositRequests(true);
                 }
             }
         }, 15000);
@@ -7509,17 +7511,99 @@ Boland v Knights                        </a>
         var _adminDepositRequestsCache = [];
         var _activeDepApproveId = null;
         var _activeDepRejectId = null;
+        var _depPollSeq = 0;
+        var _isDepLoading = false;
 
-        async function loadAdminDepositRequests() {
+        function renderDepositRows(tbody, requests) {
+            tbody.innerHTML = requests.map(function(r) {
+                var dtStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '-';
+                var amtStr = 'Rs. ' + (parseFloat(r.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+                
+                var statusBadge = '';
+                var normStatus = String(r.status || '').toUpperCase();
+                if (normStatus === 'PENDING' || normStatus === 'PROCESSING' || normStatus === 'UNDER_REVIEW') {
+                    statusBadge = '<span class="badge badge-warning px-2 py-1"><i class="fas fa-clock mr-1"></i> ' + (normStatus === 'PENDING' ? 'PENDING' : escapeHtml(normStatus)) + '</span>';
+                } else if (normStatus === 'APPROVED') {
+                    statusBadge = '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> APPROVED</span>';
+                } else if (normStatus === 'REJECTED') {
+                    statusBadge = '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i> REJECTED</span>';
+                } else {
+                    statusBadge = '<span class="badge badge-secondary px-2 py-1">' + escapeHtml(r.status || '-') + '</span>';
+                }
+
+                var bankInfo = '-';
+                if (r.selectedBank) {
+                    bankInfo = '<strong>' + escapeHtml(r.selectedBank.bankName || 'Bank') + '</strong><br>' +
+                               '<small class="text-muted">' + escapeHtml(r.selectedBank.accountTitle || '') + '<br>' +
+                               '<span class="font-weight-bold">' + escapeHtml(r.selectedBank.accountNumber || '') + '</span>' +
+                               (r.selectedBank.iban ? '<br>IBAN: ' + escapeHtml(r.selectedBank.iban) : '') + '</small>';
+                }
+
+                var proofCol = '<span class="text-muted small">No screenshot</span>';
+                if (r.screenshot) {
+                    var safeUser = (r.username || '').replace(/'/g, "\\'");
+                    proofCol = '<button class="btn btn-xs btn-outline-info font-weight-bold" onclick="openAdminScreenshotModal(\'' + r.id + '\', \'' + (parseFloat(r.amount) || 0) + '\', \'' + safeUser + '\')">' +
+                               '<i class="fas fa-image mr-1"></i> View Proof</button>';
+                }
+
+                var auditNotes = '<small class="text-muted">';
+                if (r.userNote) auditNotes += '<div><strong>User Note:</strong> ' + escapeHtml(r.userNote) + '</div>';
+                if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + escapeHtml(r.adminNote) + '</div>';
+                if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + escapeHtml(r.rejectionReason) + '</div>';
+                if (r.processedBy) auditNotes += '<div>Processed by: ' + escapeHtml(r.processedBy) + (r.processedAt ? ' (' + new Date(r.processedAt).toLocaleString('en-IN') + ')' : '') + '</div>';
+                if (!r.userNote && !r.adminNote && !r.rejectionReason && !r.processedBy) auditNotes += '-';
+                auditNotes += '</small>';
+
+                var actionCol = '';
+                if (normStatus === 'PENDING' || normStatus === 'PROCESSING' || normStatus === 'UNDER_REVIEW') {
+                    actionCol = '<div class="btn-group btn-group-sm">' +
+                                '<button class="btn btn-success btn-sm font-weight-bold" onclick="openApproveDepositModal(\'' + r.id + '\')"><i class="fas fa-check mr-1"></i> Approve</button>' +
+                                '<button class="btn btn-danger btn-sm font-weight-bold" onclick="openRejectDepositModal(\'' + r.id + '\')"><i class="fas fa-times mr-1"></i> Reject</button>' +
+                                '</div>';
+                } else if (normStatus === 'APPROVED') {
+                    actionCol = '<span class="text-success small font-weight-bold"><i class="fas fa-check-double mr-1"></i> Completed</span>';
+                } else if (normStatus === 'REJECTED') {
+                    actionCol = '<span class="text-danger small font-weight-bold"><i class="fas fa-ban mr-1"></i> Rejected</span>';
+                }
+
+                return '<tr>' +
+                       '<td><span class="badge badge-light border font-weight-bold" style="font-family:monospace;">' + escapeHtml(r.id) + '</span></td>' +
+                       '<td><strong>' + escapeHtml(r.username || '-') + '</strong><br><small class="text-muted">UID: ' + escapeHtml(r.userId || '-') + '</small></td>' +
+                       '<td class="font-weight-bold text-success" style="font-size:13px;">' + amtStr + '</td>' +
+                       '<td>' + bankInfo + '</td>' +
+                       '<td>' + proofCol + '</td>' +
+                       '<td><small>' + dtStr + '</small></td>' +
+                       '<td>' + statusBadge + '</td>' +
+                       '<td>' + auditNotes + '</td>' +
+                       '<td class="text-center">' + actionCol + '</td>' +
+                       '</tr>';
+            }).join('');
+        }
+
+        async function loadAdminDepositRequests(isBackground) {
+            if (isBackground && _isDepLoading) return;
             var tbody = document.getElementById('adminDepositRequestsTbody');
             if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading deposit requests...</td></tr>';
+
+            var refreshBtn = document.getElementById('adminDepRefreshBtn');
+            var refreshIcon = refreshBtn ? refreshBtn.querySelector('i') : null;
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+            if (!isBackground && (!tbody.children || tbody.children.length === 0 || tbody.innerText.includes('Loading') || _adminDepositRequestsCache.length === 0)) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading deposit requests...</td></tr>';
+            }
 
             var token = getAdminAuthToken();
             if (!token) {
-                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">Administrator authentication required.</td></tr>';
+                if (_adminDepositRequestsCache.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">Administrator authentication required.</td></tr>';
+                }
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
                 return;
             }
+
+            var currentSeq = ++_depPollSeq;
+            _isDepLoading = true;
 
             var statusFilter = document.getElementById('adminDepFilterStatus') ? document.getElementById('adminDepFilterStatus').value : '';
             var searchVal = document.getElementById('adminDepSearchInput') ? document.getElementById('adminDepSearchInput').value.trim() : '';
@@ -7537,76 +7621,46 @@ Boland v Knights                        </a>
                     }
                 });
 
+                if (currentSeq !== _depPollSeq) return;
+
                 if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.requests)) {
                     _adminDepositRequestsCache = res.data.requests;
+                    var warnBadge = document.getElementById('adminDepPollWarning');
+                    if (warnBadge) warnBadge.style.display = 'none';
+
                     if (_adminDepositRequestsCache.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">No deposit requests found' + (statusFilter ? ' with status ' + statusFilter : '') + '.</td></tr>';
-                        return;
+                        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">No deposit requests found' + (statusFilter ? ' with status ' + escapeHtml(statusFilter) : '') + '.</td></tr>';
+                    } else {
+                        renderDepositRows(tbody, _adminDepositRequestsCache);
                     }
-
-                    tbody.innerHTML = _adminDepositRequestsCache.map(function(r) {
-                        var dtStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '-';
-                        var amtStr = 'Rs. ' + (parseFloat(r.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
-                        
-                        var statusBadge = '';
-                        if (r.status === 'PENDING') statusBadge = '<span class="badge badge-warning px-2 py-1"><i class="fas fa-clock mr-1"></i> PENDING</span>';
-                        else if (r.status === 'APPROVED') statusBadge = '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> APPROVED</span>';
-                        else if (r.status === 'REJECTED') statusBadge = '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i> REJECTED</span>';
-                        else statusBadge = '<span class="badge badge-secondary px-2 py-1">' + (r.status || '-') + '</span>';
-
-                        var bankInfo = '-';
-                        if (r.selectedBank) {
-                            bankInfo = '<strong>' + (r.selectedBank.bankName || 'Bank') + '</strong><br>' +
-                                       '<small class="text-muted">' + (r.selectedBank.accountTitle || '') + '<br>' +
-                                       '<span class="font-weight-bold">' + (r.selectedBank.accountNumber || '') + '</span>' +
-                                       (r.selectedBank.iban ? '<br>IBAN: ' + r.selectedBank.iban : '') + '</small>';
-                        }
-
-                        var proofCol = '<span class="text-muted small">No screenshot</span>';
-                        if (r.screenshot) {
-                            var safeUser = (r.username || '').replace(/'/g, "\\'");
-                            proofCol = '<button class="btn btn-xs btn-outline-info font-weight-bold" onclick="openAdminScreenshotModal(\'' + r.id + '\', \'' + (parseFloat(r.amount) || 0) + '\', \'' + safeUser + '\')">' +
-                                       '<i class="fas fa-image mr-1"></i> View Proof</button>';
-                        }
-
-                        var auditNotes = '<small class="text-muted">';
-                        if (r.userNote) auditNotes += '<div><strong>User Note:</strong> ' + r.userNote + '</div>';
-                        if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + r.adminNote + '</div>';
-                        if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + r.rejectionReason + '</div>';
-                        if (r.processedBy) auditNotes += '<div>Processed by: ' + r.processedBy + (r.processedAt ? ' (' + new Date(r.processedAt).toLocaleString('en-IN') + ')' : '') + '</div>';
-                        if (!r.userNote && !r.adminNote && !r.rejectionReason && !r.processedBy) auditNotes += '-';
-                        auditNotes += '</small>';
-
-                        var actionCol = '';
-                        if (r.status === 'PENDING') {
-                            actionCol = '<div class="btn-group btn-group-sm">' +
-                                        '<button class="btn btn-success btn-sm font-weight-bold" onclick="openApproveDepositModal(\'' + r.id + '\')"><i class="fas fa-check mr-1"></i> Approve</button>' +
-                                        '<button class="btn btn-danger btn-sm font-weight-bold" onclick="openRejectDepositModal(\'' + r.id + '\')"><i class="fas fa-times mr-1"></i> Reject</button>' +
-                                        '</div>';
-                        } else if (r.status === 'APPROVED') {
-                            actionCol = '<span class="text-success small font-weight-bold"><i class="fas fa-check-double mr-1"></i> Completed</span>';
-                        } else if (r.status === 'REJECTED') {
-                            actionCol = '<span class="text-danger small font-weight-bold"><i class="fas fa-ban mr-1"></i> Rejected</span>';
-                        }
-
-                        return '<tr>' +
-                               '<td><span class="badge badge-light border font-weight-bold" style="font-family:monospace;">' + r.id + '</span></td>' +
-                               '<td><strong>' + (r.username || '-') + '</strong><br><small class="text-muted">UID: ' + (r.userId || '-') + '</small></td>' +
-                               '<td class="font-weight-bold text-success" style="font-size:13px;">' + amtStr + '</td>' +
-                               '<td>' + bankInfo + '</td>' +
-                               '<td>' + proofCol + '</td>' +
-                               '<td><small>' + dtStr + '</small></td>' +
-                               '<td>' + statusBadge + '</td>' +
-                               '<td>' + auditNotes + '</td>' +
-                               '<td class="text-center">' + actionCol + '</td>' +
-                               '</tr>';
-                    }).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">' + ((res.data && res.data.message) || 'Failed to load deposit requests.') + '</td></tr>';
+                    var warnBadge = document.getElementById('adminDepPollWarning');
+                    if (_adminDepositRequestsCache.length > 0) {
+                        if (warnBadge) {
+                            warnBadge.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Sync warning (' + (res.status || 'error') + ')';
+                            warnBadge.style.display = 'inline-block';
+                        }
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">' + escapeHtml((res.data && res.data.message) || 'Failed to load deposit requests.') + '</td></tr>';
+                    }
                 }
             } catch (err) {
+                if (currentSeq !== _depPollSeq) return;
                 console.error('loadAdminDepositRequests error:', err);
-                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">Error: ' + err.message + '</td></tr>';
+                var warnBadge = document.getElementById('adminDepPollWarning');
+                if (_adminDepositRequestsCache.length > 0) {
+                    if (warnBadge) {
+                        warnBadge.innerHTML = '<i class="fas fa-wifi mr-1"></i> Sync lag / offline';
+                        warnBadge.style.display = 'inline-block';
+                    }
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-danger">Error: ' + escapeHtml(err.message) + '</td></tr>';
+                }
+            } finally {
+                if (currentSeq === _depPollSeq) {
+                    _isDepLoading = false;
+                }
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
             }
         }
 
@@ -7729,17 +7783,98 @@ Boland v Knights                        </a>
         var _adminWithdrawalRequestsCache = [];
         var _activeWithApproveId = null;
         var _activeWithRejectId = null;
+        var _withPollSeq = 0;
+        var _isWithLoading = false;
 
-        async function loadAdminWithdrawalRequests() {
+        function renderWithdrawalRows(tbody, requests) {
+            tbody.innerHTML = requests.map(function(r) {
+                var dtStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '-';
+                var amtStr = 'Rs. ' + (parseFloat(r.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
+
+                var statusBadge = '';
+                var normStatus = String(r.status || '').toUpperCase();
+                if (normStatus === 'PENDING' || normStatus === 'PROCESSING' || normStatus === 'UNDER_REVIEW') {
+                    statusBadge = '<span class="badge badge-warning px-2 py-1"><i class="fas fa-clock mr-1"></i> ' + (normStatus === 'PENDING' ? 'PENDING' : escapeHtml(normStatus)) + '</span>';
+                } else if (normStatus === 'APPROVED') {
+                    statusBadge = '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> APPROVED</span>';
+                } else if (normStatus === 'REJECTED') {
+                    statusBadge = '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i> REJECTED</span>';
+                } else {
+                    statusBadge = '<span class="badge badge-secondary px-2 py-1">' + escapeHtml(r.status || '-') + '</span>';
+                }
+
+                var bDet = r.bankDetails || r.userBankDetails;
+                var bankInfo = '-';
+                if (bDet) {
+                    var hName = bDet.accountHolderName || bDet.accountTitle || '-';
+                    var bName = bDet.bankName || 'Bank';
+                    var accNo = bDet.accountNumber || '-';
+                    bankInfo = '<strong>' + escapeHtml(bName) + '</strong><br>' +
+                               '<small class="text-muted">' + escapeHtml(hName) + '<br>' +
+                               '<span class="font-weight-bold" style="font-family:monospace;">' + escapeHtml(accNo) + '</span>' +
+                               (bDet.iban ? '<br>IBAN: <span style="font-family:monospace;">' + escapeHtml(bDet.iban) + '</span>' : '') + '</small>';
+                }
+
+                var auditNotes = '<small class="text-muted">';
+                var uNote = r.note || r.userNote;
+                var procBy = r.handledByAdminUsername || r.processedBy;
+                var procAt = r.handledAt || r.processedAt;
+                if (uNote) auditNotes += '<div><strong>User Note:</strong> ' + escapeHtml(uNote) + '</div>';
+                if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + escapeHtml(r.adminNote) + '</div>';
+                if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + escapeHtml(r.rejectionReason) + '</div>';
+                if (procBy) auditNotes += '<div>Processed by: ' + escapeHtml(procBy) + (procAt ? ' (' + new Date(procAt).toLocaleString('en-IN') + ')' : '') + '</div>';
+                if (!uNote && !r.adminNote && !r.rejectionReason && !procBy) auditNotes += '-';
+                auditNotes += '</small>';
+
+                var actionCol = '';
+                if (normStatus === 'PENDING' || normStatus === 'PROCESSING' || normStatus === 'UNDER_REVIEW') {
+                    actionCol = '<div class="btn-group btn-group-sm">' +
+                                '<button class="btn btn-primary btn-sm font-weight-bold" onclick="openApproveWithdrawalModal(\'' + r.id + '\')"><i class="fas fa-check mr-1"></i> Approve</button>' +
+                                '<button class="btn btn-danger btn-sm font-weight-bold" onclick="openRejectWithdrawalModal(\'' + r.id + '\')"><i class="fas fa-times mr-1"></i> Reject</button>' +
+                                '</div>';
+                } else if (normStatus === 'APPROVED') {
+                    actionCol = '<span class="text-success small font-weight-bold"><i class="fas fa-check-double mr-1"></i> Completed</span>';
+                } else if (normStatus === 'REJECTED') {
+                    actionCol = '<span class="text-danger small font-weight-bold"><i class="fas fa-ban mr-1"></i> Rejected</span>';
+                }
+
+                return '<tr>' +
+                       '<td><span class="badge badge-light border font-weight-bold" style="font-family:monospace;">' + escapeHtml(r.id) + '</span></td>' +
+                       '<td><strong>' + escapeHtml(r.username || '-') + '</strong><br><small class="text-muted">UID: ' + escapeHtml(r.userId || '-') + '</small></td>' +
+                       '<td class="font-weight-bold text-primary" style="font-size:13px;">' + amtStr + '</td>' +
+                       '<td>' + bankInfo + '</td>' +
+                       '<td><small>' + dtStr + '</small></td>' +
+                       '<td>' + statusBadge + '</td>' +
+                       '<td>' + auditNotes + '</td>' +
+                       '<td class="text-center">' + actionCol + '</td>' +
+                       '</tr>';
+            }).join('');
+        }
+
+        async function loadAdminWithdrawalRequests(isBackground) {
+            if (isBackground && _isWithLoading) return;
             var tbody = document.getElementById('adminWithdrawalRequestsTbody');
             if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading withdrawal requests...</td></tr>';
+
+            var refreshBtn = document.getElementById('adminWithRefreshBtn');
+            var refreshIcon = refreshBtn ? refreshBtn.querySelector('i') : null;
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+            if (!isBackground && (!tbody.children || tbody.children.length === 0 || tbody.innerText.includes('Loading') || _adminWithdrawalRequestsCache.length === 0)) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i> Loading withdrawal requests...</td></tr>';
+            }
 
             var token = getAdminAuthToken();
             if (!token) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Administrator authentication required.</td></tr>';
+                if (_adminWithdrawalRequestsCache.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Administrator authentication required.</td></tr>';
+                }
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
                 return;
             }
+
+            var currentSeq = ++_withPollSeq;
+            _isWithLoading = true;
 
             var statusFilter = document.getElementById('adminWithFilterStatus') ? document.getElementById('adminWithFilterStatus').value : '';
             var searchVal = document.getElementById('adminWithSearchInput') ? document.getElementById('adminWithSearchInput').value.trim() : '';
@@ -7757,75 +7892,46 @@ Boland v Knights                        </a>
                     }
                 });
 
+                if (currentSeq !== _withPollSeq) return;
+
                 if (res.ok && res.data && res.data.status === 'success' && Array.isArray(res.data.requests)) {
                     _adminWithdrawalRequestsCache = res.data.requests;
+                    var warnBadge = document.getElementById('adminWithPollWarning');
+                    if (warnBadge) warnBadge.style.display = 'none';
+
                     if (_adminWithdrawalRequestsCache.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No withdrawal requests found' + (statusFilter ? ' with status ' + statusFilter : '') + '.</td></tr>';
-                        return;
+                        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No withdrawal requests found' + (statusFilter ? ' with status ' + escapeHtml(statusFilter) : '') + '.</td></tr>';
+                    } else {
+                        renderWithdrawalRows(tbody, _adminWithdrawalRequestsCache);
                     }
-
-                    tbody.innerHTML = _adminWithdrawalRequestsCache.map(function(r) {
-                        var dtStr = r.createdAt ? new Date(r.createdAt).toLocaleString('en-IN') : '-';
-                        var amtStr = 'Rs. ' + (parseFloat(r.amount) || 0).toLocaleString('en-IN', {minimumFractionDigits: 2});
-
-                        var statusBadge = '';
-                        if (r.status === 'PENDING') statusBadge = '<span class="badge badge-warning px-2 py-1"><i class="fas fa-clock mr-1"></i> PENDING</span>';
-                        else if (r.status === 'APPROVED') statusBadge = '<span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i> APPROVED</span>';
-                        else if (r.status === 'REJECTED') statusBadge = '<span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i> REJECTED</span>';
-                        else statusBadge = '<span class="badge badge-secondary px-2 py-1">' + (r.status || '-') + '</span>';
-
-                        var bDet = r.bankDetails || r.userBankDetails;
-                        var bankInfo = '-';
-                        if (bDet) {
-                            var hName = bDet.accountHolderName || bDet.accountTitle || '-';
-                            var bName = bDet.bankName || 'Bank';
-                            var accNo = bDet.accountNumber || '-';
-                            bankInfo = '<strong>' + escapeHtml(bName) + '</strong><br>' +
-                                       '<small class="text-muted">' + escapeHtml(hName) + '<br>' +
-                                       '<span class="font-weight-bold" style="font-family:monospace;">' + escapeHtml(accNo) + '</span>' +
-                                       (bDet.iban ? '<br>IBAN: <span style="font-family:monospace;">' + escapeHtml(bDet.iban) + '</span>' : '') + '</small>';
-                        }
-
-                        var auditNotes = '<small class="text-muted">';
-                        var uNote = r.note || r.userNote;
-                        var procBy = r.handledByAdminUsername || r.processedBy;
-                        var procAt = r.handledAt || r.processedAt;
-                        if (uNote) auditNotes += '<div><strong>User Note:</strong> ' + escapeHtml(uNote) + '</div>';
-                        if (r.adminNote) auditNotes += '<div><strong>Admin Note:</strong> ' + escapeHtml(r.adminNote) + '</div>';
-                        if (r.rejectionReason) auditNotes += '<div class="text-danger"><strong>Reason:</strong> ' + escapeHtml(r.rejectionReason) + '</div>';
-                        if (procBy) auditNotes += '<div>Processed by: ' + escapeHtml(procBy) + (procAt ? ' (' + new Date(procAt).toLocaleString('en-IN') + ')' : '') + '</div>';
-                        if (!uNote && !r.adminNote && !r.rejectionReason && !procBy) auditNotes += '-';
-                        auditNotes += '</small>';
-
-                        var actionCol = '';
-                        if (r.status === 'PENDING') {
-                            actionCol = '<div class="btn-group btn-group-sm">' +
-                                        '<button class="btn btn-primary btn-sm font-weight-bold" onclick="openApproveWithdrawalModal(\'' + r.id + '\')"><i class="fas fa-check mr-1"></i> Approve</button>' +
-                                        '<button class="btn btn-danger btn-sm font-weight-bold" onclick="openRejectWithdrawalModal(\'' + r.id + '\')"><i class="fas fa-times mr-1"></i> Reject</button>' +
-                                        '</div>';
-                        } else if (r.status === 'APPROVED') {
-                            actionCol = '<span class="text-success small font-weight-bold"><i class="fas fa-check-double mr-1"></i> Completed</span>';
-                        } else if (r.status === 'REJECTED') {
-                            actionCol = '<span class="text-danger small font-weight-bold"><i class="fas fa-ban mr-1"></i> Rejected</span>';
-                        }
-
-                        return '<tr>' +
-                               '<td><span class="badge badge-light border font-weight-bold" style="font-family:monospace;">' + r.id + '</span></td>' +
-                               '<td><strong>' + (r.username || '-') + '</strong><br><small class="text-muted">UID: ' + (r.userId || '-') + '</small></td>' +
-                               '<td class="font-weight-bold text-primary" style="font-size:13px;">' + amtStr + '</td>' +
-                               '<td>' + bankInfo + '</td>' +
-                               '<td><small>' + dtStr + '</small></td>' +
-                               '<td>' + statusBadge + '</td>' +
-                               '<td>' + auditNotes + '</td>' +
-                               '<td class="text-center">' + actionCol + '</td>' +
-                               '</tr>';
-                    }).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">' + ((res.data && res.data.message) || 'Failed to load withdrawal requests.') + '</td></tr>';
+                    var warnBadge = document.getElementById('adminWithPollWarning');
+                    if (_adminWithdrawalRequestsCache.length > 0) {
+                        if (warnBadge) {
+                            warnBadge.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i> Sync warning (' + (res.status || 'error') + ')';
+                            warnBadge.style.display = 'inline-block';
+                        }
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">' + escapeHtml((res.data && res.data.message) || 'Failed to load withdrawal requests.') + '</td></tr>';
+                    }
                 }
             } catch (err) {
+                if (currentSeq !== _withPollSeq) return;
                 console.error('loadAdminWithdrawalRequests error:', err);
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Error: ' + err.message + '</td></tr>';
+                var warnBadge = document.getElementById('adminWithPollWarning');
+                if (_adminWithdrawalRequestsCache.length > 0) {
+                    if (warnBadge) {
+                        warnBadge.innerHTML = '<i class="fas fa-wifi mr-1"></i> Sync lag / offline';
+                        warnBadge.style.display = 'inline-block';
+                    }
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-danger">Error: ' + escapeHtml(err.message) + '</td></tr>';
+                }
+            } finally {
+                if (currentSeq === _withPollSeq) {
+                    _isWithLoading = false;
+                }
+                if (refreshIcon) refreshIcon.classList.remove('fa-spin');
             }
         }
 
