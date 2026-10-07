@@ -1781,6 +1781,7 @@ Boland v Knights                        </a>
                                             <span class="btn btn-sm btn-info"><strong>L</strong></span> Ledger
                                             <span class="btn btn-sm btn-success"><strong>A</strong></span> Active
                                             <span class="btn btn-sm btn-outline-danger"><strong>D</strong></span> InActive
+                                            <span class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></span> Delete
                                         </p>
                                     </div>
 
@@ -1795,8 +1796,8 @@ Boland v Knights                        </a>
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-sm-12">
-                                                    <table id="tableLedger" style="width: 100%;" class="display table table-bordered table-striped tbl-datatable1 dataTable no-footer dtr-inline">
+                                                <div class="col-sm-12" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                                                    <table id="tableLedger" style="width: 100%; min-width: 1020px;" class="display table table-bordered table-striped tbl-datatable1 dataTable no-footer dtr-inline">
                                                         <thead>
                                                             <tr class="accounts-chart-head-bg desktop-only-load-row">
                                                                 <th colspan="9">
@@ -1826,7 +1827,7 @@ Boland v Knights                        </a>
                                                                 <th>Share</th>
                                                                 <th>Exposure</th>
                                                                 <th>Available Balance</th>
-                                                                <th>Options</th>
+                                                                <th style="min-width: 260px; text-align: right; padding-right: 20px;">Options</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="clientsTableBody">
@@ -2014,6 +2015,9 @@ Boland v Knights                        </a>
                                         <a id="BetsBtn" class="btn btn-primary" onclick="showEditSubView('bets')">Bets</a>
                                         <a id="ProfitlossBtn" class="btn btn-primary" onclick="showEditSubView('profitloss')">Profit Loss</a>
                                         <a id="CPBtn" class="btn btn-primary" onclick="showEditSubView('cp')">Current Position</a>
+                                        <button id="btnDeleteUserInEditTop" class="btn btn-danger font-weight-bold ml-2" type="button" style="display:none;" onclick="openAdminDeleteUserModal(currentEditingId, currentEditingUser)">
+                                            <i class="fas fa-trash-alt mr-1"></i> Delete User
+                                        </button>
                                         <strong id="editUserDisplayTitle" style="float:right; font-size:20px">Jimmy3221</strong>
                                     </div>
                                 </div>
@@ -3887,11 +3891,22 @@ Boland v Knights                        </a>
         };
 
         function isCompanyAccount(role) {
-            return role === 'company' || role === 'super_admin';
+            if (!role) return false;
+            var r = String(role).toLowerCase().trim();
+            return r === 'company' || r === 'super_admin';
         }
 
         function isAdminAccount(role) {
-            return role === 'super_master' || role === 'admin';
+            if (!role) return false;
+            var r = String(role).toLowerCase().trim();
+            return r === 'super_master' || r === 'admin' || r === 'master';
+        }
+
+        function isNormalUser(role) {
+            if (!role) return false;
+            var r = String(role).toLowerCase().trim();
+            if (isCompanyAccount(r) || isAdminAccount(r)) return false;
+            return true;
         }
 
         // ==============================================================================
@@ -4879,7 +4894,7 @@ Boland v Knights                        </a>
                     '<td class="share-cell">' + client.share + '</td>' +
                     '<td class="exp-cell">' + client.exp + '</td>' +
                     '<td class="avail-cell">' + client.avail + '</td>' +
-                    '<td align="right" style="padding-right:24px;">' +
+                    '<td align="right" style="padding-right:15px; white-space:nowrap; min-width:260px;">' +
                         '<button class="btn btn-warning btn-sm" onclick="event.stopPropagation(); openAdminDummyBalanceModal(\'' + client.id + '\', \'' + client.username + '\')" title="Dummy Balance (Demo/Test)">' +
                             '<i class="fas fa-coins"></i>' +
                         '</button> ' +
@@ -4898,7 +4913,7 @@ Boland v Knights                        </a>
                         '<button class="btn btn-success btn-sm btn-status-toggle" onclick="event.stopPropagation(); toggleUserStatus(this)" title="Toggle Active/Inactive">' +
                             '<strong>' + (client.active ? 'A' : 'D') + '</strong>' +
                         '</button>' +
-                        (client.role === 'user' ? ' ' +
+                        (isNormalUser(client.role) ? ' ' +
                         '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')" title="Delete User">' +
                             '<i class="fas fa-trash-alt"></i>' +
                         '</button>' : '') +
@@ -4928,7 +4943,7 @@ Boland v Knights                        </a>
                                 '<span class="options-line2">' +
                                     '<button class="btn-dtr btn-dtr-a" onclick="event.stopPropagation(); toggleUserStatus(this)"><strong>' + (client.active ? 'A' : 'D') + '</strong></button>' +
                                     '<button class="btn-dtr" style="background:#343a40; color:#fff;" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')" title="Reset Password"><i class="fas fa-key"></i></button>' +
-                                    (client.role === 'user' ?
+                                    (isNormalUser(client.role) ?
                                     '<button class="btn-dtr" style="background:#dc3545; color:#fff;" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')" title="Delete User"><i class="fas fa-trash-alt"></i></button>' : '') +
                                 '</span>' +
                             '</li>' +
@@ -4946,7 +4961,7 @@ Boland v Knights                        </a>
                 bookTr.innerHTML = 
                     '<td colspan="9" style="padding:10px 15px;">' +
                         '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Status:</strong> ' + (client.active ? '<span class="text-success font-weight-bold">Active</span>' : '<span class="text-danger font-weight-bold">Inactive</span>') + ' | <strong>Created:</strong> ' + createdStr + ' | <strong>Last Login:</strong> ' + loginStr + ' | <button class="btn btn-sm btn-outline-warning py-0 px-2 ml-2 text-dark font-weight-bold" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-key mr-1"></i>Reset Password</button>' +
-                        (client.role === 'user' ? ' | <button class="btn btn-sm btn-outline-danger py-0 px-2 ml-1 font-weight-bold" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-trash-alt mr-1"></i>Delete User</button>' : '') +
+                        (isNormalUser(client.role) ? ' | <button class="btn btn-sm btn-outline-danger py-0 px-2 ml-1 font-weight-bold" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-trash-alt mr-1"></i>Delete User</button>' : '') +
                         '</small>' +
                     '</td>';
                 tbody.appendChild(bookTr);
@@ -5135,8 +5150,13 @@ Boland v Knights                        </a>
             if (document.getElementById('user_Notes')) document.getElementById('user_Notes').value = user.notes || '';
 
             var delBtn = document.getElementById('btnDeleteUserInEdit');
+            var delBtnTop = document.getElementById('btnDeleteUserInEditTop');
+            var shouldShowDelete = !!(user && isNormalUser(user.role));
             if (delBtn) {
-                delBtn.style.display = (user && user.role === 'user') ? 'inline-block' : 'none';
+                delBtn.style.display = shouldShowDelete ? 'inline-block' : 'none';
+            }
+            if (delBtnTop) {
+                delBtnTop.style.display = shouldShowDelete ? 'inline-block' : 'none';
             }
 
             showhide();
