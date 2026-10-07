@@ -4141,6 +4141,11 @@ Boland v Knights                        </a>
             var roleLabel = ROLE_LABELS[user.role] || user.role;
             var isCompany = isCompanyAccount(user.role);
             var isAdmin = isAdminAccount(user.role);
+            if (isAdmin) {
+                isBalancesLoaded = false;
+            } else if (isCompany) {
+                isBalancesLoaded = true;
+            }
 
             // Header username / role display label
             var headerDisplay = document.getElementById('headerUserDisplayName');
@@ -4565,6 +4570,9 @@ Boland v Knights                        </a>
             } catch (err) {}
             localStorage.removeItem('admin_auth_token');
             localStorage.removeItem('admin_current_user');
+            isBalancesLoaded = false;
+            clientsList = [];
+            currentAdminUser = null;
             closeUserDropdown();
             if (BYPASS_ADMIN_AUTH) {
                 showToast('Temporary Admin Bypass is active. Access remains open.');
