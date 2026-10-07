@@ -35,8 +35,8 @@
     "reference": "",
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.284Z",
-    "tokenVersion": 7,
-    "lastLogin": "2026-10-06T20:05:09.939Z"
+    "tokenVersion": 8,
+    "lastLogin": "2026-10-07T04:49:33.012Z"
   },
   {
     "id": "8728498",
@@ -58,7 +58,7 @@
     "domain": "betproexch.com",
     "createdAt": "2026-09-30T17:58:28.298Z",
     "tokenVersion": 0,
-    "lastLogin": "2026-10-06T20:05:12.835Z"
+    "lastLogin": "2026-10-07T04:49:26.919Z"
   },
   {
     "id": "usr_1790791108314_16",
@@ -919,5 +919,27 @@
     "createdAt": "2026-10-06T19:25:43.867Z",
     "tokenVersion": 0,
     "lastLogin": "2026-10-06T19:25:50.466Z"
+  },
+  {
+    "id": "8748362",
+    "username": "malik1122",
+    "passwordHash": "d893dd1f51e79b356765d69c2d4f57d47e2ac87f350325992c040934d5d25567d1faf43ffca9b1cf39e1ea0d69eb2baafe567958dc999900f0a880bb7191af8c",
+    "passwordSalt": "66b052495febbc9c358899aa2c54f8d4",
+    "role": "super_master",
+    "status": "active",
+    "parentId": "8764246",
+    "createdBy": "superadmin_1",
+    "credit": "0",
+    "balance": "0 Rs.",
+    "pl": "0 Rs.",
+    "share": "85%",
+    "exp": "0 Rs.",
+    "avail": "0 Rs.",
+    "phone": "",
+    "reference": "",
+    "domain": "betproexch.com",
+    "createdAt": "2026-10-07T04:42:45.739Z",
+    "tokenVersion": 0,
+    "lastLogin": "2026-10-07T04:43:09.189Z"
   }
 ]
