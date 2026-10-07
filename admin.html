@@ -4188,10 +4188,15 @@ Boland v Knights                        </a>
             var token = getAdminAuthToken();
             if (!token) return;
 
+            var tbody = document.getElementById('clientsTableBody');
+            if (tbody && (!clientsList || clientsList.length === 0)) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:24px; color:#73818f;"><i class="fas fa-spinner fa-spin mr-2"></i>Loading live users from database...</td></tr>';
+            }
+
             try {
-                var url = getApiUrl('/api/admin/users');
+                var url = getApiUrl('/api/admin/users?_t=' + Date.now());
                 if (searchQuery && typeof searchQuery === 'string' && searchQuery.trim()) {
-                    url += '?search=' + encodeURIComponent(searchQuery.trim());
+                    url += '&search=' + encodeURIComponent(searchQuery.trim());
                 }
                 var result = await safeFetchJson(url, {
                     headers: { 
@@ -4586,6 +4591,7 @@ Boland v Knights                        </a>
                 document.getElementById('sideNavUsers')?.classList.add('active');
                 document.getElementById('topNavUsers')?.classList.add('active');
                 document.title = 'Users | BPEXCH';
+                fetchAdminUsers();
             } else if (cleanPath === '/users/create') {
                 document.getElementById('viewUsersCreate').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');

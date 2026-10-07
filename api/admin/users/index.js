@@ -125,6 +125,9 @@ module.exports = async function handler(req, res) {
         currentUser: authDb.sanitizeUser(authDb.getUserById(session.userId)),
         totalUsers: downline.length,
         users: downline
+      }, {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache'
       });
     } catch (err) {
       console.error('List users error:', err);
