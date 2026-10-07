@@ -8186,13 +8186,22 @@ Boland v Knights                        </a>
             }
 
             try {
-                var res = await safeFetchJson(getApiUrl('/api/admin/company/self-recharge'), {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users?action=self_recharge'), {
                     headers: {
                         'Authorization': 'Bearer ' + token,
                         'X-Admin-Token': token,
                         'X-Admin-Request': 'true'
                     }
                 });
+                if (!res.ok && res.status === 404) {
+                    res = await safeFetchJson(getApiUrl('/api/admin/company/self-recharge'), {
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'X-Admin-Token': token,
+                            'X-Admin-Request': 'true'
+                        }
+                    });
+                }
 
                 if (res.ok && res.data && res.data.status === 'success') {
                     var data = res.data;
@@ -8324,7 +8333,7 @@ Boland v Knights                        </a>
             var requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
 
             try {
-                var res = await safeFetchJson(getApiUrl('/api/admin/company/self-recharge'), {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users?action=self_recharge'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -8333,11 +8342,30 @@ Boland v Knights                        </a>
                         'X-Admin-Request': 'true'
                     },
                     body: JSON.stringify({
+                        action: 'self_recharge',
                         amount: amount,
                         note: note,
                         requestId: requestId
                     })
                 });
+
+                if (!res.ok && res.status === 404) {
+                    res = await safeFetchJson(getApiUrl('/api/admin/company/self-recharge'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token,
+                            'X-Admin-Token': token,
+                            'X-Admin-Request': 'true'
+                        },
+                        body: JSON.stringify({
+                            action: 'self_recharge',
+                            amount: amount,
+                            note: note,
+                            requestId: requestId
+                        })
+                    });
+                }
 
                 if (res.ok && res.data && res.data.status === 'success') {
                     var data = res.data;

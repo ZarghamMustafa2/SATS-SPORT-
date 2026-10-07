@@ -1,5 +1,6 @@
 const authDb = require('../../../lib/auth_db');
 const { parseJsonBody, getRequestSession, sendJson } = require('../../../lib/http_util');
+const selfRechargeHandler = require('../../../lib/self_recharge_controller');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,6 +11,24 @@ module.exports = async function handler(req, res) {
     res.statusCode = 204;
     res.end();
     return;
+  }
+
+  const urlObj = new URL(req.url, 'http://localhost');
+  const pathname = urlObj.pathname.toLowerCase();
+  const searchParams = urlObj.searchParams;
+
+  // Detect route /api/admin/company/self-recharge, /api/admin/users/self-recharge, or action=self_recharge
+  const isSelfRechargeRoute = pathname.includes('/self-recharge') ||
+    pathname.includes('/selfrecharge') ||
+    pathname.includes('/recharge') ||
+    searchParams.get('action') === 'self_recharge' ||
+    searchParams.get('action') === 'self-recharge' ||
+    searchParams.get('action') === 'recharge' ||
+    searchParams.get('view') === 'self_recharge' ||
+    searchParams.get('view') === 'self-recharge';
+
+  if (isSelfRechargeRoute) {
+    return selfRechargeHandler(req, res);
   }
 
   await authDb.hydrateUsersAsync();
@@ -28,10 +47,6 @@ module.exports = async function handler(req, res) {
   if (!session || session.role === authDb.ROLES.USER) {
     return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
   }
-
-  const urlObj = new URL(req.url, 'http://localhost');
-  const pathname = urlObj.pathname.toLowerCase();
-  const searchParams = urlObj.searchParams;
 
   // Detect route /api/admin/users/:id/dummy-balance, /api/admin/users/dummy-balance, or action=dummy_balance
   const isDummyBalanceRoute = pathname.includes('/dummy-balance') ||
@@ -122,7 +137,14 @@ module.exports = async function handler(req, res) {
     try {
       await authDb.hydrateUsersAsync();
       const body = await parseJsonBody(req);
+      req.body = body;
       const { action, userId, targetUserId, newPassword, password, amount, description } = body;
+
+      // -1. Company Account Self Recharge
+      if (action === 'self_recharge' || action === 'self-recharge' || action === 'recharge') {
+        return selfRechargeHandler(req, res);
+      }
+
       const targetId = routeUserId || userId || targetUserId || body.id;
 
       if (!targetId) {

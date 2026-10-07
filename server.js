@@ -155,6 +155,9 @@ const server = http.createServer(async (req, res) => {
 
   // 8. STATIC FILES & USER WEBSITE
   let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname);
+  if (!fs.existsSync(filePath) && fs.existsSync(filePath + '.html')) {
+    filePath = filePath + '.html';
+  }
   
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
