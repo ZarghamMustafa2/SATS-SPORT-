@@ -3,7 +3,7 @@ const { parseJsonBody, getRequestSession, sendJson } = require('../../../lib/htt
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Request, X-Admin-Token, X-Company-Key');
 
   if (req.method === 'OPTIONS') {
@@ -129,6 +129,22 @@ module.exports = async function handler(req, res) {
         return sendJson(res, 400, { status: 'error', message: 'targetUserId is required' });
       }
 
+      // 0. Admin / Company Account Delete Normal User
+      if (action === 'delete_user' || action === 'delete' || action === 'deleteUser') {
+        const delResult = authDb.deleteNormalUser({
+          requesterUser: session,
+          targetUserId: targetId,
+          reason: body.reason || body.note || ''
+        });
+        await authDb.saveUsersToDiskAsync();
+        return sendJson(res, 200, {
+          status: 'success',
+          message: `User ${delResult.deletedUsername} deleted successfully.`,
+          deletedUserId: delResult.deletedUserId,
+          deletedUsername: delResult.deletedUsername
+        });
+      }
+
       // 1. Admin Reset Password
       if (action === 'reset_password' || action === 'change_password') {
         const passToSet = newPassword || password;
@@ -250,6 +266,34 @@ module.exports = async function handler(req, res) {
       }
 
       return sendJson(res, 400, { status: 'error', message: 'Invalid action specified.' });
+    } catch (err) {
+      const statusCode = err.statusCode || 400;
+      return sendJson(res, statusCode, { status: 'error', message: err.message });
+    }
+  }
+  
+  // DELETE: Delete Normal User
+  if (req.method === 'DELETE') {
+    try {
+      await authDb.hydrateUsersAsync();
+      const body = await parseJsonBody(req);
+      const targetId = routeUserId || searchParams.get('id') || searchParams.get('userId') || body.userId || body.targetUserId || body.id;
+      if (!targetId) {
+        return sendJson(res, 400, { status: 'error', message: 'targetUserId is required' });
+      }
+
+      const delResult = authDb.deleteNormalUser({
+        requesterUser: session,
+        targetUserId: targetId,
+        reason: body.reason || body.note || searchParams.get('reason') || ''
+      });
+      await authDb.saveUsersToDiskAsync();
+      return sendJson(res, 200, {
+        status: 'success',
+        message: `User ${delResult.deletedUsername} deleted successfully.`,
+        deletedUserId: delResult.deletedUserId,
+        deletedUsername: delResult.deletedUsername
+      });
     } catch (err) {
       const statusCode = err.statusCode || 400;
       return sendJson(res, statusCode, { status: 'error', message: err.message });

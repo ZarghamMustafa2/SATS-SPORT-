@@ -2141,9 +2141,12 @@ Boland v Knights                        </a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-footer editsbmtbtn">
+                                        <div class="card-footer editsbmtbtn d-flex align-items-center">
                                             <button class="btn btn-primary" type="submit"><strong>Submit</strong></button>
                                             <button class="btn btn-secondary ml-2" type="button" onclick="navigateAdmin('/Accounts/Chart', event)">Back</button>
+                                            <button id="btnDeleteUserInEdit" class="btn btn-danger ml-auto float-right" type="button" style="display:none;" onclick="openAdminDeleteUserModal(currentEditingId, currentEditingUser)">
+                                                <i class="fas fa-trash-alt mr-1"></i> Delete User
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -3817,6 +3820,45 @@ Boland v Knights                        </a>
                         </div>
                     </div>
 
+                    <!-- Delete Normal User Confirmation Modal -->
+                    <div id="modalDeleteUser" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+                        <div style="background:#fff; border-radius:8px; width:100%; max-width:480px; box-shadow:0 10px 25px rgba(0,0,0,0.3); overflow:hidden;">
+                            <div style="padding:14px 20px; background:#fff1f2; border-bottom:1px solid #fecdd3; display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:16px; color:#9f1239;"><i class="fas fa-trash-alt text-danger mr-1"></i> Confirm Delete User</strong>
+                                <button type="button" class="close" onclick="closeAdminDeleteUserModal()" style="font-size:24px; line-height:1; border:none; background:none; cursor:pointer;">&times;</button>
+                            </div>
+                            <form onsubmit="event.preventDefault(); submitAdminDeleteUser(event);">
+                                <div style="padding:20px;">
+                                    <input type="hidden" id="deleteModalUserId" value="">
+                                    <div class="alert alert-danger py-2 small mb-3" style="display:flex; align-items:flex-start; gap:8px;">
+                                        <i class="fas fa-exclamation-triangle" style="font-size:18px; margin-top:2px;"></i>
+                                        <div>
+                                            <strong>Are you sure you want to delete this user?</strong><br>
+                                            This will immediately revoke their access, invalidate all active sessions, and remove them from the system.
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label class="font-weight-bold small text-muted mb-1">USERNAME</label>
+                                        <input type="text" id="deleteModalUsername" class="form-control" readonly style="background:#f1f5f9; font-weight:700;">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold small text-muted mb-1">USER ID</label>
+                                        <input type="text" id="deleteModalUserIdDisplay" class="form-control" readonly style="background:#f1f5f9; font-family:monospace; font-size:13px;">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="font-weight-bold small text-muted mb-1">OPTIONAL REASON / NOTE</label>
+                                        <textarea id="deleteModalReason" class="form-control" rows="2" placeholder="e.g. User requested deletion / duplicate account"></textarea>
+                                    </div>
+                                    <div id="deleteModalError" class="alert alert-danger py-2 small mb-0" style="display:none;"></div>
+                                </div>
+                                <div style="padding:12px 20px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:8px;">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminDeleteUserModal()">Cancel</button>
+                                    <button type="button" id="deleteModalSubmitBtn" onclick="submitAdminDeleteUser(event)" class="btn btn-danger btn-sm font-weight-bold"><i class="fas fa-trash-alt mr-1"></i> Delete User</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
@@ -4781,6 +4823,10 @@ Boland v Knights                        </a>
                         '<button class="btn btn-success btn-sm btn-status-toggle" onclick="event.stopPropagation(); toggleUserStatus(this)" title="Toggle Active/Inactive">' +
                             '<strong>' + (client.active ? 'A' : 'D') + '</strong>' +
                         '</button>' +
+                        (client.role === 'user' ? ' ' +
+                        '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')" title="Delete User">' +
+                            '<i class="fas fa-trash-alt"></i>' +
+                        '</button>' : '') +
                     '</td>';
                 tbody.appendChild(tr);
 
@@ -4807,6 +4853,8 @@ Boland v Knights                        </a>
                                 '<span class="options-line2">' +
                                     '<button class="btn-dtr btn-dtr-a" onclick="event.stopPropagation(); toggleUserStatus(this)"><strong>' + (client.active ? 'A' : 'D') + '</strong></button>' +
                                     '<button class="btn-dtr" style="background:#343a40; color:#fff;" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')" title="Reset Password"><i class="fas fa-key"></i></button>' +
+                                    (client.role === 'user' ?
+                                    '<button class="btn-dtr" style="background:#dc3545; color:#fff;" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')" title="Delete User"><i class="fas fa-trash-alt"></i></button>' : '') +
                                 '</span>' +
                             '</li>' +
                         '</ul>' +
@@ -4822,7 +4870,9 @@ Boland v Knights                        </a>
                 var loginStr = client.lastLogin ? new Date(client.lastLogin).toLocaleString() : 'Never';
                 bookTr.innerHTML = 
                     '<td colspan="9" style="padding:10px 15px;">' +
-                        '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Status:</strong> ' + (client.active ? '<span class="text-success font-weight-bold">Active</span>' : '<span class="text-danger font-weight-bold">Inactive</span>') + ' | <strong>Created:</strong> ' + createdStr + ' | <strong>Last Login:</strong> ' + loginStr + ' | <button class="btn btn-sm btn-outline-warning py-0 px-2 ml-2 text-dark font-weight-bold" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-key mr-1"></i>Reset Password</button></small>' +
+                        '<small><strong>User ID:</strong> ' + client.id + ' | <strong>Domain:</strong> ' + client.domain + ' | <strong>Status:</strong> ' + (client.active ? '<span class="text-success font-weight-bold">Active</span>' : '<span class="text-danger font-weight-bold">Inactive</span>') + ' | <strong>Created:</strong> ' + createdStr + ' | <strong>Last Login:</strong> ' + loginStr + ' | <button class="btn btn-sm btn-outline-warning py-0 px-2 ml-2 text-dark font-weight-bold" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-key mr-1"></i>Reset Password</button>' +
+                        (client.role === 'user' ? ' | <button class="btn btn-sm btn-outline-danger py-0 px-2 ml-1 font-weight-bold" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')"><i class="fas fa-trash-alt mr-1"></i>Delete User</button>' : '') +
+                        '</small>' +
                     '</td>';
                 tbody.appendChild(bookTr);
             });
@@ -5005,6 +5055,11 @@ Boland v Knights                        </a>
             if (document.getElementById('user_Phone')) document.getElementById('user_Phone').value = user.phone || '';
             if (document.getElementById('user_Reference')) document.getElementById('user_Reference').value = user.reference || '';
             if (document.getElementById('user_Notes')) document.getElementById('user_Notes').value = user.notes || '';
+
+            var delBtn = document.getElementById('btnDeleteUserInEdit');
+            if (delBtn) {
+                delBtn.style.display = (user && user.role === 'user') ? 'inline-block' : 'none';
+            }
 
             showhide();
         }
@@ -5788,6 +5843,110 @@ Boland v Knights                        </a>
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-key mr-1"></i> Reset Password';
+                }
+            }
+        }
+
+        // Admin Delete Normal User Modal Handlers
+        function openAdminDeleteUserModal(userId, username) {
+            var modal = document.getElementById('modalDeleteUser');
+            var idInput = document.getElementById('deleteModalUserId');
+            var idDisplay = document.getElementById('deleteModalUserIdDisplay');
+            var userInput = document.getElementById('deleteModalUsername');
+            var reasonInput = document.getElementById('deleteModalReason');
+            var errEl = document.getElementById('deleteModalError');
+
+            if (idInput) idInput.value = userId || '';
+            if (idDisplay) idDisplay.value = userId || '';
+            if (userInput) userInput.value = username || '';
+            if (reasonInput) reasonInput.value = '';
+            if (errEl) {
+                errEl.style.display = 'none';
+                errEl.innerText = '';
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeAdminDeleteUserModal() {
+            var modal = document.getElementById('modalDeleteUser');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function submitAdminDeleteUser(e) {
+            if (e) e.preventDefault();
+            var token = getAdminAuthToken();
+            if (!token) {
+                alert('Authentication required. Please login.');
+                return;
+            }
+
+            var userId = document.getElementById('deleteModalUserId') ? document.getElementById('deleteModalUserId').value : '';
+            var username = document.getElementById('deleteModalUsername') ? document.getElementById('deleteModalUsername').value : '';
+            var reason = document.getElementById('deleteModalReason') ? document.getElementById('deleteModalReason').value.trim() : '';
+            var errEl = document.getElementById('deleteModalError');
+            var submitBtn = document.getElementById('deleteModalSubmitBtn');
+
+            if (!userId) {
+                if (errEl) {
+                    errEl.innerText = 'User ID is required.';
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
+            if (errEl) errEl.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Deleting...';
+            }
+
+            try {
+                var res = await safeFetchJson(getApiUrl('/api/admin/users'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token,
+                        'X-Admin-Token': token,
+                        'X-Admin-Request': 'true'
+                    },
+                    body: JSON.stringify({
+                        action: 'delete_user',
+                        userId: userId,
+                        reason: reason
+                    })
+                });
+
+                if (res.ok && res.data && res.data.status === 'success') {
+                    showToast('User ' + (username || userId) + ' deleted successfully.');
+                    closeAdminDeleteUserModal();
+
+                    // If currently on /Users/Edit for this deleted user, navigate back to user list
+                    var currentPath = window.location.pathname.toLowerCase();
+                    if (currentPath.includes('/users/edit')) {
+                        navigateAdmin('/Accounts/Chart');
+                    }
+
+                    // Refresh user table
+                    await fetchAdminUsers();
+                } else {
+                    var msg = (res.data && res.data.message) || 'Failed to delete user.';
+                    if (errEl) {
+                        errEl.innerText = msg;
+                        errEl.style.display = 'block';
+                    } else {
+                        alert(msg);
+                    }
+                }
+            } catch (err) {
+                console.error('Delete user error:', err);
+                if (errEl) {
+                    errEl.innerText = 'Network error: ' + err.message;
+                    errEl.style.display = 'block';
+                }
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-trash-alt mr-1"></i> Delete User';
                 }
             }
         }
