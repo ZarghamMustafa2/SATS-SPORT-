@@ -3623,16 +3623,25 @@ Boland v Knights                        </a>
                         <div style="background:#fff; border-radius:10px; width:100%; max-width:700px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 12px 35px rgba(0,0,0,0.5); overflow:hidden;">
                             <div style="padding:12px 18px; background:#1e293b; color:#fff; display:flex; justify-content:space-between; align-items:center;">
                                 <strong id="modalScreenshotViewerTitle" style="font-size:15px;">Payment Receipt Proof</strong>
-                                <span onclick="closeModal('modalAdminScreenshotViewer')" style="font-size:24px; cursor:pointer; color:#fff;">&times;</span>
+                                <span onclick="closeAdminScreenshotModal()" style="font-size:24px; cursor:pointer; color:#fff;">&times;</span>
                             </div>
-                            <div style="padding:16px; overflow-y:auto; flex:1; text-align:center; background:#0f172a;">
-                                <img id="modalScreenshotImg" src="" alt="Payment Receipt" style="max-width:100%; max-height:70vh; object-fit:contain; border-radius:6px; box-shadow:0 4px 15px rgba(0,0,0,0.4);">
+                            <div style="padding:16px; overflow-y:auto; flex:1; text-align:center; background:#0f172a; min-height:240px; display:flex; align-items:center; justify-content:center;">
+                                <div id="modalScreenshotLoading" style="display:none; padding:40px 20px; color:#cbd5e1; text-align:center;">
+                                    <i class="fas fa-spinner fa-spin fa-2x mb-2" style="color:#38bdf8;"></i>
+                                    <div style="font-size:14px; font-weight:500;">Loading payment proof...</div>
+                                </div>
+                                <div id="modalScreenshotUnavailable" style="display:none; padding:45px 20px; color:#94a3b8; text-align:center;">
+                                    <i class="fas fa-file-image fa-3x mb-3" style="color:#ef4444; opacity:0.85;"></i>
+                                    <div style="font-size:15px; font-weight:600; color:#f1f5f9; margin-bottom:6px;">Payment proof file is unavailable.</div>
+                                    <div style="font-size:12px; color:#94a3b8;">The uploaded screenshot could not be loaded or was removed.</div>
+                                </div>
+                                <img id="modalScreenshotImg" src="" alt="Payment Receipt" style="display:none; max-width:100%; max-height:70vh; object-fit:contain; border-radius:6px; box-shadow:0 4px 15px rgba(0,0,0,0.4); margin:0 auto;">
                             </div>
                             <div style="padding:10px 18px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                                <a id="modalScreenshotDownloadLink" href="" target="_blank" class="btn btn-sm btn-outline-primary font-weight-bold">
+                                <a id="modalScreenshotDownloadLink" href="javascript:void(0)" target="_blank" class="btn btn-sm btn-outline-primary font-weight-bold" style="pointer-events:none; opacity:0.5;">
                                     <i class="fas fa-external-link-alt mr-1"></i> Open Full Image
                                 </a>
-                                <button type="button" class="btn btn-sm btn-secondary font-weight-bold" onclick="closeModal('modalAdminScreenshotViewer')">Close</button>
+                                <button type="button" class="btn btn-sm btn-secondary font-weight-bold" onclick="closeAdminScreenshotModal()">Close</button>
                             </div>
                         </div>
                     </div>
@@ -8124,20 +8133,94 @@ Boland v Knights                        </a>
             }
         }
 
-        function openAdminScreenshotModal(requestId, amount, username) {
+        var currentProofBlobUrl = null;
+
+        function closeAdminScreenshotModal() {
+            closeModal('modalAdminScreenshotViewer');
+            if (currentProofBlobUrl) {
+                try { URL.revokeObjectURL(currentProofBlobUrl); } catch (e) {}
+                currentProofBlobUrl = null;
+            }
+            var img = document.getElementById('modalScreenshotImg');
+            if (img) {
+                img.src = '';
+                img.style.display = 'none';
+            }
+            var loadingEl = document.getElementById('modalScreenshotLoading');
+            if (loadingEl) loadingEl.style.display = 'none';
+            var unavailEl = document.getElementById('modalScreenshotUnavailable');
+            if (unavailEl) unavailEl.style.display = 'none';
+        }
+
+        async function openAdminScreenshotModal(requestId, amount, username) {
             var titleEl = document.getElementById('modalScreenshotViewerTitle');
             if (titleEl) titleEl.innerText = 'Payment Proof Receipt - Rs. ' + (parseFloat(amount) || 0).toLocaleString('en-IN') + ' (' + username + ')';
 
-            var token = getAdminAuthToken();
-            var streamUrl = getApiUrl('/api/payments/screenshot?id=' + encodeURIComponent(requestId) + '&token=' + encodeURIComponent(token));
+            var loadingEl = document.getElementById('modalScreenshotLoading');
+            var unavailEl = document.getElementById('modalScreenshotUnavailable');
+            var imgEl = document.getElementById('modalScreenshotImg');
+            var linkEl = document.getElementById('modalScreenshotDownloadLink');
 
-            var img = document.getElementById('modalScreenshotImg');
-            if (img) img.src = streamUrl;
+            if (currentProofBlobUrl) {
+                try { URL.revokeObjectURL(currentProofBlobUrl); } catch (e) {}
+                currentProofBlobUrl = null;
+            }
 
-            var link = document.getElementById('modalScreenshotDownloadLink');
-            if (link) link.href = streamUrl;
+            if (imgEl) {
+                imgEl.src = '';
+                imgEl.style.display = 'none';
+            }
+            if (unavailEl) unavailEl.style.display = 'none';
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (linkEl) {
+                linkEl.href = 'javascript:void(0)';
+                linkEl.style.pointerEvents = 'none';
+                linkEl.style.opacity = '0.5';
+            }
 
             openModal('modalAdminScreenshotViewer');
+
+            var token = getAdminAuthToken();
+            var streamUrl = getApiUrl('/api/payments/screenshot?id=' + encodeURIComponent(requestId) + (token ? '&token=' + encodeURIComponent(token) : ''));
+
+            try {
+                var res = await fetch(streamUrl, {
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+                });
+
+                if (loadingEl) loadingEl.style.display = 'none';
+
+                if (res.ok) {
+                    var blob = await res.blob();
+                    currentProofBlobUrl = URL.createObjectURL(blob);
+                    if (imgEl) {
+                        imgEl.src = currentProofBlobUrl;
+                        imgEl.style.display = 'inline-block';
+                    }
+                    if (linkEl) {
+                        linkEl.href = currentProofBlobUrl;
+                        linkEl.style.pointerEvents = 'auto';
+                        linkEl.style.opacity = '1';
+                    }
+                } else {
+                    if (unavailEl) unavailEl.style.display = 'block';
+                    if (imgEl) imgEl.style.display = 'none';
+                    if (linkEl) {
+                        linkEl.href = 'javascript:void(0)';
+                        linkEl.style.pointerEvents = 'none';
+                        linkEl.style.opacity = '0.5';
+                    }
+                }
+            } catch (err) {
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (unavailEl) unavailEl.style.display = 'block';
+                if (imgEl) imgEl.style.display = 'none';
+                if (linkEl) {
+                    linkEl.href = 'javascript:void(0)';
+                    linkEl.style.pointerEvents = 'none';
+                    linkEl.style.opacity = '0.5';
+                }
+            }
         }
 
         // =========================================================================
