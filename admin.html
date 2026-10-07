@@ -4422,9 +4422,9 @@ Boland v Knights                        </a>
                     // Admin roles (Company Account, Admin)
                     applyUserRoleUI(data.user);
                     showAdminApp();
-                    await fetchAdminUsers();
                     navigateAdmin('/admin');
                     showToast('Logged in successfully as ' + (ROLE_LABELS[data.user.role] || data.user.role) + '!');
+                    fetchAdminUsers();
                 } else {
                     err.innerText = data.message || 'Invalid username or password!';
                     err.style.display = 'block';
