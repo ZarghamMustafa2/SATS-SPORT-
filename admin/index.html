@@ -709,7 +709,7 @@
             <li class="nav-item px-3">
                 <a class="nav-link" id="topNavSettings" href="/Settings" onclick="navigateAdmin('/Settings', event)"><i class="fas fa-cog mr-1"></i> Settings</a>
             </li>
-            <li class="nav-item px-3">
+            <li class="nav-item px-3" id="topNavApiManagementContainer" style="display: none;">
                 <a class="nav-link" id="topNavApiManagement" href="/Settings/API" onclick="navigateAdmin('/Settings/API', event)"><i class="fas fa-network-wired mr-1"></i> API Management</a>
             </li>
         </ul>
@@ -805,7 +805,7 @@
                 <i class="nav-icon fas fa-cog fa-inverse"></i> Settings
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="sideNavApiManagementContainer" style="display: none;">
             <a class="nav-link" href="/Settings/API" id="sideNavApiManagement" onclick="navigateAdmin('/Settings/API', event)">
                 <i class="nav-icon fas fa-network-wired fa-inverse"></i> API Management
             </a>
@@ -4128,7 +4128,18 @@ Boland v Knights                        </a>
             var dropSelfRecharge = document.getElementById('dropdownSelfRechargeLink');
             var dashCompanyRow = document.getElementById('dashboardCompanyRechargeRow');
 
+            var topNavApi = document.getElementById('topNavApiManagementContainer');
+            var sideNavApi = document.getElementById('sideNavApiManagementContainer');
+            var topNavApiLink = document.getElementById('topNavApiManagement');
+            var sideNavApiLink = document.getElementById('sideNavApiManagement');
+
             if (isCompany) {
+                // SHOW API Management ONLY for Company Account
+                if (topNavApi) topNavApi.style.display = '';
+                else if (topNavApiLink && topNavApiLink.closest('li')) topNavApiLink.closest('li').style.display = '';
+                if (sideNavApi) sideNavApi.style.display = '';
+                else if (sideNavApiLink && sideNavApiLink.closest('li')) sideNavApiLink.closest('li').style.display = '';
+
                 // Remove / hide payment and WhatsApp management options for Company Account
                 if (topNavFinance) topNavFinance.style.display = 'none';
                 if (sideDeposits) sideDeposits.style.display = 'none';
@@ -4160,6 +4171,12 @@ Boland v Knights                        </a>
                     loadSelfRechargeData();
                 }
             } else {
+                // HIDE API Management completely for Admin accounts (super_master)
+                if (topNavApi) topNavApi.style.display = 'none';
+                else if (topNavApiLink && topNavApiLink.closest('li')) topNavApiLink.closest('li').style.display = 'none';
+                if (sideNavApi) sideNavApi.style.display = 'none';
+                else if (sideNavApiLink && sideNavApiLink.closest('li')) sideNavApiLink.closest('li').style.display = 'none';
+
                 // Show all payment and WhatsApp management options for Admin (both existing and newly created)
                 if (topNavFinance) topNavFinance.style.display = '';
                 if (sideDeposits) sideDeposits.style.display = '';
@@ -4641,6 +4658,15 @@ Boland v Knights                        </a>
                 cleanPath === '/settings/api' || cleanPath === '/settings/api/' || cleanPath === '/api-management' || cleanPath === '/api-management/' ||
                 (window.location.hash && (window.location.hash.toLowerCase().includes('api') || window.location.hash.toLowerCase().includes('provider')))
             ) {
+                if (!isCompanyAccount(currentAdminUser?.role)) {
+                    document.getElementById('viewDashboard').style.display = 'block';
+                    document.getElementById('sideNavDashboard')?.classList.add('active');
+                    document.getElementById('topNavDashboard')?.classList.add('active');
+                    document.title = 'Dashboard | BPEXCH';
+                    showToast('Access Denied: API Management is restricted to Company Account only.');
+                    navigateAdmin('/admin');
+                    return;
+                }
                 document.getElementById('viewApiManagement').style.display = 'block';
                 document.getElementById('sideNavApiManagement')?.classList.add('active');
                 document.getElementById('topNavApiManagement')?.classList.add('active');
@@ -6930,6 +6956,10 @@ Boland v Knights                        </a>
         var cachedApiOverview = null;
 
         async function loadAdminApiManagement() {
+            if (!currentAdminUser || !isCompanyAccount(currentAdminUser.role)) {
+                console.warn('API Management access restricted to Company Account only.');
+                return;
+            }
             try {
                 var token = getAdminAuthToken();
                 var res = await safeFetchJson(getApiUrl('/api/sports?action=api_overview'), {
@@ -7082,6 +7112,10 @@ Boland v Knights                        </a>
         }
 
         async function testAdminApiConnection(provider) {
+            if (!currentAdminUser || !isCompanyAccount(currentAdminUser.role)) {
+                showToast('Access Denied: API Management is restricted to Company Account only.');
+                return;
+            }
             var consoleSec = document.getElementById('apiTestConsoleSection');
             if (consoleSec) consoleSec.style.display = 'block';
 
@@ -7229,6 +7263,10 @@ Boland v Knights                        </a>
         }
 
         function openApiEndpointsModal(provider) {
+            if (!currentAdminUser || !isCompanyAccount(currentAdminUser.role)) {
+                showToast('Access Denied: API Management is restricted to Company Account only.');
+                return;
+            }
             var modal = document.getElementById('modalApiEndpoints');
             var title = document.getElementById('modalEndpointsTitle');
             var tbody = document.getElementById('modalEndpointsTbody');
@@ -7266,6 +7304,10 @@ Boland v Knights                        </a>
         }
 
         function openApiSettingsModal(provider) {
+            if (!currentAdminUser || !isCompanyAccount(currentAdminUser.role)) {
+                showToast('Access Denied: API Management is restricted to Company Account only.');
+                return;
+            }
             var modal = document.getElementById('modalApiSettings');
             var title = document.getElementById('modalSettingsTitle');
             var idInput = document.getElementById('settingProviderId');
@@ -7299,6 +7341,10 @@ Boland v Knights                        </a>
 
         async function saveApiProviderSettings(event) {
             if (event) event.preventDefault();
+            if (!currentAdminUser || !isCompanyAccount(currentAdminUser.role)) {
+                showToast('Access Denied: API Management is restricted to Company Account only.');
+                return;
+            }
             var idInput = document.getElementById('settingProviderId');
             var urlInput = document.getElementById('settingBaseUrlInput');
             var keyInput = document.getElementById('settingApiKeyInput');
@@ -7377,6 +7423,10 @@ Boland v Knights                        </a>
         }
 
         async function activateApiProvider(provider) {
+            if (!currentAdminUser || !isCompanyAccount(currentAdminUser.role)) {
+                showToast('Access Denied: API Management is restricted to Company Account only.');
+                return;
+            }
             var pName = provider === 'diamond' ? 'Diamond Betting API' : 'Shubdx International';
             if (!confirm('Are you sure you want to test and activate ' + pName + ' as the primary live sports provider?')) {
                 return;

@@ -200,8 +200,41 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
   };
 }
 
+  // Strict Role Guard: API Management is restricted ONLY to Company Account
+  async function authorizeCompanyAccount() {
+    await authDb.hydrateUsersAsync();
+
+    let session = getRequestSession(req, authDb);
+    const companyKey = req.headers['x-company-key'] || req.headers['X-Company-Key'];
+    if (!session && companyKey && authDb.verifyCompanyKey(companyKey)) {
+      session = { role: authDb.ROLES.COMPANY, username: 'Company Account' };
+    }
+
+    if (!session) {
+      const err = new Error('Authentication required to access API Management.');
+      err.statusCode = 401;
+      throw err;
+    }
+
+    const isCompany = (
+      session.role === authDb.ROLES.COMPANY ||
+      session.role === authDb.ROLES.SUPER_ADMIN ||
+      session.role === 'company' ||
+      session.role === 'super_admin'
+    );
+
+    if (!isCompany) {
+      const err = new Error('Forbidden: API Management is restricted to Company Account only.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    return session;
+  }
+
   if (req.method === 'GET' && (action === 'api_overview' || action === 'api_management' || pathname === '/api/admin/api-management' || pathname === '/api/admin/api-overview')) {
     try {
+      const session = await authorizeCompanyAccount();
       const providersConf = settingsDb.getApiProviders(true); // masked secrets
       const auditLogs = settingsDb.getApiAuditLogs();
 
@@ -346,16 +379,17 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
       return sendJson(res, 200, overview);
     } catch (err) {
       console.error('Error generating api_overview:', err);
-      return sendJson(res, 500, { status: 'error', message: err.message });
+      return sendJson(res, err.statusCode || 500, { status: 'error', message: err.message });
     }
   }
 
   // 0.2 LIVE CONNECTION TEST FOR PROVIDER (POST)
   if (req.method === 'POST' && (action === 'api_test_connection' || pathname === '/api/admin/api-management/test')) {
     try {
+      const session = await authorizeCompanyAccount();
       const body = await parseJsonBody(req);
       const target = (body.provider || 'diamond').toLowerCase().trim();
-      const adminUser = body.admin || 'Admin';
+      const adminUser = session.username || session.role || body.admin || 'Company Account';
 
       let testResult = null;
       if (target === 'diamond') {
@@ -387,23 +421,15 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
       return sendJson(res, 200, { status: 'success', testResult });
     } catch (err) {
       console.error('Error in api_test_connection:', err);
-      return sendJson(res, 500, { status: 'error', message: err.message });
+      return sendJson(res, err.statusCode || 500, { status: 'error', message: err.message });
     }
   }
 
   // 0.3 UPDATE PROVIDER SETTINGS (POST)
   if (req.method === 'POST' && (action === 'api_update_settings' || pathname === '/api/admin/api-management/settings')) {
     try {
+      const session = await authorizeCompanyAccount();
       const body = await parseJsonBody(req);
-      let session = getRequestSession(req, authDb);
-      const companyKey = req.headers['x-company-key'];
-      if (!session && companyKey && authDb.verifyCompanyKey(companyKey)) {
-        session = { role: authDb.ROLES.COMPANY, username: 'Company Account' };
-      }
-      if (!session) {
-        session = { role: 'company', username: body.admin || 'Admin' };
-      }
-
       const result = settingsDb.updateApiProviderSettings(body, session);
       return sendJson(res, 200, { status: 'success', ...result });
     } catch (err) {
@@ -415,16 +441,8 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
   // 0.4 SWITCH ACTIVE PROVIDER (WITH VERIFICATION GUARD) (POST)
   if (req.method === 'POST' && (action === 'api_switch_provider' || pathname === '/api/admin/api-management/switch')) {
     try {
+      const session = await authorizeCompanyAccount();
       const body = await parseJsonBody(req);
-      let session = getRequestSession(req, authDb);
-      const companyKey = req.headers['x-company-key'];
-      if (!session && companyKey && authDb.verifyCompanyKey(companyKey)) {
-        session = { role: authDb.ROLES.COMPANY, username: 'Company Account' };
-      }
-      if (!session) {
-        session = { role: 'company', username: body.admin || 'Admin' };
-      }
-
       const target = String(body.targetProvider || body.provider || '').toLowerCase().trim();
 
       // PRE-ACTIVATION VERIFICATION GUARD:
