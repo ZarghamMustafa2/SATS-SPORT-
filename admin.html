@@ -4052,6 +4052,51 @@ Boland v Knights                        </a>
             }
         }
 
+        // Synchronize authoritative Company / Admin Account balance across all UI locations
+        function syncAuthoritativeBalance(user) {
+            if (!user) return;
+            var balRaw = (user.balance != null && user.balance !== '') ? user.balance : user.credit;
+            var bNum = parseFloat(String(balRaw || '0').replace(/[^0-9.-]/g, ''));
+            if (isNaN(bNum)) bNum = 0;
+            var formattedCommas = bNum.toLocaleString('en-IN');
+            var formattedRs = formattedCommas + ' Rs.';
+
+            // 1. Dashboard summary table "Credit Remaining"
+            var sumCredit = document.getElementById('sumCreditRemaining');
+            if (sumCredit) {
+                sumCredit.innerText = formattedCommas;
+                if (bNum < 0) {
+                    sumCredit.className = 'position-minus';
+                } else {
+                    sumCredit.className = 'position-plus';
+                }
+            }
+
+            // 2. Top-right header balance (B: ...)
+            var hBal = document.getElementById('headerWalletBal');
+            if (hBal) hBal.innerText = formattedCommas;
+
+            // 3. Vault card on dashboard (dashCompanyBalanceDisplay)
+            var dBal = document.getElementById('dashCompanyBalanceDisplay');
+            if (dBal) dBal.innerText = formattedRs;
+
+            // 4. Self Recharge view current balance display
+            var curBalEl = document.getElementById('selfRechargeCurrentBalDisplay');
+            if (curBalEl) curBalEl.innerText = formattedRs;
+
+            // 5. Update cached user in localStorage
+            var cachedUserStr = localStorage.getItem('admin_current_user');
+            if (cachedUserStr) {
+                try {
+                    var cu = JSON.parse(cachedUserStr);
+                    cu.balance = formattedRs;
+                    cu.credit = formattedCommas;
+                    cu.avail = formattedRs;
+                    localStorage.setItem('admin_current_user', JSON.stringify(cu));
+                } catch(e) {}
+            }
+        }
+
         // Apply UI according to Authenticated Role
         function applyUserRoleUI(user) {
             currentAdminUser = user;
@@ -4154,18 +4199,9 @@ Boland v Knights                        </a>
                 if (dropSelfRecharge) dropSelfRecharge.style.display = '';
                 if (dashCompanyRow) dashCompanyRow.style.display = '';
 
-                // Sync balance in header and vault card
-                if (user && user.balance != null) {
-                    var hBal = document.getElementById('headerWalletBal');
-                    if (hBal) {
-                        var bNum = parseFloat(String(user.balance).replace(/[^0-9.-]/g, ''));
-                        hBal.innerText = !isNaN(bNum) ? bNum.toLocaleString() : String(user.balance);
-                    }
-                    var dBal = document.getElementById('dashCompanyBalanceDisplay');
-                    if (dBal) {
-                        var bNum = parseFloat(String(user.balance).replace(/[^0-9.-]/g, ''));
-                        dBal.innerText = (!isNaN(bNum) ? bNum.toLocaleString() : String(user.balance)) + ' Rs.';
-                    }
+                // Sync balance across header, vault card, and dashboard Credit Remaining
+                if (user && (user.balance != null || user.credit != null)) {
+                    syncAuthoritativeBalance(user);
                 }
                 if (typeof loadSelfRechargeData === 'function') {
                     loadSelfRechargeData();
@@ -4190,6 +4226,10 @@ Boland v Knights                        </a>
                 if (topSelfRecharge) topSelfRecharge.style.display = 'none';
                 if (dropSelfRecharge) dropSelfRecharge.style.display = 'none';
                 if (dashCompanyRow) dashCompanyRow.style.display = 'none';
+
+                if (user && (user.balance != null || user.credit != null)) {
+                    syncAuthoritativeBalance(user);
+                }
 
                 if (typeof loadAdminWhatsappSettings === 'function') loadAdminWhatsappSettings();
                 if (typeof updateAdminPaymentStats === 'function') updateAdminPaymentStats();
@@ -4220,6 +4260,10 @@ Boland v Knights                        </a>
                 });
                 var data = result.data;
                 if (result.ok && data.status === 'success' && Array.isArray(data.users)) {
+                    if (data.currentUser) {
+                        currentAdminUser = data.currentUser;
+                        syncAuthoritativeBalance(data.currentUser);
+                    }
                     clientsList = data.users.map(function(u) {
                         var balNum = parseFloat(String(u.balance || '0').replace(/[^0-9.-]/g, ''));
                         var balStr = (!isNaN(balNum) ? balNum.toFixed(2) : '0.00') + ' Rs.';
@@ -4599,6 +4643,9 @@ Boland v Knights                        </a>
                 document.getElementById('sideNavDashboard')?.classList.add('active');
                 document.getElementById('topNavDashboard')?.classList.add('active');
                 document.title = 'Dashboard | BPEXCH';
+                if (currentAdminUser) {
+                    syncAuthoritativeBalance(currentAdminUser);
+                }
             } else if (cleanPath.startsWith('/accounts/chart') || cleanPath === '/users' || cleanPath === '/users/' || cleanPath === '/accounts' || cleanPath === '/accounts/') {
                 document.getElementById('viewUsers').style.display = 'block';
                 document.getElementById('sideNavUsers')?.classList.add('active');
@@ -4907,6 +4954,9 @@ Boland v Knights                        </a>
 
             document.getElementById('sumUsersCount').innerText = clientsList.length;
             document.getElementById('tableLedger_info').innerText = 'Showing 1 to ' + clientsList.length + ' of ' + clientsList.length + ' entries';
+            if (currentAdminUser) {
+                syncAuthoritativeBalance(currentAdminUser);
+            }
         }
 
         function toggleMobileUserDetails(id, e) {
@@ -8424,28 +8474,8 @@ Boland v Knights                        </a>
                     var balNum = (data.numericBalance != null && !isNaN(data.numericBalance))
                         ? Number(data.numericBalance)
                         : (parseFloat(String(data.balance || 0).replace(/[^0-9.-]/g, '')) || 0);
-                    var balFormatted = balNum.toLocaleString('en-IN') + ' Rs.';
 
-                    var curBalEl = document.getElementById('selfRechargeCurrentBalDisplay');
-                    if (curBalEl) curBalEl.innerText = balFormatted;
-
-                    var hBal = document.getElementById('headerWalletBal');
-                    if (hBal) hBal.innerText = balNum.toLocaleString('en-IN');
-
-                    var dBal = document.getElementById('dashCompanyBalanceDisplay');
-                    if (dBal) dBal.innerText = balFormatted;
-
-                    // Sync with cached session user in localStorage
-                    var cachedUserStr = localStorage.getItem('admin_current_user');
-                    if (cachedUserStr) {
-                        try {
-                            var cu = JSON.parse(cachedUserStr);
-                            cu.balance = balNum;
-                            cu.avail = balNum;
-                            localStorage.setItem('admin_current_user', JSON.stringify(cu));
-                        } catch(e) {}
-                    }
-
+                    syncAuthoritativeBalance({ balance: balNum, credit: balNum });
                     renderSelfRechargeHistory(data.history || []);
                 } else {
                     if (tbody) {
@@ -8590,26 +8620,9 @@ Boland v Knights                        </a>
                         : (parseFloat(String(data.newBalance != null ? data.newBalance : data.balance).replace(/[^0-9.-]/g, '')) || 0);
                     var balFormatted = newBal.toLocaleString('en-IN') + ' Rs.';
 
-                    // Immediate UI Balance Updates
-                    var curBalEl = document.getElementById('selfRechargeCurrentBalDisplay');
-                    if (curBalEl) curBalEl.innerText = balFormatted;
-
-                    var hBal = document.getElementById('headerWalletBal');
-                    if (hBal) hBal.innerText = newBal.toLocaleString('en-IN');
-
-                    var dBal = document.getElementById('dashCompanyBalanceDisplay');
-                    if (dBal) dBal.innerText = balFormatted;
-
-                    // Update user cache in localStorage
-                    var cachedUserStr = localStorage.getItem('admin_current_user');
-                    if (cachedUserStr) {
-                        try {
-                            var cu = JSON.parse(cachedUserStr);
-                            cu.balance = newBal;
-                            cu.avail = newBal;
-                            localStorage.setItem('admin_current_user', JSON.stringify(cu));
-                        } catch(e) {}
-                    }
+                    // Immediate UI Balance Updates across all locations (Dashboard Credit Remaining, Header, Vault card, etc.)
+                    syncAuthoritativeBalance({ balance: newBal, credit: newBal });
+                    fetchAdminUsers();
 
                     // Reset Form
                     amtInput.value = '';
