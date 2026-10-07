@@ -10677,7 +10677,7 @@
       container.innerHTML = '<div style="text-align: center; padding: 14px; color: #6b7280; font-size: 12.5px;">Loading active bank accounts...</div>';
 
       try {
-        const res = await safeFetchJson(getApiUrl('/api/payments/banks'));
+        const res = await safeFetchJson(getApiUrl('/api/payments/banks?_t=' + Date.now()));
         if (res.ok && res.data && Array.isArray(res.data.banks)) {
           activeDwBankAccounts = res.data.banks;
           renderBankAccountsList(activeDwBankAccounts);

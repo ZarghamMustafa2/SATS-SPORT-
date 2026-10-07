@@ -7945,7 +7945,7 @@ Boland v Knights                        </a>
 
             var token = getAdminAuthToken();
             try {
-                var res = await safeFetchJson(getApiUrl('/api/payments/banks'), {
+                var res = await safeFetchJson(getApiUrl('/api/payments/banks?_t=' + Date.now()), {
                     headers: {
                         'Authorization': 'Bearer ' + token,
                         'X-Admin-Token': token,

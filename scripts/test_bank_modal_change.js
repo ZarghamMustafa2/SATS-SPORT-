@@ -84,10 +84,9 @@ async function testBankModal(baseUrl) {
   console.log('Modal closed after save:', isModalClosed);
   if (!isModalClosed) throw new Error('Modal did not close after saving!');
 
-  const tableText = await adminPage.locator('#adminBankAccountsTbody').innerText();
-  const savedInTable = tableText.includes(testBankName);
-  console.log(`New bank appeared in admin table: ${savedInTable}`);
-  if (!savedInTable) throw new Error('New bank not found in admin table!');
+  const row = adminPage.locator('#adminBankAccountsTbody tr', { hasText: testBankName });
+  await row.waitFor({ state: 'visible', timeout: 10000 });
+  console.log(`New bank appeared in admin table: true`);
 
   // Take screenshot of Admin bank accounts table
   await adminPage.screenshot({ path: 'admin_bank_accounts_list.png' });
