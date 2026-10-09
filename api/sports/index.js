@@ -510,10 +510,27 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
 
     if (useDiamond) {
       try {
-        const resolved = diamondProvider.resolveDiamondSport(sportParam);
-        const privRes = await diamondProvider.getPriveteData(resolved.sid, groupById);
-        const privData = privRes.data;
-        const rawList = privData?.data || (Array.isArray(privData) ? privData : []);
+        let resolved = diamondProvider.resolveDiamondSport(sportParam);
+        let privRes = await diamondProvider.getPriveteData(resolved.sid, groupById);
+        let privData = privRes.data;
+        let rawList = privData?.data || (Array.isArray(privData) ? privData : []);
+
+        // If initial lookup is empty and sport was inplay or unspecified, try matching across other sports
+        if ((!privRes.success || !Array.isArray(rawList) || rawList.length === 0) && (sportParam === 'inplay' || !searchParams.has('sport'))) {
+          for (const fallbackSid of [4, 1, 2]) {
+            if (fallbackSid === resolved.sid) continue;
+            const tryRes = await diamondProvider.getPriveteData(fallbackSid, groupById);
+            const tryList = tryRes.data?.data || (Array.isArray(tryRes.data) ? tryRes.data : []);
+            if (tryRes.success && Array.isArray(tryList) && tryList.length > 0) {
+              resolved = diamondProvider.resolveDiamondSport(fallbackSid);
+              privRes = tryRes;
+              privData = tryRes.data;
+              rawList = tryList;
+              break;
+            }
+          }
+        }
+
         const isLive = privRes.success && Array.isArray(rawList) && rawList.length > 0;
         const categorized = isLive ? diamondProvider.normalizeMarkets(rawList) : null;
         const fallbackMarkets = getFallbackMatchMarkets(groupById, sportParam);

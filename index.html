@@ -9967,7 +9967,7 @@
     // ==========================================================================
     // SYSTEM B: ODDS INTERFACE CONTROLLER (STRICTLY INDEPENDENT FROM SYSTEM A: B/F/M)
     // ==========================================================================
-    window.handleOddsClick = function(e, btnEl, team1, team2, matchTime, b1, l1, b2, l2, runnerName, type, odd) {
+    window.handleOddsClick = function(e, btnEl, team1, team2, matchTime, b1, l1, b2, l2, runnerName, type, odd, matchId, sport) {
       if (e) {
         e.stopPropagation();
         e.preventDefault();
@@ -9978,13 +9978,21 @@
         return;
       }
 
-      // 2. Open Dedicated Odds Market Interface (System B) matching media_1790500056271.png
-      openOddsMarket(team1, team2, matchTime, b1, l1, b2, l2, runnerName, type, odd);
+      const matchTitle = team2 ? `${team1} vs ${team2}` : team1;
+
+      // 2. Open betslip with exact selected odd
+      openBetslip(e, matchTitle, runnerName, type, odd);
+
+      // 3. Open dedicated authentic match view with real dynamic odds
+      if (typeof openMatchDetails === 'function') {
+        openMatchDetails(team1, team2, matchTime, 'match', b1, l1, b2, l2, matchId, sport);
+      }
     };
 
     function openBetslip(e, matchName, runnerName, type, odd) {
       if (e) e.stopPropagation();
-      activeBet = { matchName, runnerName, type, odd: parseFloat(odd) || 1.85, stake: 500 };
+      const parsedOdd = (odd !== null && odd !== undefined && odd !== '' && !isNaN(parseFloat(odd))) ? parseFloat(odd) : (odd || '');
+      activeBet = { matchName, runnerName, type, odd: parsedOdd, stake: 500 };
 
       // Update mobile floating betslip
       const evTitle = document.getElementById('betslipEventTitle');
@@ -9995,7 +10003,7 @@
         tag.innerText = (type === 'back' ? 'Back: ' : 'Lay: ') + runnerName;
       }
       const oddsInp = document.getElementById('betslipOddsInput');
-      if (oddsInp) oddsInp.value = activeBet.odd;
+      if (oddsInp) oddsInp.value = activeBet.odd !== '' ? activeBet.odd : '';
       const stakeInp = document.getElementById('betslipStakeInput');
       if (stakeInp) stakeInp.value = activeBet.stake;
       updateBetslipProfit();
@@ -12041,7 +12049,7 @@
           <div class="inplay-match-card default-game-box sport-event-card" style="background:${rowBg}; border-radius:10px; padding:8px 12px; margin:6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
             <!-- Left Side: Status/Date, Teams/Tourney, BFM Pin Badges -->
             <div class="default-game-box-left">
-              <div onclick="openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'all', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; cursor:pointer;" title="Click to view match details">
+              <div onclick="openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'all', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}', '${escapeForAttr(m.sport || '')}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; cursor:pointer;" title="Click to view match details">
                 ${isLive ? `
                   <div class="live-wrapper">
                     <span class="live-badge" style="background:#55b80b; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>
@@ -12062,15 +12070,15 @@
 
               <!-- Option 1: B (Bookmaker), Option 2: F (Fancy), Option 3: M (Match Odds) Pin Badges -->
               <div class="bfm-wrapper">
-                <div class="bfm-item" title="Bookmaker Markets (B)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'bookmaker', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')">
+                <div class="bfm-item" title="Bookmaker Markets (B)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'bookmaker', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}', '${escapeForAttr(m.sport || '')}')">
                   <span class="bfm-pin-badge">${m.bPin || (m.hasBM !== false ? '1' : '-')}</span>
                   <span class="bfm-letter-label">B</span>
                 </div>
-                <div class="bfm-item" title="Fancy Markets (F)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'fancy', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')">
+                <div class="bfm-item" title="Fancy Markets (F)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'fancy', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}', '${escapeForAttr(m.sport || '')}')">
                   <span class="bfm-pin-badge">${m.fPin || (m.hasFancy ? '10' : '-')}</span>
                   <span class="bfm-letter-label">F</span>
                 </div>
-                <div class="bfm-item" title="Match Odds (M)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'match', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')">
+                <div class="bfm-item" title="Match Odds (M)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'match', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}', '${escapeForAttr(m.sport || '')}')">
                   <span class="bfm-pin-badge">${m.mPin || '1'}</span>
                   <span class="bfm-letter-label">M</span>
                 </div>
@@ -12088,13 +12096,13 @@
               <!-- Pair 1: Team 1 Back / Lay -->
               <div class="sp-b">
                 <div class="box special-a gradient-special-a ${m.b1 && m.b1 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT1}', 'back', '${safeB1}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT1}', 'back', '${safeB1}', '${safeId}', '${escapeForAttr(m.sport || '')}')" 
                      title="Back ${team1} at ${m.b1 || '-'}">
                   <span>${m.b1 || '-'}</span>
                   ${m.bS1 ? `<div class="amount-below"><p>${m.bS1}</p></div>` : ''}
                 </div>
                 <div class="box special-b gradient-special-b ${m.l1 && m.l1 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT1}', 'lay', '${safeL1}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT1}', 'lay', '${safeL1}', '${safeId}', '${escapeForAttr(m.sport || '')}')" 
                      title="Lay ${team1} at ${m.l1 || '-'}">
                   <span>${m.l1 || '-'}</span>
                   ${m.lS1 ? `<div class="amount-below"><p>${m.lS1}</p></div>` : ''}
@@ -12104,13 +12112,13 @@
               <!-- Pair 2: Draw / Empty -->
               <div class="sp-b">
                 <div class="box special-a gradient-special-a ${m.b2Draw && m.b2Draw !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', 'The Draw', 'back', '${escapeForAttr(m.b2Draw || '')}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', 'The Draw', 'back', '${escapeForAttr(m.b2Draw || '')}', '${safeId}', '${escapeForAttr(m.sport || '')}')" 
                      title="${m.b2Draw && m.b2Draw !== '-' ? 'Back Draw at ' + m.b2Draw : 'No Draw Odds'}">
                   <span>${m.b2Draw || '-'}</span>
                   ${m.bS2Draw ? `<div class="amount-below"><p>${m.bS2Draw}</p></div>` : ''}
                 </div>
                 <div class="box special-b gradient-special-b ${m.l2Draw && m.l2Draw !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', 'The Draw', 'lay', '${escapeForAttr(m.l2Draw || '')}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', 'The Draw', 'lay', '${escapeForAttr(m.l2Draw || '')}', '${safeId}', '${escapeForAttr(m.sport || '')}')" 
                      title="${m.l2Draw && m.l2Draw !== '-' ? 'Lay Draw at ' + m.l2Draw : 'No Draw Odds'}">
                   <span>${m.l2Draw || '-'}</span>
                   ${m.lS2Draw ? `<div class="amount-below"><p>${m.lS2Draw}</p></div>` : ''}
@@ -12120,13 +12128,13 @@
               <!-- Pair 3: Team 2 Back / Lay -->
               <div class="sp-b">
                 <div class="box special-a gradient-special-a ${m.b2 && m.b2 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT2 || safeT1}', 'back', '${safeB2}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT2 || safeT1}', 'back', '${safeB2}', '${safeId}', '${escapeForAttr(m.sport || '')}')" 
                      title="Back ${team2 || team1} at ${m.b2 || '-'}">
                   <span>${m.b2 || '-'}</span>
                   ${m.bS2 ? `<div class="amount-below"><p>${m.bS2}</p></div>` : ''}
                 </div>
                 <div class="box special-b gradient-special-b ${m.l2 && m.l2 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT2 || safeT1}', 'lay', '${safeL2}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT2 || safeT1}', 'lay', '${safeL2}', '${safeId}', '${escapeForAttr(m.sport || '')}')" 
                      title="Lay ${team2 || team1} at ${m.l2 || '-'}">
                   <span>${m.l2 || '-'}</span>
                   ${m.lS2 ? `<div class="amount-below"><p>${m.lS2}</p></div>` : ''}
@@ -12438,7 +12446,7 @@
     }
 
     // AUTHENTIC MATCH DETAILS LOGIC (TRIGGERED BY B, F, M BADGES AND MATCH CARDS)
-    window.openMatchDetails = function(team1, team2, matchTime, initialTab, b1, l1, b2, l2, matchId) {
+    window.openMatchDetails = function(team1, team2, matchTime, initialTab, b1, l1, b2, l2, matchId, sportKey) {
       const details = document.getElementById('matchDetailsContainer');
       const matches = document.getElementById('sportsMatchesContainer');
       const viewMore = document.querySelector('.view-more-wrap');
@@ -12462,15 +12470,18 @@
         const myBetsTitle = document.getElementById('myBetsMatchTitle');
         if (myBetsTitle) myBetsTitle.innerText = matchTitleText;
         const myBetsSport = document.getElementById('myBetsSportTitle');
-        if (myBetsSport && typeof currentSelectedSport !== 'undefined') {
-          myBetsSport.innerText = currentSelectedSport ? (currentSelectedSport.charAt(0).toUpperCase() + currentSelectedSport.slice(1)) : 'Cricket';
+        if (myBetsSport) {
+          const spTitle = sportKey || (typeof currentSelectedSport !== 'undefined' ? currentSelectedSport : 'Cricket');
+          myBetsSport.innerText = spTitle ? (spTitle.charAt(0).toUpperCase() + spTitle.slice(1)) : 'Cricket';
         }
       }
 
       const matchTitle = team2 ? `${team1} vs ${team2}` : team1;
-      const t1 = team1 || 'Team A';
-      const t2 = team2 || 'Team B';
+      const t1 = team1 || 'Team 1';
+      const t2 = team2 || 'Team 2';
       const activeTab = initialTab || 'all';
+      const resolvedSport = sportKey || (typeof currentSelectedSport !== 'undefined' && currentSelectedSport !== 'inplay' ? currentSelectedSport : 'cricket') || 'cricket';
+      const sportLabel = resolvedSport.charAt(0).toUpperCase() + resolvedSport.slice(1);
 
       // Update Left Sidebar with Active Match Hierarchy (matching live reference)
       const sideList = document.getElementById('sidebarSportsList');
@@ -12481,12 +12492,8 @@
         sideList.innerHTML = `
           <div style="padding: 6px 10px;">
             <div style="background:#ffc11c; color:#000; font-weight:800; font-size:12px; padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-              <span>🏏</span>
-              <span>Cricket</span>
-            </div>
-            <div style="background:#111; color:#fff; font-weight:700; font-size:11.5px; padding:7px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span>Uttarakhand Premier League</span>
-              <span style="font-size:10px;">&gt;</span>
+              <span>🏆</span>
+              <span>${sportLabel}</span>
             </div>
             <div style="font-size:11.5px; font-weight:700; color:#111; padding:6px 4px; border-bottom:1px solid #eee;">
               ${matchTitle}
@@ -12495,27 +12502,15 @@
               <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px; background:#f5f5f5;">
                 <span style="color:#28a745; font-weight:900;">✔</span> Match Odds
               </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> Tied Match
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> Completed Match
-              </div>
             </div>
           </div>
         `;
       }
 
-      // Live odds default fallbacks matching reference
-      const oddsB1 = b1 || '1.88';
-      const oddsL1 = l1 || '2.54';
-      const oddsB2 = b2 || '1.70';
-      const oddsL2 = l2 || '2.30';
-
-      const ob1_val = parseFloat(oddsB1) || 1.88;
-      const ol1_val = parseFloat(oddsL1) || 2.54;
-      const ob2_val = parseFloat(oddsB2) || 1.70;
-      const ol2_val = parseFloat(oddsL2) || 2.30;
+      const hasInitB1 = b1 && b1 !== '-' && b1 !== 'null';
+      const hasInitL1 = l1 && l1 !== '-' && l1 !== 'null';
+      const hasInitB2 = b2 && b2 !== '-' && b2 !== 'null';
+      const hasInitL2 = l2 && l2 !== '-' && l2 !== 'null';
 
       details.innerHTML = `
         <!-- Match Details Top Navigation Bar -->
@@ -12554,7 +12549,7 @@
           </div>
 
           <div class="match-sec-substrip">
-            <span>Matched: <strong style="color:#111;">342,056.33</strong></span>
+            <span>Min: 100 | Max: 500,000</span>
             <button onclick="alert('Match Odds Rules: Standard Betfair Exchange Settlement Rules apply.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
           </div>
 
@@ -12573,33 +12568,16 @@
               <span style="font-size:13px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t1}</span>
             </div>
             <div style="display:flex; gap:4px; align-items:center;">
-              <!-- 3 Back Boxes -->
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'back', '${(ob1_val * 0.94).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ob1_val * 0.94).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#888;">24</span>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
+              <div class="match-odds-box-back" ${hasInitB1 ? `onclick="openBetslip(event, '${matchTitle}', '${t1}', 'back', '${b1}')"` : ''}>
+                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${hasInitB1 ? b1 : '-'}</span>
               </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'back', '${(ob1_val * 0.97).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ob1_val * 0.97).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#777;">319</span>
+              <div class="match-odds-box-lay" ${hasInitL1 ? `onclick="openBetslip(event, '${matchTitle}', '${t1}', 'lay', '${l1}')"` : ''}>
+                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${hasInitL1 ? l1 : '-'}</span>
               </div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'back', '${oddsB1}')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${oddsB1}</span>
-                <span style="font-size:9.5px; color:#555;">39</span>
-              </div>
-
-              <!-- 3 Lay Boxes -->
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'lay', '${oddsL1}')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${oddsL1}</span>
-                <span style="font-size:9.5px; color:#555;">85.85K</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'lay', '${(ol1_val * 1.02).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ol1_val * 1.02).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#777;">2.58K</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t1}', 'lay', '${(ol1_val * 1.06).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ol1_val * 1.06).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#888;">276</span>
-              </div>
+              <div class="odds-depth-cell"></div>
+              <div class="odds-depth-cell"></div>
             </div>
           </div>
 
@@ -12610,110 +12588,13 @@
               <span style="font-size:13px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t2}</span>
             </div>
             <div style="display:flex; gap:4px; align-items:center;">
-              <!-- 3 Back Boxes -->
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'back', '${(ob2_val * 0.94).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ob2_val * 0.94).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#888;">18</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'back', '${(ob2_val * 0.97).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ob2_val * 0.97).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#777;">142</span>
-              </div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'back', '${oddsB2}')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${oddsB2}</span>
-                <span style="font-size:9.5px; color:#555;">52</span>
-              </div>
-
-              <!-- 3 Lay Boxes -->
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'lay', '${oddsL2}')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${oddsL2}</span>
-                <span style="font-size:9.5px; color:#555;">12.4K</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'lay', '${(ol2_val * 1.02).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#333;">${(ol2_val * 1.02).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#777;">1.15K</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', '${t2}', 'lay', '${(ol2_val * 1.06).toFixed(2)}')">
-                <span style="font-weight:700; font-size:11.5px; color:#555;">${(ol2_val * 1.06).toFixed(2)}</span>
-                <span style="font-size:9.5px; color:#888;">510</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- SECTION 2: COMPLETED MATCH (MATCHING LIVE REFERENCE ref_live_desktop_full.png) -->
-        <div id="matchSection-completed" class="match-card-sec" style="${activeTab === 'bookmaker' || activeTab === 'fancy' ? 'display:none;' : 'display:block;'}">
-          <div class="match-sec-header">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Completed Match</span>
-              <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">i</span>
-            </div>
-            <span style="color:#ffc11c; font-size:12px;">&#x25bc;</span>
-          </div>
-
-          <div class="match-sec-substrip">
-            <span>Matched: <strong style="color:#111;">249</strong></span>
-            <button onclick="alert('Completed Match Rules apply.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
-          </div>
-
-          <div class="match-table-cols">
-            <span>2 selections</span>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-header-back-wrap">Back {L}</div>
-              <div class="odds-header-lay-wrap">Lay {K}</div>
-            </div>
-          </div>
-
-          <!-- Runner: Yes -->
-          <div class="match-runner-row">
-            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
-              <span style="color:#666; font-size:12px;">&#128202;</span>
-              <span style="font-size:13px; font-weight:700; color:#111;">Yes</span>
-            </div>
-            <div style="display:flex; gap:4px; align-items:center;">
               <div class="odds-depth-cell"></div>
               <div class="odds-depth-cell"></div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'back', '1.14')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">1.14</span>
-                <span style="font-size:9.5px; color:#555;">210</span>
+              <div class="match-odds-box-back" ${hasInitB2 ? `onclick="openBetslip(event, '${matchTitle}', '${t2}', 'back', '${b2}')"` : ''}>
+                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${hasInitB2 ? b2 : '-'}</span>
               </div>
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'lay', '1.17')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">1.17</span>
-                <span style="font-size:9.5px; color:#555;">42</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'lay', '1.22')">
-                <span style="font-weight:700; font-size:11.5px; color:#333;">1.22</span>
-                <span style="font-size:9.5px; color:#777;">21</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: Yes', 'lay', '2.00')">
-                <span style="font-weight:700; font-size:11.5px; color:#555;">2.00</span>
-                <span style="font-size:9.5px; color:#888;">108</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Runner: No -->
-          <div class="match-runner-row">
-            <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
-              <span style="color:#666; font-size:12px;">&#128202;</span>
-              <span style="font-size:13px; font-weight:700; color:#111;">No</span>
-            </div>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'back', '1.04')">
-                <span style="font-weight:700; font-size:11.5px; color:#555;">1.04</span>
-                <span style="font-size:9.5px; color:#888;">62</span>
-              </div>
-              <div class="odds-depth-cell" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'back', '1.05')">
-                <span style="font-weight:700; font-size:11.5px; color:#333;">1.05</span>
-                <span style="font-size:9.5px; color:#777;">52</span>
-              </div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'back', '1.10')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">1.10</span>
-                <span style="font-size:9.5px; color:#555;">26</span>
-              </div>
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', 'Completed Match: No', 'lay', '1.15')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">1.15</span>
-                <span style="font-size:9.5px; color:#555;">80</span>
+              <div class="match-odds-box-lay" ${hasInitL2 ? `onclick="openBetslip(event, '${matchTitle}', '${t2}', 'lay', '${l2}')"` : ''}>
+                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${hasInitL2 ? l2 : '-'}</span>
               </div>
               <div class="odds-depth-cell"></div>
               <div class="odds-depth-cell"></div>
@@ -12721,144 +12602,14 @@
           </div>
         </div>
 
-        <!-- SECTION 3: BOOKMAKER / MANUAL ODDS -->
+        <!-- SECTION 2: BOOKMAKER / MANUAL ODDS -->
         <div id="matchSection-bookmaker" class="match-card-sec" style="${activeTab === 'fancy' || activeTab === 'match' ? 'display:none;' : 'display:block;'}">
-          <!-- Bookmaker 1 & Bookmaker 2 sub-tabs -->
-          <div style="display:flex; border-bottom:1px solid #ddd; background:#f0f0f0;">
-            <div style="padding:7px 16px; background:#111; color:#fff; font-size:12px; font-weight:700; border-top:2px solid #ffc11c; cursor:pointer;">Bookmaker 1</div>
-            <div style="padding:7px 16px; background:#e8e8e8; color:#333; font-size:12px; font-weight:600; cursor:pointer;">Bookmaker 2</div>
-          </div>
-
-          <div style="background:#ffffff; color:#000; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13.5px; font-weight:800; color:#111;">BOOKMAKER</span>
-              <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-              <span style="background:#ff9800; color:#000; font-size:10px; font-weight:800; padding:1px 6px; border-radius:3px;">Cashout</span>
-            </div>
-            <button onclick="alert('Bookmaker Rules apply: Zero commission betting.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
-          </div>
-
-          <div class="match-table-cols">
-            <span>2 selections</span>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-header-back-wrap">Back {L}</div>
-              <div class="odds-header-lay-wrap">Lay {K}</div>
-            </div>
-          </div>
-
-          <!-- Bookmaker Runner 1 -->
-          <div class="match-runner-row">
-            <div style="font-size:13px; font-weight:700; color:#111;">${t1}</div>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle} [BM]', '${t1}', 'back', '1.85')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">1.85</span>
-                <span style="font-size:9.5px; color:#555;">100k</span>
-              </div>
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle} [BM]', '${t1}', 'lay', '1.87')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">1.87</span>
-                <span style="font-size:9.5px; color:#555;">100k</span>
-              </div>
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-            </div>
-          </div>
-
-          <!-- Bookmaker Runner 2 -->
-          <div class="match-runner-row">
-            <div style="font-size:13px; font-weight:700; color:#111;">${t2}</div>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle} [BM]', '${t2}', 'back', '2.15')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">2.15</span>
-                <span style="font-size:9.5px; color:#555;">100k</span>
-              </div>
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle} [BM]', '${t2}', 'lay', '2.18')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">2.18</span>
-                <span style="font-size:9.5px; color:#555;">100k</span>
-              </div>
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-            </div>
-          </div>
+          <div style="padding:15px; text-align:center; color:#777; font-size:12px;">Loading live Bookmaker markets...</div>
         </div>
 
-        <!-- SECTION 4: FANCY MARKETS -->
+        <!-- SECTION 3: FANCY MARKETS -->
         <div id="matchSection-fancy" class="match-card-sec" style="${activeTab === 'bookmaker' || activeTab === 'match' ? 'display:none;' : 'display:block;'}">
-          <div class="match-sec-header">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Fancy Markets (Normal)</span>
-              <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-            </div>
-            <span style="color:#ffc11c; font-size:12px;">&#x25bc;</span>
-          </div>
-
-          <div class="match-table-cols">
-            <span>Market</span>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-header-back-wrap" style="color:#d9534f;">No {Back}</div>
-              <div class="odds-header-lay-wrap" style="color:#0275d8;">Yes {Lay}</div>
-            </div>
-          </div>
-
-          <!-- Fancy 1 -->
-          <div class="match-runner-row">
-            <div style="font-size:12.5px; font-weight:700; color:#111;">6 Over Total Runs</div>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '6 Over Runs - NO', 'lay', '48')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">48</span>
-                <span style="font-size:9.5px; color:#555;">100</span>
-              </div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', '6 Over Runs - YES', 'back', '50')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">50</span>
-                <span style="font-size:9.5px; color:#555;">100</span>
-              </div>
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-            </div>
-          </div>
-
-          <!-- Fancy 2 -->
-          <div class="match-runner-row">
-            <div style="font-size:12.5px; font-weight:700; color:#111;">10 Over Total Runs</div>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', '10 Over Runs - NO', 'lay', '79')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">79</span>
-                <span style="font-size:9.5px; color:#555;">100</span>
-              </div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', '10 Over Runs - YES', 'back', '81')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">81</span>
-                <span style="font-size:9.5px; color:#555;">100</span>
-              </div>
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-            </div>
-          </div>
-
-          <!-- Fancy 3 -->
-          <div class="match-runner-row">
-            <div style="font-size:12.5px; font-weight:700; color:#111;">Fall of 1st Wicket</div>
-            <div style="display:flex; gap:4px; align-items:center;">
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-              <div class="match-odds-box-lay" onclick="openBetslip(event, '${matchTitle}', 'Fall 1st Wkt - NO', 'lay', '24')">
-                <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">24</span>
-                <span style="font-size:9.5px; color:#555;">100</span>
-              </div>
-              <div class="match-odds-box-back" onclick="openBetslip(event, '${matchTitle}', 'Fall 1st Wkt - YES', 'back', '26')">
-                <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">26</span>
-                <span style="font-size:9.5px; color:#555;">100</span>
-              </div>
-              <div class="odds-depth-cell"></div>
-              <div class="odds-depth-cell"></div>
-            </div>
-          </div>
+          <div style="padding:15px; text-align:center; color:#777; font-size:12px;">Loading live Fancy / Session markets...</div>
         </div>
       `;
 
@@ -13048,7 +12799,7 @@
 
       if (matchId) {
         function pollMarkets() {
-          const sp = typeof currentSelectedSport !== 'undefined' ? (currentSelectedSport || 'cricket') : 'cricket';
+          const sp = sportKey || (typeof currentSelectedSport !== 'undefined' && currentSelectedSport !== 'inplay' ? currentSelectedSport : 'cricket') || 'cricket';
           fetch(getApiUrl(`/api/sports?action=fetchmatch&sport=${sp}&match=${matchId}`))
             .then(r => r.json())
             .then(data => {
@@ -13060,7 +12811,7 @@
         }
 
         pollMarkets();
-        window._matchDetailsPollTimer = setInterval(pollMarkets, 7000);
+        window._matchDetailsPollTimer = setInterval(pollMarkets, 4000);
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -13141,731 +12892,35 @@
 
     // ==========================================================================
     // SYSTEM B: AUTHENTIC ODDS MARKET INTERFACE CONTROLLER
-    // Triggered strictly by ODDS buttons (Options 1-6). Fully isolated from System A (B/F/M).
-    // Recreates the exact live reference interface shown in media_1790500056271.png
+    // Delegates directly to live openMatchDetails and openBetslip to guarantee
+    // 100% dynamic odds parity with zero hardcoded fallbacks or static data.
     // ==========================================================================
-    window.openOddsMarket = function(team1, team2, matchTime, b1, l1, b2, l2, activeRunner, activeType, activeOdd) {
-      const container = document.getElementById('oddsMarketContainer');
-      const matches = document.getElementById('sportsMatchesContainer');
-      const viewMore = document.querySelector('.view-more-wrap');
-      const rightSidebar = document.getElementById('appRightSidebar');
-      if (!container) return;
-
-      // Hide sports feed widgets on both desktop and mobile
-      document.querySelectorAll('.subnav-bar, .welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
-        el.classList.add('hidden-inplay');
-      });
-
-      if (matches) matches.style.display = 'none';
-      if (viewMore) viewMore.style.display = 'none';
-      container.classList.add('show');
-      container.style.display = 'block';
-
+    window.openOddsMarket = function(team1, team2, matchTime, b1, l1, b2, l2, activeRunner, activeType, activeOdd, matchId, sport) {
       const matchTitle = team2 ? `${team1} vs ${team2}` : team1;
-      const t1 = team1 || 'South Africa';
-      const t2 = team2 || 'Australia';
-
-      // Desktop Right Sidebar (matching media_1790500056271.png)
-      if (rightSidebar && window.innerWidth > 1024) {
-        rightSidebar.classList.add('show');
-        const myBetsTitle = document.getElementById('myBetsMatchTitle');
-        if (myBetsTitle) myBetsTitle.innerText = matchTitle;
-        const myBetsSport = document.getElementById('myBetsSportTitle');
-        if (myBetsSport) myBetsSport.innerText = 'Cricket';
-      }
-
-      // Left Sidebar Market Tree (matching media_1790500056271.png)
-      const sideList = document.getElementById('sidebarSportsList');
-      if (sideList) {
-        if (!window._origSidebarHtml) {
-          window._origSidebarHtml = sideList.innerHTML;
-        }
-        sideList.innerHTML = `
-          <div style="padding: 6px 10px;">
-            <div style="background:#ffc11c; color:#000; font-weight:800; font-size:12px; padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-              <span>🏏</span>
-              <span>Cricket</span>
-            </div>
-            <div style="background:#111; color:#fff; font-weight:700; font-size:11.5px; padding:7px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span>One Day Internationals</span>
-              <span style="font-size:10px;">&gt;</span>
-            </div>
-            <div style="font-size:11.5px; font-weight:700; color:#111; padding:6px 4px; border-bottom:1px solid #eee;">
-              ${t1} v ${t2}
-            </div>
-            <div style="display:flex; flex-direction:column; gap:4px; margin-top:6px; font-size:11px; color:#333; font-weight:600;">
-              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px; background:#f5f5f5;">
-                <span style="color:#28a745; font-weight:900;">✔</span> Match Odds
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> Completed Match
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:4px 6px; border-radius:4px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> Tied Match
-              </div>
-              <div style="font-size:10px; font-weight:800; color:#e2a808; margin-top:6px; text-transform:uppercase;">Line</div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 15 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 20 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 25 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 30 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 35 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 40 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 45 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings 50 Overs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 1st Innings Runs Line
-              </div>
-              <div style="display:flex; align-items:center; gap:6px; padding:3px 6px; font-size:10.5px;">
-                <span style="color:#28a745; font-weight:900;">✔</span> 2nd Innings 10 Overs Line
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      // Find real match in Sportbex live matches if present
-      const liveMatch = (window.liveSportbexCricketMatches || []).find(m => 
-        (m.team1 && t1 && (m.team1.toLowerCase().includes(t1.toLowerCase()) || t1.toLowerCase().includes(m.team1.toLowerCase()))) || 
-        (m.team2 && t2 && (m.team2.toLowerCase().includes(t2.toLowerCase()) || t2.toLowerCase().includes(m.team2.toLowerCase())))
-      );
-
-      const r1Meta = liveMatch?.runners?.[0];
-      const r2Meta = liveMatch?.runners?.[1];
-
-      // Live odds default fallbacks or live real odds
-      const ob1 = (liveMatch && liveMatch.b1 && liveMatch.b1 !== '-') ? liveMatch.b1 : (b1 || '1.55');
-      const obS1 = (liveMatch && liveMatch.bS1) ? liveMatch.bS1 : '93.21';
-      const ol1 = (liveMatch && liveMatch.l1 && liveMatch.l1 !== '-') ? liveMatch.l1 : (l1 || '1.58');
-      const olS1 = (liveMatch && liveMatch.lS1) ? liveMatch.lS1 : '136.79';
-
-      const ob2 = (liveMatch && liveMatch.b2 && liveMatch.b2 !== '-') ? liveMatch.b2 : (b2 || '2.74');
-      const obS2 = (liveMatch && liveMatch.bS2) ? liveMatch.bS2 : '1.49';
-      const ol2 = (liveMatch && liveMatch.l2 && liveMatch.l2 !== '-') ? liveMatch.l2 : (l2 || '2.82');
-      const olS2 = (liveMatch && liveMatch.lS2) ? liveMatch.lS2 : '51.23';
-
-      const totalMatchedStr = (liveMatch && liveMatch.totalMatched) ? liveMatch.totalMatched : '40,359,276.13';
-
-      // Full HTML for System B container matching media_1790500056271.png
-      container.innerHTML = `
-        <!-- Top Bar with Back button -->
-        <div class="om-topbar">
-          <button class="om-back-btn" onclick="closeOddsMarket()">
-            <span style="font-size:14px; font-weight:900;">&larr;</span> Back to Matches
-          </button>
-          <div style="display:flex; align-items:center; gap:8px; min-width:0; overflow:hidden;">
-            <span style="background:#4cd964; color:#fff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>
-            <span style="font-size:13px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${matchTitle}</span>
-          </div>
-          <button onclick="if(typeof initSportbexLiveIntegration==='function')initSportbexLiveIntegration(); alert('Odds market data refreshed');" style="background:#222; border:1px solid #444; color:#ffc11c; border-radius:4px; padding:4px 8px; font-size:12px; cursor:pointer;" title="Refresh Market">&#x21bb;</button>
-        </div>
-
-        <!-- Ticker Strip -->
-        <div class="om-ticker-strip">
-          Welcome to exchange
-        </div>
-
-        <!-- Tabs Bar (All, Manual Odds, Fancy Markets) -->
-        <div class="om-tabs-bar">
-          <button id="omTab-all" class="om-tab-btn active" onclick="switchOddsMarketTab('all')">All</button>
-          <button id="omTab-manual" class="om-tab-btn" onclick="switchOddsMarketTab('manual')">Manual Odds</button>
-          <button id="omTab-fancy" class="om-tab-btn" onclick="switchOddsMarketTab('fancy')">Fancy Markets</button>
-        </div>
-
-        <!-- 1. MATCH ODDS (Collapsible) -->
-        <div id="omSec-matchOdds" class="om-card-sec">
-          <div class="om-sec-header-dark" onclick="toggleOddsMarketAccordion('omBody-matchOdds', this)">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Match Odds</span>
-              <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-              <button class="om-cashout-pill" onclick="event.stopPropagation(); alert('Cashout calculated.');">Cashout</button>
-            </div>
-            <span class="om-acc-arrow" style="color:#ffc11c; font-size:12px;">&#x25b2;</span>
-          </div>
-          <div id="omBody-matchOdds">
-            <div class="om-sec-substrip">
-              <span>Matched: <strong style="color:#111;">${totalMatchedStr}</strong></span>
-              <button class="om-rules-btn" onclick="alert('Match Odds Rules: Betfair standard settlement rules apply.');">Rules</button>
-            </div>
-            <div class="om-table-cols">
-              <span>2 selections</span>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="odds-header-back-wrap">Back {L}</div>
-                <div class="odds-header-lay-wrap">Lay {K}</div>
-              </div>
-            </div>
-            <!-- Runner 1 -->
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:#111;">
-                <span style="color:#666; font-size:12px;">&#128202;</span>
-                <span>${t1}</span>
-              </div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.back?.[1]?.price || '1.53'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.back?.[1]?.size ? (r1Meta.back[1].size >= 1000 ? (r1Meta.back[1].size/1000).toFixed(1)+'K' : r1Meta.back[1].size) : '24.5K'}</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.back?.[2]?.price || '1.54'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.back?.[2]?.size ? (r1Meta.back[2].size >= 1000 ? (r1Meta.back[2].size/1000).toFixed(1)+'K' : r1Meta.back[2].size) : '18.2K'}</span></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', '${t1}', 'back', '${ob1}')">
-                  <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${ob1}</span>
-                  <span style="font-size:9.5px; color:#555;">${obS1}</span>
-                </div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', '${t1}', 'lay', '${ol1}')">
-                  <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${ol1}</span>
-                  <span style="font-size:9.5px; color:#555;">${olS1}</span>
-                </div>
-                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.lay?.[1]?.price || '1.59'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.lay?.[1]?.size ? (r1Meta.lay[1].size >= 1000 ? (r1Meta.lay[1].size/1000).toFixed(1)+'K' : r1Meta.lay[1].size) : '5.1K'}</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">${r1Meta?.lay?.[2]?.price || '1.60'}</span><span style="font-size:9.5px; color:#666;">${r1Meta?.lay?.[2]?.size ? (r1Meta.lay[2].size >= 1000 ? (r1Meta.lay[2].size/1000).toFixed(1)+'K' : r1Meta.lay[2].size) : '12K'}</span></div>
-              </div>
-            </div>
-            <!-- Runner 2 -->
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:8px; font-weight:700; color:#111;">
-                <span style="color:#666; font-size:12px;">&#128202;</span>
-                <span>${t2}</span>
-              </div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.back?.[1]?.price || '2.70'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.back?.[1]?.size ? (r2Meta.back[1].size >= 1000 ? (r2Meta.back[1].size/1000).toFixed(1)+'K' : r2Meta.back[1].size) : '8.2K'}</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.back?.[2]?.price || '2.72'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.back?.[2]?.size ? (r2Meta.back[2].size >= 1000 ? (r2Meta.back[2].size/1000).toFixed(1)+'K' : r2Meta.back[2].size) : '14.1K'}</span></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', '${t2}', 'back', '${ob2}')">
-                  <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${ob2}</span>
-                  <span style="font-size:9.5px; color:#555;">${obS2}</span>
-                </div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', '${t2}', 'lay', '${ol2}')">
-                  <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${ol2}</span>
-                  <span style="font-size:9.5px; color:#555;">${olS2}</span>
-                </div>
-                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.lay?.[1]?.price || '2.84'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.lay?.[1]?.size ? (r2Meta.lay[1].size >= 1000 ? (r2Meta.lay[1].size/1000).toFixed(1)+'K' : r2Meta.lay[1].size) : '6.8K'}</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">${r2Meta?.lay?.[2]?.price || '2.86'}</span><span style="font-size:9.5px; color:#666;">${r2Meta?.lay?.[2]?.size ? (r2Meta.lay[2].size >= 1000 ? (r2Meta.lay[2].size/1000).toFixed(1)+'K' : r2Meta.lay[2].size) : '9.4K'}</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. LINE MARKETS (Collapsible, 6 cols, matching media_1790500056271.png) -->
-        <div id="omSec-lineMarkets" class="om-card-sec">
-          <div class="om-sec-header-light" onclick="toggleOddsMarketAccordion('omBody-lineMarkets', this)">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13px; font-weight:700; color:#111;">Line Markets</span>
-              <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <button class="om-rules-btn" onclick="event.stopPropagation(); alert('Line Market Rules apply.');">Rules</button>
-              <span class="om-acc-arrow" style="font-size:12px; color:#555;">&#x25bc;</span>
-            </div>
-          </div>
-          <div id="omBody-lineMarkets">
-            <div class="om-table-cols">
-              <span>3 selections</span>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="odds-header-back-wrap">Back {L}</div>
-                <div class="odds-header-lay-wrap">Lay {K}</div>
-              </div>
-            </div>
-            <!-- Line Row 1: 15 Overs Line -->
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:#111; font-size:12px;">
-                <span style="color:#666; font-size:12px;">&#128202;</span>
-                <span>1st Innings 15 Overs Line</span>
-                <span class="om-ladder-icon">&#9638;</span>
-              </div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">82</span><span style="font-size:9.5px; color:#666;">23.52K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">81</span><span style="font-size:9.5px; color:#666;">120.3K</span></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', '15 Overs Line', 'back', '80')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">80</span><span style="font-size:9.5px; color:#555;">22.63K</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', '15 Overs Line', 'lay', '79')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">79</span><span style="font-size:9.5px; color:#555;">229.12K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">78</span><span style="font-size:9.5px; color:#666;">28.7K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">77</span><span style="font-size:9.5px; color:#666;">374</span></div>
-              </div>
-            </div>
-            <!-- Line Row 2: 20 Overs Line -->
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:#111; font-size:12px;">
-                <span style="color:#666; font-size:12px;">&#128202;</span>
-                <span>1st Innings 20 Overs Line</span>
-                <span class="om-ladder-icon">&#9638;</span>
-              </div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">107</span><span style="font-size:9.5px; color:#666;">20.61K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">106</span><span style="font-size:9.5px; color:#666;">124.9K</span></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', '20 Overs Line', 'back', '105')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">105</span><span style="font-size:9.5px; color:#555;">44.22K</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', '20 Overs Line', 'lay', '104')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">104</span><span style="font-size:9.5px; color:#555;">149.46K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">103</span><span style="font-size:9.5px; color:#666;">33.75K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">102</span><span style="font-size:9.5px; color:#666;">45.09K</span></div>
-              </div>
-            </div>
-            <!-- Line Row 3: 50 Overs Line -->
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:#111; font-size:12px;">
-                <span style="color:#666; font-size:12px;">&#128202;</span>
-                <span>1st Innings 50 Overs Line</span>
-                <span class="om-ladder-icon">&#9638;</span>
-              </div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">291</span><span style="font-size:9.5px; color:#666;">60.75K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">290</span><span style="font-size:9.5px; color:#666;">11.05K</span></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', '50 Overs Line', 'back', '289')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">289</span><span style="font-size:9.5px; color:#555;">4.22K</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', '50 Overs Line', 'lay', '288')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">288</span><span style="font-size:9.5px; color:#555;">109.87K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">282</span><span style="font-size:9.5px; color:#666;">5.2K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">265</span><span style="font-size:9.5px; color:#666;">1.77K</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. BOOKMAKER & MINI BOOKMAKER (with Bookmaker 1 / 2 tabs) -->
-        <div id="omSec-bookmakers" class="om-card-sec">
-          <!-- Pill Tabs -->
-          <div style="display:flex; background:#f0f0f0; border-bottom:1px solid #ddd;">
-            <div id="omBmTab-1" style="padding:7px 16px; background:#111; color:#fff; font-size:12px; font-weight:700; border-top:2px solid #ffc11c; cursor:pointer;" onclick="switchOddsMarketBm(1)">Bookmaker 1</div>
-            <div id="omBmTab-2" style="padding:7px 16px; background:#e8e8e8; color:#333; font-size:12px; font-weight:600; cursor:pointer;" onclick="switchOddsMarketBm(2)">Bookmaker 2</div>
-          </div>
-
-          <!-- BOOKMAKER 1 -->
-          <div id="omBmContent-1">
-            <div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:13.5px; font-weight:800; color:#111;">BOOKMAKER</span>
-                <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-                <button class="om-cashout-pill" onclick="alert('Bookmaker Cashout calculated.');">Cashout</button>
-              </div>
-              <button class="om-rules-btn" onclick="alert('Bookmaker Rules: Zero Commission.');">Rules</button>
-            </div>
-            <div class="om-table-cols">
-              <span>2 selections</span>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="odds-header-back-wrap">Back {L}</div>
-                <div class="odds-header-lay-wrap">Lay {K}</div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="font-size:12.5px; font-weight:700; color:#111;">${t1}</div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle} [BM]', '${t1}', 'back', '143')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">143</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle} [BM]', '${t1}', 'lay', '152')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">152</span></div>
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="font-size:12.5px; font-weight:700; color:#111;">${t2}</div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle} [BM]', '${t2}', 'back', '66')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">66</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle} [BM]', '${t2}', 'lay', '68')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">68</span></div>
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-              </div>
-            </div>
-
-            <!-- MINI BOOKMAKER -->
-            <div style="padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #eee; border-bottom:1px solid #eee;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:13.5px; font-weight:800; color:#111;">MINI BOOKMAKER</span>
-                <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-                <button class="om-cashout-pill" onclick="alert('Mini Bookmaker Cashout.');">Cashout</button>
-              </div>
-              <button class="om-rules-btn" onclick="alert('Mini Bookmaker Rules apply.');">Rules</button>
-            </div>
-            <div class="om-table-cols">
-              <span>2 selections</span>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="odds-header-back-wrap">Back {L}</div>
-                <div class="odds-header-lay-wrap">Lay {K}</div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="font-size:12.5px; font-weight:700; color:#111;">${t1}</div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle} [Mini BM]', '${t1}', 'back', '143')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">143</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle} [Mini BM]', '${t1}', 'lay', '150')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">150</span></div>
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="font-size:12.5px; font-weight:700; color:#111;">${t2}</div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle} [Mini BM]', '${t2}', 'back', '67')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">67</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle} [Mini BM]', '${t2}', 'lay', '69')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">69</span></div>
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- BOOKMAKER 2 (Alternate view) -->
-          <div id="omBmContent-2" style="display:none; padding:16px;">
-            <div style="font-size:13px; font-weight:700; color:#444; text-align:center;">Bookmaker 2 markets are syncing. Zero commission active.</div>
-          </div>
-        </div>
-
-        <!-- 4. COMPLETED MATCH (Collapsible) -->
-        <div id="omSec-completedMatch" class="om-card-sec">
-          <div class="om-sec-header-light" onclick="toggleOddsMarketAccordion('omBody-completedMatch', this)">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13px; font-weight:700; color:#111;">Completed Match</span>
-              <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-            </div>
-            <span class="om-acc-arrow" style="font-size:12px; color:#555;">&#x25bc;</span>
-          </div>
-          <div id="omBody-completedMatch">
-            <div class="om-sec-substrip">
-              <span>Matched: <strong style="color:#111;">2.92K</strong></span>
-              <button class="om-rules-btn" onclick="alert('Completed Match Rules apply.');">Rules</button>
-            </div>
-            <div class="om-table-cols">
-              <span>2 selections</span>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="odds-header-back-wrap">Back {L}</div>
-                <div class="odds-header-lay-wrap">Lay {K}</div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:#111;"><span style="color:#666; font-size:12px;">&#128202;</span><span>Yes</span></div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', 'Completed Match: Yes', 'back', '1.01')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">1.01</span><span style="font-size:9.5px; color:#555;">11.91K</span></div>
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:#111;"><span style="color:#666; font-size:12px;">&#128202;</span><span>No</span></div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">1.05</span><span style="font-size:9.5px; color:#666;">52</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">1.1</span><span style="font-size:9.5px; color:#666;">26</span></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', 'Completed Match: No', 'back', '110')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">110</span><span style="font-size:9.5px; color:#555;">15</span></div>
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. TIED MATCH (Collapsible) -->
-        <div id="omSec-tiedMatch" class="om-card-sec">
-          <div class="om-sec-header-light" onclick="toggleOddsMarketAccordion('omBody-tiedMatch', this)">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:13px; font-weight:700; color:#111;">Tied Match</span>
-              <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
-            </div>
-            <span class="om-acc-arrow" style="font-size:12px; color:#555;">&#x25bc;</span>
-          </div>
-          <div id="omBody-tiedMatch">
-            <div class="om-sec-substrip">
-              <span>Matched: <strong style="color:#111;">4.71K</strong></span>
-              <button class="om-rules-btn" onclick="alert('Tied Match Rules apply.');">Rules</button>
-            </div>
-            <div class="om-table-cols">
-              <span>2 selections</span>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="odds-header-back-wrap">Back {L}</div>
-                <div class="odds-header-lay-wrap">Lay {K}</div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:#111;"><span style="color:#666; font-size:12px;">&#128202;</span><span>Yes</span></div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"><span style="font-weight:700;">8</span><span style="font-size:9.5px; color:#666;">114</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">15</span><span style="font-size:9.5px; color:#666;">52</span></div>
-                <div class="om-odds-box-back" onclick="selectMarketOdds(this, '${matchTitle}', 'Tied Match: Yes', 'back', '100')"><span style="font-weight:800; font-size:12.5px; color:#0d47a1;">100</span><span style="font-size:9.5px; color:#555;">531</span></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', 'Tied Match: Yes', 'lay', '120')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">120</span><span style="font-size:9.5px; color:#555;">12</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">140</span><span style="font-size:9.5px; color:#666;">72</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">160</span><span style="font-size:9.5px; color:#666;">481</span></div>
-              </div>
-            </div>
-            <div class="om-runner-row">
-              <div style="display:flex; align-items:center; gap:6px; font-weight:700; color:#111;"><span style="color:#666; font-size:12px;">&#128202;</span><span>No</span></div>
-              <div style="display:flex; gap:4px; align-items:center;">
-                <div class="om-depth-cell"></div><div class="om-depth-cell"></div>
-                <div class="om-odds-box-lay" onclick="selectMarketOdds(this, '${matchTitle}', 'Tied Match: No', 'lay', '1.02')"><span style="font-weight:800; font-size:12.5px; color:#b71c1c;">1.02</span><span style="font-size:9.5px; color:#555;">227.88K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">1.03</span><span style="font-size:9.5px; color:#666;">55.37K</span></div>
-                <div class="om-depth-cell"><span style="font-weight:700;">1.05</span><span style="font-size:9.5px; color:#666;">1.05K</span></div>
-                <div class="om-depth-cell"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. SATRADAR FANCY & WICKET FANCY (Tabs + Subfilters + Session + W/P + Others) -->
-        <div id="omSec-fancyFull" class="om-card-sec">
-          <!-- Satradar Fancy / Wicket Fancy Tabs -->
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#f0f0f0; border-bottom:1px solid #ddd; padding-right:12px;">
-            <div style="display:flex;">
-              <div id="omFancyTab-satradar" style="padding:7px 16px; background:#111; color:#fff; font-size:12px; font-weight:700; border-top:2px solid #ffc11c; cursor:pointer;" onclick="switchOddsMarketFancy('satradar')">Satradar Fancy</div>
-              <div id="omFancyTab-wicket" style="padding:7px 16px; background:#e8e8e8; color:#333; font-size:12px; font-weight:600; cursor:pointer;" onclick="switchOddsMarketFancy('wicket')">Wicket Fancy</div>
-            </div>
-            <button class="om-rules-btn" onclick="alert('Fancy Rules apply.');">Rules</button>
-          </div>
-
-          <!-- Subfilters: ALL | SESSION | W/P | OTHERS -->
-          <div style="display:flex; gap:8px; padding:6px 16px; border-bottom:1px solid #eee; background:#fff;">
-            <button id="omSubfilter-all" class="om-subfilter-btn active" onclick="filterOddsMarketFancy('all')">ALL</button>
-            <button id="omSubfilter-session" class="om-subfilter-btn" onclick="filterOddsMarketFancy('session')">SESSION</button>
-            <button id="omSubfilter-wp" class="om-subfilter-btn" onclick="filterOddsMarketFancy('wp')">W/P</button>
-            <button id="omSubfilter-others" class="om-subfilter-btn" onclick="filterOddsMarketFancy('others')">OTHERS</button>
-          </div>
-
-          <!-- SESSION ACCORDION -->
-          <div id="omFancyGroup-session">
-            <div class="om-sec-header-light" onclick="toggleOddsMarketAccordion('omBody-session', this)">
-              <span style="font-size:11.5px; font-weight:800; color:#555; text-transform:uppercase;">SESSION</span>
-              <span class="om-acc-arrow" style="font-size:12px; color:#555;">&#x25bc;</span>
-            </div>
-            <div id="omBody-session">
-              ${[
-                '20 Over Runs SA',
-                '50 Over Runs SA Adv',
-                'Only 14 Over Runs SA',
-                '13 Over Runs SA',
-                '14 Over Runs SA',
-                '50 Over Run Bhav SA'
-              ].map(title => `
-                <div class="om-accordion-row">
-                  <div>
-                    <div style="font-size:12px; font-weight:700; color:#111;">${title}</div>
-                    <div style="font-size:10px; color:#666; margin-top:2px;">Min / Max / Max Market: <strong>100 / 100K / 1M</strong></div>
-                  </div>
-                  <div style="display:flex; align-items:center; gap:10px;">
-                    <span class="om-ball-running">BALL RUNNING</span>
-                    <span class="om-ladder-icon">&#9638;</span>
-                    <span style="font-size:11px; color:#888; cursor:pointer;">&#x25bc;</span>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- W/P MARKET ACCORDION -->
-          <div id="omFancyGroup-wp">
-            <div class="om-sec-header-light" onclick="toggleOddsMarketAccordion('omBody-wp', this)">
-              <span style="font-size:11.5px; font-weight:800; color:#555; text-transform:uppercase;">W/P MARKET</span>
-              <span class="om-acc-arrow" style="font-size:12px; color:#555;">&#x25bc;</span>
-            </div>
-            <div id="omBody-wp">
-              ${[
-                'T Bavuma Runs',
-                'M Breetzke Runs',
-                'T Bavuma Boundaries',
-                'M Breetzke Boundaries',
-                'H.M.B Face By T Bavuma',
-                'H.M.B Face By M Breetzke',
-                'Fall Of 3rd Wkt Runs SA Adv',
-                'Fall Of 4th Wkt Runs SA Adv',
-                'Fall Of 5th Wkt Runs SA Adv',
-                '3rd Wkt Pship Boundaries SA'
-              ].map(title => `
-                <div class="om-accordion-row">
-                  <div>
-                    <div style="font-size:12px; font-weight:700; color:#111;">${title}</div>
-                    <div style="font-size:10px; color:#666; margin-top:2px;">Min / Max / Max Market: <strong>100 / 100K / 1M</strong></div>
-                  </div>
-                  <div style="display:flex; align-items:center; gap:10px;">
-                    <span class="om-ball-running">BALL RUNNING</span>
-                    <span class="om-ladder-icon">&#9638;</span>
-                    <span style="font-size:11px; color:#888; cursor:pointer;">&#x25bc;</span>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-
-          <!-- OTHERS ACCORDION -->
-          <div id="omFancyGroup-others">
-            <div class="om-sec-header-light" onclick="toggleOddsMarketAccordion('omBody-others', this)">
-              <span style="font-size:11.5px; font-weight:800; color:#555; text-transform:uppercase;">OTHERS</span>
-              <span class="om-acc-arrow" style="font-size:12px; color:#555;">&#x25bc;</span>
-            </div>
-            <div id="omBody-others">
-              ${[
-                'T Bavuma Run Bhav',
-                'M Breetzke Run Bhav',
-                'Fall Of 3rd Wkt Run Bhav SA',
-                '3rd Wkt Caught Out SA',
-                '3rd Wkt Nextman Out T Bavuma',
-                '12.5 Ball Run SA'
-              ].map(title => `
-                <div class="om-accordion-row">
-                  <div>
-                    <div style="font-size:12px; font-weight:700; color:#111;">${title}</div>
-                    <div style="font-size:10px; color:#666; margin-top:2px;">Min / Max / Max Market: <strong>100 / 100K / 1M</strong></div>
-                  </div>
-                  <div style="display:flex; align-items:center; gap:10px;">
-                    <span class="om-ball-running">BALL RUNNING</span>
-                    <span class="om-ladder-icon">&#9638;</span>
-                    <span style="font-size:11px; color:#888; cursor:pointer;">&#x25bc;</span>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-
-      // If an initial odd was clicked, populate and select in Bet Slip
       if (activeRunner && activeType && activeOdd) {
         openBetslip(null, matchTitle, activeRunner, activeType, activeOdd);
       }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof openMatchDetails === 'function') {
+        openMatchDetails(team1, team2, matchTime, 'match', b1, l1, b2, l2, matchId, sport);
+      }
     };
 
     window.closeOddsMarket = function() {
-      const container = document.getElementById('oddsMarketContainer');
-      const matches = document.getElementById('sportsMatchesContainer');
-      const viewMore = document.querySelector('.view-more-wrap');
-      const rightSidebar = document.getElementById('appRightSidebar');
-
-      if (container) {
-        container.classList.remove('show');
-        container.style.display = 'none';
+      if (typeof closeMatchDetails === 'function') {
+        closeMatchDetails();
       }
-      if (rightSidebar) {
-        rightSidebar.classList.remove('show');
-      }
-
-      if (matches) matches.style.display = 'block';
-      if (viewMore) viewMore.style.display = 'block';
-
-      // Restore widgets
-      document.querySelectorAll('.subnav-bar, .welcome-image-container, .welcome-strip, .hero-carousel-container, .providers-container, .races-section-wrapper, .inplay-upcoming-banner, .sport-filter-pills-row, .view-more-wrap').forEach(el => {
-        el.classList.remove('hidden-inplay');
-      });
-
-      // Restore left sidebar HTML
-      if (window._origSidebarHtml) {
-        const sideList = document.getElementById('sidebarSportsList');
-        if (sideList) {
-          sideList.innerHTML = window._origSidebarHtml;
-          window._origSidebarHtml = null;
-        }
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.switchOddsMarketTab = function(tab) {
-      document.querySelectorAll('.om-tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('omTab-' + tab)?.classList.add('active');
-
-      const matchSec = document.getElementById('omSec-matchOdds');
-      const lineSec = document.getElementById('omSec-lineMarkets');
-      const bmSec = document.getElementById('omSec-bookmakers');
-      const compSec = document.getElementById('omSec-completedMatch');
-      const tiedSec = document.getElementById('omSec-tiedMatch');
-      const fancySec = document.getElementById('omSec-fancyFull');
-
-      if (tab === 'all') {
-        if (matchSec) matchSec.style.display = 'block';
-        if (lineSec) lineSec.style.display = 'block';
-        if (bmSec) bmSec.style.display = 'block';
-        if (compSec) compSec.style.display = 'block';
-        if (tiedSec) tiedSec.style.display = 'block';
-        if (fancySec) fancySec.style.display = 'block';
-      } else if (tab === 'manual') {
-        if (matchSec) matchSec.style.display = 'none';
-        if (lineSec) lineSec.style.display = 'none';
-        if (bmSec) bmSec.style.display = 'block';
-        if (compSec) compSec.style.display = 'none';
-        if (tiedSec) tiedSec.style.display = 'none';
-        if (fancySec) fancySec.style.display = 'none';
-      } else if (tab === 'fancy') {
-        if (matchSec) matchSec.style.display = 'none';
-        if (lineSec) lineSec.style.display = 'none';
-        if (bmSec) bmSec.style.display = 'none';
-        if (compSec) compSec.style.display = 'none';
-        if (tiedSec) tiedSec.style.display = 'none';
-        if (fancySec) fancySec.style.display = 'block';
-      }
+      if (typeof switchMatchTab === 'function') switchMatchTab(tab);
     };
 
-    window.switchOddsMarketBm = function(num) {
-      const tab1 = document.getElementById('omBmTab-1');
-      const tab2 = document.getElementById('omBmTab-2');
-      const c1 = document.getElementById('omBmContent-1');
-      const c2 = document.getElementById('omBmContent-2');
-      if (tab1) {
-        tab1.style.background = num === 1 ? '#111' : '#e8e8e8';
-        tab1.style.color = num === 1 ? '#fff' : '#333';
-      }
-      if (tab2) {
-        tab2.style.background = num === 2 ? '#111' : '#e8e8e8';
-        tab2.style.color = num === 2 ? '#fff' : '#333';
-      }
-      if (c1) c1.style.display = num === 1 ? 'block' : 'none';
-      if (c2) c2.style.display = num === 2 ? 'block' : 'none';
-    };
-
-    window.switchOddsMarketFancy = function(type) {
-      const isSatradar = (type === 'satradar');
-      const tSat = document.getElementById('omFancyTab-satradar');
-      const tWkt = document.getElementById('omFancyTab-wicket');
-      if (tSat) {
-        tSat.style.background = isSatradar ? '#111' : '#e8e8e8';
-        tSat.style.color = isSatradar ? '#fff' : '#333';
-      }
-      if (tWkt) {
-        tWkt.style.background = !isSatradar ? '#111' : '#e8e8e8';
-        tWkt.style.color = !isSatradar ? '#fff' : '#333';
-      }
-    };
-
-    window.filterOddsMarketFancy = function(filter) {
-      document.querySelectorAll('.om-subfilter-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('omSubfilter-' + filter)?.classList.add('active');
-
-      const sess = document.getElementById('omFancyGroup-session');
-      const wp = document.getElementById('omFancyGroup-wp');
-      const oth = document.getElementById('omFancyGroup-others');
-
-      if (filter === 'all') {
-        if (sess) sess.style.display = 'block';
-        if (wp) wp.style.display = 'block';
-        if (oth) oth.style.display = 'block';
-      } else if (filter === 'session') {
-        if (sess) sess.style.display = 'block';
-        if (wp) wp.style.display = 'none';
-        if (oth) oth.style.display = 'none';
-      } else if (filter === 'wp') {
-        if (sess) sess.style.display = 'none';
-        if (wp) wp.style.display = 'block';
-        if (oth) oth.style.display = 'none';
-      } else if (filter === 'others') {
-        if (sess) sess.style.display = 'none';
-        if (wp) wp.style.display = 'none';
-        if (oth) oth.style.display = 'block';
-      }
-    };
-
-    window.toggleOddsMarketAccordion = function(bodyId, headerEl) {
-      const body = document.getElementById(bodyId);
-      const arrow = headerEl.querySelector('.om-acc-arrow');
-      if (body) {
-        if (body.style.display === 'none') {
-          body.style.display = 'block';
-          if (arrow) arrow.innerHTML = '&#x25bc;';
-        } else {
-          body.style.display = 'none';
-          if (arrow) arrow.innerHTML = '&#x25b6;';
-        }
-      }
-    };
+    window.switchOddsMarketBm = function(num) {};
+    window.switchOddsMarketFancy = function(type) {};
+    window.filterOddsMarketFancy = function(filter) {};
+    window.toggleOddsMarketAccordion = function(bodyId, headerEl) {};
 
     window.selectMarketOdds = function(boxEl, matchName, runnerName, type, odd) {
-      document.querySelectorAll('.om-odds-box-back, .om-odds-box-lay').forEach(b => b.style.outline = 'none');
-      if (boxEl) {
-        boxEl.style.outline = type === 'back' ? '2.5px solid #0056b3' : '2.5px solid #b71c1c';
-      }
       openBetslip(null, matchName, runnerName, type, odd);
     };
 
@@ -13904,20 +12959,37 @@
                   team2: m.team2,
                   time: m.time || (m.inPlay ? 'LIVE' : 'Upcoming'),
                   timeTab: m.inPlay ? 'inplay' : 'today',
-                  back1: m.b1 || '1.90',
-                  backSize1: m.bS1 || '5k',
-                  lay1: m.l1 || '1.92',
-                  laySize1: m.lS1 || '3k',
-                  back2: m.b2 || '2.00',
-                  backSize2: m.bS2 || '4k',
-                  lay2: m.l2 || '2.04',
-                  laySize2: m.lS2 || '2k',
+                  back1: m.b1 || '-',
+                  backSize1: m.bS1 || '',
+                  lay1: m.l1 || '-',
+                  laySize1: m.lS1 || '',
+                  back2: m.b2 || '-',
+                  backSize2: m.bS2 || '',
+                  lay2: m.l2 || '-',
+                  laySize2: m.lS2 || '',
+                  back2Draw: m.b2Draw || '-',
+                  backSize2Draw: m.bS2Draw || '',
+                  lay2Draw: m.l2Draw || '-',
+                  laySize2Draw: m.lS2Draw || '',
+                  b1: m.b1,
+                  l1: m.l1,
+                  bS1: m.bS1,
+                  lS1: m.lS1,
+                  b2: m.b2,
+                  l2: m.l2,
+                  bS2: m.bS2,
+                  lS2: m.lS2,
+                  b2Draw: m.b2Draw,
+                  l2Draw: m.l2Draw,
+                  bS2Draw: m.bS2Draw,
+                  lS2Draw: m.lS2Draw,
                   bPin: m.bPin || '1',
                   fPin: m.fPin || '10',
                   mPin: m.mPin || '1',
                   id: m.id,
                   gmid: m.gmid,
-                  sid: m.sid
+                  sid: m.sid || 4,
+                  sport: 'cricket'
                 }));
               }
 
@@ -13948,20 +13020,37 @@
                   team2: m.team2,
                   time: m.time || (m.inPlay ? 'LIVE' : 'Upcoming'),
                   timeTab: m.inPlay ? 'inplay' : 'today',
-                  back1: m.b1 || '1.50',
-                  backSize1: m.bS1 || '5k',
-                  lay1: m.l1 || '1.52',
-                  laySize1: m.lS1 || '3k',
-                  back2: m.b2 || '3.00',
-                  backSize2: m.bS2 || '4k',
-                  lay2: m.l2 || '3.10',
-                  laySize2: m.lS2 || '2k',
+                  back1: m.b1 || '-',
+                  backSize1: m.bS1 || '',
+                  lay1: m.l1 || '-',
+                  laySize1: m.lS1 || '',
+                  back2: m.b2 || '-',
+                  backSize2: m.bS2 || '',
+                  lay2: m.l2 || '-',
+                  laySize2: m.lS2 || '',
+                  back2Draw: m.b2Draw || '-',
+                  backSize2Draw: m.bS2Draw || '',
+                  lay2Draw: m.l2Draw || '-',
+                  laySize2Draw: m.lS2Draw || '',
+                  b1: m.b1,
+                  l1: m.l1,
+                  bS1: m.bS1,
+                  lS1: m.lS1,
+                  b2: m.b2,
+                  l2: m.l2,
+                  bS2: m.bS2,
+                  lS2: m.lS2,
+                  b2Draw: m.b2Draw,
+                  l2Draw: m.l2Draw,
+                  bS2Draw: m.bS2Draw,
+                  lS2Draw: m.lS2Draw,
                   bPin: m.bPin || '1',
                   fPin: m.fPin || '5',
                   mPin: m.mPin || '1',
                   id: m.id,
                   gmid: m.gmid,
-                  sid: m.sid
+                  sid: m.sid || 1,
+                  sport: 'soccer'
                 }));
               }
 
@@ -13990,20 +13079,37 @@
                   team2: m.team2,
                   time: m.time || (m.inPlay ? 'LIVE' : 'Upcoming'),
                   timeTab: m.inPlay ? 'inplay' : 'today',
-                  back1: m.b1 || '1.70',
-                  backSize1: m.bS1 || '5k',
-                  lay1: m.l1 || '1.72',
-                  laySize1: m.lS1 || '3k',
-                  back2: m.b2 || '2.10',
-                  backSize2: m.bS2 || '4k',
-                  lay2: m.l2 || '2.15',
-                  laySize2: m.lS2 || '2k',
+                  back1: m.b1 || '-',
+                  backSize1: m.bS1 || '',
+                  lay1: m.l1 || '-',
+                  laySize1: m.lS1 || '',
+                  back2: m.b2 || '-',
+                  backSize2: m.bS2 || '',
+                  lay2: m.l2 || '-',
+                  laySize2: m.lS2 || '',
+                  back2Draw: m.b2Draw || '-',
+                  backSize2Draw: m.bS2Draw || '',
+                  lay2Draw: m.l2Draw || '-',
+                  laySize2Draw: m.lS2Draw || '',
+                  b1: m.b1,
+                  l1: m.l1,
+                  bS1: m.bS1,
+                  lS1: m.lS1,
+                  b2: m.b2,
+                  l2: m.l2,
+                  bS2: m.bS2,
+                  lS2: m.lS2,
+                  b2Draw: m.b2Draw,
+                  l2Draw: m.l2Draw,
+                  bS2Draw: m.bS2Draw,
+                  lS2Draw: m.lS2Draw,
                   bPin: m.bPin || '1',
                   fPin: m.fPin || '5',
                   mPin: m.mPin || '1',
                   id: m.id,
                   gmid: m.gmid,
-                  sid: m.sid
+                  sid: m.sid || 2,
+                  sport: 'tennis'
                 }));
               }
 
@@ -14022,7 +13128,7 @@
 
       refreshLiveFeed();
       if (!window._sportbexPollTimer) {
-        window._sportbexPollTimer = setInterval(refreshLiveFeed, 20000);
+        window._sportbexPollTimer = setInterval(refreshLiveFeed, 8000);
       }
     };
 
