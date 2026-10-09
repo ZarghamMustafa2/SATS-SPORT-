@@ -616,7 +616,9 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           const t2 = Array.isArray(diamondData.data.t2) ? diamondData.data.t2 : [];
           const allRaw = [...t1, ...t2];
           if (allRaw.length > 0) {
-            normalizedMatches = allRaw.map(m => diamondProvider.normalizeMatch(m, resolved.key));
+            normalizedMatches = allRaw
+              .filter(m => !diamondProvider.isSyntheticTestMatch(m))
+              .map(m => diamondProvider.normalizeMatch(m, resolved.key));
             isDiamondLive = true;
           }
         }

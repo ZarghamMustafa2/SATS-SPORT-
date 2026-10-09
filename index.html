@@ -9729,9 +9729,25 @@
       // Populate Top Competitions in Sidebar
       const compList = document.getElementById('sportsCompetitionsList');
       if (compList) {
-        compList.innerHTML = sportObj.competitions.map((c, i) => `
-          <div class="sports-comp-item ${i === 0 ? 'active' : ''}" onclick="filterByCompetition('${c.name}')">
-            <span>${c.flag} ${c.name}</span>
+        let liveMatchesList = [];
+        if (sportKey === 'cricket') liveMatchesList = window.liveDiamondCricketMatches || window.liveSportbexCricketMatches || [];
+        else if (sportKey === 'soccer') liveMatchesList = window.liveDiamondSoccerMatches || [];
+        else if (sportKey === 'tennis') liveMatchesList = window.liveDiamondTennisMatches || [];
+
+        let compsToRender = sportObj.competitions || [];
+        if (liveMatchesList.length > 0) {
+          const uniqueComps = [...new Set(liveMatchesList.map(m => m.competition || m.tournament).filter(Boolean))];
+          if (uniqueComps.length > 0) {
+            compsToRender = uniqueComps.slice(0, 15).map(cName => ({
+              name: cName,
+              flag: '🏆'
+            }));
+          }
+        }
+
+        compList.innerHTML = compsToRender.map((c, i) => `
+          <div class="sports-comp-item ${i === 0 ? 'active' : ''}" onclick="filterByCompetition('${(c.name || '').replace(/'/g, "\\'")}')">
+            <span>${c.flag || '🏆'} ${c.name}</span>
             <span style="font-size: 10px; color: #888;">›</span>
           </div>
         `).join('');
@@ -11850,40 +11866,111 @@
         document.querySelector('.providers-container')?.classList.remove('hidden-inplay');
       }
 
+      // Safe string escaping for HTML attributes & JS call arguments
+      function escapeForAttr(str) {
+        return String(str || '')
+          .replace(/\\/g, '\\\\')
+          .replace(/'/g, "\\'")
+          .replace(/"/g, '&quot;');
+      }
+
+      function getCompFlag(compName) {
+        const c = String(compName || '').toLowerCase();
+        if (c.includes('england') || c.includes('premier league') || c.includes('championship') || c.includes('county')) return 'https://daba.b-cdn.net/flags/gb.svg';
+        if (c.includes('spain') || c.includes('laliga')) return 'https://daba.b-cdn.net/flags/es.svg';
+        if (c.includes('germany') || c.includes('bundesliga')) return 'https://daba.b-cdn.net/flags/de.svg';
+        if (c.includes('italy') || c.includes('serie')) return 'https://daba.b-cdn.net/flags/it.svg';
+        if (c.includes('france') || c.includes('ligue')) return 'https://daba.b-cdn.net/flags/fr.svg';
+        if (c.includes('portugal')) return 'https://daba.b-cdn.net/flags/pt.svg';
+        if (c.includes('saudi')) return 'https://daba.b-cdn.net/flags/sa.svg';
+        if (c.includes('argentina')) return 'https://daba.b-cdn.net/flags/ar.svg';
+        if (c.includes('brazil')) return 'https://daba.b-cdn.net/flags/br.svg';
+        if (c.includes('india') || c.includes('ipl')) return 'https://daba.b-cdn.net/flags/in.svg';
+        if (c.includes('australia') || c.includes('ncl')) return 'https://daba.b-cdn.net/flags/au.svg';
+        if (c.includes('south africa')) return 'https://daba.b-cdn.net/flags/za.svg';
+        if (c.includes('europe') || c.includes('uefa')) return 'https://daba.b-cdn.net/flags/eu.svg';
+        if (c.includes('turkey')) return 'https://daba.b-cdn.net/flags/tr.svg';
+        if (c.includes('chile')) return 'https://daba.b-cdn.net/flags/cl.svg';
+        if (c.includes('greece')) return 'https://daba.b-cdn.net/flags/gr.svg';
+        if (c.includes('romania')) return 'https://daba.b-cdn.net/flags/ro.svg';
+        if (c.includes('poland')) return 'https://daba.b-cdn.net/flags/pl.svg';
+        if (c.includes('czech')) return 'https://daba.b-cdn.net/flags/cz.svg';
+        if (c.includes('sweden')) return 'https://daba.b-cdn.net/flags/se.svg';
+        if (c.includes('norway')) return 'https://daba.b-cdn.net/flags/no.svg';
+        if (c.includes('denmark')) return 'https://daba.b-cdn.net/flags/dk.svg';
+        if (c.includes('belgium')) return 'https://daba.b-cdn.net/flags/be.svg';
+        if (c.includes('ireland')) return 'https://daba.b-cdn.net/flags/ie.svg';
+        if (c.includes('mexico')) return 'https://daba.b-cdn.net/flags/mx.svg';
+        if (c.includes('colombia')) return 'https://daba.b-cdn.net/flags/co.svg';
+        return '';
+      }
+
+      function groupMatchesByComp(matchesList) {
+        const groups = {};
+        (matchesList || []).forEach(m => {
+          const comp = m.competition || m.tournament || (m.sportName ? m.sportName + ' Matches' : 'Other Matches');
+          if (!groups[comp]) groups[comp] = [];
+          groups[comp].push(m);
+        });
+        return groups;
+      }
+
       // Helper to build 2-row match card matching reference DOM
       function buildMatchRow(m, idx) {
         const isOdd = (idx % 2 === 0);
         const rowBg = isOdd ? '#ffffff' : '#fcf4d9';
-        const matchTitle = m.team2 ? `${m.team1} vs ${m.team2}` : m.team1;
+        const team1 = m.team1 || 'Team 1';
+        const team2 = m.team2 || '';
+        const matchTitle = team2 ? `${team1} vs ${team2}` : team1;
+        const matchId = m.gmid || m.id || '';
+        const isLive = Boolean(m.isLive || m.inPlay || (m.time === 'LIVE'));
+        const timeDisplay = isLive ? 'LIVE' : (m.time || m.stime || 'Upcoming');
+        const compDisplay = m.competition || m.tournament || '';
+
+        const safeT1 = escapeForAttr(team1);
+        const safeT2 = escapeForAttr(team2);
+        const safeTime = escapeForAttr(timeDisplay);
+        const safeId = escapeForAttr(matchId);
+        const safeB1 = escapeForAttr(m.b1 || '');
+        const safeL1 = escapeForAttr(m.l1 || '');
+        const safeB2 = escapeForAttr(m.b2 || '');
+        const safeL2 = escapeForAttr(m.l2 || '');
+
         return `
           <div class="inplay-match-card default-game-box sport-event-card" style="background:${rowBg}; border-radius:10px; padding:8px 12px; margin:6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
             <!-- Left Side: Status/Date, Teams/Tourney, BFM Pin Badges -->
             <div class="default-game-box-left">
-              <div onclick="openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'all', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; cursor:pointer;" title="Click to view match details">
-                <div class="live-wrapper">
-                  <span class="live-badge" style="background:#55b80b; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>
-                </div>
+              <div onclick="openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'all', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; cursor:pointer;" title="Click to view match details">
+                ${isLive ? `
+                  <div class="live-wrapper">
+                    <span class="live-badge" style="background:#55b80b; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>
+                  </div>
+                ` : `
+                  <div class="upcoming-wrapper">
+                    <span class="upcoming-time-badge" style="background:#eef0f3; color:#333333; font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:4px; flex-shrink:0; white-space:nowrap;">${timeDisplay}</span>
+                  </div>
+                `}
                 <div class="market-name-container" style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
                   <div class="def-runners-side" style="font-size:13px; font-weight:700; color:#111111; display:flex; align-items:center; justify-content:center; gap:6px; width:100%; min-width:0;">
-                    <span class="def-runner-team text-right">${m.team1}</span>
-                    ${m.team2 ? `<span class="vs-badge" style="font-size:9.5px; font-weight:800; color:#b8860b; background:#fdf3d0; padding:1px 5px; border-radius:4px;">Vs</span><span class="def-runner-team text-left">${m.team2}</span>` : ''}
+                    <span class="def-runner-team text-right">${team1}</span>
+                    ${team2 ? `<span class="vs-badge" style="font-size:9.5px; font-weight:800; color:#b8860b; background:#fdf3d0; padding:1px 5px; border-radius:4px;">Vs</span><span class="def-runner-team text-left">${team2}</span>` : ''}
                   </div>
-                  ${m.competition ? `<div class="competition-name" style="font-size:10.5px; font-weight:700; color:#444444; text-transform:uppercase; margin-top:2px;">${m.competition}</div>` : ''}
+                  ${compDisplay ? `<div class="competition-name" style="font-size:10.5px; font-weight:700; color:#444444; text-transform:uppercase; margin-top:2px;">${compDisplay}</div>` : ''}
                 </div>
               </div>
 
               <!-- Option 1: B (Bookmaker), Option 2: F (Fancy), Option 3: M (Match Odds) Pin Badges -->
               <div class="bfm-wrapper">
-                <div class="bfm-item" title="Bookmaker Markets (B)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'bookmaker', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')">
-                  <span class="bfm-pin-badge">${m.bPin || '1'}</span>
+                <div class="bfm-item" title="Bookmaker Markets (B)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'bookmaker', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')">
+                  <span class="bfm-pin-badge">${m.bPin || (m.hasBM !== false ? '1' : '-')}</span>
                   <span class="bfm-letter-label">B</span>
                 </div>
-                <div class="bfm-item" title="Fancy Markets (F)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'fancy', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')">
-                  <span class="bfm-pin-badge">${m.fPin || '22'}</span>
+                <div class="bfm-item" title="Fancy Markets (F)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'fancy', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')">
+                  <span class="bfm-pin-badge">${m.fPin || (m.hasFancy ? '10' : '-')}</span>
                   <span class="bfm-letter-label">F</span>
                 </div>
-                <div class="bfm-item" title="Match Odds (M)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'match', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')">
-                  <span class="bfm-pin-badge">${m.mPin || '8'}</span>
+                <div class="bfm-item" title="Match Odds (M)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'match', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}')">
+                  <span class="bfm-pin-badge">${m.mPin || '1'}</span>
                   <span class="bfm-letter-label">M</span>
                 </div>
               </div>
@@ -11900,14 +11987,14 @@
               <!-- Pair 1: Team 1 Back / Lay -->
               <div class="sp-b">
                 <div class="box special-a gradient-special-a ${m.b1 && m.b1 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team1}', 'back', '${m.b1 || ''}')" 
-                     title="Back ${m.team1} at ${m.b1 || '-'}">
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT1}', 'back', '${safeB1}')" 
+                     title="Back ${team1} at ${m.b1 || '-'}">
                   <span>${m.b1 || '-'}</span>
                   ${m.bS1 ? `<div class="amount-below"><p>${m.bS1}</p></div>` : ''}
                 </div>
                 <div class="box special-b gradient-special-b ${m.l1 && m.l1 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team1}', 'lay', '${m.l1 || ''}')" 
-                     title="Lay ${m.team1} at ${m.l1 || '-'}">
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT1}', 'lay', '${safeL1}')" 
+                     title="Lay ${team1} at ${m.l1 || '-'}">
                   <span>${m.l1 || '-'}</span>
                   ${m.lS1 ? `<div class="amount-below"><p>${m.lS1}</p></div>` : ''}
                 </div>
@@ -11916,13 +12003,13 @@
               <!-- Pair 2: Draw / Empty -->
               <div class="sp-b">
                 <div class="box special-a gradient-special-a ${m.b2Draw && m.b2Draw !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', 'The Draw', 'back', '${m.b2Draw || ''}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', 'The Draw', 'back', '${escapeForAttr(m.b2Draw || '')}')" 
                      title="${m.b2Draw && m.b2Draw !== '-' ? 'Back Draw at ' + m.b2Draw : 'No Draw Odds'}">
                   <span>${m.b2Draw || '-'}</span>
                   ${m.bS2Draw ? `<div class="amount-below"><p>${m.bS2Draw}</p></div>` : ''}
                 </div>
                 <div class="box special-b gradient-special-b ${m.l2Draw && m.l2Draw !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', 'The Draw', 'lay', '${m.l2Draw || ''}')" 
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', 'The Draw', 'lay', '${escapeForAttr(m.l2Draw || '')}')" 
                      title="${m.l2Draw && m.l2Draw !== '-' ? 'Lay Draw at ' + m.l2Draw : 'No Draw Odds'}">
                   <span>${m.l2Draw || '-'}</span>
                   ${m.lS2Draw ? `<div class="amount-below"><p>${m.lS2Draw}</p></div>` : ''}
@@ -11932,14 +12019,14 @@
               <!-- Pair 3: Team 2 Back / Lay -->
               <div class="sp-b">
                 <div class="box special-a gradient-special-a ${m.b2 && m.b2 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team2 || m.team1}', 'back', '${m.b2 || ''}')" 
-                     title="Back ${m.team2 || m.team1} at ${m.b2 || '-'}">
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT2 || safeT1}', 'back', '${safeB2}')" 
+                     title="Back ${team2 || team1} at ${m.b2 || '-'}">
                   <span>${m.b2 || '-'}</span>
                   ${m.bS2 ? `<div class="amount-below"><p>${m.bS2}</p></div>` : ''}
                 </div>
                 <div class="box special-b gradient-special-b ${m.l2 && m.l2 !== '-' ? '' : 'empty-odd'}" 
-                     onclick="handleOddsClick(event, this, '${m.team1}', '${m.team2 || ''}', '${m.time || ''}', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.team2 || m.team1}', 'lay', '${m.l2 || ''}')" 
-                     title="Lay ${m.team2 || m.team1} at ${m.l2 || '-'}">
+                     onclick="handleOddsClick(event, this, '${safeT1}', '${safeT2}', '${safeTime}', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeT2 || safeT1}', 'lay', '${safeL2}')" 
+                     title="Lay ${team2 || team1} at ${m.l2 || '-'}">
                   <span>${m.l2 || '-'}</span>
                   ${m.lS2 ? `<div class="amount-below"><p>${m.lS2}</p></div>` : ''}
                 </div>
@@ -11967,23 +12054,25 @@
       `;
 
       function buildSportAccordion(id, title, flagSrc, matches) {
+        const safeId = String(id).replace(/[^a-zA-Z0-9_-]/g, '_');
         return `
-          <div class="inplay_matches_box_header coming-up" onclick="toggleSportSection('${id}')" style="background:rgb(23, 23, 23); color:rgb(33, 37, 41); height:30px; margin:6px 10px 0 10px; padding:1px 10px; display:flex; justify-content:space-between; align-items:center; border-radius:10px; cursor:pointer;">
+          <div class="inplay_matches_box_header coming-up" onclick="toggleSportSection('${safeId}')" style="background:rgb(23, 23, 23); color:rgb(33, 37, 41); height:30px; margin:6px 10px 0 10px; padding:1px 10px; display:flex; justify-content:space-between; align-items:center; border-radius:10px; cursor:pointer;">
             <div style="display:flex; align-items:center; gap:8px;">
               ${flagSrc ? `<img src="${flagSrc}" height="16" style="vertical-align:middle; border-radius:2px;" alt="${title}">` : ''}
               <span style="color:rgb(255, 192, 28); font-size:11px; font-weight:700;">${title}</span>
             </div>
-            <span id="chev-${id}" style="color:#ffffff; font-size:13px; font-weight:700;">^</span>
+            <span id="chev-${safeId}" style="color:#ffffff; font-size:13px; font-weight:700;">^</span>
           </div>
-          <div id="list-${id}" style="margin:0 10px; background:transparent;">
+          <div id="list-${safeId}" style="margin:0 10px; background:transparent;">
             ${matches.map((m, idx) => buildMatchRow(m, idx)).join('')}
           </div>
         `;
       }
 
       window.toggleSportSection = function(id) {
-        const list = document.getElementById('list-' + id);
-        const chev = document.getElementById('chev-' + id);
+        const safeId = String(id).replace(/[^a-zA-Z0-9_-]/g, '_');
+        const list = document.getElementById('list-' + safeId);
+        const chev = document.getElementById('chev-' + safeId);
         if (list) {
           if (list.style.display === 'none') {
             list.style.display = 'block';
@@ -12002,21 +12091,27 @@
         if (inplayNavTab) inplayNavTab.classList.add('active');
 
         const defaultCricketMatches = [
-          { isLive: true, team1: 'Keonjhar Miners', team2: 'Kataka Panthers', b1: '1.55', bS1: '93.21', l1: '1.58', lS1: '136.79', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '2.74', bS2: '1.49', l2: '2.82', lS2: '51.23' },
-          { isLive: true, team1: 'Rourkela Steelers', team2: 'Puri Titans', b1: '1.37', bS1: '2.4K', l1: '2.54', lS1: '1.8K', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.66', bS2: '1.1K', l2: '4.6', lS2: '890' },
-          { isLive: true, team1: 'Bahamas', team2: 'Bermuda', b1: '3.25', bS1: '400', l1: '4.3', lS1: '250', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.31', bS2: '6.2K', l2: '1.44', lS2: '8.1K' },
-          { isLive: true, team1: 'Rishikesh River Kings', team2: 'Dehradun Warriors', b1: '1.55', bS1: '80', l1: '3.8', lS1: '10', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.36', bS2: '20', l2: '2.8', lS2: '10' },
-          { isLive: true, team1: 'Titans', team2: 'Western Province', b1: '2.4', bS1: '69', l1: '2.46', lS1: '180', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.69', bS2: '263', l2: '1.7', lS2: '100' }
+          { isLive: true, inPlay: true, team1: 'Keonjhar Miners', team2: 'Kataka Panthers', competition: 'Odisha Cricket League', b1: '1.55', bS1: '93.21', l1: '1.58', lS1: '136.79', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '2.74', bS2: '1.49', l2: '2.82', lS2: '51.23' },
+          { isLive: true, inPlay: true, team1: 'Rourkela Steelers', team2: 'Puri Titans', competition: 'Odisha Cricket League', b1: '1.37', bS1: '2.4K', l1: '2.54', lS1: '1.8K', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.66', bS2: '1.1K', l2: '4.6', lS2: '890' },
+          { isLive: true, inPlay: true, team1: 'Bahamas', team2: 'Bermuda', competition: 'ICC T20 World Cup Qualifiers', b1: '3.25', bS1: '400', l1: '4.3', lS1: '250', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.31', bS2: '6.2K', l2: '1.44', lS2: '8.1K' },
+          { isLive: true, inPlay: true, team1: 'Rishikesh River Kings', team2: 'Dehradun Warriors', competition: 'Uttarakhand Premier League', b1: '1.55', bS1: '80', l1: '3.8', lS1: '10', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.36', bS2: '20', l2: '2.8', lS2: '10' },
+          { isLive: true, inPlay: true, team1: 'Titans', team2: 'Western Province', competition: 'South Africa T20 Challenge', b1: '2.4', bS1: '69', l1: '2.46', lS1: '180', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.69', bS2: '263', l2: '1.7', lS2: '100' }
         ];
 
-        const cricketMatches = (window.liveSportbexCricketMatches && window.liveSportbexCricketMatches.length > 0)
-          ? window.liveSportbexCricketMatches
-          : defaultCricketMatches;
+        const allCricket = window.liveDiamondCricketMatches || window.liveSportbexCricketMatches || [];
+        const liveCricket = allCricket.filter(m => m.inPlay || m.isLive);
+        const cricketMatches = liveCricket.length > 0 ? liveCricket : defaultCricketMatches;
 
-        const soccerMatches = [
-          { isLive: true, team1: 'Arsenal', team2: 'Chelsea', b1: '2.14', bS1: '12k', l1: '2.18', lS1: '8k', b2Draw: '3.40', bS2Draw: '5k', l2Draw: '3.55', lS2Draw: '3k', b2: '3.10', bS2: '4k', l2: '3.25', lS2: '2k' },
-          { isLive: true, team1: 'Real Madrid', team2: 'Barcelona', b1: '2.05', bS1: '45k', l1: '2.08', lS1: '33k', b2Draw: '3.60', bS2Draw: '15k', l2Draw: '3.75', lS2Draw: '10k', b2: '3.30', bS2: '12k', l2: '3.45', lS2: '8k' }
+        const allSoccer = window.liveDiamondSoccerMatches || [];
+        const liveSoccer = allSoccer.filter(m => m.inPlay || m.isLive);
+        const soccerMatches = liveSoccer.length > 0 ? liveSoccer : [
+          { isLive: true, inPlay: true, team1: 'Arsenal', team2: 'Chelsea', competition: 'English Premier League', b1: '2.14', bS1: '12k', l1: '2.18', lS1: '8k', b2Draw: '3.40', bS2Draw: '5k', l2Draw: '3.55', lS2Draw: '3k', b2: '3.10', bS2: '4k', l2: '3.25', lS2: '2k' },
+          { isLive: true, inPlay: true, team1: 'Real Madrid', team2: 'Barcelona', competition: 'Spanish La Liga', b1: '2.05', bS1: '45k', l1: '2.08', lS1: '33k', b2Draw: '3.60', bS2Draw: '15k', l2Draw: '3.75', lS2Draw: '10k', b2: '3.30', bS2: '12k', l2: '3.45', lS2: '8k' }
         ];
+
+        const allTennis = window.liveDiamondTennisMatches || [];
+        const liveTennis = allTennis.filter(m => m.inPlay || m.isLive);
+        const tennisMatches = liveTennis;
 
         let inplayHtml = `
           <!-- In-Play Matches Heading Card -->
@@ -12027,7 +12122,7 @@
 
           <!-- Cricket Section -->
           <div class="inplay-sport-header" onclick="toggleSportSection('inplayCricket')" style="background:#111111; color:#ffb800; height:36px; margin:4px 10px 0 10px; padding:0 12px; display:flex; align-items:center; justify-content:space-between; border-radius:8px 8px 0 0; cursor:pointer;">
-            <span style="display:flex; align-items:center; gap:6px;"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94401.png" height="18" alt="Cricket"><span style="font-weight:700; font-size:14px; color:#ffb800;">Cricket</span></span>
+            <span style="display:flex; align-items:center; gap:6px;"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94401.png" height="18" alt="Cricket"><span style="font-weight:700; font-size:14px; color:#ffb800;">Cricket (${cricketMatches.length})</span></span>
             <span id="chev-inplayCricket" style="color:#ffffff; font-size:13px; font-weight:700;">^</span>
           </div>
           <div id="list-inplayCricket" style="margin:0 10px; background:transparent;">
@@ -12036,12 +12131,23 @@
 
           <!-- Soccer Section -->
           <div class="inplay-sport-header" onclick="toggleSportSection('inplaySoccer')" style="background:#111111; color:#ffb800; height:36px; margin:8px 10px 0 10px; padding:0 12px; display:flex; align-items:center; justify-content:space-between; border-radius:8px 8px 0 0; cursor:pointer;">
-            <span style="display:flex; align-items:center; gap:6px;"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94400.png" height="18" alt="Soccer"><span style="font-weight:700; font-size:14px; color:#ffb800;">Soccer</span></span>
+            <span style="display:flex; align-items:center; gap:6px;"><img src="https://dabba.b-cdn.net/satsport.co.in/banners/94400.png" height="18" alt="Soccer"><span style="font-weight:700; font-size:14px; color:#ffb800;">Soccer (${soccerMatches.length})</span></span>
             <span id="chev-inplaySoccer" style="color:#ffffff; font-size:13px; font-weight:700;">^</span>
           </div>
           <div id="list-inplaySoccer" style="margin:0 10px; background:transparent;">
             ${soccerMatches.map((m, idx) => buildMatchRow(m, idx)).join('')}
           </div>
+
+          <!-- Tennis Section -->
+          ${tennisMatches.length > 0 ? `
+          <div class="inplay-sport-header" onclick="toggleSportSection('inplayTennis')" style="background:#111111; color:#ffb800; height:36px; margin:8px 10px 0 10px; padding:0 12px; display:flex; align-items:center; justify-content:space-between; border-radius:8px 8px 0 0; cursor:pointer;">
+            <span style="display:flex; align-items:center; gap:6px;"><img src="https://dabba.b-cdn.net/satsports247.app/Tennis.svg" height="18" alt="Tennis"><span style="font-weight:700; font-size:14px; color:#ffb800;">Tennis (${tennisMatches.length})</span></span>
+            <span id="chev-inplayTennis" style="color:#ffffff; font-size:13px; font-weight:700;">^</span>
+          </div>
+          <div id="list-inplayTennis" style="margin:0 10px; background:transparent;">
+            ${tennisMatches.map((m, idx) => buildMatchRow(m, idx)).join('')}
+          </div>
+          ` : ''}
 
           <!-- Authentic Reference View More Link -->
           <div class="mobile-view-more" style="text-align:center; padding:16px 0 10px; color:#e50914; font-size:14px; font-weight:700; cursor:pointer;" onclick="if (typeof selectSport === 'function') selectSport('cricket');">
@@ -12058,40 +12164,27 @@
       if (currentSelectedSport === 'cricket') {
         const heroBanner = `<img src="https://www.satsport.co.in/assets/images/banners/4.png" style="width:calc(100% - 20px); height:55px; object-fit:cover; border-radius:8px; margin:6px 10px 4px 10px; display:block;" alt="Cricket Banner">`;
         
-        const iplMatches = [
-          { time: 'Mon, Mar 1 06:00 am', team1: 'Indian Premier League', marketLabel: 'Tournament Winner Market', b1: '6.4', bS1: '3', l1: '9.4', lS1: '2', b2: '3.8', bS2: '2', l2: '4.7', lS2: '2' }
+        const liveList = window.liveDiamondCricketMatches || window.liveSportbexCricketMatches || [];
+        let matchesToRender = liveList.length > 0 ? liveList : [
+          { time: 'Tomorrow 01:00 am', team1: 'South Africa', team2: 'Australia', competition: 'One Day Internationals', b1: '2.24', bS1: '466', l1: '2.26', lS1: '11', b2: '1.79', bS2: '200', l2: '1.8', lS2: '571' },
+          { time: 'Tomorrow 01:30 am', team1: 'India', team2: 'West Indies', competition: 'One Day Internationals', b1: '1.13', bS1: '26.1K', l1: '1.14', lS1: '21.17K', b2: '8.2', bS2: '22', l2: '8.8', lS2: '3.38K' }
         ];
 
-        const defaultOdiMatches = [
-          { time: 'Tomorrow 01:00 am', team1: 'South Africa', team2: 'Australia', b1: '2.24', bS1: '466', l1: '2.26', lS1: '11', b2: '1.79', bS2: '200', l2: '1.8', lS2: '571' },
-          { time: 'Tomorrow 01:30 am', team1: 'India', team2: 'West Indies', b1: '1.13', bS1: '26.1K', l1: '1.14', lS1: '21.17K', b2: '8.2', bS2: '22', l2: '8.8', lS2: '3.38K' },
-          { time: 'Tomorrow 02:30 am', team1: 'England', team2: 'Sri Lanka', b1: '1.18', bS1: '13.19K', l1: '1.19', lS1: '193', b2: '6.2', bS2: '220', l2: '6.4', lS2: '28' }
-        ];
-
-        const liveCricketList = window.liveSportbexCricketMatches || [];
-        const liveOdi = liveCricketList.filter(m => (m.competition || '').toLowerCase().includes('one day') || (m.competition || '').toLowerCase().includes('international'));
-        const liveCounty = liveCricketList.filter(m => (m.competition || '').toLowerCase().includes('county'));
-
-        const odiMatches = liveOdi.length > 0 ? liveOdi : defaultOdiMatches;
-
-        const t20Matches = [
-          { time: 'Starting In 18m', team1: 'Sierra Leone', team2: 'Nigeria A', b1: '7.6', bS1: '3', l1: '8.2', lS1: '2', b2: '1.14', bS2: '14', l2: '1.15', lS2: '18' },
-          { time: 'Today 06:00 am', team1: 'Ghana', team2: 'Nigeria', b1: '6.8', bS1: '5', l1: '7.8', lS1: '30', b2: '1.15', bS2: '162', l2: '1.17', lS2: '10' }
-        ];
-
-        const ausNclMatches = [
-          { time: 'Mon 04:30 pm', team1: 'New South Wales Breakers W', team2: 'Queensland Fire W', b1: '1.4', bS1: '11', l1: '3.45', lS1: '2', b2: '1.4', bS2: '11', l2: '3.45', lS2: '2' },
-          { time: 'Mon 09:00 pm', team1: 'Victoria W', team2: 'South Australia W', b1: '1.4', bS1: '11', l1: '3.45', lS1: '2', b2: '1.4', bS2: '11', l2: '3.45', lS2: '2' }
-        ];
-
-        let html = heroBanner;
-        html += buildSportAccordion('ipl', 'Indian Premier League', 'https://daba.b-cdn.net/flags/in.svg', iplMatches);
-        html += buildSportAccordion('odi', 'One Day Internationals', 'https://daba.b-cdn.net/flags/gb.svg', odiMatches);
-        if (liveCounty.length > 0) {
-          html += buildSportAccordion('county', 'County Championship', 'https://daba.b-cdn.net/flags/gb.svg', liveCounty);
+        if (filterComp && filterComp !== 'all') {
+          const compLower = filterComp.toLowerCase();
+          const filtered = matchesToRender.filter(m => (m.competition || m.tournament || '').toLowerCase().includes(compLower));
+          if (filtered.length > 0) matchesToRender = filtered;
         }
-        html += buildSportAccordion('t20', 'International Twenty20 Matches', '', t20Matches);
-        html += buildSportAccordion('ncl', 'Australia NCL Women', 'https://daba.b-cdn.net/flags/au.svg', ausNclMatches);
+
+        const compGroups = groupMatchesByComp(matchesToRender);
+        let html = heroBanner;
+        let gIdx = 0;
+        for (const [compName, compMatches] of Object.entries(compGroups)) {
+          const flag = getCompFlag(compName);
+          const safeId = 'cricket_comp_' + (gIdx++);
+          html += buildSportAccordion(safeId, `${compName} (${compMatches.length})`, flag, compMatches);
+        }
+
         cont.innerHTML = html;
         return;
       }
@@ -12100,26 +12193,27 @@
       if (currentSelectedSport === 'soccer') {
         const heroBanner = `<img src="https://www.satsport.co.in/assets/images/banners/1.png" style="width:calc(100% - 20px); height:55px; object-fit:cover; border-radius:8px; margin:6px 10px 4px 10px; display:block;" alt="Soccer Banner">`;
 
-        const uefaNationsMatches = [
-          { time: 'Today 06:00 am', team1: 'Slovenia', team2: 'Scotland', b1: '2.7', bS1: '331', l1: '2.72', lS1: '28', b2Draw: '3.25', bS2Draw: '2.58K', l2Draw: '3.3', lS2Draw: '2.31K', b2: '3.05', bS2: '45', l2: '3.1', lS2: '446' },
-          { time: 'Today 09:00 am', team1: 'Bulgaria', team2: 'Luxembourg', b1: '2.44', bS1: '1.26K', l1: '2.46', lS1: '1.03K', b2Draw: '3.1', bS2Draw: '2.12K', l2Draw: '3.15', lS2Draw: '87', b2: '3.6', bS2: '175', l2: '3.65', lS2: '4' },
-          { time: 'Today 09:00 am', team1: 'San Marino', team2: 'Finland', b1: '46', bS1: '7', l1: '48', lS1: '30', b2Draw: '13.5', bS2Draw: '89', l2Draw: '14', lS2Draw: '51', b2: '1.1', bS2: '16.15K', l2: '1.11', lS2: '15.15K' }
+        const liveList = window.liveDiamondSoccerMatches || [];
+        let matchesToRender = liveList.length > 0 ? liveList : [
+          { time: 'Tomorrow 07:30 pm', team1: 'Arsenal', team2: 'Chelsea', competition: 'English Premier League', b1: '1.85', bS1: '45K', l1: '1.87', lS1: '32K', b2Draw: '3.75', bS2Draw: '18K', l2Draw: '3.85', lS2Draw: '12K', b2: '4.2', bS2: '22K', l2: '4.4', lS2: '15K' },
+          { time: 'Tomorrow 10:00 pm', team1: 'Manchester City', team2: 'Liverpool', competition: 'English Premier League', b1: '2.05', bS1: '62K', l1: '2.08', lS1: '48K', b2Draw: '3.6', bS2Draw: '24K', l2Draw: '3.7', lS2Draw: '16K', b2: '3.5', bS2: '31K', l2: '3.6', lS2: '20K' }
         ];
 
-        const uefaU21Matches = [
-          { time: 'Tomorrow 12:30 am', team1: 'Iceland U21', team2: 'Estonia U21', b1: '1.22', bS1: '5.2K', l1: '1.24', lS1: '3.1K', b2Draw: '6.4', bS2Draw: '1.1K', l2Draw: '6.8', lS2Draw: '800', b2: '12.5', bS2: '150', l2: '13.5', lS2: '90' },
-          { time: 'Tomorrow 01:00 am', team1: 'Faroe Islands U21', team2: 'Kazakhstan U21', b1: '2.1', bS1: '2.8K', l1: '2.14', lS1: '1.9K', b2Draw: '3.4', bS2Draw: '1.4K', l2Draw: '3.5', lS2Draw: '920', b2: '3.45', bS2: '850', l2: '3.6', lS2: '410' }
-        ];
+        if (filterComp && filterComp !== 'all') {
+          const compLower = filterComp.toLowerCase();
+          const filtered = matchesToRender.filter(m => (m.competition || m.tournament || '').toLowerCase().includes(compLower));
+          if (filtered.length > 0) matchesToRender = filtered;
+        }
 
-        const eplMatches = [
-          { time: 'Tomorrow 07:30 pm', team1: 'Arsenal', team2: 'Chelsea', b1: '1.85', bS1: '45K', l1: '1.87', lS1: '32K', b2Draw: '3.75', bS2Draw: '18K', l2Draw: '3.85', lS2Draw: '12K', b2: '4.2', bS2: '22K', l2: '4.4', lS2: '15K' },
-          { time: 'Tomorrow 10:00 pm', team1: 'Manchester City', team2: 'Liverpool', b1: '2.05', bS1: '62K', l1: '2.08', lS1: '48K', b2Draw: '3.6', bS2Draw: '24K', l2Draw: '3.7', lS2Draw: '16K', b2: '3.5', bS2: '31K', l2: '3.6', lS2: '20K' }
-        ];
-
+        const compGroups = groupMatchesByComp(matchesToRender);
         let html = heroBanner;
-        html += buildSportAccordion('uefa-nations', 'UEFA Nations League', 'https://daba.b-cdn.net/flags/eu.svg', uefaNationsMatches);
-        html += buildSportAccordion('uefa-u21', 'UEFA U21 Euro Qualifiers', 'https://daba.b-cdn.net/flags/eu.svg', uefaU21Matches);
-        html += buildSportAccordion('epl', 'English Premier League', 'https://daba.b-cdn.net/flags/gb.svg', eplMatches);
+        let gIdx = 0;
+        for (const [compName, compMatches] of Object.entries(compGroups)) {
+          const flag = getCompFlag(compName);
+          const safeId = 'soccer_comp_' + (gIdx++);
+          html += buildSportAccordion(safeId, `${compName} (${compMatches.length})`, flag, compMatches);
+        }
+
         cont.innerHTML = html;
         return;
       }
@@ -12128,19 +12222,26 @@
       if (currentSelectedSport === 'tennis') {
         const heroBanner = `<img src="https://www.satsport.co.in/assets/images/banners/2.png" style="width:calc(100% - 20px); height:55px; object-fit:cover; border-radius:8px; margin:6px 10px 4px 10px; display:block;" alt="Tennis Banner">`;
 
-        const chengduMatches = [
-          { time: 'Today 04:30 pm', team1: 'Martin Damm Jr', team2: 'Hubert Hurkacz', b1: '3.55', bS1: '140', l1: '3.7', lS1: '85', b2: '1.32', bS2: '8.4K', l2: '1.34', lS2: '6.2K' },
-          { time: 'Today 05:45 pm', team1: 'Robert Galloway / Goransson', team2: 'Julian Cash / Alexander Erler', b1: '2.12', bS1: '420', l1: '2.2', lS1: '210', b2: '1.76', bS2: '1.1K', l2: '1.82', lS2: '750' }
+        const liveList = window.liveDiamondTennisMatches || [];
+        let matchesToRender = liveList.length > 0 ? liveList : [
+          { time: 'Today 04:30 pm', team1: 'Martin Damm Jr', team2: 'Hubert Hurkacz', competition: 'ATP Chengdu 2026', b1: '3.55', bS1: '140', l1: '3.7', lS1: '85', b2: '1.32', bS2: '8.4K', l2: '1.34', lS2: '6.2K' }
         ];
 
-        const hangzhouMatches = [
-          { time: 'Tomorrow 11:30 am', team1: 'Zhizhen Zhang', team2: 'Brandon Nakashima', b1: '2.28', bS1: '1.8K', l1: '2.34', lS1: '950', b2: '1.68', bS2: '4.2K', l2: '1.72', lS2: '2.8K' },
-          { time: 'Tomorrow 01:00 pm', team1: 'Marin Cilic', team2: 'Yasutaka Uchiyama', b1: '1.45', bS1: '7.6K', l1: '1.48', lS1: '5.1K', b2: '2.92', bS2: '680', l2: '3.05', lS2: '340' }
-        ];
+        if (filterComp && filterComp !== 'all') {
+          const compLower = filterComp.toLowerCase();
+          const filtered = matchesToRender.filter(m => (m.competition || m.tournament || '').toLowerCase().includes(compLower));
+          if (filtered.length > 0) matchesToRender = filtered;
+        }
 
+        const compGroups = groupMatchesByComp(matchesToRender);
         let html = heroBanner;
-        html += buildSportAccordion('chengdu', 'ATP Chengdu 2026', '', chengduMatches);
-        html += buildSportAccordion('hangzhou', 'ATP Hangzhou 2026', '', hangzhouMatches);
+        let gIdx = 0;
+        for (const [compName, compMatches] of Object.entries(compGroups)) {
+          const flag = getCompFlag(compName);
+          const safeId = 'tennis_comp_' + (gIdx++);
+          html += buildSportAccordion(safeId, `${compName} (${compMatches.length})`, flag, compMatches);
+        }
+
         cont.innerHTML = html;
         return;
       }
@@ -13699,6 +13800,7 @@
           .then(res => res.json())
           .then(data => {
             if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+              window.liveDiamondSoccerMatches = data.matches;
               if (typeof sportsData !== 'undefined' && sportsData.soccer) {
                 sportsData.soccer.matches = data.matches.map(m => ({
                   comp: m.tournament || m.competition || 'Football',
@@ -13722,6 +13824,15 @@
                   sid: m.sid
                 }));
               }
+
+              if (typeof currentSelectedSport !== 'undefined' && (currentSelectedSport === 'inplay' || currentSelectedSport === 'soccer')) {
+                const sportsCont = document.getElementById('sportsViewContainer');
+                const isSportsVisible = sportsCont && sportsCont.style.display !== 'none';
+                const cont = document.getElementById('sportsMatchesContainer');
+                if (isSportsVisible && cont && cont.style.display !== 'none' && typeof renderSportsMatches === 'function') {
+                  renderSportsMatches();
+                }
+              }
             }
           })
           .catch(err => console.warn('Soccer feed refresh:', err.message));
@@ -13731,6 +13842,7 @@
           .then(res => res.json())
           .then(data => {
             if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+              window.liveDiamondTennisMatches = data.matches;
               if (typeof sportsData !== 'undefined' && sportsData.tennis) {
                 sportsData.tennis.matches = data.matches.map(m => ({
                   comp: m.tournament || m.competition || 'Tennis',
@@ -13753,6 +13865,15 @@
                   gmid: m.gmid,
                   sid: m.sid
                 }));
+              }
+
+              if (typeof currentSelectedSport !== 'undefined' && (currentSelectedSport === 'inplay' || currentSelectedSport === 'tennis')) {
+                const sportsCont = document.getElementById('sportsViewContainer');
+                const isSportsVisible = sportsCont && sportsCont.style.display !== 'none';
+                const cont = document.getElementById('sportsMatchesContainer');
+                if (isSportsVisible && cont && cont.style.display !== 'none' && typeof renderSportsMatches === 'function') {
+                  renderSportsMatches();
+                }
               }
             }
           })
