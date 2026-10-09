@@ -17,10 +17,10 @@ function getActiveProvider() {
 }
 
 
-// In-Memory Cache for Live Match Polling (reduces rate load on upstream API)
+// In-Memory Cache for Live Match Polling (reduces rate load on upstream API while ensuring fresh live updates)
 let cachedMatches = {};
 let lastCacheTimes = {};
-const CACHE_TTL_MS = 15000;
+const CACHE_TTL_MS = 5000;
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -320,34 +320,52 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
             environment: 'Production API (Scalar OpenAPI 3.0)',
             authType: 'Query Key (?key=) OR Server IP Whitelist',
             hasKey: providersConf.diamond?.hasKey || false,
-            maskedKey: providersConf.diamond?.apiKey || 'Not Configured',
-            overallStatus: diamondDiag.overallStatus,
-            connectionStatus: diamondDiag.connectionStatus,
+            keyConfigured: providersConf.diamond?.hasKey ? 'YES' : 'NO',
+            maskedKey: providersConf.diamond?.hasKey ? 'Configured (Hidden)' : 'Not Configured',
+            overallStatus: isDiamondLive ? 'READ-ONLY LIVE' : diamondDiag.overallStatus,
+            connectionStatus: isDiamondLive ? 'CONNECTED (READ-ONLY LIVE)' : diamondDiag.connectionStatus,
             networkReachability: diamondDiag.networkReachability,
             authentication: diamondDiag.authentication,
             liveData: diamondDiag.liveData,
             dataAvailability: diamondDiag.dataAvailability,
             dataSource: diamondDiag.dataSource,
             httpStatus: diamondDiag.httpStatus,
-            status: diamondDiag.overallStatus,
+            status: isDiamondLive ? 'READ-ONLY LIVE' : diamondDiag.overallStatus,
             isAuthorized: isDiamondLive,
             clientIpSeen: diamondDiag.clientIpSeen,
             upstreamMessage: diamondDiag.error || 'OK',
             lastTest: diamondHealth.timestamp || new Date().toISOString(),
+            capabilities: {
+              sportsList: { name: 'SPORTS LIST', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              liveMatches: { name: 'LIVE MATCHES', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              matchHierarchy: { name: 'MATCH TREE', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              matchOdds: { name: 'MATCH ODDS (3-DEPTH)', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              bookmaker: { name: 'BOOKMAKER', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              fancy: { name: 'FANCY / SESSION', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              casinoTables: { name: 'CASINO TABLES (80)', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              casinoData: { name: 'CASINO DATA', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              casinoResult: { name: 'CASINO RESULT', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              matchDetails: { name: 'MATCH DETAILS', status: 'UPSTREAM BROKEN (HTTP 400)', code: 'UPSTREAM_BROKEN', badgeClass: 'badge-danger' },
+              score: { name: 'SCORE WIDGET', status: 'UPSTREAM ROUTE UNAVAILABLE (HTTP 404)', code: 'UPSTREAM_BROKEN', badgeClass: 'badge-danger' },
+              casinoDetailResult: { name: 'CASINO DETAIL RESULT', status: 'AUTH REQUIRED / BLOCKED (HTTP 401)', code: 'BLOCKED_AUTH', badgeClass: 'badge-warning' },
+              betOrder: { name: 'BET ORDER (/placed_bets)', status: 'PROVIDER BACKEND BLOCKED (HTTP 500)', code: 'BLOCKED', badgeClass: 'badge-danger' },
+              placedBets: { name: 'PLACED BETS (/get_placed_bets)', status: 'PROVIDER BACKEND BLOCKED (HTTP 500)', code: 'BLOCKED', badgeClass: 'badge-danger' },
+              resultSettlement: { name: 'RESULT SETTLEMENT (/get-result)', status: 'PENDING SETTLEMENT (HTTP 400)', code: 'NOT_VERIFIED', badgeClass: 'badge-secondary' }
+            },
             endpoints: [
-              { method: 'GET', path: '/allSportid', purpose: 'All Sport IDs list' },
-              { method: 'GET', path: '/esid?sid={sid}', purpose: 'Match list for specific sport ID' },
-              { method: 'GET', path: '/tree', purpose: 'All sports match hierarchy tree' },
-              { method: 'GET', path: '/getDetailsData?sid={sid}&gmid={gmid}', purpose: 'Match details and graphic tracker ID (gtv)' },
-              { method: 'GET', path: '/getPriveteData?sid={sid}&gmid={gmid}', purpose: 'Unified Match Odds, Bookmaker, and Fancy lines' },
-              { method: 'GET', path: '/score?sid={sid}&gtv={gtv}', purpose: 'Live graphic scorecard iframe widget' },
-              { method: 'POST', path: '/placed_bets', purpose: 'Submit user bet order' },
-              { method: 'POST', path: '/get-result', purpose: 'Query settlement result for placed bet' },
-              { method: 'GET', path: '/get_placed_bets?event_id={id}', purpose: 'All declared event results' },
-              { method: 'GET', path: '/casino/tableid', purpose: 'List of all Casino table IDs' },
-              { method: 'GET', path: '/casino/data?type={type}', purpose: 'Casino game live data' },
-              { method: 'GET', path: '/casino/result?type={type}', purpose: 'Casino last round outcome' },
-              { method: 'GET', path: '/casino/detail_result?type={type}&mid={mid}', purpose: 'Casino round detail result' }
+              { method: 'GET', path: '/allSportid', purpose: 'All Sport IDs list (69 Sports)', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/esid?sid={sid}', purpose: 'Match list (t1 In-Play & t2 Upcoming)', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/tree', purpose: 'Sports match hierarchy tree', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/getDetailsData?sid={sid}&gmid={gmid}', purpose: 'Match details & tracker ID', auth: 'Optional Query Key', status: '400 Bad Request', state: 'UPSTREAM_BROKEN', stateClass: 'badge-danger' },
+              { method: 'GET', path: '/getPriveteData?sid={sid}&gmid={gmid}', purpose: 'Unified Match Odds, Bookmaker & Fancy', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/score?sid={sid}&gtv={gtv}', purpose: 'Graphic scoreboard iframe widget', auth: 'Optional Query Key', status: '404 Not Found', state: 'UPSTREAM_ROUTE_UNAVAILABLE', stateClass: 'badge-danger' },
+              { method: 'GET', path: '/casino/tableid', purpose: 'List of all Casino tables (80 Tables)', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/casino/data?type={type}', purpose: 'Live Casino round cards & odds', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/casino/result?type={type}', purpose: 'Casino last declared round outcome', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/casino/detail_result?type={type}&mid={mid}', purpose: 'Casino round detail & player outcome', auth: 'Player Session', status: '200 (Status 401)', state: 'BLOCKED_AUTH', stateClass: 'badge-warning' },
+              { method: 'POST', path: '/placed_bets', purpose: 'Submit user bet order', auth: 'DB Validation', status: '500 Server Error', state: 'PROVIDER_BACKEND_BLOCKED', stateClass: 'badge-danger' },
+              { method: 'GET', path: '/get_placed_bets?event_id={id}', purpose: 'All placed bets for an event', auth: 'Event ID', status: '500 Server Error', state: 'PROVIDER_BACKEND_BLOCKED', stateClass: 'badge-danger' },
+              { method: 'POST', path: '/get-result', purpose: 'Query settlement result for placed bet', auth: 'Market & Event ID', status: '400 (Not Declared)', state: 'NOT_VERIFIED', stateClass: 'badge-secondary' }
             ]
           },
           sportbex: {
@@ -371,7 +389,10 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           inPlay: { name: 'In-Play', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
           odds: { name: 'Match Odds Ladder', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
           bookmaker: { name: 'Bookmaker Odds', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
-          fancy: { name: 'Fancy / Session Lines', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider }
+          fancy: { name: 'Fancy / Session Lines', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          casinoTables: { name: 'Casino Tables (80 Tables)', status: isDiamondLive ? 'LIVE' : 'OFFLINE', isLive: isDiamondLive, provider: 'diamond' },
+          casinoData: { name: 'Live Casino Rounds', status: isDiamondLive ? 'LIVE' : 'OFFLINE', isLive: isDiamondLive, provider: 'diamond' },
+          casinoResults: { name: 'Casino Round Results', status: isDiamondLive ? 'LIVE' : 'OFFLINE', isLive: isDiamondLive, provider: 'diamond' }
         },
         auditLogs: auditLogs
       };

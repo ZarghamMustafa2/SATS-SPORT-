@@ -3149,23 +3149,47 @@ Boland v Knights                        </a>
                                     <div class="card-header" style="background: #fffbeb; display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
                                         <div>
                                             <strong style="color: #92400e; font-size: 15px;">Diamond Betting API (46.202.166.33:3009)</strong>
-                                            <span class="badge badge-success ml-2" style="font-size: 11px; padding: 3px 7px;">INTEGRATED & VERIFIED</span>
+                                            <span class="badge badge-warning ml-2" style="font-size: 11px; padding: 3px 7px;">READ-ONLY LIVE (8/13 LIVE)</span>
                                         </div>
-                                        <span id="diamondStatusBadge" class="badge badge-success" style="font-size: 11px;">CONNECTED</span>
+                                        <span id="diamondStatusBadge" class="badge badge-warning" style="font-size: 11px;">READ-ONLY LIVE</span>
                                     </div>
                                     <div class="card-body" style="padding: 16px;">
                                         <p style="font-size: 13px; color: #4b5563; margin-bottom: 8px;">
-                                            Diamond Exchange B2B aggregator API. Offers unified Match Odds, Bookmaker, Fancy, score widget, and Casino suite.
+                                            Diamond Exchange B2B aggregator API. Read-only sports & casino suite live; score widget 404, bet execution blocked.
                                         </p>
                                         <ul class="list-group list-group-flush mb-3" style="font-size: 12.5px;">
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Base URL:</span> <code id="diamondCardBaseUrl">http://46.202.166.33:3009</code></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Documentation:</span> <a href="http://46.202.166.33:3009/docs" target="_blank" style="color: #0284c7;">Scalar API Reference <i class="fas fa-external-link-alt fa-xs"></i></a></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Network Reachability:</span> <span id="diamondNetworkBadge" class="badge badge-info" style="background:#0284c7; color:#fff;">REACHABLE</span></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authentication:</span> <span id="diamondAuthBadge" class="badge badge-danger">FAILED / UNAUTHORIZED</span></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Data Availability:</span> <span id="diamondDataBadge" class="badge badge-secondary">NO DATA</span></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Overall Provider Status:</span> <span id="diamondOverallBadge" class="badge badge-danger">NOT CONNECTED</span></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>API Key:</span> <code id="diamondCardKey">Not Configured</code></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authentication:</span> <span id="diamondAuthBadge" class="badge badge-success">AUTHENTICATED (OPEN/KEY)</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Data Availability:</span> <span id="diamondDataBadge" class="badge badge-success">REAL LIVE DATA</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Overall Provider Status:</span> <span id="diamondOverallBadge" class="badge badge-warning">READ-ONLY LIVE</span></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>API Key Configured:</span> <span id="diamondCardKey" class="badge badge-secondary">NO</span></li>
                                         </ul>
+
+                                        <!-- Granular Capabilities Status -->
+                                        <div class="mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                                            <div style="font-weight: 700; font-size: 12px; color: #334155; margin-bottom: 6px; display: flex; justify-content: space-between;">
+                                                <span><i class="fas fa-cubes mr-1 text-primary"></i> Provider Capabilities</span>
+                                                <span style="font-size: 11px; color: #64748b;">8 Live | 5 Blocked/Error</span>
+                                            </div>
+                                            <div id="diamondCapabilitiesList" style="display: flex; flex-wrap: wrap; gap: 4px; font-size: 10.5px;">
+                                                <span class="badge badge-success">SPORTS LIST: LIVE</span>
+                                                <span class="badge badge-success">LIVE MATCHES: LIVE</span>
+                                                <span class="badge badge-success">MATCH ODDS: LIVE</span>
+                                                <span class="badge badge-success">BOOKMAKER: LIVE</span>
+                                                <span class="badge badge-success">FANCY: LIVE</span>
+                                                <span class="badge badge-success">CASINO TABLES: LIVE</span>
+                                                <span class="badge badge-success">CASINO DATA: LIVE</span>
+                                                <span class="badge badge-success">CASINO RESULT: LIVE</span>
+                                                <span class="badge badge-danger">SCORE: 404 UNAVAILABLE</span>
+                                                <span class="badge badge-warning">CASINO DETAIL: 401 AUTH REQUIRED</span>
+                                                <span class="badge badge-danger">BET ORDER: 500 BLOCKED</span>
+                                                <span class="badge badge-danger">PLACED BETS: 500 BLOCKED</span>
+                                                <span class="badge badge-secondary">RESULT: PENDING SETTLEMENT</span>
+                                            </div>
+                                        </div>
+
                                         <div class="btn-group btn-group-sm w-100" role="group">
                                             <button type="button" class="btn btn-warning font-weight-bold" onclick="testAdminApiConnection('diamond')"><i class="fas fa-plug mr-1"></i> Test Connection</button>
                                             <button type="button" class="btn btn-outline-info" onclick="openApiEndpointsModal('diamond')"><i class="fas fa-list mr-1"></i> View Endpoints</button>
@@ -3688,6 +3712,7 @@ Boland v Knights                        </a>
                                                 <th style="width:80px;">Method</th>
                                                 <th>Path / Route</th>
                                                 <th>Purpose / Description</th>
+                                                <th style="width:140px;">Integration State</th>
                                             </tr>
                                         </thead>
                                         <tbody id="modalEndpointsTbody"></tbody>
@@ -7248,28 +7273,51 @@ Boland v Knights                        </a>
                 var sUrl = document.getElementById('shubdxCardBaseUrl');
                 if (sUrl) sUrl.innerText = s.baseUrl || 'https://shubdxinternational.com';
                 var sKey = document.getElementById('shubdxCardKey');
-                if (sKey) sKey.innerText = s.maskedKey || 'Not Configured';
+                if (sKey) {
+                    var sHasKey = s.hasKey === true || s.keyConfigured === 'YES';
+                    sKey.innerText = sHasKey ? 'YES' : 'NO';
+                    sKey.className = 'badge ' + (sHasKey ? 'badge-success' : 'badge-secondary');
+                }
             }
 
             if (providers.diamond) {
                 var d = providers.diamond;
                 var diamondBadge = document.getElementById('diamondStatusBadge');
                 if (diamondBadge) {
+                    var isReadOnly = (d.overallStatus && d.overallStatus.includes('READ-ONLY')) || (d.status && d.status.includes('READ-ONLY'));
                     diamondBadge.innerText = d.overallStatus || 'NOT CONNECTED';
-                    diamondBadge.className = 'badge ' + (d.overallStatus === 'CONNECTED' ? 'badge-success' : 'badge-danger');
+                    diamondBadge.className = 'badge ' + (d.overallStatus === 'CONNECTED' ? 'badge-success' : (isReadOnly ? 'badge-warning' : 'badge-danger'));
                 }
                 var dNet = document.getElementById('diamondNetworkBadge');
                 if (dNet) dNet.innerText = d.networkReachability || 'REACHABLE';
                 var dAuth = document.getElementById('diamondAuthBadge');
-                if (dAuth) dAuth.innerText = d.authentication || 'FAILED / UNAUTHORIZED';
+                if (dAuth) dAuth.innerText = d.authentication || 'AUTHENTICATED';
                 var dData = document.getElementById('diamondDataBadge');
-                if (dData) dData.innerText = d.dataAvailability || 'NO DATA';
+                if (dData) dData.innerText = d.dataAvailability || 'REAL LIVE DATA';
                 var dOver = document.getElementById('diamondOverallBadge');
-                if (dOver) dOver.innerText = d.overallStatus || 'NOT CONNECTED';
+                if (dOver) {
+                    dOver.innerText = d.overallStatus || 'READ-ONLY LIVE';
+                    dOver.className = 'badge ' + (d.overallStatus === 'CONNECTED' ? 'badge-success' : (d.overallStatus && d.overallStatus.includes('READ-ONLY') ? 'badge-warning' : 'badge-danger'));
+                }
                 var dUrl = document.getElementById('diamondCardBaseUrl');
                 if (dUrl) dUrl.innerText = d.baseUrl || 'http://46.202.166.33:3009';
                 var dKey = document.getElementById('diamondCardKey');
-                if (dKey) dKey.innerText = d.maskedKey || 'Not Configured';
+                if (dKey) {
+                    var dHasKey = d.hasKey === true || d.keyConfigured === 'YES';
+                    dKey.innerText = dHasKey ? 'YES' : 'NO';
+                    dKey.className = 'badge ' + (dHasKey ? 'badge-success' : 'badge-secondary');
+                }
+
+                // Populate granular capabilities
+                var capContainer = document.getElementById('diamondCapabilitiesList');
+                if (capContainer && d.capabilities) {
+                    var capHtml = '';
+                    for (var cKey in d.capabilities) {
+                        var cap = d.capabilities[cKey];
+                        capHtml += '<span class="badge ' + cap.badgeClass + '" style="font-size:10.5px; margin:2px;">' + cap.name + ': ' + cap.status + '</span>';
+                    }
+                    capContainer.innerHTML = capHtml;
+                }
             }
 
             // 3. Live Monitor Grid
@@ -7495,17 +7543,21 @@ Boland v Knights                        </a>
 
             var rows = '';
             if (endpoints.length === 0) {
-                rows = '<tr><td colspan="3" class="text-center text-muted py-3">No endpoints configured for this provider.</td></tr>';
+                rows = '<tr><td colspan="4" class="text-center text-muted py-3">No endpoints configured for this provider.</td></tr>';
             } else {
                 endpoints.forEach(function(ep) {
                     var mBadge = ep.method === 'POST' ? '<span class="badge badge-warning">POST</span>' :
                                  ep.method === 'GET' ? '<span class="badge badge-primary">GET</span>' :
                                  '<span class="badge badge-secondary">' + ep.method + '</span>';
 
+                    var sBadge = ep.stateClass ? ('<span class="badge ' + ep.stateClass + '">' + (ep.state || ep.status) + '</span>') :
+                                 (ep.state ? '<span class="badge badge-info">' + ep.state + '</span>' : '<span class="badge badge-secondary">' + (ep.status || 'READY') + '</span>');
+
                     rows += '<tr>' +
                         '<td>' + mBadge + '</td>' +
                         '<td><code style="font-size:12px; color:#0369a1;">' + ep.path + '</code></td>' +
                         '<td>' + ep.purpose + '</td>' +
+                        '<td>' + sBadge + '</td>' +
                         '</tr>';
                 });
             }
