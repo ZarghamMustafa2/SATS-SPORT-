@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-10-09T20:11:21.291Z",
+  "apiResults": [
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=allmatches&sport=cricket",
+      "status": 200,
+      "durationMs": 1503,
+      "bytes": 30617
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=allmatches&sport=soccer",
+      "status": 200,
+      "durationMs": 2031,
+      "bytes": 198084
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=allmatches&sport=tennis",
+      "status": 200,
+      "durationMs": 1492,
+      "bytes": 138600
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=fetchmatch&sport=cricket&match=640154297",
+      "status": 200,
+      "durationMs": 817,
+      "bytes": 12074
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/auth/me",
+      "status": 401,
+      "durationMs": 818,
+      "bytes": 58
+    }
+  ],
+  "desktop": {
+    "name": "Desktop (1280x800, Unthrottled)",
+    "metrics": {
+      "ttfb": 162.29999995231628,
+      "domContentLoaded": 4027.399999976158,
+      "fullLoad": 0,
+      "fcp": 4000,
+      "lcp": 8512,
+      "cls": 0.13784782276153565,
+      "domInteractive": 3984.5,
+      "transferSize": 101750
+    },
+    "requestCount": 168,
+    "totalTransferredBytes": 4262291
+  },
+  "mobile": {
+    "name": "Mobile (375x667, Unthrottled)",
+    "metrics": {
+      "ttfb": 232.60000002384186,
+      "domContentLoaded": 2111.100000023842,
+      "fullLoad": 0,
+      "fcp": 2016,
+      "lcp": 4080,
+      "cls": 0.07915615243352836,
+      "domInteractive": 2100.5,
+      "transferSize": 101750
+    },
+    "requestCount": 166,
+    "totalTransferredBytes": 2429253
+  },
+  "mobileThrottled": {
+    "name": "Mobile (375x667, Throttled 4G 1.6Mbps/150ms)",
+    "metrics": {
+      "ttfb": 178.20000004768372,
+      "domContentLoaded": 1790.6999999284744,
+      "fullLoad": 0,
+      "fcp": 1720,
+      "lcp": 2100,
+      "cls": 0.2282950977659596,
+      "domInteractive": 1774.2999999523163,
+      "transferSize": 101750
+    },
+    "requestCount": 166,
+    "totalTransferredBytes": 1710189
+  }
+}

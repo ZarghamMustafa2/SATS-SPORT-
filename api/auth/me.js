@@ -16,6 +16,13 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 405, { status: 'error', message: 'Method not allowed' });
   }
 
+  const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+  const cookieHeader = req.headers['cookie'] || '';
+  const hasToken = (authHeader && authHeader.startsWith('Bearer ')) || cookieHeader.includes('auth_token');
+  if (!hasToken) {
+    return sendJson(res, 401, { status: 'unauthenticated', message: 'Not authenticated' });
+  }
+
   await authDb.hydrateUsersAsync();
 
   const session = getRequestSession(req, authDb);

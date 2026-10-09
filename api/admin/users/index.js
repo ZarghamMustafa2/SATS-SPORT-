@@ -31,12 +31,18 @@ module.exports = async function handler(req, res) {
     return selfRechargeHandler(req, res);
   }
 
+  const companyKey = req.headers['x-company-key'];
+  const cookieHeader = req.headers['cookie'] || '';
+  const hasAuth = req.headers['authorization'] || companyKey || cookieHeader.includes('admin_auth_token') || cookieHeader.includes('auth_token');
+  if (!hasAuth) {
+    return sendJson(res, 403, { status: 'error', message: 'Access denied: Administrator privileges required' });
+  }
+
   await authDb.hydrateUsersAsync();
 
   let session = getRequestSession(req, authDb);
 
   // Support Master Company Key in header if provided
-  const companyKey = req.headers['x-company-key'];
   if (!session && companyKey && authDb.verifyCompanyKey(companyKey)) {
     session = {
       role: authDb.ROLES.COMPANY,

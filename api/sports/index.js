@@ -21,7 +21,11 @@ function getActiveProvider() {
 let cachedMatches = {};
 let lastCacheTimes = {};
 let lastLiveTimes = {};
-const CACHE_TTL_MS = 5000;
+let cachedMatchDetails = {};
+let lastMatchDetailsTimes = {};
+let inFlightRequests = {}; // Promise deduplication map for concurrent requests
+const ALLMATCHES_CACHE_TTL_MS = 6000;
+const FETCHMATCH_CACHE_TTL_MS = 3000;
 const LIVE_STALE_TTL_MS = 180000; // 3 minutes stale cache retention during upstream proxy session drops
 
 module.exports = async function handler(req, res) {
@@ -509,47 +513,76 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
     const useDiamond = (providerParam === 'diamond' || (!providerParam && activeProvider === 'diamond'));
 
     if (useDiamond) {
-      try {
-        let resolved = diamondProvider.resolveDiamondSport(sportParam);
-        let privRes = await diamondProvider.getPriveteData(resolved.sid, groupById);
-        let privData = privRes.data;
-        let rawList = privData?.data || (Array.isArray(privData) ? privData : []);
+      const matchCacheKey = `fetchmatch_${groupById}`;
+      const now = Date.now();
+      if (cachedMatchDetails[matchCacheKey] && (now - (lastMatchDetailsTimes[matchCacheKey] || 0) < FETCHMATCH_CACHE_TTL_MS)) {
+        res.setHeader('Cache-Control', 'public, max-age=2, stale-while-revalidate=4');
+        return sendJson(res, 200, cachedMatchDetails[matchCacheKey]);
+      }
 
-        // If initial lookup is empty and sport was inplay or unspecified, try matching across other sports
-        if ((!privRes.success || !Array.isArray(rawList) || rawList.length === 0) && (sportParam === 'inplay' || !searchParams.has('sport'))) {
-          for (const fallbackSid of [4, 1, 2]) {
-            if (fallbackSid === resolved.sid) continue;
-            const tryRes = await diamondProvider.getPriveteData(fallbackSid, groupById);
-            const tryList = tryRes.data?.data || (Array.isArray(tryRes.data) ? tryRes.data : []);
-            if (tryRes.success && Array.isArray(tryList) && tryList.length > 0) {
-              resolved = diamondProvider.resolveDiamondSport(fallbackSid);
-              privRes = tryRes;
-              privData = tryRes.data;
-              rawList = tryList;
-              break;
+      if (inFlightRequests[matchCacheKey]) {
+        try {
+          const inFlightResult = await inFlightRequests[matchCacheKey];
+          res.setHeader('Cache-Control', 'public, max-age=2, stale-while-revalidate=4');
+          return sendJson(res, 200, inFlightResult);
+        } catch (e) {}
+      }
+
+      try {
+        const fetchPromise = (async () => {
+          let resolved = diamondProvider.resolveDiamondSport(sportParam);
+          let privRes = await diamondProvider.getPriveteData(resolved.sid, groupById);
+          let privData = privRes.data;
+          let rawList = privData?.data || (Array.isArray(privData) ? privData : []);
+
+          // If initial lookup is empty and sport was inplay or unspecified, try matching across other sports
+          if ((!privRes.success || !Array.isArray(rawList) || rawList.length === 0) && (sportParam === 'inplay' || !searchParams.has('sport'))) {
+            for (const fallbackSid of [4, 1, 2]) {
+              if (fallbackSid === resolved.sid) continue;
+              const tryRes = await diamondProvider.getPriveteData(fallbackSid, groupById);
+              const tryList = tryRes.data?.data || (Array.isArray(tryRes.data) ? tryRes.data : []);
+              if (tryRes.success && Array.isArray(tryList) && tryList.length > 0) {
+                resolved = diamondProvider.resolveDiamondSport(fallbackSid);
+                privRes = tryRes;
+                privData = tryRes.data;
+                rawList = tryList;
+                break;
+              }
             }
           }
-        }
 
-        const isLive = privRes.success && Array.isArray(rawList) && rawList.length > 0;
-        const categorized = isLive ? diamondProvider.normalizeMarkets(rawList) : null;
-        const fallbackMarkets = getFallbackMatchMarkets(groupById, sportParam);
+          const isLive = privRes.success && Array.isArray(rawList) && rawList.length > 0;
+          const categorized = isLive ? diamondProvider.normalizeMarkets(rawList) : null;
+          const fallbackMarkets = getFallbackMatchMarkets(groupById, sportParam);
 
-        return sendJson(res, 200, {
-          status: isLive ? 'success' : 'fallback',
-          dataSource: isLive ? 'LIVE_DIAMOND' : 'OFFLINE_FALLBACK',
-          isLiveDiamond: isLive,
-          isLiveShubdx: false,
-          groupById: groupById,
-          sport: resolved.key,
-          sportName: resolved.name,
-          sportId: resolved.sid,
-          provider: 'diamond_live',
-          endpoint: privRes.endpoint || '/getPriveteData',
-          isDiamondAuthorized: isLive,
-          markets: isLive ? categorized : fallbackMarkets,
-          rawDiamondResponse: privData
+          const payload = {
+            status: isLive ? 'success' : 'fallback',
+            dataSource: isLive ? 'LIVE_DIAMOND' : 'OFFLINE_FALLBACK',
+            isLiveDiamond: isLive,
+            isLiveShubdx: false,
+            groupById: groupById,
+            sport: resolved.key,
+            sportName: resolved.name,
+            sportId: resolved.sid,
+            provider: 'diamond_live',
+            endpoint: privRes.endpoint || '/getPriveteData',
+            isDiamondAuthorized: isLive,
+            markets: isLive ? categorized : fallbackMarkets
+          };
+
+          cachedMatchDetails[matchCacheKey] = payload;
+          lastMatchDetailsTimes[matchCacheKey] = Date.now();
+          return payload;
+        })();
+
+        inFlightRequests[matchCacheKey] = fetchPromise;
+        fetchPromise.finally(() => {
+          delete inFlightRequests[matchCacheKey];
         });
+
+        const resultPayload = await fetchPromise;
+        res.setHeader('Cache-Control', 'public, max-age=2, stale-while-revalidate=4');
+        return sendJson(res, 200, resultPayload);
       } catch (err) {
         console.error('Error fetching Diamond fetchmatch:', err.message);
         return sendJson(res, 200, {
@@ -618,64 +651,81 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
       const cacheKey = `allmatches_diamond_${resolved.key}`;
       const now = Date.now();
 
-      if (cachedMatches[cacheKey] && (now - (lastCacheTimes[cacheKey] || 0) < CACHE_TTL_MS)) {
+      if (cachedMatches[cacheKey] && (now - (lastCacheTimes[cacheKey] || 0) < ALLMATCHES_CACHE_TTL_MS)) {
+        res.setHeader('Cache-Control', 'public, max-age=3, stale-while-revalidate=6');
         return sendJson(res, 200, cachedMatches[cacheKey]);
       }
 
+      if (inFlightRequests[cacheKey]) {
+        try {
+          const inFlightResult = await inFlightRequests[cacheKey];
+          res.setHeader('Cache-Control', 'public, max-age=3, stale-while-revalidate=6');
+          return sendJson(res, 200, inFlightResult);
+        } catch (e) {}
+      }
+
       try {
-        const diamondRes = await diamondProvider.getMatches(resolved.sid);
-        const statusCode = diamondRes.statusCode;
-        const diamondData = diamondRes.data;
+        const fetchPromise = (async () => {
+          const diamondRes = await diamondProvider.getMatches(resolved.sid);
+          const statusCode = diamondRes.statusCode;
+          const diamondData = diamondRes.data;
 
-        let normalizedMatches = [];
-        let isDiamondLive = false;
+          let normalizedMatches = [];
+          let isDiamondLive = false;
 
-        if (statusCode === 200 && diamondData?.data) {
-          const t1 = Array.isArray(diamondData.data.t1) ? diamondData.data.t1 : [];
-          const t2 = Array.isArray(diamondData.data.t2) ? diamondData.data.t2 : [];
-          const allRaw = [...t1, ...t2];
-          if (allRaw.length > 0) {
-            normalizedMatches = allRaw
-              .filter(m => !diamondProvider.isSyntheticTestMatch(m))
-              .map(m => diamondProvider.normalizeMatch(m, resolved.key));
-            isDiamondLive = true;
+          if (statusCode === 200 && diamondData?.data) {
+            const t1 = Array.isArray(diamondData.data.t1) ? diamondData.data.t1 : [];
+            const t2 = Array.isArray(diamondData.data.t2) ? diamondData.data.t2 : [];
+            const allRaw = [...t1, ...t2];
+            if (allRaw.length > 0) {
+              normalizedMatches = allRaw
+                .filter(m => !diamondProvider.isSyntheticTestMatch(m))
+                .map(m => diamondProvider.normalizeMatch(m, resolved.key));
+              isDiamondLive = true;
+            }
           }
-        }
 
-        if (isDiamondLive) {
-          lastLiveTimes[cacheKey] = now;
-        } else if (cachedMatches[cacheKey]?.isLiveDiamond && (now - (lastLiveTimes[cacheKey] || 0) < LIVE_STALE_TTL_MS)) {
-          // Upstream is temporarily flapping; serve last verified live matches to prevent UI dropouts
-          return sendJson(res, 200, {
-            ...cachedMatches[cacheKey],
+          if (isDiamondLive) {
+            lastLiveTimes[cacheKey] = Date.now();
+          } else if (cachedMatches[cacheKey]?.isLiveDiamond && (Date.now() - (lastLiveTimes[cacheKey] || 0) < LIVE_STALE_TTL_MS)) {
+            return {
+              ...cachedMatches[cacheKey],
+              timestamp: new Date().toISOString(),
+              isStaleRetained: true
+            };
+          }
+
+          const fallbackMatches = getFallbackMatches(resolved.key);
+
+          const responsePayload = {
+            status: isDiamondLive ? 'success' : 'fallback',
+            dataSource: isDiamondLive ? 'LIVE_DIAMOND' : 'OFFLINE_FALLBACK',
+            isLiveDiamond: isDiamondLive,
+            isLiveShubdx: false,
             timestamp: new Date().toISOString(),
-            isStaleRetained: true
-          });
-        }
+            sport: resolved.key,
+            sportName: resolved.name,
+            sportId: resolved.sid,
+            provider: isDiamondLive ? 'diamond_live' : 'offline_fallback',
+            isDiamondAuthorized: isDiamondLive,
+            endpoint: diamondRes.endpoint || '/esid',
+            count: isDiamondLive ? normalizedMatches.length : fallbackMatches.length,
+            matches: isDiamondLive ? normalizedMatches : fallbackMatches
+          };
 
-        const fallbackMatches = getFallbackMatches(resolved.key);
+          cachedMatches[cacheKey] = responsePayload;
+          lastCacheTimes[cacheKey] = Date.now();
+          return responsePayload;
+        })();
 
-        const responsePayload = {
-          status: isDiamondLive ? 'success' : 'fallback',
-          dataSource: isDiamondLive ? 'LIVE_DIAMOND' : 'OFFLINE_FALLBACK',
-          isLiveDiamond: isDiamondLive,
-          isLiveShubdx: false,
-          timestamp: new Date().toISOString(),
-          sport: resolved.key,
-          sportName: resolved.name,
-          sportId: resolved.sid,
-          provider: isDiamondLive ? 'diamond_live' : 'offline_fallback',
-          isDiamondAuthorized: isDiamondLive,
-          endpoint: diamondRes.endpoint || '/esid',
-          count: isDiamondLive ? normalizedMatches.length : fallbackMatches.length,
-          matches: isDiamondLive ? normalizedMatches : fallbackMatches,
-          rawDiamondResponse: diamondData
-        };
+        inFlightRequests[cacheKey] = fetchPromise;
+        fetchPromise.finally(() => {
+          delete inFlightRequests[cacheKey];
+        });
 
-        cachedMatches[cacheKey] = responsePayload;
-        lastCacheTimes[cacheKey] = now;
-
-        return sendJson(res, 200, responsePayload);
+        const resultPayload = await fetchPromise;
+        res.setHeader('Cache-Control', 'public, max-age=3, stale-while-revalidate=6');
+        return sendJson(res, 200, resultPayload);
       } catch (err) {
         console.error('Error fetching Diamond allmatches:', err.message);
         return sendJson(res, 500, {
@@ -692,7 +742,8 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
     const cacheKey = `allmatches_${sportsname}`;
     const now = Date.now();
 
-    if (cachedMatches[cacheKey] && (now - (lastCacheTimes[cacheKey] || 0) < CACHE_TTL_MS)) {
+    if (cachedMatches[cacheKey] && (now - (lastCacheTimes[cacheKey] || 0) < ALLMATCHES_CACHE_TTL_MS)) {
+      res.setHeader('Cache-Control', 'public, max-age=3, stale-while-revalidate=6');
       return sendJson(res, 200, cachedMatches[cacheKey]);
     }
 
