@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-10-09T20:33:02.006Z",
+  "apiResults": [
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=allmatches&sport=cricket",
+      "status": 200,
+      "durationMs": 1767,
+      "bytes": 17033
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=allmatches&sport=soccer",
+      "status": 200,
+      "durationMs": 1595,
+      "bytes": 101185
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=allmatches&sport=tennis",
+      "status": 200,
+      "durationMs": 1043,
+      "bytes": 75407
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/sports?action=fetchmatch&sport=cricket&match=640154297",
+      "status": 200,
+      "durationMs": 717,
+      "bytes": 2076
+    },
+    {
+      "url": "https://satsportco.vercel.app/api/auth/me",
+      "status": 401,
+      "durationMs": 614,
+      "bytes": 58
+    }
+  ],
+  "desktop": {
+    "name": "Desktop (1280x800, Unthrottled)",
+    "metrics": {
+      "ttfb": 530.4000000953674,
+      "domContentLoaded": 5067,
+      "fullLoad": 7465.899999976158,
+      "fcp": 4916,
+      "lcp": 5796,
+      "cls": 0.32665169851779935,
+      "domInteractive": 4970.5,
+      "transferSize": 103064
+    },
+    "requestCount": 38,
+    "totalTransferredBytes": 1856587
+  },
+  "mobile": {
+    "name": "Mobile (375x667, Unthrottled)",
+    "metrics": {
+      "ttfb": 461.5,
+      "domContentLoaded": 2873.7999999523163,
+      "fullLoad": 4528.899999976158,
+      "fcp": 2792,
+      "lcp": 4396,
+      "cls": 0.2284550904832441,
+      "domInteractive": 2824.100000023842,
+      "transferSize": 103064
+    },
+    "requestCount": 56,
+    "totalTransferredBytes": 1819104
+  },
+  "mobileThrottled": {
+    "name": "Mobile (375x667, Throttled 4G 1.6Mbps/150ms)",
+    "metrics": {
+      "ttfb": 164.80000007152557,
+      "domContentLoaded": 1511.6000000238419,
+      "fullLoad": 0,
+      "fcp": 1396,
+      "lcp": 3000,
+      "cls": 0.15166056589396454,
+      "domInteractive": 1451.3999999761581,
+      "transferSize": 103064
+    },
+    "requestCount": 55,
+    "totalTransferredBytes": 1561364
+  }
+}
