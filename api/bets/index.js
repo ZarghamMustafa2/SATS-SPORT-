@@ -13,6 +13,9 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  await authDb.hydrateUsersAsync();
+  await authDb.hydrateBetsAsync();
+
   const session = getRequestSession(req, authDb);
   if (!session) {
     return sendJson(res, 401, { status: 'error', message: 'Authentication required' });

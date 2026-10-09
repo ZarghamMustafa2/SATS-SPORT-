@@ -11,19 +11,24 @@ async function runBetFlowAndCurrencyVerification() {
 
   // 1. Prepare Test User with Balance
   await authDb.hydrateUsersAsync();
-  const testUsername = 'test_bettor_' + Math.floor(1000 + Math.random() * 9000);
-  const testPassword = 'BettorPass123!';
-  console.log(`Step 0: Creating test user "${testUsername}" with 25,000 Rs. balance...`);
-  const registered = authDb.registerNormalUser({
-    username: testUsername,
-    password: testPassword,
-    confirmPassword: testPassword
-  });
-  const userRecord = authDb.getUserById(registered.id);
-  userRecord.balance = '25,000 Rs.';
-  userRecord.avail = '25,000 Rs.';
-  userRecord.exp = '0 Rs.';
-  await authDb.saveUsersToDiskAsync();
+  const testUsername = 'bettor_audit_prod_' + Math.floor(1000 + Math.random() * 9000);
+  const testPassword = 'AuditPass123!';
+  console.log(`Step 0: Registering test user "${testUsername}" via ${BASE_URL}/api/auth/register...`);
+  try {
+    const regRes = await fetch(`${BASE_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: testUsername,
+        password: testPassword,
+        confirmPassword: testPassword
+      })
+    });
+    const regData = await regRes.json();
+    console.log(`  Registered status: ${regData.status}, initial balance: ${regData.user?.balance}`);
+  } catch (err) {
+    console.warn('  Registration warning:', err.message);
+  }
 
   const browser = await chromium.launch({ headless: true });
 
