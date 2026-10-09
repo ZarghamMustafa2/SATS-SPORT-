@@ -8,8 +8,14 @@ async function auditProduction() {
 
   console.log('Navigating to https://satsportco.vercel.app ...');
   await page.goto('https://satsportco.vercel.app', { waitUntil: 'domcontentloaded', timeout: 30000 });
-  console.log('DOM loaded. Waiting 3 seconds for initial render...');
-  await page.waitForTimeout(3000);
+  console.log('DOM loaded. Waiting for live feeds to populate...');
+  await page.waitForFunction(() => {
+    return (window.liveDiamondCricketMatches && window.liveDiamondCricketMatches.length > 0) &&
+           (window.liveDiamondSoccerMatches && window.liveDiamondSoccerMatches.length > 0) &&
+           (window.liveDiamondTennisMatches && window.liveDiamondTennisMatches.length > 0);
+  }, { timeout: 30000 });
+  console.log('Live arrays populated!');
+  await page.waitForTimeout(1000);
 
   // Helper to extract visible matches from #sportsMatchesContainer
   async function getRenderedMatches() {
