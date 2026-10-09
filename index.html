@@ -11859,7 +11859,7 @@
           <div class="inplay-match-card default-game-box sport-event-card" style="background:${rowBg}; border-radius:10px; padding:8px 12px; margin:6px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
             <!-- Left Side: Status/Date, Teams/Tourney, BFM Pin Badges -->
             <div class="default-game-box-left">
-              <div onclick="openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'all', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; cursor:pointer;" title="Click to view match details">
+              <div onclick="openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'all', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')" style="display:flex; align-items:center; gap:8px; min-width:0; flex:1; cursor:pointer;" title="Click to view match details">
                 <div class="live-wrapper">
                   <span class="live-badge" style="background:#55b80b; color:#ffffff; font-size:9.5px; font-weight:800; padding:2px 6px; border-radius:10px; flex-shrink:0;">LIVE</span>
                 </div>
@@ -11874,15 +11874,15 @@
 
               <!-- Option 1: B (Bookmaker), Option 2: F (Fancy), Option 3: M (Match Odds) Pin Badges -->
               <div class="bfm-wrapper">
-                <div class="bfm-item" title="Bookmaker Markets (B)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'bookmaker', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')">
+                <div class="bfm-item" title="Bookmaker Markets (B)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'bookmaker', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')">
                   <span class="bfm-pin-badge">${m.bPin || '1'}</span>
                   <span class="bfm-letter-label">B</span>
                 </div>
-                <div class="bfm-item" title="Fancy Markets (F)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'fancy', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')">
+                <div class="bfm-item" title="Fancy Markets (F)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'fancy', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')">
                   <span class="bfm-pin-badge">${m.fPin || '22'}</span>
                   <span class="bfm-letter-label">F</span>
                 </div>
-                <div class="bfm-item" title="Match Odds (M)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'match', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}')">
+                <div class="bfm-item" title="Match Odds (M)" onclick="event.stopPropagation(); openMatchDetails('${m.team1}', '${m.team2 || ''}', '${m.time || ''}', 'match', '${m.b1 || ''}', '${m.l1 || ''}', '${m.b2 || ''}', '${m.l2 || ''}', '${m.gmid || m.id || ''}')">
                   <span class="bfm-pin-badge">${m.mPin || '8'}</span>
                   <span class="bfm-letter-label">M</span>
                 </div>
@@ -12197,7 +12197,7 @@
     }
 
     // AUTHENTIC MATCH DETAILS LOGIC (TRIGGERED BY B, F, M BADGES AND MATCH CARDS)
-    window.openMatchDetails = function(team1, team2, matchTime, initialTab, b1, l1, b2, l2) {
+    window.openMatchDetails = function(team1, team2, matchTime, initialTab, b1, l1, b2, l2, matchId) {
       const details = document.getElementById('matchDetailsContainer');
       const matches = document.getElementById('sportsMatchesContainer');
       const viewMore = document.querySelector('.view-more-wrap');
@@ -12621,10 +12621,216 @@
         </div>
       `;
 
+      if (window._matchDetailsPollTimer) {
+        clearInterval(window._matchDetailsPollTimer);
+        window._matchDetailsPollTimer = null;
+      }
+
+      function updateMarketsView(markets) {
+        if (!markets) return;
+
+        // 1. MATCH ODDS (Betfair 3-level depth ladder)
+        if (markets.matchOdds && Array.isArray(markets.matchOdds.runners) && markets.matchOdds.runners.length > 0) {
+          const moSec = document.getElementById('matchSection-match');
+          if (moSec) {
+            const runnersHtml = markets.matchOdds.runners.map(r => {
+              const b0 = r.back && r.back[0] ? r.back[0] : null;
+              const b1 = r.back && r.back[1] ? r.back[1] : null;
+              const b2 = r.back && r.back[2] ? r.back[2] : null;
+              const l0 = r.lay && r.lay[0] ? r.lay[0] : null;
+              const l1 = r.lay && r.lay[1] ? r.lay[1] : null;
+              const l2 = r.lay && r.lay[2] ? r.lay[2] : null;
+
+              return `
+                <div class="match-runner-row">
+                  <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+                    <span style="color:#666; font-size:12px;">&#128202;</span>
+                    <span style="font-size:13px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.runnerName}</span>
+                  </div>
+                  <div style="display:flex; gap:4px; align-items:center;">
+                    <!-- 3 Back Boxes -->
+                    <div class="odds-depth-cell" ${b2 ? `onclick="openBetslip(event, '${matchTitle}', '${r.runnerName}', 'back', '${b2.price}')"` : ''}>
+                      <span style="font-weight:700; font-size:11.5px; color:#555;">${b2 ? (b2.price ? b2.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#888;">${b2 && b2.size ? (b2.size > 1000 ? (b2.size/1000).toFixed(1)+'k' : b2.size) : ''}</span>
+                    </div>
+                    <div class="odds-depth-cell" ${b1 ? `onclick="openBetslip(event, '${matchTitle}', '${r.runnerName}', 'back', '${b1.price}')"` : ''}>
+                      <span style="font-weight:700; font-size:11.5px; color:#333;">${b1 ? (b1.price ? b1.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#777;">${b1 && b1.size ? (b1.size > 1000 ? (b1.size/1000).toFixed(1)+'k' : b1.size) : ''}</span>
+                    </div>
+                    <div class="match-odds-box-back" ${b0 ? `onclick="openBetslip(event, '${matchTitle}', '${r.runnerName}', 'back', '${b0.price}')"` : ''}>
+                      <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${b0 ? (b0.price ? b0.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#555;">${b0 && b0.size ? (b0.size > 1000 ? (b0.size/1000).toFixed(1)+'k' : b0.size) : ''}</span>
+                    </div>
+
+                    <!-- 3 Lay Boxes -->
+                    <div class="match-odds-box-lay" ${l0 ? `onclick="openBetslip(event, '${matchTitle}', '${r.runnerName}', 'lay', '${l0.price}')"` : ''}>
+                      <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${l0 ? (l0.price ? l0.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#555;">${l0 && l0.size ? (l0.size > 1000 ? (l0.size/1000).toFixed(1)+'k' : l0.size) : ''}</span>
+                    </div>
+                    <div class="odds-depth-cell" ${l1 ? `onclick="openBetslip(event, '${matchTitle}', '${r.runnerName}', 'lay', '${l1.price}')"` : ''}>
+                      <span style="font-weight:700; font-size:11.5px; color:#333;">${l1 ? (l1.price ? l1.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#777;">${l1 && l1.size ? (l1.size > 1000 ? (l1.size/1000).toFixed(1)+'k' : l1.size) : ''}</span>
+                    </div>
+                    <div class="odds-depth-cell" ${l2 ? `onclick="openBetslip(event, '${matchTitle}', '${r.runnerName}', 'lay', '${l2.price}')"` : ''}>
+                      <span style="font-weight:700; font-size:11.5px; color:#555;">${l2 ? (l2.price ? l2.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#888;">${l2 && l2.size ? (l2.size > 1000 ? (l2.size/1000).toFixed(1)+'k' : l2.size) : ''}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            const headerHtml = `
+              <div class="match-sec-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Match Odds</span>
+                  <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">i</span>
+                  <span style="background:#ff9800; color:#000; font-size:10px; font-weight:800; padding:1px 6px; border-radius:3px;">Cashout</span>
+                  <span style="background:#28a745; color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:3px;">LIVE EXCHANGE</span>
+                </div>
+                <span style="color:#ffc11c; font-size:12px;">&#x25bc;</span>
+              </div>
+              <div class="match-sec-substrip">
+                <span>Min: ${markets.matchOdds.min || 100} | Max: ${markets.matchOdds.max || 500000}</span>
+                <button onclick="alert('Match Odds Rules: Standard Betfair Exchange Settlement Rules apply.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
+              </div>
+              <div class="match-table-cols">
+                <span>${markets.matchOdds.runners.length} selections</span>
+                <div style="display:flex; gap:4px; align-items:center;">
+                  <div class="odds-header-back-wrap">Back {L}</div>
+                  <div class="odds-header-lay-wrap">Lay {K}</div>
+                </div>
+              </div>
+            `;
+            moSec.innerHTML = headerHtml + runnersHtml;
+          }
+        }
+
+        // 2. BOOKMAKER
+        if (markets.bookmakers && markets.bookmakers.length > 0) {
+          const bmSec = document.getElementById('matchSection-bookmaker');
+          if (bmSec) {
+            const firstBm = markets.bookmakers[0];
+            const bmRunnersHtml = (firstBm.runners || []).map(r => {
+              const b0 = r.back && r.back[0] ? r.back[0] : null;
+              const l0 = r.lay && r.lay[0] ? r.lay[0] : null;
+              return `
+                <div class="match-runner-row">
+                  <div style="font-size:13px; font-weight:700; color:#111;">${r.runnerName}</div>
+                  <div style="display:flex; gap:4px; align-items:center;">
+                    <div class="odds-depth-cell"></div>
+                    <div class="odds-depth-cell"></div>
+                    <div class="match-odds-box-back" ${b0 ? `onclick="openBetslip(event, '${matchTitle} [BM]', '${r.runnerName}', 'back', '${b0.price}')"` : ''}>
+                      <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${b0 ? (b0.price > 0 ? b0.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#555;">${b0 && b0.size > 0 ? (b0.size > 1000 ? (b0.size/1000).toFixed(1)+'k' : b0.size) : ''}</span>
+                    </div>
+                    <div class="match-odds-box-lay" ${l0 ? `onclick="openBetslip(event, '${matchTitle} [BM]', '${r.runnerName}', 'lay', '${l0.price}')"` : ''}>
+                      <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${l0 ? (l0.price > 0 ? l0.price.toFixed(2) : '-') : '-'}</span>
+                      <span style="font-size:9.5px; color:#555;">${l0 && l0.size > 0 ? (l0.size > 1000 ? (l0.size/1000).toFixed(1)+'k' : l0.size) : ''}</span>
+                    </div>
+                    <div class="odds-depth-cell"></div>
+                    <div class="odds-depth-cell"></div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            bmSec.innerHTML = `
+              <div style="background:#ffffff; color:#000; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:13.5px; font-weight:800; color:#111;">${firstBm.marketName || 'BOOKMAKER'}</span>
+                  <span style="background:rgba(0,0,0,0.08); color:#333; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">i</span>
+                  <span style="background:#ff9800; color:#000; font-size:10px; font-weight:800; padding:1px 6px; border-radius:3px;">Zero Commission</span>
+                </div>
+                <button onclick="alert('Bookmaker Rules apply: Zero commission betting.');" style="background:#fff; border:1px solid #ccc; border-radius:4px; padding:3px 10px; font-size:11px; font-weight:700; color:#333; cursor:pointer;">Rules</button>
+              </div>
+              <div class="match-table-cols">
+                <span>${firstBm.runners ? firstBm.runners.length : 2} selections</span>
+                <div style="display:flex; gap:4px; align-items:center;">
+                  <div class="odds-header-back-wrap">Back {L}</div>
+                  <div class="odds-header-lay-wrap">Lay {K}</div>
+                </div>
+              </div>
+              ${bmRunnersHtml}
+            `;
+          }
+        }
+
+        // 3. FANCY MARKETS
+        if (markets.fancy && markets.fancy.length > 0) {
+          const fancySec = document.getElementById('matchSection-fancy');
+          if (fancySec) {
+            const fancyItemsHtml = markets.fancy.slice(0, 30).map(f => {
+              const hasNo = f.runsNo !== null && f.runsNo !== undefined;
+              const hasYes = f.runsYes !== null && f.runsYes !== undefined;
+              return `
+                <div class="match-runner-row">
+                  <div style="font-size:12.5px; font-weight:700; color:#111; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${f.marketName}</div>
+                  <div style="display:flex; gap:4px; align-items:center;">
+                    <div class="odds-depth-cell"></div>
+                    <div class="odds-depth-cell"></div>
+                    <div class="match-odds-box-lay" ${hasNo ? `onclick="openBetslip(event, '${matchTitle}', '${f.marketName} - NO', 'lay', '${f.runsNo}')"` : ''}>
+                      <span style="font-weight:800; font-size:12.5px; color:#b71c1c;">${hasNo ? f.runsNo : '-'}</span>
+                      <span style="font-size:9.5px; color:#555;">${f.rateNo ? f.rateNo : '100'}</span>
+                    </div>
+                    <div class="match-odds-box-back" ${hasYes ? `onclick="openBetslip(event, '${matchTitle}', '${f.marketName} - YES', 'back', '${f.runsYes}')"` : ''}>
+                      <span style="font-weight:800; font-size:12.5px; color:#0d47a1;">${hasYes ? f.runsYes : '-'}</span>
+                      <span style="font-size:9.5px; color:#555;">${f.rateYes ? f.rateYes : '100'}</span>
+                    </div>
+                    <div class="odds-depth-cell"></div>
+                    <div class="odds-depth-cell"></div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            fancySec.innerHTML = `
+              <div class="match-sec-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:13.5px; color:#ffc11c; font-weight:700;">Fancy Markets (${markets.fancy.length} Active Lines)</span>
+                  <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:10px; width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">i</span>
+                </div>
+                <span style="color:#ffc11c; font-size:12px;">&#x25bc;</span>
+              </div>
+              <div class="match-table-cols">
+                <span>Session Line</span>
+                <div style="display:flex; gap:4px; align-items:center;">
+                  <div class="odds-header-back-wrap" style="color:#d9534f;">No {Back}</div>
+                  <div class="odds-header-lay-wrap" style="color:#0275d8;">Yes {Lay}</div>
+                </div>
+              </div>
+              ${fancyItemsHtml}
+            `;
+          }
+        }
+      }
+
+      if (matchId) {
+        function pollMarkets() {
+          const sp = typeof currentSelectedSport !== 'undefined' ? (currentSelectedSport || 'cricket') : 'cricket';
+          fetch(getApiUrl(`/api/sports?action=fetchmatch&sport=${sp}&match=${matchId}`))
+            .then(r => r.json())
+            .then(data => {
+              if (data && data.status === 'success' && data.markets) {
+                updateMarketsView(data.markets);
+              }
+            })
+            .catch(err => console.warn('Fetchmatch polling:', err.message));
+        }
+
+        pollMarkets();
+        window._matchDetailsPollTimer = setInterval(pollMarkets, 7000);
+      }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.closeMatchDetails = function() {
+      if (window._matchDetailsPollTimer) {
+        clearInterval(window._matchDetailsPollTimer);
+        window._matchDetailsPollTimer = null;
+      }
+
       const details = document.getElementById('matchDetailsContainer');
       const matches = document.getElementById('sportsMatchesContainer');
       const viewMore = document.querySelector('.view-more-wrap');
@@ -13437,17 +13643,43 @@
     window.addEventListener('load', hideLoader);
     setTimeout(hideLoader, 100);
 
-    // Live Shubdx & Sports API Integration Loader
+    // Live Provider & Sports API Integration Loader (Diamond & Shubdx)
     window.initSportbexLiveIntegration = function() {
       function refreshLiveFeed() {
-        // Primary: Query /api/sports (backed by Shubdx International Sports API)
+        // 1. Fetch Cricket
         fetch(getApiUrl('/api/sports?action=allmatches&sport=cricket'))
           .then(res => res.json())
           .then(data => {
-            if (data && data.status === 'success' && data.isLiveShubdx && Array.isArray(data.matches) && data.matches.length > 0) {
+            if (data && data.status === 'success' && (data.isLiveDiamond || data.isLiveShubdx || Array.isArray(data.matches)) && data.matches.length > 0) {
               window.liveShubdxCricketMatches = data.matches;
-              window.isShubdxLiveActive = true;
+              window.liveDiamondCricketMatches = data.matches;
+              window.isLiveSportsFeedActive = true;
               window.liveSportbexCricketMatches = data.matches;
+              
+              if (typeof sportsData !== 'undefined' && sportsData.cricket) {
+                sportsData.cricket.matches = data.matches.map(m => ({
+                  comp: m.tournament || m.competition || 'Cricket',
+                  team1: m.team1,
+                  team2: m.team2,
+                  time: m.time || (m.inPlay ? 'LIVE' : 'Upcoming'),
+                  timeTab: m.inPlay ? 'inplay' : 'today',
+                  back1: m.b1 || '1.90',
+                  backSize1: m.bS1 || '5k',
+                  lay1: m.l1 || '1.92',
+                  laySize1: m.lS1 || '3k',
+                  back2: m.b2 || '2.00',
+                  backSize2: m.bS2 || '4k',
+                  lay2: m.l2 || '2.04',
+                  laySize2: m.lS2 || '2k',
+                  bPin: m.bPin || '1',
+                  fPin: m.fPin || '10',
+                  mPin: m.mPin || '1',
+                  id: m.id,
+                  gmid: m.gmid,
+                  sid: m.sid
+                }));
+              }
+
               if (typeof currentSelectedSport !== 'undefined' && (currentSelectedSport === 'inplay' || currentSelectedSport === 'cricket')) {
                 const sportsCont = document.getElementById('sportsViewContainer');
                 const isSportsVisible = sportsCont && sportsCont.style.display !== 'none';
@@ -13456,18 +13688,77 @@
                   renderSportsMatches();
                 }
               }
-            } else {
-              window.isShubdxLiveActive = false;
-              // Offline fallback active: ensure website operates smoothly without crashing
-              if (data && Array.isArray(data.matches) && data.matches.length > 0) {
-                window.liveSportbexCricketMatches = data.matches;
-              }
             }
           })
           .catch(err => {
-            console.warn('Sports feed fallback active:', err.message);
+            console.warn('Cricket feed refresh:', err.message);
           });
+
+        // 2. Fetch Football / Soccer
+        fetch(getApiUrl('/api/sports?action=allmatches&sport=soccer'))
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+              if (typeof sportsData !== 'undefined' && sportsData.soccer) {
+                sportsData.soccer.matches = data.matches.map(m => ({
+                  comp: m.tournament || m.competition || 'Football',
+                  team1: m.team1,
+                  team2: m.team2,
+                  time: m.time || (m.inPlay ? 'LIVE' : 'Upcoming'),
+                  timeTab: m.inPlay ? 'inplay' : 'today',
+                  back1: m.b1 || '1.50',
+                  backSize1: m.bS1 || '5k',
+                  lay1: m.l1 || '1.52',
+                  laySize1: m.lS1 || '3k',
+                  back2: m.b2 || '3.00',
+                  backSize2: m.bS2 || '4k',
+                  lay2: m.l2 || '3.10',
+                  laySize2: m.lS2 || '2k',
+                  bPin: m.bPin || '1',
+                  fPin: m.fPin || '5',
+                  mPin: m.mPin || '1',
+                  id: m.id,
+                  gmid: m.gmid,
+                  sid: m.sid
+                }));
+              }
+            }
+          })
+          .catch(err => console.warn('Soccer feed refresh:', err.message));
+
+        // 3. Fetch Tennis
+        fetch(getApiUrl('/api/sports?action=allmatches&sport=tennis'))
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+              if (typeof sportsData !== 'undefined' && sportsData.tennis) {
+                sportsData.tennis.matches = data.matches.map(m => ({
+                  comp: m.tournament || m.competition || 'Tennis',
+                  team1: m.team1,
+                  team2: m.team2,
+                  time: m.time || (m.inPlay ? 'LIVE' : 'Upcoming'),
+                  timeTab: m.inPlay ? 'inplay' : 'today',
+                  back1: m.b1 || '1.70',
+                  backSize1: m.bS1 || '5k',
+                  lay1: m.l1 || '1.72',
+                  laySize1: m.lS1 || '3k',
+                  back2: m.b2 || '2.10',
+                  backSize2: m.bS2 || '4k',
+                  lay2: m.l2 || '2.15',
+                  laySize2: m.lS2 || '2k',
+                  bPin: m.bPin || '1',
+                  fPin: m.fPin || '5',
+                  mPin: m.mPin || '1',
+                  id: m.id,
+                  gmid: m.gmid,
+                  sid: m.sid
+                }));
+              }
+            }
+          })
+          .catch(err => console.warn('Tennis feed refresh:', err.message));
       }
+
       refreshLiveFeed();
       if (!window._sportbexPollTimer) {
         window._sportbexPollTimer = setInterval(refreshLiveFeed, 20000);

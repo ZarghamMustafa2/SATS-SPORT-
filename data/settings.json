@@ -1,7 +1,7 @@
 {
   "depositWithdrawWhatsapp": "447846062779",
   "apiProviders": {
-    "activeProvider": "shubdx",
+    "activeProvider": "diamond",
     "shubdx": {
       "name": "Shubdx International",
       "baseUrl": "https://shubdxinternational.com",
@@ -12,7 +12,7 @@
     },
     "diamond": {
       "name": "Diamond Betting API",
-      "baseUrl": "http://77.37.44.135:3009",
+      "baseUrl": "http://46.202.166.33:3009",
       "apiKey": "",
       "timeoutMs": 8000,
       "retryCount": 1,
@@ -20,6 +20,27 @@
     }
   },
   "apiAuditLogs": [
+    {
+      "timestamp": "2026-10-09T11:20:21.450Z",
+      "admin": "Company Account",
+      "action": "API connection tested",
+      "provider": "diamond",
+      "result": "Tested Diamond API: Connection=CONNECTED / SUCCESS, HTTP 200, Auth=AUTHENTICATED"
+    },
+    {
+      "timestamp": "2026-10-09T11:12:51.472Z",
+      "admin": "Company Account",
+      "action": "Provider activated",
+      "provider": "diamond",
+      "result": "Switched active provider from shubdx to Diamond Betting API"
+    },
+    {
+      "timestamp": "2026-10-09T11:12:29.097Z",
+      "admin": "Company Account",
+      "action": "API connection tested",
+      "provider": "diamond",
+      "result": "Tested Diamond API: Connection=CONNECTED / SUCCESS, HTTP 200, Auth=AUTHENTICATED"
+    },
     {
       "timestamp": "2026-10-03T16:43:02.154Z",
       "admin": "Admin",
@@ -77,6 +98,6 @@
       "result": "Active production provider set to Shubdx International"
     }
   ],
-  "updatedAt": "2026-10-01T19:33:22.130Z",
+  "updatedAt": "2026-10-09T11:12:51.468Z",
   "updatedBy": "superadmin_1"
 }

@@ -258,7 +258,7 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
       const diamondDiag = evaluateDiagnostics(
         'diamond',
         'Diamond Betting API',
-        `${providersConf.diamond?.baseUrl || 'http://77.37.44.135:3009'}/allSportid`,
+        `${providersConf.diamond?.baseUrl || 'http://46.202.166.33:3009'}/allSportid`,
         diamondHealth,
         diamondHealth.latencyMs || 0
       );
@@ -313,11 +313,11 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           diamond: {
             id: 'diamond',
             name: 'Diamond Betting API (v1.0.0)',
-            role: 'CANDIDATE PROVIDER (DORMANT)',
-            baseUrl: providersConf.diamond?.baseUrl || 'http://77.37.44.135:3009',
-            docsUrl: 'http://77.37.44.135:3009/docs',
-            specUrl: 'http://77.37.44.135:3009/docs.json',
-            environment: 'Production VPS (Mumbai, Hostinger AS47583)',
+            role: 'INTEGRATED SPORTS & CASINO PROVIDER',
+            baseUrl: providersConf.diamond?.baseUrl || 'http://46.202.166.33:3009',
+            docsUrl: 'http://46.202.166.33:3009/docs',
+            specUrl: 'http://46.202.166.33:3009/docs.json',
+            environment: 'Production API (Scalar OpenAPI 3.0)',
             authType: 'Query Key (?key=) OR Server IP Whitelist',
             hasKey: providersConf.diamond?.hasKey || false,
             maskedKey: providersConf.diamond?.apiKey || 'Not Configured',
@@ -365,13 +365,13 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           }
         },
         sportsDataStatus: {
-          cricket: { name: 'Cricket', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
-          football: { name: 'Football', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
-          tennis: { name: 'Tennis', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
-          inPlay: { name: 'In-Play', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
-          odds: { name: 'Match Odds Ladder', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
-          bookmaker: { name: 'Bookmaker Odds', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider },
-          fancy: { name: 'Fancy / Session Lines', status: isShubdxLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isShubdxLive, provider: activeProvider }
+          cricket: { name: 'Cricket', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          football: { name: 'Football', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          tennis: { name: 'Tennis', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          inPlay: { name: 'In-Play', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          odds: { name: 'Match Odds Ladder', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          bookmaker: { name: 'Bookmaker Odds', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          fancy: { name: 'Fancy / Session Lines', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider }
         },
         auditLogs: auditLogs
       };
@@ -482,6 +482,48 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
       });
     }
 
+    const providerParam = (searchParams.get('provider') || '').toLowerCase().trim();
+    const useDiamond = (providerParam === 'diamond' || (!providerParam && activeProvider === 'diamond'));
+
+    if (useDiamond) {
+      try {
+        const resolved = diamondProvider.resolveDiamondSport(sportParam);
+        const privRes = await diamondProvider.getPriveteData(resolved.sid, groupById);
+        const privData = privRes.data;
+        const rawList = privData?.data || (Array.isArray(privData) ? privData : []);
+        const isLive = privRes.success && Array.isArray(rawList) && rawList.length > 0;
+        const categorized = isLive ? diamondProvider.normalizeMarkets(rawList) : null;
+        const fallbackMarkets = getFallbackMatchMarkets(groupById, sportParam);
+
+        return sendJson(res, 200, {
+          status: isLive ? 'success' : 'fallback',
+          dataSource: isLive ? 'LIVE_DIAMOND' : 'OFFLINE_FALLBACK',
+          isLiveDiamond: isLive,
+          isLiveShubdx: false,
+          groupById: groupById,
+          sport: resolved.key,
+          sportName: resolved.name,
+          sportId: resolved.sid,
+          provider: 'diamond_live',
+          endpoint: privRes.endpoint || '/getPriveteData',
+          isDiamondAuthorized: isLive,
+          markets: isLive ? categorized : fallbackMarkets,
+          rawDiamondResponse: privData
+        });
+      } catch (err) {
+        console.error('Error fetching Diamond fetchmatch:', err.message);
+        return sendJson(res, 200, {
+          status: 'fallback',
+          dataSource: 'OFFLINE_FALLBACK',
+          isLiveDiamond: false,
+          groupById: groupById,
+          sport: sportParam,
+          markets: getFallbackMatchMarkets(groupById, sportParam),
+          message: err.message
+        });
+      }
+    }
+
     const { sportsname, eventTypeId } = shubdx.resolveSport(sportParam);
 
     try {
@@ -528,6 +570,71 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
 
   // 2. ALL MATCHES (GET)
   if (req.method === 'GET' && (action === 'allmatches' || pathname.includes('/allmatches') || (!action && !groupById))) {
+    const providerParam = (searchParams.get('provider') || '').toLowerCase().trim();
+    const useDiamond = (providerParam === 'diamond' || (!providerParam && activeProvider === 'diamond'));
+
+    if (useDiamond) {
+      const resolved = diamondProvider.resolveDiamondSport(sportParam);
+      const cacheKey = `allmatches_diamond_${resolved.key}`;
+      const now = Date.now();
+
+      if (cachedMatches[cacheKey] && (now - (lastCacheTimes[cacheKey] || 0) < CACHE_TTL_MS)) {
+        return sendJson(res, 200, cachedMatches[cacheKey]);
+      }
+
+      try {
+        const diamondRes = await diamondProvider.getMatches(resolved.sid);
+        const statusCode = diamondRes.statusCode;
+        const diamondData = diamondRes.data;
+
+        let normalizedMatches = [];
+        let isDiamondLive = false;
+
+        if (statusCode === 200 && diamondData?.data) {
+          const t1 = Array.isArray(diamondData.data.t1) ? diamondData.data.t1 : [];
+          const t2 = Array.isArray(diamondData.data.t2) ? diamondData.data.t2 : [];
+          const allRaw = [...t1, ...t2];
+          if (allRaw.length > 0) {
+            normalizedMatches = allRaw.map(m => diamondProvider.normalizeMatch(m, resolved.key));
+            isDiamondLive = true;
+          }
+        }
+
+        const fallbackMatches = getFallbackMatches(resolved.key);
+
+        const responsePayload = {
+          status: isDiamondLive ? 'success' : 'fallback',
+          dataSource: isDiamondLive ? 'LIVE_DIAMOND' : 'OFFLINE_FALLBACK',
+          isLiveDiamond: isDiamondLive,
+          isLiveShubdx: false,
+          timestamp: new Date().toISOString(),
+          sport: resolved.key,
+          sportName: resolved.name,
+          sportId: resolved.sid,
+          provider: isDiamondLive ? 'diamond_live' : 'offline_fallback',
+          isDiamondAuthorized: isDiamondLive,
+          endpoint: diamondRes.endpoint || '/esid',
+          count: isDiamondLive ? normalizedMatches.length : fallbackMatches.length,
+          matches: isDiamondLive ? normalizedMatches : fallbackMatches,
+          rawDiamondResponse: diamondData
+        };
+
+        cachedMatches[cacheKey] = responsePayload;
+        lastCacheTimes[cacheKey] = now;
+
+        return sendJson(res, 200, responsePayload);
+      } catch (err) {
+        console.error('Error fetching Diamond allmatches:', err.message);
+        return sendJson(res, 500, {
+          status: 'error',
+          dataSource: 'OFFLINE_FALLBACK',
+          isLiveDiamond: false,
+          message: err.message,
+          matches: getFallbackMatches(resolved.key)
+        });
+      }
+    }
+
     const { sportsname, eventTypeId, name } = shubdx.resolveSport(sportParam);
     const cacheKey = `allmatches_${sportsname}`;
     const now = Date.now();
@@ -590,6 +697,67 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
         message: err.message,
         matches: getFallbackMatches(sportsname)
       });
+    }
+  }
+
+  // 2.1 CASINO SUITE ENDPOINTS (GET)
+  if (req.method === 'GET' && action === 'casino_tables') {
+    try {
+      const resData = await diamondProvider.getCasinoTables();
+      return sendJson(res, 200, {
+        status: resData.success ? 'success' : 'error',
+        statusCode: resData.statusCode,
+        tables: resData.data?.data?.t1 || resData.data?.data || []
+      });
+    } catch (err) {
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
+  if (req.method === 'GET' && action === 'casino_data') {
+    const tableType = searchParams.get('type') || searchParams.get('table') || 'worli3';
+    try {
+      const resData = await diamondProvider.getCasinoData(tableType);
+      return sendJson(res, 200, {
+        status: resData.success ? 'success' : 'error',
+        statusCode: resData.statusCode,
+        type: tableType,
+        data: resData.data?.data || resData.data
+      });
+    } catch (err) {
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
+  if (req.method === 'GET' && action === 'casino_result') {
+    const tableType = searchParams.get('type') || searchParams.get('table') || 'worli3';
+    try {
+      const resData = await diamondProvider.getCasinoLastResult(tableType);
+      return sendJson(res, 200, {
+        status: resData.success ? 'success' : 'error',
+        statusCode: resData.statusCode,
+        type: tableType,
+        result: resData.data?.data || resData.data
+      });
+    } catch (err) {
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
+  if (req.method === 'GET' && action === 'casino_detail_result') {
+    const tableType = searchParams.get('type') || searchParams.get('table') || 'worli3';
+    const roundId = searchParams.get('mid') || '';
+    try {
+      const resData = await diamondProvider.getCasinoDetailResult(tableType, roundId);
+      return sendJson(res, 200, {
+        status: resData.success ? 'success' : 'error',
+        statusCode: resData.statusCode,
+        type: tableType,
+        mid: roundId,
+        data: resData.data?.data || resData.data
+      });
+    } catch (err) {
+      return sendJson(res, 500, { status: 'error', message: err.message });
     }
   }
 

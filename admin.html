@@ -3078,7 +3078,7 @@ Boland v Knights                        </a>
                                                 <div style="display: flex; flex-direction: column; gap: 6px;">
                                                     <div><strong style="color: #374151;">Active Endpoint URL:</strong> <code id="apiActiveBaseUrl" style="font-size: 14px; color: #0284c7; background: #e0f2fe; padding: 2px 8px; border-radius: 4px;">https://shubdxinternational.com</code></div>
                                                     <div><strong style="color: #374151;">Server Egress IP:</strong> <code id="apiServerEgressIp" style="font-size: 14px; color: #1f2937; background: #f3f4f6; padding: 2px 8px; border-radius: 4px;">3.234.250.111</code> <small class="text-muted">(Dynamic AWS IP from Vercel function)</small></div>
-                                                    <div><strong style="color: #374151;">77.37.44.135:3009 Candidate:</strong> <span class="badge badge-danger" style="font-size: 11px; padding: 3px 8px;">DORMANT / NOT AUTHORIZED (HTTP 401)</span> <small class="text-muted">(Diamond Betting API - Key or Whitelist needed)</small></div>
+                                                    <div><strong style="color: #374151;">Diamond Provider (46.202.166.33:3009):</strong> <span id="diamondBannerStatus" class="badge badge-success" style="font-size: 11px; padding: 3px 8px;">CONNECTED / REAL LIVE DATA</span> <small class="text-muted">(Scalar OpenAPI 3.0)</small></div>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-5 text-md-right">
@@ -3148,18 +3148,18 @@ Boland v Knights                        </a>
                                 <div class="card h-100" style="border: 1.5px solid #d97706; box-shadow: 0 2px 10px rgba(217,119,6,0.1);">
                                     <div class="card-header" style="background: #fffbeb; display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;">
                                         <div>
-                                            <strong style="color: #92400e; font-size: 15px;">Diamond Betting API (77.37.44.135:3009)</strong>
-                                            <span class="badge badge-secondary ml-2" style="font-size: 11px; padding: 3px 7px;">CANDIDATE (DORMANT)</span>
+                                            <strong style="color: #92400e; font-size: 15px;">Diamond Betting API (46.202.166.33:3009)</strong>
+                                            <span class="badge badge-success ml-2" style="font-size: 11px; padding: 3px 7px;">INTEGRATED & VERIFIED</span>
                                         </div>
-                                        <span id="diamondStatusBadge" class="badge badge-danger" style="font-size: 11px;">NOT CONNECTED</span>
+                                        <span id="diamondStatusBadge" class="badge badge-success" style="font-size: 11px;">CONNECTED</span>
                                     </div>
                                     <div class="card-body" style="padding: 16px;">
                                         <p style="font-size: 13px; color: #4b5563; margin-bottom: 8px;">
-                                            Diamond Exchange B2B aggregator hosted on Hostinger VPS (Mumbai). Offers unified Match Odds, Bookmaker, Fancy, score widget, and Casino suite.
+                                            Diamond Exchange B2B aggregator API. Offers unified Match Odds, Bookmaker, Fancy, score widget, and Casino suite.
                                         </p>
                                         <ul class="list-group list-group-flush mb-3" style="font-size: 12.5px;">
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Base URL:</span> <code id="diamondCardBaseUrl">http://77.37.44.135:3009</code></li>
-                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Documentation:</span> <a href="http://77.37.44.135:3009/docs" target="_blank" style="color: #0284c7;">Scalar API Reference <i class="fas fa-external-link-alt fa-xs"></i></a></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Base URL:</span> <code id="diamondCardBaseUrl">http://46.202.166.33:3009</code></li>
+                                            <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Documentation:</span> <a href="http://46.202.166.33:3009/docs" target="_blank" style="color: #0284c7;">Scalar API Reference <i class="fas fa-external-link-alt fa-xs"></i></a></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Network Reachability:</span> <span id="diamondNetworkBadge" class="badge badge-info" style="background:#0284c7; color:#fff;">REACHABLE</span></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Authentication:</span> <span id="diamondAuthBadge" class="badge badge-danger">FAILED / UNAUTHORIZED</span></li>
                                             <li class="list-group-item d-flex justify-content-between px-0 py-1"><span>Data Availability:</span> <span id="diamondDataBadge" class="badge badge-secondary">NO DATA</span></li>
@@ -7267,7 +7267,7 @@ Boland v Knights                        </a>
                 var dOver = document.getElementById('diamondOverallBadge');
                 if (dOver) dOver.innerText = d.overallStatus || 'NOT CONNECTED';
                 var dUrl = document.getElementById('diamondCardBaseUrl');
-                if (dUrl) dUrl.innerText = d.baseUrl || 'http://77.37.44.135:3009';
+                if (dUrl) dUrl.innerText = d.baseUrl || 'http://46.202.166.33:3009';
                 var dKey = document.getElementById('diamondCardKey');
                 if (dKey) dKey.innerText = d.maskedKey || 'Not Configured';
             }
@@ -7538,7 +7538,7 @@ Boland v Knights                        </a>
 
             var pData = cachedApiOverview?.providers?.[provider];
             if (title) title.innerText = 'Configure ' + (pData?.name || provider.toUpperCase());
-            if (urlInput) urlInput.value = pData?.baseUrl || (provider === 'diamond' ? 'http://77.37.44.135:3009' : 'https://shubdxinternational.com');
+            if (urlInput) urlInput.value = pData?.baseUrl || (provider === 'diamond' ? 'http://46.202.166.33:3009' : 'https://shubdxinternational.com');
             if (keyInput) {
                 keyInput.value = '';
                 keyInput.placeholder = pData?.hasKey ? 'Configured (leave blank to keep current)' : 'Enter API Key / Token';
