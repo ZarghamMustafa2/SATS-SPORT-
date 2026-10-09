@@ -5580,7 +5580,7 @@
           <div class="user-dropdown-menu" id="userProfileDropdown">
             <div class="dropdown-header-info">
               <div id="dropdownHeaderUsername" style="font-weight: 800; font-size: 14px; color: #000;">User</div>
-              <div id="dropdownHeaderBalSub" style="font-size: 11.5px; color: #666; margin-top: 2px;">Main: ₹0.00 | Exposure: ₹0.00</div>
+              <div id="dropdownHeaderBalSub" style="font-size: 11.5px; color: #666; margin-top: 2px;">Main: Rs. 0.00 | Exposure: Rs. 0.00</div>
               <div id="dropdownHeaderDummySub" style="font-size: 11.5px; color: #b78103; margin-top: 3px; font-weight: 700;">Dummy Balance: 0.00 (Demo/Test)</div>
             </div>
             <div class="dropdown-item" onclick="openAccountModal('dummy_balance')" style="color: #b78103; font-weight: 700;">🪙 Dummy Balance</div>
@@ -8819,7 +8819,7 @@
         content: `
           <p>Betting exchanges revolutionized wagering by allowing bettors to act as the bookmaker through 'Lay' betting. Understanding how Lay liability functions is the bedrock of profitable sports trading.</p>
           <h3>What Is Lay Betting?</h3>
-          <p>When you Lay a selection, you are betting that it will NOT happen. If you lay India at 1.50 for ₹1,000, your liability is ₹500, while your potential profit is ₹1,000 if West Indies win or tie.</p>
+          <p>When you Lay a selection, you are betting that it will NOT happen. If you lay India at 1.50 for Rs. 1,000, your liability is Rs. 500, while your potential profit is Rs. 1,000 if West Indies win or tie.</p>
           <h3>Green-Booking (Equalizing Profits)</h3>
           <p>By backing high and laying low as match momentum fluctuates, traders achieve a 'Green Book' where profit is locked in regardless of the final outcome.</p>
           <div class="blog-reader-takeaways">
@@ -9888,7 +9888,7 @@
                 ${sportObj.icon} <strong>${compName}</strong>
                 <span class="accordion-chevron" id="compChevron-${idx}">▲</span>
               </span>
-              <span style="font-size: 11px; color: #888;">Matched: ₹ ${(compMatches.length * 425890).toLocaleString()}</span>
+              <span style="font-size: 11px; color: #888;">Matched: Rs. ${(compMatches.length * 425890).toLocaleString()}</span>
             </div>
             <div class="match-rows-container" id="compRows-${idx}">
               ${compMatches.map(m => `
@@ -10024,7 +10024,7 @@
                 </div>
               </div>
               <div style="flex:1;">
-                <label style="font-size:10px; font-weight:700; color:#666; display:block; margin-bottom:2px;">Stake (₹)</label>
+                <label style="font-size:10px; font-weight:700; color:#666; display:block; margin-bottom:2px;">Stake (Rs.)</label>
                 <input type="number" step="10" id="desktopStakeInput" value="${activeBet.stake}" oninput="updateDesktopProfit()" style="width:100%; height:28px; padding:2px 6px; border:1px solid #ccc; border-radius:4px; font-weight:700; font-size:12px; text-align:center; box-sizing:border-box;">
               </div>
             </div>
@@ -10037,7 +10037,7 @@
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:11.5px; font-weight:700; padding:4px 0; border-top:1px dashed #e0e0e0;">
               <span>Potential Profit:</span>
-              <span id="desktopProfitVal" style="color:#28a745; font-size:12px;">₹ ${(activeBet.stake * (activeBet.odd - 1)).toFixed(2)}</span>
+              <span id="desktopProfitVal" style="color:#28a745; font-size:12px;">${formatPKR(activeBet.stake * (activeBet.odd - 1))}</span>
             </div>
             <div style="display:flex; gap:6px; margin-top:8px;">
               <button type="button" onclick="closeBetslip()" style="flex:1; background:#f0f0f0; border:1px solid #ccc; border-radius:4px; padding:7px; font-weight:700; font-size:11.5px; cursor:pointer;">Cancel</button>
@@ -10097,6 +10097,17 @@
       }
     };
 
+    // Global PKR / Rs. Currency Formatter (Conceptually formatPKR(amount))
+    window.formatPKR = function(amount) {
+      const num = typeof amount === 'number' ? amount : (parseFloat(String(amount || '0').replace(/[^0-9.-]/g, '')) || 0);
+      return 'Rs. ' + num.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    // Authentic Normal User Auth Token Retriever
+    window.getAuthToken = function() {
+      return localStorage.getItem('auth_token') || localStorage.getItem('token') || (window.currentUser && window.currentUser.token) || null;
+    };
+
     window.addDesktopStake = function(amt) {
       const inp = document.getElementById('desktopStakeInput');
       if (inp) {
@@ -10104,6 +10115,14 @@
         inp.value = cur + amt;
         updateDesktopProfit();
       }
+    };
+
+    window.updateDesktopProfit = function() {
+      const odd = parseFloat(document.getElementById('desktopOddsInput')?.value) || 1;
+      const stake = parseFloat(document.getElementById('desktopStakeInput')?.value) || 0;
+      const profit = stake * (odd - 1);
+      const el = document.getElementById('desktopProfitVal');
+      if (el) el.innerText = formatPKR(profit);
     };
 
     function stepOdds(delta) {
@@ -10122,24 +10141,67 @@
     }
 
     function updateBetslipProfit() {
-      const odd = parseFloat(document.getElementById('betslipOddsInput').value) || 1;
-      const stake = parseFloat(document.getElementById('betslipStakeInput').value) || 0;
+      const odd = parseFloat(document.getElementById('betslipOddsInput')?.value) || 1;
+      const stake = parseFloat(document.getElementById('betslipStakeInput')?.value) || 0;
       const profit = stake * (odd - 1);
-      document.getElementById('betslipProfitVal').innerText = '₹ ' + profit.toFixed(2);
+      const el = document.getElementById('betslipProfitVal');
+      if (el) el.innerText = formatPKR(profit);
     }
 
     window.placedBetsList = window.placedBetsList || [];
 
     function updateBetsMetrics() {
       const list = window.placedBetsList || [];
-      const totalExposure = list.reduce((sum, b) => sum + (parseFloat(b.stake) || 0), 0);
+      const totalExposure = list.reduce((sum, b) => sum + (parseFloat(b.liability || b.stake) || 0), 0);
       const outValEl = document.getElementById('headerOutVal');
-      if (outValEl) outValEl.innerText = totalExposure.toFixed(2);
+      if (outValEl) outValEl.innerText = formatPKR(totalExposure);
       const matchedCountEl = document.getElementById('matchedBetsCount');
       if (matchedCountEl) matchedCountEl.innerText = list.length;
     }
 
+    // Persisted User Bets Synchronization from database
+    window.fetchUserBets = async function() {
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
+      if (!token && !window.currentUser) {
+        window.placedBetsList = [];
+        updateBetsMetrics();
+        return;
+      }
+      try {
+        const headers = {};
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        const res = await fetch(getApiUrl('/api/bets'), {
+          headers: headers,
+          credentials: 'include'
+        });
+        const data = await res.json();
+        if (data && data.status === 'success' && Array.isArray(data.bets)) {
+          window.placedBetsList = data.bets.map(b => ({
+            id: b.id,
+            ref: b.id ? `#${b.id.slice(-6).toUpperCase()}` : (b.shubdxBetId ? `#SH-${b.shubdxBetId}` : '#BET'),
+            runner: b.runner,
+            event: b.event,
+            odds: b.odds,
+            stake: b.stake,
+            liability: b.liability,
+            profit: (parseFloat(b.potentialProfit || b.profit) || (b.stake * (b.odds - 1))).toFixed(2),
+            type: (b.type || 'Back').toUpperCase(),
+            time: b.placedAt ? new Date(b.placedAt).toLocaleTimeString() : 'Recent'
+          }));
+          updateBetsMetrics();
+          if (document.getElementById('myMarketsModal')?.classList.contains('show')) {
+            renderMyMarketsContent(currentMyMarketsTab || 'matched');
+          }
+        }
+      } catch (e) {
+        console.warn('Could not fetch user bets:', e.message);
+      }
+    };
+
     function placeBet() {
+      if (window._isPlacingBet) return;
+      window._isPlacingBet = true;
+
       const deskStakeInp = document.getElementById('desktopStakeInput');
       const mobStakeInp = document.getElementById('betslipStakeInput');
       const deskOddsInp = document.getElementById('desktopOddsInput');
@@ -10149,24 +10211,38 @@
       const odd = parseFloat((deskOddsInp && deskOddsInp.value) ? deskOddsInp.value : (mobOddsInp ? mobOddsInp.value : (document.getElementById('betslipOddsVal')?.innerText || 1.95))) || 1.95;
       const runner = activeBet?.runnerName || document.getElementById('betslipRunnerName')?.innerText || 'Runner';
       const eventName = activeBet?.matchName || document.getElementById('betslipEventName')?.innerText || document.getElementById('betslipEventTitle')?.innerText || 'Match Odds';
-      const side = activeBet?.type || 'back';
+      const side = (activeBet?.type || 'back').toLowerCase();
       const refId = '#SB-' + Math.floor(100000 + Math.random() * 900000);
 
-      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('token') || (window.currentUser && window.currentUser.token);
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token') || localStorage.getItem('token');
+      const user = window.currentUser || (localStorage.getItem('current_user') ? JSON.parse(localStorage.getItem('current_user')) : null);
 
-      if (!token) {
-        showToast('Please login to place bets with real database settlement!');
+      if (!token && !user) {
+        window._isPlacingBet = false;
+        showToast('Please login to place bets!', 'error');
         if (typeof openLoginModal === 'function') openLoginModal();
         return;
       }
 
-      // Submit bet to real unified backend & Shubdx International Settlement API
-      fetch(getApiUrl('/api/bets'), {
+      const deskBtn = document.querySelector('#desktopBetslipBody button[onclick*="placeBet"]');
+      const mobBtn = document.querySelector('.betslip-place-btn');
+      if (deskBtn) { deskBtn.disabled = true; deskBtn.dataset.origText = deskBtn.innerText; deskBtn.innerText = 'Placing...'; }
+      if (mobBtn) { mobBtn.disabled = true; mobBtn.dataset.origText = mobBtn.innerText; mobBtn.innerText = 'Placing...'; }
+
+      const resetButtons = () => {
+        window._isPlacingBet = false;
+        if (deskBtn) { deskBtn.disabled = false; deskBtn.innerText = deskBtn.dataset.origText || 'Place Bet'; }
+        if (mobBtn) { mobBtn.disabled = false; mobBtn.innerText = mobBtn.dataset.origText || 'Place Bet'; }
+      };
+
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+
+      // Submit bet to real unified backend (SATS SPORT Internal Betting & Settlement Engine)
+      return fetch(getApiUrl('/api/bets'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
+        headers: headers,
+        credentials: 'include',
         body: JSON.stringify({
           runner: runner,
           event: eventName,
@@ -10182,65 +10258,67 @@
           price: odd
         })
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.status === 'success') {
+      .then(async res => {
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          showToast('Please login to place bets!', 'error');
+          if (typeof openLoginModal === 'function') openLoginModal();
+          return;
+        }
+        if (res.ok && data.status === 'success') {
           if (data.user) {
             updateUserLoggedInState(data.user);
           }
-          const shubdxTag = data.shubdxSettlement?.betId ? ` (Shubdx Bet #${data.shubdxSettlement.betId} Confirmed)` : '';
-          showToast(`Bet placed successfully! ₹ ${stake} on ${runner}${shubdxTag}`);
+          showToast(`Bet placed successfully! ${formatPKR(stake)} on ${runner}`);
 
           const newBet = {
-            ref: data.shubdxSettlement?.betId ? `#SH-${data.shubdxSettlement.betId}` : refId,
+            id: data.bet?.id,
+            ref: data.bet?.id ? `#${data.bet.id.slice(-6).toUpperCase()}` : (data.shubdxSettlement?.betId ? `#SH-${data.shubdxSettlement.betId}` : refId),
             runner: runner,
             event: eventName,
             odds: odd,
             stake: stake,
-            profit: (stake * (odd - 1)).toFixed(2),
+            liability: data.bet?.liability || ((side === 'lay') ? stake * (odd - 1) : stake),
+            profit: (side === 'back' ? (stake * (odd - 1)) : stake).toFixed(2),
             type: side.toUpperCase(),
             time: 'Just now'
           };
+          window.placedBetsList = window.placedBetsList || [];
           window.placedBetsList.unshift(newBet);
           updateBetsMetrics();
           closeBetslip();
+          if (typeof fetchUserBets === 'function') {
+            fetchUserBets();
+          }
         } else {
           showToast(data.message || 'Error placing bet', 'error');
         }
       })
       .catch(err => {
-        console.warn('Real bet placement failed, recorded locally:', err.message);
-        const newBet = {
-          ref: refId,
-          runner: runner,
-          event: eventName,
-          odds: odd,
-          stake: stake,
-          profit: (stake * (odd - 1)).toFixed(2),
-          type: side.toUpperCase(),
-          time: 'Just now'
-        };
-        window.placedBetsList.unshift(newBet);
-        updateBetsMetrics();
-        showToast('Bet placed for ₹ ' + stake + '! Ref: ' + refId);
-        closeBetslip();
+        console.error('Real bet placement failed:', err.message);
+        showToast(err.message || 'Connection error placing bet', 'error');
+      })
+      .finally(() => {
+        resetButtons();
       });
     }
 
-    function showToast(msg) {
+    function showToast(msg, type) {
       let toast = document.getElementById('appToastNotification');
       if (!toast) {
         toast = document.createElement('div');
         toast.id = 'appToastNotification';
-        toast.style.cssText = 'position: fixed; top: 70px; right: 20px; background: #28a745; color: #fff; padding: 12px 20px; border-radius: 6px; font-weight: 600; font-size: 13px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: opacity 0.3s; opacity: 0; pointer-events: none;';
         document.body.appendChild(toast);
       }
+      const isErr = (type === 'error');
+      toast.style.cssText = `position: fixed; top: 70px; right: 20px; background: ${isErr ? '#d32f2f' : '#28a745'}; color: #fff; padding: 12px 20px; border-radius: 6px; font-weight: 600; font-size: 13px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: opacity 0.3s; opacity: 1; pointer-events: none;`;
       toast.innerText = msg;
-      toast.style.opacity = '1';
       setTimeout(() => {
         toast.style.opacity = '0';
-      }, 3000);
+      }, 3500);
     }
+    window.showToast = showToast;
+    window.placeBet = placeBet;
 
     // 5. HEADER DROPDOWNS & NOTIFICATIONS
     function toggleAllCasinosDropdown(e) {
@@ -10295,22 +10373,22 @@
 
       const balValEl = document.getElementById('headerBalVal');
       if (balValEl) {
-        balValEl.innerText = rawBal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        balValEl.innerText = formatPKR(rawBal);
       }
       const outValEl = document.getElementById('headerOutVal');
       if (outValEl) {
-        outValEl.innerText = rawExp.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        outValEl.innerText = formatPKR(rawExp);
       }
 
       const dropdownInfo = document.querySelector('.dropdown-header-info div:first-child');
       if (dropdownInfo) dropdownInfo.innerText = user.username;
       const dropdownSub = document.querySelector('.dropdown-header-info div:nth-child(2)');
       if (dropdownSub) {
-        dropdownSub.innerText = 'Main: ₹' + rawBal.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + ' | Exposure: ₹' + rawExp.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+        dropdownSub.innerText = 'Main: ' + formatPKR(rawBal) + ' | Exposure: ' + formatPKR(rawExp);
       }
       const dropdownDummy = document.getElementById('dropdownHeaderDummySub');
       if (dropdownDummy) {
-        dropdownDummy.innerText = 'Dummy Balance: ' + dummyBal.toLocaleString('en-IN', { minimumFractionDigits: 2 }) + ' (Demo/Test)';
+        dropdownDummy.innerText = 'Dummy Balance: ' + formatPKR(dummyBal) + ' (Demo/Test)';
       }
 
       // If user is admin, add an Admin link to the profile dropdown
@@ -10343,6 +10421,8 @@
       localStorage.removeItem('auth_token');
       localStorage.removeItem('current_user');
       window.currentUser = null;
+      window.placedBetsList = [];
+      updateBetsMetrics();
       const loggedIn = document.getElementById('desktopLoggedIn');
       const loggedOut = document.getElementById('desktopLoggedOut');
       if (loggedIn) loggedIn.style.display = 'none';
@@ -10371,7 +10451,7 @@
     // Verify session & enforce authentication for protected actions
     async function verifyAndEnforceAuth() {
       fetchWhatsappSettings();
-      const token = localStorage.getItem('auth_token');
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
       const urlParams = new URLSearchParams(window.location.search);
       const path = window.location.pathname.toLowerCase();
       let protectedArea = urlParams.get('protected');
@@ -10407,6 +10487,9 @@
           if (data.token) localStorage.setItem('auth_token', data.token);
           localStorage.setItem('current_user', JSON.stringify(authUser));
           updateUserLoggedInState(authUser);
+          if (typeof fetchUserBets === 'function') {
+            fetchUserBets();
+          }
 
           if (protectedArea) {
             if (protectedArea === 'deposit' || protectedArea === 'withdraw') {
@@ -10422,6 +10505,8 @@
           localStorage.removeItem('auth_token');
           localStorage.removeItem('current_user');
           window.currentUser = null;
+          window.placedBetsList = [];
+          updateBetsMetrics();
           const loggedIn = document.getElementById('desktopLoggedIn');
           const loggedOut = document.getElementById('desktopLoggedOut');
           if (loggedIn) loggedIn.style.display = 'none';
@@ -10456,11 +10541,12 @@
       if (e) e.stopPropagation();
       const btn = document.querySelector('.balance-refresh-btn');
       if (btn) btn.classList.add('spinning');
-      const token = localStorage.getItem('auth_token');
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
       if (token) {
         try {
           const res = await safeFetchJson(getApiUrl('/api/auth/me'), {
-            headers: { 'Authorization': 'Bearer ' + token }
+            headers: { 'Authorization': 'Bearer ' + token },
+            credentials: 'include'
           });
           if (res.ok && res.data && res.data.user) {
             updateUserLoggedInState(res.data.user);
@@ -10477,15 +10563,19 @@
     }
 
     // DEDICATED MY MARKETS MODAL CONTROLLER
-    function openMyMarketsDialog() {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
+    async function openMyMarketsDialog() {
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
+      if (!token && !window.currentUser) {
         window.location.href = '/login?redirect=/my-bets';
         return;
       }
       renderMyMarketsContent('matched');
       const m = document.getElementById('myMarketsModal');
       if (m) m.classList.add('show');
+      if (typeof fetchUserBets === 'function') {
+        await fetchUserBets();
+        renderMyMarketsContent('matched');
+      }
     }
 
     function closeMyMarketsModal() {
@@ -10494,6 +10584,7 @@
     }
 
     function switchMyMarketsTab(tab) {
+      window.currentMyMarketsTab = tab;
       const tabMatched = document.getElementById('tabMatchedBets');
       const tabUnmatched = document.getElementById('tabUnmatchedBets');
       if (tab === 'matched') {
@@ -10552,15 +10643,15 @@
         let rows = bets.map(b => `
           <tr style="border-bottom: 1px solid #eee; font-size: 12.5px;">
             <td style="padding: 10px 8px;">
-              <div style="font-weight: 700; color: #111;">${b.runner}</div>
-              <div style="font-size: 11px; color: #666;">${b.event} &bull; ${b.ref}</div>
+              <div style="font-weight: 700; color: #111;">${escapeHtml(b.runner || 'Runner')}</div>
+              <div style="font-size: 11px; color: #666;">${escapeHtml(b.event || 'Match')} &bull; ${b.ref}</div>
             </td>
             <td style="padding: 10px 8px; text-align: center;">
-              <span style="background: #e2f0d9; color: #2e7d32; font-weight: 800; padding: 2px 8px; border-radius: 4px;">${b.type}</span>
+              <span style="background: ${b.type === 'LAY' ? '#fbd7e5' : '#e2f0d9'}; color: ${b.type === 'LAY' ? '#c62828' : '#2e7d32'}; font-weight: 800; padding: 2px 8px; border-radius: 4px;">${b.type}</span>
             </td>
             <td style="padding: 10px 8px; text-align: right; font-weight: 700;">${b.odds}</td>
-            <td style="padding: 10px 8px; text-align: right; font-weight: 700;">₹ ${b.stake}</td>
-            <td style="padding: 10px 8px; text-align: right; color: #2e7d32; font-weight: 700;">+₹ ${b.profit}</td>
+            <td style="padding: 10px 8px; text-align: right; font-weight: 700;">${formatPKR(b.stake)}</td>
+            <td style="padding: 10px 8px; text-align: right; color: #2e7d32; font-weight: 700;">+${formatPKR(b.profit || b.potentialProfit)}</td>
           </tr>
         `).join('');
         cont.innerHTML = `
@@ -11646,7 +11737,7 @@
 
         // Amount & Impact
         const amtVal = parseFloat(it.amount) || 0;
-        const amtStr = '₹ ' + amtVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const amtStr = formatPKR(amtVal);
         let impactHtml = '';
         if (st === 'APPROVED' || st === 'COMPLETED') {
           impactHtml = isDep
@@ -13962,7 +14053,7 @@
           <input type="number" step="0.01" id="betslipOddsInput" value="1.85" oninput="updateBetslipProfit()">
         </div>
         <div class="betslip-calc-field">
-          <label>Stake (₹)</label>
+          <label>Stake (Rs.)</label>
           <input type="number" step="10" id="betslipStakeInput" value="500" oninput="updateBetslipProfit()">
         </div>
       </div>
@@ -13976,7 +14067,7 @@
 
       <div class="betslip-profit-row">
         <span>Potential Profit:</span>
-        <span class="betslip-profit-val" id="betslipProfitVal">₹ 425.00</span>
+        <span class="betslip-profit-val" id="betslipProfitVal">Rs. 425.00</span>
       </div>
 
       <button class="betslip-place-btn" onclick="placeBet()">Place Bet</button>
