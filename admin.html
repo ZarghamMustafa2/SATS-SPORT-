@@ -358,21 +358,27 @@
         }
 
         @media (max-width: 768px) {
-            /* Table Horizontal Scroll Container */
+            /* Table Horizontal & Card Wrapper (Full Width, No Artificial Gaps) */
             #tableLedger_wrapper {
                 overflow: visible !important;
+                width: 100% !important;
             }
             #tableLedger_wrapper > .row:nth-child(2) > .col-sm-12,
             #viewUsersList .col-sm-12 {
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch !important;
-                margin-right: -20px !important;
-                padding-right: 20px !important;
+                overflow-x: hidden !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                width: 100% !important;
+            }
+            #viewUsersList .card-body {
+                padding: 10px 8px !important;
             }
             table#tableLedger {
-                width: 526px !important;
-                min-width: 526px !important;
-                max-width: 526px !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
                 table-layout: fixed !important;
                 border-collapse: collapse !important;
                 background-color: #ffffff !important;
@@ -389,9 +395,10 @@
                 padding: 8px 12px !important;
                 text-align: left !important;
                 box-sizing: border-box !important;
+                width: 100% !important;
             }
 
-            /* Authentic Top Green Summary Row on Mobile (Only when balances are loaded) */
+            /* Authentic Top Green Summary Row on Mobile (1:1 Reference Layout) */
             table#tableLedger:not(.balances-hidden) .accounts-chart-summary-row {
                 display: table-row !important;
                 background-color: #00b282 !important;
@@ -400,81 +407,72 @@
                 background-color: #00b282 !important;
                 border: 1px solid #00936b !important;
                 color: #000000 !important;
-                font-size: 13.5px !important;
+                font-size: 14.5px !important;
                 font-weight: 700 !important;
-                height: 41px !important;
-                padding: 6px 8px !important;
+                height: 42px !important;
+                padding: 8px 14px !important;
                 vertical-align: middle !important;
                 box-sizing: border-box !important;
             }
             .accounts-chart-summary-row th:nth-child(1) {
-                width: 111px !important;
-                min-width: 111px !important;
-                max-width: 111px !important;
+                width: 62% !important;
+                min-width: 62% !important;
+                max-width: 62% !important;
                 text-align: left !important;
             }
             .accounts-chart-summary-row th:nth-child(2) {
-                width: 68px !important;
-                min-width: 68px !important;
-                max-width: 68px !important;
+                display: none !important;
             }
             .accounts-chart-summary-row th:nth-child(3) {
-                width: 77px !important;
-                min-width: 77px !important;
-                max-width: 77px !important;
-                text-align: center !important;
+                width: 38% !important;
+                min-width: 38% !important;
+                max-width: 38% !important;
+                text-align: right !important;
+                padding-right: 14px !important;
             }
-            .accounts-chart-summary-row th:nth-child(4),
-            .accounts-chart-summary-row th:nth-child(5),
-            .accounts-chart-summary-row th:nth-child(6),
-            .accounts-chart-summary-row th:nth-child(7),
-            .accounts-chart-summary-row th:nth-child(8),
-            .accounts-chart-summary-row th:nth-child(9) {
-                width: 45px !important;
-                min-width: 45px !important;
-                max-width: 45px !important;
-                text-align: center !important;
+            .accounts-chart-summary-row th:nth-child(n+4) {
+                display: none !important;
             }
 
-            /* Table Header Columns on Mobile (Only when balances are loaded) */
+            /* Table Header Columns on Mobile (1:1 Reference: Username & Credit) */
             table#tableLedger:not(.balances-hidden) .accounts-chart-columns-row {
                 display: table-row !important;
             }
             .accounts-chart-columns-row th {
                 background-color: #ffffff !important;
                 color: #23282c !important;
-                font-size: 14px !important;
+                font-size: 14.5px !important;
                 font-weight: 700 !important;
                 height: 42px !important;
-                padding: 6px 8px !important;
+                padding: 8px 14px !important;
                 vertical-align: middle !important;
-                text-align: center !important;
                 border: 1px solid #c8ced3 !important;
                 box-sizing: border-box !important;
             }
             .accounts-chart-columns-row th:nth-child(1) {
-                width: 111px !important;
-                min-width: 111px !important;
-                max-width: 111px !important;
+                width: 62% !important;
+                min-width: 62% !important;
+                max-width: 62% !important;
+                text-align: left !important;
             }
             .accounts-chart-columns-row th:nth-child(2) {
-                width: 68px !important;
-                min-width: 68px !important;
-                max-width: 68px !important;
+                display: none !important;
             }
             .accounts-chart-columns-row th:nth-child(3) {
-                width: 77px !important;
-                min-width: 77px !important;
-                max-width: 77px !important;
+                width: 38% !important;
+                min-width: 38% !important;
+                max-width: 38% !important;
+                text-align: right !important;
+                padding-right: 14px !important;
             }
             .accounts-chart-columns-row th:nth-child(n+4) {
                 display: none !important;
             }
 
-            /* User Main Row on Mobile */
+            /* User Main Row on Mobile (Clean Proportions & Single-Line Username) */
             .user-main-row td {
-                height: 42px !important;
-                padding: 6px 8px !important;
+                height: 44px !important;
+                padding: 8px 14px !important;
                 font-size: 14px !important;
                 color: #212529 !important;
                 border: 1px solid #c8ced3 !important;
@@ -482,24 +480,28 @@
                 box-sizing: border-box !important;
             }
             .user-main-row td:nth-child(1) {
-                width: 111px !important;
-                min-width: 111px !important;
-                max-width: 111px !important;
+                width: 62% !important;
+                min-width: 62% !important;
+                max-width: 62% !important;
                 text-align: left !important;
                 font-weight: 700 !important;
+                font-size: 14.5px !important;
                 cursor: pointer !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
             }
             .user-main-row td:nth-child(2) {
-                width: 68px !important;
-                min-width: 68px !important;
-                max-width: 68px !important;
-                text-align: center !important;
+                display: none !important;
             }
             .user-main-row td:nth-child(3) {
-                width: 77px !important;
-                min-width: 77px !important;
-                max-width: 77px !important;
-                text-align: left !important;
+                width: 38% !important;
+                min-width: 38% !important;
+                max-width: 38% !important;
+                text-align: right !important;
+                padding-right: 14px !important;
+                font-size: 14px !important;
+                color: #23282c !important;
             }
             .user-main-row td:nth-child(n+4) {
                 display: none !important;
@@ -508,7 +510,7 @@
                 display: none !important;
             }
 
-            /* User Child Row (Expanded Details) */
+            /* User Child Row (Expanded Details - 1:1 Reference Card Layout) */
             .user-child-row {
                 display: none;
             }
@@ -521,6 +523,8 @@
                 border-top: none !important;
                 padding: 10px 14px 14px 14px !important;
                 vertical-align: top !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
             }
 
             /* Bullets & Expanded List Items */
@@ -532,39 +536,43 @@
             ul.dtr-details li {
                 font-size: 14px !important;
                 color: #23282c !important;
-                line-height: 23px !important;
-                margin-bottom: 0px !important;
+                line-height: 25px !important;
+                margin-bottom: 2px !important;
             }
             ul.dtr-details li .dtr-title {
                 font-weight: 600 !important;
                 color: #23282c !important;
-                margin-right: 4px !important;
+                margin-right: 6px !important;
             }
             ul.dtr-details li .dtr-data {
                 font-weight: 400 !important;
                 color: #23282c !important;
             }
 
-            /* Mobile Options Buttons */
+            /* Mobile Options Buttons (Compact, Evenly Spaced, Matching Reference) */
             .options-li {
-                margin-top: 2px !important;
+                margin-top: 4px !important;
+                display: flex !important;
+                align-items: center !important;
+                flex-wrap: wrap !important;
+                gap: 6px !important;
             }
-            .options-line1 {
+            .options-wrap {
                 display: inline-flex !important;
-                gap: 5px !important;
+                align-items: center !important;
+                gap: 6px !important;
+                flex-wrap: wrap !important;
                 vertical-align: middle !important;
-                margin-left: 5px !important;
-            }
-            .options-line2 {
-                margin-top: 5px !important;
-                display: block !important;
+                margin-left: 2px !important;
             }
 
             .btn-dtr {
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                height: 32px !important;
+                height: 30px !important;
+                width: 32px !important;
+                min-width: 32px !important;
                 border-radius: 4px !important;
                 font-size: 13px !important;
                 font-weight: 700 !important;
@@ -572,15 +580,14 @@
                 text-decoration: none !important;
                 cursor: pointer !important;
                 line-height: 1 !important;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.12) !important;
             }
             .btn-dtr-c {
-                width: 33px !important;
                 background-color: #e0a802 !important;
                 color: #000000 !important;
                 border: 1px solid #d49a00 !important;
             }
             .btn-dtr-edit {
-                width: 37px !important;
                 background-color: #00b281 !important;
                 color: #ffffff !important;
             }
@@ -589,13 +596,19 @@
                 color: #ffffff !important;
             }
             .btn-dtr-l {
-                width: 31px !important;
                 background-color: #64c2dd !important;
                 color: #ffffff !important;
             }
             .btn-dtr-a {
-                width: 33px !important;
                 background-color: #55b877 !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-key {
+                background-color: #343a40 !important;
+                color: #ffffff !important;
+            }
+            .btn-dtr-del {
+                background-color: #dc3545 !important;
                 color: #ffffff !important;
             }
 
@@ -5001,6 +5014,18 @@ Boland v Knights                        </a>
                 if (info) info.innerText = 'Showing 0 to 0 of 0 entries';
                 return;
             }
+
+            if (rowTotal && clientsList && clientsList.length > 0) {
+                var totalCreditSum = 0;
+                clientsList.forEach(function(c) {
+                    var cred = parseFloat(String(c.credit || '0').replace(/[^0-9.-]/g, '')) || 0;
+                    totalCreditSum += cred;
+                });
+                if (rowTotal.children && rowTotal.children[2]) {
+                    rowTotal.children[2].innerText = totalCreditSum.toLocaleString('en-IN');
+                }
+            }
+
             clientsList.forEach(function(client, idx) {
                 var tr = document.createElement('tr');
                 tr.id = 'row-' + client.id;
@@ -5054,26 +5079,24 @@ Boland v Knights                        </a>
                 childTr.id = 'child-' + client.id;
                 childTr.className = (idx === 0) ? 'user-child-row show' : 'user-child-row';
                 childTr.innerHTML = 
-                    '<td colspan="3" class="child-details-cell">' +
+                    '<td colspan="9" class="child-details-cell">' +
                         '<ul class="dtr-details">' +
+                            (client.type ? '<li><span class="dtr-title">Type</span> <span class="dtr-data">' + client.type + '</span></li>' : '') +
                             '<li><span class="dtr-title">Balance</span> <span class="dtr-data">' + client.balance + '</span></li>' +
-                            '<li><span class="dtr-title">Dummy Balance</span> <span class="dtr-data" style="color:#b78103; font-weight:700;">' + (typeof client.dummyBalance === 'number' ? client.dummyBalance.toLocaleString('en-IN', {minimumFractionDigits: 2}) : '0.00') + ' (Demo/Test)</span></li>' +
                             '<li><span class="dtr-title">Client (P/L)</span> <span class="dtr-data">' + client.pl + '</span></li>' +
                             '<li><span class="dtr-title">Share</span> <span class="dtr-data">' + client.share + '</span></li>' +
                             '<li><span class="dtr-title">Exposure</span> <span class="dtr-data">' + client.exp + '</span></li>' +
                             '<li><span class="dtr-title">Available Balance</span> <span class="dtr-data">' + client.avail + '</span></li>' +
                             '<li class="options-li">' +
                                 '<span class="dtr-title">Options</span>' +
-                                '<span class="options-line1">' +
+                                '<span class="options-wrap">' +
                                     '<a class="btn-dtr btn-dtr-c" href="/Accounts/Cash?id=' + client.id + '" onclick="event.stopPropagation(); popup_hawala(\'/Accounts/Cash\', \'' + client.id + '\', \'' + client.username + '\', event)"><strong>C</strong></a>' +
                                     '<a class="btn-dtr btn-dtr-edit" href="/Users/Edit?id=' + client.id + '" onclick="event.stopPropagation(); navigateAdmin(\'/Users/Edit?id=' + client.id + '\', event)"><i class="fas fa-pencil-alt"></i></a>' +
                                     '<a class="btn-dtr btn-dtr-l" href="/Accounts/Ledger?id=' + client.id + '" onclick="event.stopPropagation(); navigateAdmin(\'/Accounts/Ledger?id=' + client.id + '\', event)"><strong>L</strong></a>' +
-                                '</span>' +
-                                '<span class="options-line2">' +
                                     '<button class="btn-dtr btn-dtr-a" onclick="event.stopPropagation(); toggleUserStatus(this)"><strong>' + (client.active ? 'A' : 'D') + '</strong></button>' +
-                                    '<button class="btn-dtr" style="background:#343a40; color:#fff;" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')" title="Reset Password"><i class="fas fa-key"></i></button>' +
+                                    '<button class="btn-dtr btn-dtr-key" onclick="event.stopPropagation(); openAdminResetPasswordModal(\'' + client.id + '\', \'' + client.username + '\')" title="Reset Password"><i class="fas fa-key"></i></button>' +
                                     (isNormalUser(client.role) ?
-                                    '<button class="btn-dtr" style="background:#dc3545; color:#fff;" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')" title="Delete User"><i class="fas fa-trash-alt"></i></button>' : '') +
+                                    '<button class="btn-dtr btn-dtr-del" onclick="event.stopPropagation(); openAdminDeleteUserModal(\'' + client.id + '\', \'' + client.username + '\')" title="Delete User"><i class="fas fa-trash-alt"></i></button>' : '') +
                                 '</span>' +
                             '</li>' +
                         '</ul>' +
