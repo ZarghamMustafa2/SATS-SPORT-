@@ -20,7 +20,9 @@ function getActiveProvider() {
 // In-Memory Cache for Live Match Polling (reduces rate load on upstream API while ensuring fresh live updates)
 let cachedMatches = {};
 let lastCacheTimes = {};
+let lastLiveTimes = {};
 const CACHE_TTL_MS = 5000;
+const LIVE_STALE_TTL_MS = 180000; // 3 minutes stale cache retention during upstream proxy session drops
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -621,6 +623,17 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
               .map(m => diamondProvider.normalizeMatch(m, resolved.key));
             isDiamondLive = true;
           }
+        }
+
+        if (isDiamondLive) {
+          lastLiveTimes[cacheKey] = now;
+        } else if (cachedMatches[cacheKey]?.isLiveDiamond && (now - (lastLiveTimes[cacheKey] || 0) < LIVE_STALE_TTL_MS)) {
+          // Upstream is temporarily flapping; serve last verified live matches to prevent UI dropouts
+          return sendJson(res, 200, {
+            ...cachedMatches[cacheKey],
+            timestamp: new Date().toISOString(),
+            isStaleRetained: true
+          });
         }
 
         const fallbackMatches = getFallbackMatches(resolved.key);

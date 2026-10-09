@@ -5649,7 +5649,7 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="#888">
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
           </svg>
-          <input type="text" placeholder="Search Market...">
+          <input type="text" placeholder="Search Market..." id="sidebarSearchMarketInput" oninput="if(typeof filterSportsMatchesByQuery==='function')filterSportsMatchesByQuery(this.value)">
         </div>
       </div>
 
@@ -11841,6 +11841,16 @@
       renderSportsMatches(compName);
     }
 
+    // Dynamic Market Search Filter across full integrated matches
+    window.filterSportsMatchesByQuery = function(q) {
+      window._sportsSearchQuery = q ? q.trim().toLowerCase() : '';
+      if (typeof window.renderAuthenticSportsMatches === 'function') {
+        window.renderAuthenticSportsMatches();
+      } else if (typeof renderSportsMatches === 'function') {
+        renderSportsMatches();
+      }
+    };
+
     // OVERRIDE renderSportsMatches with authentic interface matching real reference website across all sports
     window.renderAuthenticSportsMatches = function(filterComp) {
       const cont = document.getElementById('sportsMatchesContainer');
@@ -12100,18 +12110,30 @@
 
         const allCricket = window.liveDiamondCricketMatches || window.liveSportbexCricketMatches || [];
         const liveCricket = allCricket.filter(m => m.inPlay || m.isLive);
-        const cricketMatches = liveCricket.length > 0 ? liveCricket : defaultCricketMatches;
+        let cricketMatches = liveCricket.length > 0 ? liveCricket : defaultCricketMatches;
 
         const allSoccer = window.liveDiamondSoccerMatches || [];
         const liveSoccer = allSoccer.filter(m => m.inPlay || m.isLive);
-        const soccerMatches = liveSoccer.length > 0 ? liveSoccer : [
+        let soccerMatches = liveSoccer.length > 0 ? liveSoccer : [
           { isLive: true, inPlay: true, team1: 'Arsenal', team2: 'Chelsea', competition: 'English Premier League', b1: '2.14', bS1: '12k', l1: '2.18', lS1: '8k', b2Draw: '3.40', bS2Draw: '5k', l2Draw: '3.55', lS2Draw: '3k', b2: '3.10', bS2: '4k', l2: '3.25', lS2: '2k' },
           { isLive: true, inPlay: true, team1: 'Real Madrid', team2: 'Barcelona', competition: 'Spanish La Liga', b1: '2.05', bS1: '45k', l1: '2.08', lS1: '33k', b2Draw: '3.60', bS2Draw: '15k', l2Draw: '3.75', lS2Draw: '10k', b2: '3.30', bS2: '12k', l2: '3.45', lS2: '8k' }
         ];
 
         const allTennis = window.liveDiamondTennisMatches || [];
         const liveTennis = allTennis.filter(m => m.inPlay || m.isLive);
-        const tennisMatches = liveTennis;
+        let tennisMatches = liveTennis;
+
+        if (window._sportsSearchQuery) {
+          const q = window._sportsSearchQuery;
+          const matchFilter = m => {
+            const name = (m.name || ((m.team1 || '') + ' ' + (m.team2 || ''))).toLowerCase();
+            const comp = (m.competition || m.tournament || '').toLowerCase();
+            return name.includes(q) || comp.includes(q);
+          };
+          cricketMatches = cricketMatches.filter(matchFilter);
+          soccerMatches = soccerMatches.filter(matchFilter);
+          tennisMatches = tennisMatches.filter(matchFilter);
+        }
 
         let inplayHtml = `
           <!-- In-Play Matches Heading Card -->
@@ -12176,6 +12198,15 @@
           if (filtered.length > 0) matchesToRender = filtered;
         }
 
+        if (window._sportsSearchQuery) {
+          const q = window._sportsSearchQuery;
+          matchesToRender = matchesToRender.filter(m => {
+            const name = (m.name || ((m.team1 || '') + ' ' + (m.team2 || ''))).toLowerCase();
+            const comp = (m.competition || m.tournament || '').toLowerCase();
+            return name.includes(q) || comp.includes(q);
+          });
+        }
+
         const compGroups = groupMatchesByComp(matchesToRender);
         let html = heroBanner;
         let gIdx = 0;
@@ -12205,6 +12236,15 @@
           if (filtered.length > 0) matchesToRender = filtered;
         }
 
+        if (window._sportsSearchQuery) {
+          const q = window._sportsSearchQuery;
+          matchesToRender = matchesToRender.filter(m => {
+            const name = (m.name || ((m.team1 || '') + ' ' + (m.team2 || ''))).toLowerCase();
+            const comp = (m.competition || m.tournament || '').toLowerCase();
+            return name.includes(q) || comp.includes(q);
+          });
+        }
+
         const compGroups = groupMatchesByComp(matchesToRender);
         let html = heroBanner;
         let gIdx = 0;
@@ -12231,6 +12271,15 @@
           const compLower = filterComp.toLowerCase();
           const filtered = matchesToRender.filter(m => (m.competition || m.tournament || '').toLowerCase().includes(compLower));
           if (filtered.length > 0) matchesToRender = filtered;
+        }
+
+        if (window._sportsSearchQuery) {
+          const q = window._sportsSearchQuery;
+          matchesToRender = matchesToRender.filter(m => {
+            const name = (m.name || ((m.team1 || '') + ' ' + (m.team2 || ''))).toLowerCase();
+            const comp = (m.competition || m.tournament || '').toLowerCase();
+            return name.includes(q) || comp.includes(q);
+          });
         }
 
         const compGroups = groupMatchesByComp(matchesToRender);
@@ -13751,7 +13800,7 @@
         fetch(getApiUrl('/api/sports?action=allmatches&sport=cricket'))
           .then(res => res.json())
           .then(data => {
-            if (data && data.status === 'success' && (data.isLiveDiamond || data.isLiveShubdx || Array.isArray(data.matches)) && data.matches.length > 0) {
+            if (data && (data.status === 'success' || data.isLiveDiamond || data.dataSource === 'LIVE_DIAMOND' || Array.isArray(data.matches)) && Array.isArray(data.matches) && data.matches.length > 0) {
               window.liveShubdxCricketMatches = data.matches;
               window.liveDiamondCricketMatches = data.matches;
               window.isLiveSportsFeedActive = true;
@@ -13799,7 +13848,7 @@
         fetch(getApiUrl('/api/sports?action=allmatches&sport=soccer'))
           .then(res => res.json())
           .then(data => {
-            if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+            if (data && (data.status === 'success' || data.isLiveDiamond || data.dataSource === 'LIVE_DIAMOND' || Array.isArray(data.matches)) && Array.isArray(data.matches) && data.matches.length > 0) {
               window.liveDiamondSoccerMatches = data.matches;
               if (typeof sportsData !== 'undefined' && sportsData.soccer) {
                 sportsData.soccer.matches = data.matches.map(m => ({
@@ -13841,7 +13890,7 @@
         fetch(getApiUrl('/api/sports?action=allmatches&sport=tennis'))
           .then(res => res.json())
           .then(data => {
-            if (data && data.status === 'success' && Array.isArray(data.matches) && data.matches.length > 0) {
+            if (data && (data.status === 'success' || data.isLiveDiamond || data.dataSource === 'LIVE_DIAMOND' || Array.isArray(data.matches)) && Array.isArray(data.matches) && data.matches.length > 0) {
               window.liveDiamondTennisMatches = data.matches;
               if (typeof sportsData !== 'undefined' && sportsData.tennis) {
                 sportsData.tennis.matches = data.matches.map(m => ({
