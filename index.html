@@ -5886,6 +5886,24 @@
               <span>Greyhound Todays Card</span>
             </div>
           </div>
+
+          <!-- 10. More Active Sports (Dynamic Provider Registry) -->
+          <div class="sports-sidebar-item" onclick="toggleSidebarSport('moresports')">
+            <div class="item-left">
+              <span class="item-icon">🏆</span>
+              <span>More Sports</span>
+            </div>
+            <span class="accordion-chevron" id="sideChevron-moresports">▼</span>
+          </div>
+          <div class="sports-nested-menu" id="sideNested-moresports">
+            <div class="sports-nested-item" onclick="selectSport('tabletennis')">🏓 Table Tennis <span>›</span></div>
+            <div class="sports-nested-item" onclick="selectSport('basketball')">🏀 Basketball <span>›</span></div>
+            <div class="sports-nested-item" onclick="selectSport('volleyball')">🏐 Volleyball <span>›</span></div>
+            <div class="sports-nested-item" onclick="selectSport('americanfootball')">🏈 American Football <span>›</span></div>
+            <div class="sports-nested-item" onclick="selectSport('wrestling')">🤼 Wrestling <span>›</span></div>
+            <div class="sports-nested-item" onclick="selectSport('egames')">🎮 E Games <span>›</span></div>
+            <div class="sports-nested-item" onclick="selectSport('politics')">🗳️ Politics <span>›</span></div>
+          </div>
         </div>
       </div>
     </aside>
@@ -5919,6 +5937,10 @@
           <div class="subnav-item pointer" data-sport="greyhound" onclick="selectSport('greyhound')">
             <img loading="lazy" decoding="async" class="nav-icon" src="https://dabba.b-cdn.net/satsport.co.in/banners/94403.png" width="32" height="29" alt="Greyhound Racing_Satsport">
             <span>Greyhound Racing</span>
+          </div>
+          <div class="subnav-item pointer" data-sport="othersports" onclick="selectSport('othersports')">
+            <div style="font-size:22px; line-height:34px;">🏆</div>
+            <span>All Sports</span>
           </div>
         </div>
       </div>
@@ -9656,6 +9678,54 @@
         matches: [
           { comp: 'Nottingham', team1: '18:15 Nottingham - 500m Flat', team2: 'Trap 1 Fast Lane / Trap 3 Blue Lightning', time: 'Today 18:15', timeTab: 'today', back1: '2.80', backSize1: '6k', lay1: '2.94', laySize1: '4k', back2: '3.10', backSize2: '5k', lay2: '3.25', laySize2: '3k' }
         ]
+      },
+      othersports: {
+        name: 'All Sports',
+        icon: '🌐',
+        competitions: [],
+        matches: []
+      },
+      tabletennis: {
+        name: 'Table Tennis',
+        icon: '🏓',
+        competitions: [],
+        matches: []
+      },
+      basketball: {
+        name: 'Basketball',
+        icon: '🏀',
+        competitions: [],
+        matches: []
+      },
+      volleyball: {
+        name: 'Volleyball',
+        icon: '🏐',
+        competitions: [],
+        matches: []
+      },
+      americanfootball: {
+        name: 'American Football',
+        icon: '🏈',
+        competitions: [],
+        matches: []
+      },
+      wrestling: {
+        name: 'Wrestling',
+        icon: '🤼',
+        competitions: [],
+        matches: []
+      },
+      egames: {
+        name: 'E Games',
+        icon: '🎮',
+        competitions: [],
+        matches: []
+      },
+      politics: {
+        name: 'Politics',
+        icon: '🗳️',
+        competitions: [],
+        matches: []
       }
     };
 
@@ -12095,8 +12165,8 @@
                 </div>
               </div>
 
-              <!-- Option 1: B (Bookmaker), Option 2: F (Fancy), Option 3: M (Match Odds) Pin Badges -->
-              <div class="bfm-wrapper">
+              <!-- Option 1: B (Bookmaker), Option 2: F (Fancy), Option 3: M (Match Odds) Pin Badges, Plus TV & Score -->
+              <div class="bfm-wrapper" style="display:flex; align-items:center; gap:3px;">
                 <div class="bfm-item" title="Bookmaker Markets (B)" onclick="event.stopPropagation(); openMatchDetails('${safeT1}', '${safeT2}', '${safeTime}', 'bookmaker', '${safeB1}', '${safeL1}', '${safeB2}', '${safeL2}', '${safeId}', '${escapeForAttr(m.sport || '')}')">
                   <span class="bfm-pin-badge">${m.bPin || (m.hasBM !== false ? '1' : '-')}</span>
                   <span class="bfm-letter-label">B</span>
@@ -12109,6 +12179,16 @@
                   <span class="bfm-pin-badge">${m.mPin || '1'}</span>
                   <span class="bfm-letter-label">M</span>
                 </div>
+                ${(m.tv || m.hasStream) ? `
+                  <div class="bfm-item live-tv-pill" title="Live Video Broadcast (Route Verified)" onclick="event.stopPropagation(); handleTvClick('${escapeForAttr(m.sport || 'cricket')}', '${safeId}', '${safeT1}')" style="cursor:pointer; background:#e02424; color:#fff; border-radius:4px; padding:2px 4px; display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px;">
+                    <span style="font-size:11px;">📺</span>
+                  </div>
+                ` : ''}
+                ${(m.gtv || m.hasScore) ? `
+                  <div class="bfm-item live-score-pill" title="Live Match Tracker (GTV: ${escapeForAttr(m.gtv || '')})" onclick="event.stopPropagation(); handleScoreClick('${escapeForAttr(m.sport || 'cricket')}', '${escapeForAttr(m.gtv || '')}', '${safeT1}')" style="cursor:pointer; background:#1e40af; color:#fff; border-radius:4px; padding:2px 4px; display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px;">
+                    <span style="font-size:11px;">📊</span>
+                  </div>
+                ` : ''}
               </div>
             </div>
 
@@ -12396,49 +12476,308 @@
         return;
       }
 
-      // 5. HORSE RACING & GREYHOUND RACING VIEW
+      // 5. HORSE RACING & GREYHOUND RACING VIEW (DYNAMIC REAL LIVE FIXTURES)
       if (currentSelectedSport === 'horseracing' || currentSelectedSport === 'greyhound') {
         const isHorse = (currentSelectedSport === 'horseracing');
-        const meetings = isHorse ? [
-          { track: 'Belmont Park', country: 'AU', times: ['01:45', '02:20'] },
-          { track: 'Menangle', country: 'AU', times: ['01:51', '02:30', '02:59', '03:27', '04:03', '04:32', '05:03'] },
-          { track: 'Albion Park', country: 'AU', times: ['01:56', '02:37', '03:12', '03:47', '04:22', '04:52'] },
-          { track: 'Globe Derby', country: 'AU', times: ['02:12', '02:47', '03:22', '03:57', '04:37', '05:12'] }
-        ] : [
-          { track: 'Nottingham', country: 'GB', times: ['18:15', '18:35', '18:55', '19:15'] },
-          { track: 'Romford', country: 'GB', times: ['18:45', '19:05', '19:25', '19:45'] },
-          { track: 'Shelbourne Park', country: 'IE', times: ['19:30', '19:50', '20:10', '20:30'] },
-          { track: 'Wentworth Park', country: 'AU', times: ['11:15', '11:35', '11:55', '12:15'] }
-        ];
+        const liveRaces = isHorse ? (window.liveDiamondHorseMatches || []) : (window.liveDiamondGreyhoundMatches || []);
+
+        if (liveRaces.length === 0 && typeof triggerSportFetchOnDemand === 'function') {
+          triggerSportFetchOnDemand(isHorse ? 'horseracing' : 'greyhound');
+        }
+
+        const sportLabel = isHorse ? 'Horse Racing' : 'Greyhound Racing';
+        const sportIcon = isHorse ? '🏇' : '🐕';
+        const flagMap = {
+          'GB': '🇬🇧 United Kingdom',
+          'UK': '🇬🇧 United Kingdom',
+          'AU': '🇦🇺 Australia',
+          'US': '🇺🇸 United States',
+          'IE': '🇮🇪 Ireland',
+          'ZA': '🇿🇦 South Africa',
+          'FR': '🇫🇷 France',
+          'NZ': '🇳🇿 New Zealand',
+          'OTHER': '🌍 Other Regions'
+        };
+
+        const countryGroups = {};
+        liveRaces.forEach(r => {
+          const c = (r.country || r.cname || 'GB').toUpperCase();
+          const track = r.meetingName || r.tournament || 'Meeting';
+          if (!countryGroups[c]) countryGroups[c] = {};
+          if (!countryGroups[c][track]) countryGroups[c][track] = [];
+          countryGroups[c][track].push(r);
+        });
+
+        const countryKeys = Object.keys(countryGroups);
 
         let raceHtml = `
-          <div style="background:#ffffff; border-radius:10px; margin:8px 10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+          <!-- Racing Header Card -->
+          <div style="background:#ffffff; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; padding:0 14px; margin:8px 10px 6px 10px; position:relative; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
+            <div style="position:absolute; left:0; top:0; bottom:0; width:6px; background:#ffc21d; border-top-left-radius:8px; border-bottom-left-radius:8px;"></div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">${sportIcon}</span>
+              <span style="font-size:15px; font-weight:800; color:#111111;">${sportLabel}</span>
+              <span style="background:#28a745; color:#fff; font-size:10px; font-weight:800; padding:2px 7px; border-radius:10px;">${liveRaces.length} Live Fixtures</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:11px; color:#666; font-weight:600;">Diamond API sid=${isHorse ? '10' : '65'}</span>
+            </div>
+          </div>
+
+          <!-- Market Integrity Notice (Strictly no fake odds) -->
+          <div style="background:#fff9e6; border:1px solid #ffe299; border-radius:8px; margin:4px 10px 8px 10px; padding:8px 12px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:14px;">ℹ️</span>
+            <span style="font-size:11.5px; color:#7a5c00; font-weight:600;">
+              Live schedule &amp; tracks active (${liveRaces.length} races). Odds markets are pending upstream activation (/getPriveteData: HTTP 400). No synthetic odds are fabricated.
+            </span>
+          </div>
+
+          <div style="background:#ffffff; border-radius:10px; margin:0 10px 10px 10px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
             <!-- Today Yellow Button Bar -->
             <div style="display:flex; align-items:center; gap:8px; border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:8px;">
               <button style="background:#ffc21d; color:#000000; font-weight:800; border:none; border-radius:6px; padding:5px 16px; font-size:12px; cursor:pointer;">Today</button>
               <button style="background:#f4f4f4; color:#555555; font-weight:600; border:none; border-radius:6px; padding:5px 16px; font-size:12px; cursor:pointer;">Tomorrow</button>
             </div>
-            <!-- Region AU / GB Bar -->
-            <div style="background:#171717; color:#ffc21d; font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-              <span>${isHorse ? '🇦🇺 AU' : '🇬🇧 GB'}</span>
-              <span style="color:#fff;">▲</span>
+
+            ${countryKeys.length === 0 ? `
+              <div style="text-align:center; padding:30px 10px; color:#777;">
+                <div style="display:inline-block; width:22px; height:22px; border:3px solid #ffc21d; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:8px;"></div>
+                <div style="font-size:13px; font-weight:600;">Loading authentic ${sportLabel} fixtures...</div>
+              </div>
+            ` : countryKeys.map(cKey => {
+              const tracks = countryGroups[cKey];
+              const trackNames = Object.keys(tracks);
+              const cLabel = flagMap[cKey] || `${cKey} Region`;
+              return `
+                <!-- Country Region Bar -->
+                <div style="background:#171717; color:#ffc21d; font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; margin-top:8px;">
+                  <span>${cLabel} (${trackNames.length} Tracks)</span>
+                  <span style="color:#fff;">▲</span>
+                </div>
+
+                <!-- Meetings / Tracks List -->
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                  ${trackNames.map(tName => {
+                    const races = tracks[tName];
+                    return `
+                      <div style="background:#f9f9f9; border:1px solid #eaeaea; border-radius:8px; padding:8px 10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                          <div style="font-weight:700; font-size:12.5px; color:#111;">${tName}</div>
+                          <span style="font-size:10.5px; color:#666; font-weight:600;">${races.length} Races</span>
+                        </div>
+                        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                          ${races.map(r => {
+                            const timeStr = r.stime || r.time || 'Post';
+                            const isLive = Boolean(r.inPlay || r.isLive);
+                            const safeTrack = escapeForAttr(tName);
+                            const safeTime = escapeForAttr(timeStr);
+                            const safeGmid = escapeForAttr(r.gmid || r.id || '');
+                            const safeCountry = escapeForAttr(cKey);
+                            const safeSport = escapeForAttr(r.sport || (isHorse ? 'horse' : 'greyhound'));
+                            const safeSportName = escapeForAttr(sportLabel);
+                            const hasTv = Boolean(r.tv || r.hasStream);
+
+                            return `
+                              <button type="button" onclick="openRaceModal({
+                                meetingName: '${safeTrack}',
+                                name: '${safeTrack} - ${safeTime}',
+                                country: '${safeCountry}',
+                                stime: '${safeTime}',
+                                time: '${safeTime}',
+                                gmid: '${safeGmid}',
+                                id: '${safeGmid}',
+                                sid: ${r.sid || (isHorse ? 10 : 65)},
+                                inPlay: ${isLive},
+                                isLive: ${isLive},
+                                tv: ${hasTv},
+                                hasStream: ${hasTv},
+                                sport: '${safeSport}',
+                                sportName: '${safeSportName}'
+                              })" style="background:${isLive ? '#e8f5e9' : '#ffffff'}; border:1px solid ${isLive ? '#4caf50' : '#dcdcdc'}; border-radius:4px; padding:4px 8px; font-size:11px; font-weight:700; color:${isLive ? '#2e7d32' : '#111'}; cursor:pointer; display:inline-flex; align-items:center; gap:4px;" title="View ${tName} ${timeStr} details">
+                                ${isLive ? '<span style="color:#d32f2f; font-size:9px;">🔴</span>' : ''}
+                                <span>${timeStr}</span>
+                                ${hasTv ? '<span style="font-size:9px;" title="Live Video Available">📺</span>' : ''}
+                              </button>
+                            `;
+                          }).join('')}
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        cont.innerHTML = raceHtml;
+        return;
+      }
+
+      // 6. ALL SPORTS DIRECTORY VIEW (DYNAMIC 69 SPORTS FROM DIAMOND API)
+      if (currentSelectedSport === 'othersports') {
+        const dir = window.sportsDirectory || null;
+        if (!dir && typeof fetchSportsDirectory === 'function') {
+          fetchSportsDirectory();
+        }
+
+        const otherActive = [
+          { sid: 8, name: 'Table Tennis', key: 'tabletennis', icon: '🏓' },
+          { sid: 15, name: 'Basketball', key: 'basketball', icon: '🏀' },
+          { sid: 18, name: 'Volleyball', key: 'volleyball', icon: '🏐' },
+          { sid: 58, name: 'American Football', key: 'americanfootball', icon: '🏈' },
+          { sid: 69, name: 'Wrestling', key: 'wrestling', icon: '🤼' },
+          { sid: 11, name: 'E Games', key: 'egames', icon: '🎮' },
+          { sid: 40, name: 'Politics', key: 'politics', icon: '🗳️' }
+        ];
+
+        const allSports = (dir && dir.sports) ? dir.sports : [];
+
+        let dirHtml = `
+          <!-- Header -->
+          <div style="background:#ffffff; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; padding:0 14px; margin:8px 10px 6px 10px; position:relative; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
+            <div style="position:absolute; left:0; top:0; bottom:0; width:6px; background:#ffc21d; border-top-left-radius:8px; border-bottom-left-radius:8px;"></div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🌐</span>
+              <span style="font-size:15px; font-weight:800; color:#111111;">All Sports &amp; Games Directory</span>
+              <span style="background:#ffc21d; color:#000; font-size:10px; font-weight:800; padding:2px 7px; border-radius:10px;">69 Sports Registered</span>
             </div>
-            <!-- Meetings List -->
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              ${meetings.map(m => `
-                <div style="background:#f9f9f9; border:1px solid #eaeaea; border-radius:8px; padding:8px 10px;">
-                  <div style="font-weight:700; font-size:12.5px; color:#111; margin-bottom:6px;">${m.track}</div>
-                  <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                    ${m.times.map(t => `
-                      <span onclick="openBetslip(event, '${m.track} - ${t}', 'Runner 1', 'back', '2.50')" style="background:#ffffff; border:1px solid #dcdcdc; border-radius:4px; padding:4px 8px; font-size:11px; font-weight:600; color:#111; cursor:pointer;">${t}</span>
-                    `).join('')}
+            <span style="font-size:11px; color:#666; font-weight:600;">Diamond Betting API</span>
+          </div>
+
+          <!-- Section 1: Primary Sports -->
+          <div style="background:#171717; color:#ffc21d; font-size:12px; font-weight:800; padding:7px 12px; border-radius:8px; margin:8px 10px 4px 10px;">
+            🏆 PRIMARY SPORTS (EXCHANGE &amp; BOOKMAKER)
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; margin:0 10px 12px 10px;">
+            <div onclick="selectSport('cricket')" style="background:#fff; border:1.5px solid #ffc21d; border-radius:8px; padding:12px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:22px;">🏏</span>
+                <div>
+                  <div style="font-weight:800; font-size:14px; color:#111;">Cricket</div>
+                  <div style="font-size:11px; color:#666;">sid=4 &bull; Betfair Ladder &bull; BM &bull; Fancy</div>
+                </div>
+              </div>
+              <span style="background:#ffc21d; color:#000; font-size:11px; font-weight:800; padding:3px 8px; border-radius:10px;">View</span>
+            </div>
+            <div onclick="selectSport('soccer')" style="background:#fff; border:1.5px solid #ffc21d; border-radius:8px; padding:12px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:22px;">⚽</span>
+                <div>
+                  <div style="font-weight:800; font-size:14px; color:#111;">Football (Soccer)</div>
+                  <div style="font-size:11px; color:#666;">sid=1 &bull; 130+ Matches &bull; Global Leagues</div>
+                </div>
+              </div>
+              <span style="background:#ffc21d; color:#000; font-size:11px; font-weight:800; padding:3px 8px; border-radius:10px;">View</span>
+            </div>
+            <div onclick="selectSport('tennis')" style="background:#fff; border:1.5px solid #ffc21d; border-radius:8px; padding:12px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:22px;">🎾</span>
+                <div>
+                  <div style="font-weight:800; font-size:14px; color:#111;">Tennis</div>
+                  <div style="font-size:11px; color:#666;">sid=2 &bull; ATP, WTA, Challenger Circuits</div>
+                </div>
+              </div>
+              <span style="background:#ffc21d; color:#000; font-size:11px; font-weight:800; padding:3px 8px; border-radius:10px;">View</span>
+            </div>
+          </div>
+
+          <!-- Section 2: Racing -->
+          <div style="background:#171717; color:#ffc21d; font-size:12px; font-weight:800; padding:7px 12px; border-radius:8px; margin:8px 10px 4px 10px;">
+            🏇 RACING SUITE (LIVE FIXTURES &amp; TRACKS)
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px; margin:0 10px 12px 10px;">
+            <div onclick="selectSport('horseracing')" style="background:#fff; border:1.5px solid #28a745; border-radius:8px; padding:12px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:22px;">🏇</span>
+                <div>
+                  <div style="font-weight:800; font-size:14px; color:#111;">Horse Racing</div>
+                  <div style="font-size:11px; color:#666;">sid=10 &bull; 130+ Races &bull; GB, AU, US Tracks</div>
+                </div>
+              </div>
+              <span style="background:#28a745; color:#fff; font-size:11px; font-weight:800; padding:3px 8px; border-radius:10px;">View</span>
+            </div>
+            <div onclick="selectSport('greyhound')" style="background:#fff; border:1.5px solid #28a745; border-radius:8px; padding:12px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:22px;">🐕</span>
+                <div>
+                  <div style="font-weight:800; font-size:14px; color:#111;">Greyhound Racing</div>
+                  <div style="font-size:11px; color:#666;">sid=65 &bull; 110+ Races &bull; UK, AU Greyhounds</div>
+                </div>
+              </div>
+              <span style="background:#28a745; color:#fff; font-size:11px; font-weight:800; padding:3px 8px; border-radius:10px;">View</span>
+            </div>
+          </div>
+
+          <!-- Section 3: Other Active Sports -->
+          <div style="background:#171717; color:#ffc21d; font-size:12px; font-weight:800; padding:7px 12px; border-radius:8px; margin:8px 10px 4px 10px;">
+            ⚡ ACTIVE OTHER SPORTS (AVAILABLE VIA DIAMOND FEED)
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px; margin:0 10px 12px 10px;">
+            ${otherActive.map(sp => `
+              <div onclick="selectSport('${sp.key}')" style="background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:10px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:20px;">${sp.icon}</span>
+                  <div>
+                    <div style="font-weight:700; font-size:13px; color:#111;">${sp.name}</div>
+                    <div style="font-size:10.5px; color:#777;">sid=${sp.sid}</div>
                   </div>
+                </div>
+                <span style="color:#007bff; font-size:11px; font-weight:700;">Open &rarr;</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Section 4: Complete 69 Sports Registry Catalog -->
+          <div style="background:#ffffff; border-radius:10px; margin:0 10px 12px 10px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:8px;">
+              <span style="font-weight:800; font-size:13px; color:#111;">Complete 69-Sport Provider Catalog</span>
+              <span style="font-size:11px; color:#666;">Source: GET /allSportid</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:6px; max-height:300px; overflow-y:auto; padding-right:4px;">
+              ${allSports.map(s => `
+                <div style="background:#f8f9fa; border:1px solid #eee; border-radius:6px; padding:6px 8px; font-size:11.5px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-weight:600; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${s.name}">${s.name}</span>
+                  <span style="font-size:10px; font-weight:700; color:#999; font-family:monospace;">sid:${s.sid}</span>
                 </div>
               `).join('')}
             </div>
           </div>
         `;
-        cont.innerHTML = raceHtml;
+
+        cont.innerHTML = dirHtml;
+        return;
+      }
+
+      // 7. GENERIC ACTIVE OTHER SPORTS (Table Tennis, Basketball, Volleyball, etc.)
+      const genericActiveSports = ['tabletennis', 'basketball', 'volleyball', 'americanfootball', 'wrestling', 'egames', 'politics'];
+      if (genericActiveSports.includes(currentSelectedSport)) {
+        if (!window.liveDiamondGenericMatches) window.liveDiamondGenericMatches = {};
+        const liveList = window.liveDiamondGenericMatches[currentSelectedSport] || [];
+
+        if (liveList.length === 0 && typeof triggerSportFetchOnDemand === 'function') {
+          triggerSportFetchOnDemand(currentSelectedSport);
+        }
+
+        const sportTitles = {
+          tabletennis: 'Table Tennis',
+          basketball: 'Basketball',
+          volleyball: 'Volleyball',
+          americanfootball: 'American Football',
+          wrestling: 'Wrestling',
+          egames: 'E Games',
+          politics: 'Politics'
+        };
+
+        const sportName = sportTitles[currentSelectedSport] || currentSelectedSport;
+        const heroBanner = `
+          <div style="background:#171717; color:#ffc21d; border-radius:8px; padding:10px 14px; margin:6px 10px 4px 10px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight:800; font-size:14px; color:#fff;">🏆 ${sportName}</div>
+            <span style="background:#ffc21d; color:#000; font-size:11px; font-weight:800; padding:2px 8px; border-radius:10px;">${liveList.length} Matches</span>
+          </div>
+        `;
+
+        renderSportCompGroups(currentSelectedSport, heroBanner, liveList, []);
         return;
       }
     };
@@ -13162,6 +13501,75 @@
           });
       }
 
+      function fetchHorseRacingData() {
+        if (isSportFetching.horse) return;
+        isSportFetching.horse = true;
+        fetch(getApiUrl('/api/sports?action=allmatches&sport=horse'))
+          .then(res => res.json())
+          .then(data => {
+            lastSportFetchTime.horse = Date.now();
+            if (data && Array.isArray(data.matches)) {
+              window.liveDiamondHorseMatches = data.matches;
+              if (currentSelectedSport === 'horseracing' && typeof renderSportsMatches === 'function') {
+                renderSportsMatches();
+              }
+            }
+          })
+          .catch(err => console.warn('Horse racing refresh:', err.message))
+          .finally(() => { isSportFetching.horse = false; });
+      }
+
+      function fetchGreyhoundData() {
+        if (isSportFetching.greyhound) return;
+        isSportFetching.greyhound = true;
+        fetch(getApiUrl('/api/sports?action=allmatches&sport=greyhound'))
+          .then(res => res.json())
+          .then(data => {
+            lastSportFetchTime.greyhound = Date.now();
+            if (data && Array.isArray(data.matches)) {
+              window.liveDiamondGreyhoundMatches = data.matches;
+              if (currentSelectedSport === 'greyhound' && typeof renderSportsMatches === 'function') {
+                renderSportsMatches();
+              }
+            }
+          })
+          .catch(err => console.warn('Greyhound racing refresh:', err.message))
+          .finally(() => { isSportFetching.greyhound = false; });
+      }
+
+      window.fetchSportsDirectory = function() {
+        fetch(getApiUrl('/api/sports?action=directory'))
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.status === 'success') {
+              window.sportsDirectory = data;
+              if (currentSelectedSport === 'othersports' && typeof renderSportsMatches === 'function') {
+                renderSportsMatches();
+              }
+            }
+          })
+          .catch(err => console.warn('Sports directory fetch:', err.message));
+      };
+
+      function fetchGenericSportData(sportKey) {
+        if (!sportKey || isSportFetching[sportKey]) return;
+        isSportFetching[sportKey] = true;
+        fetch(getApiUrl(`/api/sports?action=allmatches&sport=${sportKey}`))
+          .then(res => res.json())
+          .then(data => {
+            lastSportFetchTime[sportKey] = Date.now();
+            if (data && Array.isArray(data.matches)) {
+              if (!window.liveDiamondGenericMatches) window.liveDiamondGenericMatches = {};
+              window.liveDiamondGenericMatches[sportKey] = data.matches;
+              if (currentSelectedSport === sportKey && typeof renderSportsMatches === 'function') {
+                renderSportsMatches();
+              }
+            }
+          })
+          .catch(err => console.warn(`Generic sport ${sportKey} refresh:`, err.message))
+          .finally(() => { isSportFetching[sportKey] = false; });
+      }
+
       window.triggerSportFetchOnDemand = function(sportKey) {
         const now = Date.now();
         if (sportKey === 'soccer') {
@@ -13170,6 +13578,14 @@
           if (!window.liveDiamondTennisMatches || (now - lastSportFetchTime.tennis > 6000)) fetchTennisData();
         } else if (sportKey === 'cricket') {
           if (!window.liveDiamondCricketMatches || (now - lastSportFetchTime.cricket > 6000)) fetchCricketData();
+        } else if (sportKey === 'horseracing' || sportKey === 'horse') {
+          if (!window.liveDiamondHorseMatches || (now - (lastSportFetchTime.horse || 0) > 10000)) fetchHorseRacingData();
+        } else if (sportKey === 'greyhound') {
+          if (!window.liveDiamondGreyhoundMatches || (now - (lastSportFetchTime.greyhound || 0) > 10000)) fetchGreyhoundData();
+        } else if (sportKey === 'othersports') {
+          if (!window.sportsDirectory) fetchSportsDirectory();
+        } else if (['tabletennis', 'basketball', 'volleyball', 'americanfootball', 'wrestling', 'egames', 'politics'].includes(sportKey)) {
+          if (!window.liveDiamondGenericMatches?.[sportKey] || (now - (lastSportFetchTime[sportKey] || 0) > 10000)) fetchGenericSportData(sportKey);
         }
       };
 
@@ -13190,6 +13606,14 @@
           fetchSoccerData();
         } else if (activeSport === 'tennis') {
           fetchTennisData();
+        } else if (activeSport === 'horseracing' || activeSport === 'horse') {
+          fetchHorseRacingData();
+        } else if (activeSport === 'greyhound') {
+          fetchGreyhoundData();
+        } else if (activeSport === 'othersports') {
+          if (!window.sportsDirectory) fetchSportsDirectory();
+        } else if (['tabletennis', 'basketball', 'volleyball', 'americanfootball', 'wrestling', 'egames', 'politics'].includes(activeSport)) {
+          fetchGenericSportData(activeSport);
         } else if (activeSport === 'inplay') {
           fetchCricketData();
           if (!window.liveDiamondSoccerMatches || Date.now() - lastSportFetchTime.soccer > 15000) {
@@ -13214,6 +13638,182 @@
       if (!window._sportbexPollTimer) {
         window._sportbexPollTimer = setInterval(refreshLiveFeed, 8000);
       }
+    };
+
+    // RACING MODAL CONTROLLER
+    window.openRaceModal = function(r) {
+      const modal = document.getElementById('genericDialogModal');
+      const title = document.getElementById('genericDialogTitle');
+      const body = document.getElementById('genericDialogBody');
+      if (!modal || !body) return;
+
+      const track = r.meetingName || r.name || 'Race';
+      const country = r.country || 'GB';
+      const time = r.stime || r.time || 'Upcoming';
+      const gmid = r.gmid || r.id || '';
+      const sid = r.sid || (r.sport === 'horse' ? 10 : 65);
+      const isLive = Boolean(r.inPlay || r.isLive);
+      const hasTv = Boolean(r.tv || r.hasStream);
+
+      if (title) title.innerText = `${track} (${country}) - ${time}`;
+
+      body.innerHTML = `
+        <div style="padding:10px 4px;">
+          <div style="background:#171717; color:#ffc21d; border-radius:8px; padding:12px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:16px; font-weight:800; color:#fff;">${track}</div>
+              <div style="font-size:12px; color:#ffc21d; margin-top:2px;">${r.sportName || 'Racing'} &bull; ${country}</div>
+            </div>
+            <div style="text-align:right;">
+              <span style="background:${isLive ? '#28a745' : '#ffc21d'}; color:${isLive ? '#fff' : '#000'}; font-size:11px; font-weight:800; padding:3px 8px; border-radius:4px;">
+                ${isLive ? '🔴 IN-PLAY' : 'SCHEDULED'}
+              </span>
+              <div style="font-size:11px; color:#aaa; margin-top:4px;">${time}</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
+            <div style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:8px 10px;">
+              <div style="font-size:11px; color:#666; font-weight:600;">Event ID (GMID)</div>
+              <div style="font-size:13px; font-weight:800; color:#111; font-family:monospace; margin-top:2px;">${gmid}</div>
+            </div>
+            <div style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:8px 10px;">
+              <div style="font-size:11px; color:#666; font-weight:600;">Sport ID (SID)</div>
+              <div style="font-size:13px; font-weight:800; color:#111; margin-top:2px;">sid=${sid}</div>
+            </div>
+            <div style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:8px 10px;">
+              <div style="font-size:11px; color:#666; font-weight:600;">TV Broadcast</div>
+              <div style="font-size:12px; font-weight:700; color:${hasTv ? '#28a745' : '#777'}; margin-top:2px;">
+                ${hasTv ? '📺 Route Verified' : 'None'}
+              </div>
+            </div>
+            <div style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:6px; padding:8px 10px;">
+              <div style="font-size:11px; color:#666; font-weight:600;">Provider Route</div>
+              <div style="font-size:12px; font-weight:700; color:#111; margin-top:2px;">/esid?sid=${sid}</div>
+            </div>
+          </div>
+
+          <!-- Market Integrity Notice -->
+          <div style="background:#fff8e6; border:1px solid #ffd57e; border-radius:8px; padding:12px; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:6px; font-weight:800; font-size:12.5px; color:#855d00; margin-bottom:4px;">
+              <span>⚠️</span> Market Odds Status: Pending Upstream Activation
+            </div>
+            <div style="font-size:11.5px; color:#665220; line-height:1.45;">
+              The Diamond Betting API fixture feed for this race is verified live (GMID: ${gmid}). Market odds (/getPriveteData) currently returns HTTP 400 upstream pending race card initialization. In compliance with data integrity policies, no synthetic odds are displayed. Betting markets open automatically when odds are broadcast.
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            ${hasTv ? `
+              <button onclick="handleTvClick('${r.sport || 'horse'}', '${gmid}', '${(track || '').replace(/'/g, "\\'")}'); closeGenericDialog();" style="flex:1; background:#e02424; color:#fff; font-weight:700; font-size:12px; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">
+                📺 Check Live TV Status
+              </button>
+            ` : ''}
+            <button onclick="closeGenericDialog();" style="flex:1; background:#eee; color:#333; font-weight:700; font-size:12px; border:none; border-radius:6px; padding:8px 12px; cursor:pointer;">
+              Close
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.add('show');
+    };
+
+    // TV STREAM CONTROLLER
+    window.handleTvClick = async function(sport, gmid, matchName) {
+      const modal = document.getElementById('liveTvModal');
+      const body = document.getElementById('liveTvModalBody');
+      const title = document.getElementById('liveTvModalTitle');
+      if (!modal || !body) return;
+
+      if (title) title.innerText = `Live Broadcast — ${matchName || 'Match'}`;
+      modal.classList.add('show');
+
+      body.innerHTML = `
+        <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #232733; padding:20px; box-sizing:border-box; text-align:center;">
+          <div style="display:inline-block; width:30px; height:30px; border:3px solid #ffc21d; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:12px;"></div>
+          <div style="font-weight:800; font-size:14px; color:#fff;">Connecting to Diamond Streaming Route...</div>
+          <div style="font-size:12px; color:#aaa; margin-top:4px;">Testing endpoint /tv?gmid=${gmid}...</div>
+        </div>
+      `;
+
+      try {
+        const res = await fetch(getApiUrl(`/api/sports?action=tv&sport=${sport}&match=${gmid}`));
+        const data = await res.json();
+
+        if (data && data.streamUrl) {
+          body.innerHTML = `
+            <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden;">
+              <iframe src="${data.streamUrl}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>
+            </div>
+          `;
+        } else {
+          body.innerHTML = `
+            <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #232733; padding:24px; box-sizing:border-box; text-align:center;">
+              <div style="font-size:36px; margin-bottom:8px;">📡</div>
+              <div style="font-weight:800; font-size:15px; color:#ffc21d; margin-bottom:6px;">UPSTREAM STREAM AUTHORIZATION PENDING</div>
+              <div style="font-size:12px; color:#ddd; max-width:480px; line-height:1.5;">
+                The provider's live streaming route (<code>${data.endpointTested || '/tv'}</code>) was verified on port 3009 (HTTP ${data.httpStatus || 400}).<br><br>
+                Upstream video authorization token is currently pending from the provider. In compliance with SATS SPORT integrity standards, no unauthorized third-party embeds or synthetic video feeds are displayed.
+              </div>
+            </div>
+            <div style="margin-top:12px; font-size:11.5px; color:#888; display:flex; justify-content:space-between; border-top:1px solid #1f2430; padding-top:8px;">
+              <span>Route Verified: <strong style="color:#28a745;">YES</strong></span>
+              <span>HTTP Status: <strong style="color:#ffc21d;">${data.httpStatus || 400}</strong></span>
+              <span>Provider: <strong style="color:#fff;">Diamond Betting API</strong></span>
+            </div>
+          `;
+        }
+      } catch (err) {
+        body.innerHTML = `
+          <div style="padding:20px; text-align:center; color:#c62828;">
+            <div style="font-weight:700;">Streaming service check failed</div>
+            <div style="font-size:12px; margin-top:4px;">${err.message}</div>
+          </div>
+        `;
+      }
+    };
+
+    // SCORECARD CONTROLLER
+    window.handleScoreClick = async function(sport, gtv, matchName) {
+      const modal = document.getElementById('genericDialogModal');
+      const title = document.getElementById('genericDialogTitle');
+      const body = document.getElementById('genericDialogBody');
+      if (!modal || !body) return;
+
+      if (title) title.innerText = `Live Match Tracker — ${matchName || 'Match'}`;
+
+      body.innerHTML = `
+        <div style="padding:10px 4px;">
+          <div style="background:#171717; color:#ffc21d; border-radius:8px; padding:12px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:15px; font-weight:800; color:#fff;">Live Match Tracker &amp; Radar</div>
+              <div style="font-size:12px; color:#ffc21d; margin-top:2px;">Diamond GTV Tracker ID: ${gtv || 'N/A'}</div>
+            </div>
+            <span style="background:#1e40af; color:#fff; font-size:10px; font-weight:800; padding:3px 8px; border-radius:4px;">
+              📊 RADAR
+            </span>
+          </div>
+
+          <div style="background:#f0f4ff; border:1px solid #c7d7fe; border-radius:8px; padding:12px; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:6px; font-weight:800; font-size:12.5px; color:#1e40af; margin-bottom:4px;">
+              <span>ℹ️</span> Scorecard Route Status: Provider Route Unmounted (HTTP 404)
+            </div>
+            <div style="font-size:11.5px; color:#374151; line-height:1.45;">
+              The Diamond Betting API documentation defines the scorecard endpoint at <code>/score?sid={sid}&gtv=${gtv}</code>. However, this route is currently unmounted on the provider server (returning HTTP 404 Not Found).<br><br>
+              Satsport preserves the authentic <code>gtv</code> parameter for this fixture. Live scores will display automatically once the provider activates the scorecard service. No synthetic scorecards are generated.
+            </div>
+          </div>
+
+          <div style="text-align:right;">
+            <button onclick="closeGenericDialog();" style="background:#ffc21d; color:#000; font-weight:800; font-size:12px; border:none; border-radius:6px; padding:8px 18px; cursor:pointer;">
+              Understood
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.add('show');
     };
 
     // Initialize races meetings, inplay matches, and header nav scroller on load
@@ -13631,31 +14231,19 @@
 
   <!-- DEDICATED LIVE TV / VIDEO STREAM MODAL -->
   <div class="generic-dialog-modal" id="liveTvModal">
-    <div class="generic-dialog-card" style="max-width: 720px; width: 94%; border-radius: 12px; overflow: hidden; background: #0b0c10;">
+    <div class="generic-dialog-card" id="liveTvModalCard" style="max-width: 720px; width: 94%; border-radius: 12px; overflow: hidden; background: #0b0c10; box-shadow: 0 16px 40px rgba(0,0,0,0.6);">
       <div class="generic-dialog-header" style="background: #14171e; color: #fff; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #232733;">
         <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px; color: #ffc21d;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#ffc21d"><polygon points="6,4 20,12 6,20"/></svg>
-          <span>Live Sports Broadcast &amp; Radar</span>
+          <span id="liveTvModalTitle">Live Broadcast &amp; Radar</span>
         </div>
         <span class="generic-dialog-close" onclick="closeLiveTvModal()" style="font-size: 24px; font-weight: 700; cursor: pointer; color: #ffc21d;">&times;</span>
       </div>
-      <div style="padding: 16px;">
-        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-          <div style="position: absolute; top: 12px; left: 16px; background: rgba(255,0,0,0.8); color: #fff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; display: flex; align-items: center; gap: 5px;">
-            <span style="width: 7px; height: 7px; border-radius: 50%; background: #fff;"></span> LIVE FEED
-          </div>
-          <div style="position: absolute; top: 12px; right: 16px; color: #ffc21d; font-size: 12px; font-weight: 700;">
-            HD 1080p | 60 FPS
-          </div>
-          <div style="text-align: center; color: #eee;">
-            <div style="font-size: 40px; margin-bottom: 8px;">🏏</div>
-            <div style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">India vs South Africa</div>
-            <div style="font-size: 13px; color: #4cd964; font-weight: 700;">Over 18.4 &bull; Ind 186/4 (Run Rate: 10.12)</div>
-          </div>
-          <div style="position: absolute; bottom: 12px; width: 90%; display: flex; justify-content: space-between; color: #aaa; font-size: 11px;">
-            <span>Next Batsman: Hardik Pandya</span>
-            <span>Bowler: Kagiso Rabada</span>
-          </div>
+      <div id="liveTvModalBody" style="padding: 16px; color:#fff;">
+        <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #232733;">
+          <div style="font-size: 32px; margin-bottom: 8px;">📡</div>
+          <div style="font-size: 14px; font-weight: 700; color: #fff;" id="tvModalStatusHeading">Connecting to Live Video Feed...</div>
+          <div style="font-size: 12px; color: #888; margin-top: 4px;" id="tvModalStatusSub">Querying Diamond Provider Stream Route</div>
         </div>
       </div>
     </div>

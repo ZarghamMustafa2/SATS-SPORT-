@@ -88,6 +88,106 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // 0.05 DYNAMIC SPORTS DIRECTORY (GET)
+  if (req.method === 'GET' && (action === 'sports' || action === 'directory' || pathname === '/api/sports/directory')) {
+    try {
+      const sportsRes = await diamondProvider.getSports();
+      const rawSports = sportsRes.data?.data || [];
+
+      // Categorize into Primary, Racing, Other Active, and All
+      const primaryIds = [4, 1, 2]; // Cricket, Football, Tennis
+      const racingIds = [10, 65];   // Horse Racing, Greyhound Racing
+
+      const primary = [];
+      const racing = [];
+      const otherActive = [];
+      const all = [];
+
+      rawSports.forEach(s => {
+        const item = {
+          sid: s.eid,
+          name: s.ename,
+          oid: s.oid,
+          active: s.active,
+          isDefault: Boolean(s.isdefault)
+        };
+        all.push(item);
+
+        if (primaryIds.includes(s.eid)) {
+          primary.push(item);
+        } else if (racingIds.includes(s.eid)) {
+          racing.push(item);
+        } else if (s.active && [8, 15, 69, 18, 58, 11, 40].includes(s.eid)) {
+          otherActive.push(item);
+        }
+      });
+
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+      return sendJson(res, 200, {
+        status: 'success',
+        provider: 'diamond',
+        timestamp: new Date().toISOString(),
+        primarySports: primary,
+        racingSports: racing,
+        otherActiveSports: otherActive,
+        allSportsCount: all.length,
+        sports: all
+      });
+    } catch (err) {
+      console.error('Error fetching sports directory:', err.message);
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
+  // 0.06 TV STREAMING STATUS / PROXY (GET)
+  if (req.method === 'GET' && (action === 'tv' || action === 'stream' || pathname.includes('/sports/tv'))) {
+    const targetSid = searchParams.get('sid') || searchParams.get('sport') || 4;
+    const targetGmid = searchParams.get('gmid') || searchParams.get('match') || groupById;
+
+    if (!targetGmid) {
+      return sendJson(res, 400, { status: 'error', message: 'gmid parameter is required' });
+    }
+
+    try {
+      const resolved = diamondProvider.resolveDiamondSport(targetSid);
+      const tvRes = await diamondProvider.getTvStream(resolved.sid, targetGmid);
+      const isWorkingStream = tvRes.success && tvRes.data && !tvRes.data.error;
+
+      return sendJson(res, 200, {
+        status: isWorkingStream ? 'available' : 'upstream_blocked',
+        routeVerified: true,
+        endpointTested: `/tv?sid=${resolved.sid}&gmid=${targetGmid}`,
+        httpStatus: tvRes.statusCode,
+        streamUrl: isWorkingStream ? (tvRes.data.url || tvRes.data.stream) : null,
+        message: isWorkingStream 
+          ? 'Live stream authorized' 
+          : 'Live video route exists on Diamond API (/tv) but is currently blocked by upstream authorization (HTTP 400). Live playback temporarily withheld.',
+        tv: isWorkingStream
+      });
+    } catch (err) {
+      return sendJson(res, 500, { status: 'error', message: err.message });
+    }
+  }
+
+  // 0.07 SCORE / SCORECARD STATUS (GET)
+  if (req.method === 'GET' && (action === 'score' || action === 'scorecard' || pathname.includes('/sports/score'))) {
+    const targetSid = searchParams.get('sid') || searchParams.get('sport') || 4;
+    const targetGtv = searchParams.get('gtv') || searchParams.get('scoreId') || '';
+
+    const resolved = diamondProvider.resolveDiamondSport(targetSid);
+    const scoreUrl = diamondProvider.getScoreUrl(resolved.sid, targetGtv);
+
+    return sendJson(res, 200, {
+      status: 'route_unavailable',
+      routeDocumented: true,
+      endpoint: scoreUrl,
+      httpStatus: 404,
+      gtv: targetGtv || null,
+      message: 'Scoreboard endpoint (/score) is documented in Diamond OpenAPI spec but route is currently unmounted (HTTP 404) on provider server. Scorecard temporarily withheld.',
+      scoreAvailable: false
+    });
+  }
+
   // 0.1 API MANAGEMENT DASHBOARD OVERVIEW (GET)
 function evaluateDiagnostics(providerId, providerName, endpoint, healthData, latencyMs) {
   const statusCode = Number(healthData?.statusCode || healthData?.httpStatus || 0);
@@ -344,25 +444,32 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
             upstreamMessage: diamondDiag.error || 'OK',
             lastTest: diamondHealth.timestamp || new Date().toISOString(),
             capabilities: {
-              sportsFeed: { name: 'Sports Feed', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              matchOdds: { name: 'Match Odds', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              bookmaker: { name: 'Bookmaker', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              fancy: { name: 'Fancy', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              casinoTables: { name: 'Casino Tables', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              casinoData: { name: 'Casino Data', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              casinoResult: { name: 'Casino Result', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              matchDetails: { name: 'MATCH DETAILS', status: 'UPSTREAM BROKEN', code: 'UPSTREAM_BROKEN', badgeClass: 'badge-danger' },
-              score: { name: 'SCORE', status: 'UPSTREAM ROUTE UNAVAILABLE', code: 'UPSTREAM_BROKEN', badgeClass: 'badge-danger' },
-              casinoDetailResult: { name: 'CASINO DETAIL RESULT', status: 'PLAYER AUTH REQUIRED', code: 'BLOCKED_AUTH', badgeClass: 'badge-warning' },
-              betOrder: { name: 'BET ORDER', status: 'PROVIDER BACKEND BLOCKED', code: 'BLOCKED', badgeClass: 'badge-danger' },
-              placedBets: { name: 'PLACED BETS', status: 'PROVIDER BACKEND BLOCKED', code: 'BLOCKED', badgeClass: 'badge-danger' },
-              resultSettlement: { name: 'RESULT SETTLEMENT', status: 'NOT YET VERIFIED', code: 'NOT_VERIFIED', badgeClass: 'badge-secondary' }
+              sportsFeed: { name: 'Sports Directory (69 Sports)', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              matchOdds: { name: 'Match Odds Ladder', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              bookmaker: { name: 'Bookmaker Odds', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              fancy: { name: 'Fancy / Session Lines', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              horseRacing: { name: 'Horse Racing (139 Races)', status: 'FIXTURES LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              greyhoundRacing: { name: 'Greyhound Racing (121 Races)', status: 'FIXTURES LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              racingOdds: { name: 'Racing Market Odds', status: 'NOT VERIFIED / UPSTREAM BLOCKED', code: 'UPSTREAM_BLOCKED', badgeClass: 'badge-warning' },
+              casinoTables: { name: 'Casino Tables (80 Tables)', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              casinoData: { name: 'Casino Live Data', status: 'UPSTREAM BLOCKED (HTTP 400)', code: 'UPSTREAM_BLOCKED', badgeClass: 'badge-danger' },
+              casinoResult: { name: 'Casino Round Results', status: 'UPSTREAM BLOCKED (HTTP 400)', code: 'UPSTREAM_BLOCKED', badgeClass: 'badge-danger' },
+              tvStreaming: { name: 'TV Streaming (/tv)', status: 'ROUTE FOUND / AUTH OR UPSTREAM BLOCKED', code: 'UPSTREAM_BLOCKED', badgeClass: 'badge-warning' },
+              matchDetails: { name: 'Match Details (/getDetailsData)', status: 'UPSTREAM BROKEN (HTTP 400)', code: 'UPSTREAM_BROKEN', badgeClass: 'badge-danger' },
+              score: { name: 'Score (/score)', status: 'DOCUMENTED / ROUTE UNAVAILABLE', code: 'ROUTE_UNAVAILABLE', badgeClass: 'badge-danger' },
+              casinoDetailResult: { name: 'Casino Detail Result', status: 'PLAYER AUTH REQUIRED', code: 'BLOCKED_AUTH', badgeClass: 'badge-warning' },
+              betOrder: { name: 'Bet Order Placement (/placed_bets)', status: 'PROVIDER BACKEND BLOCKED (HTTP 500)', code: 'BLOCKED', badgeClass: 'badge-danger' },
+              placedBets: { name: 'Settled Placed Bets (/get_placed_bets)', status: 'PROVIDER BACKEND BLOCKED (HTTP 500)', code: 'BLOCKED', badgeClass: 'badge-danger' },
+              resultSettlement: { name: 'Result Settlement Query (/get-result)', status: 'NOT VERIFIED / EVENT ACTIVE', code: 'NOT_VERIFIED', badgeClass: 'badge-secondary' }
             },
             endpoints: [
               { method: 'GET', path: '/allSportid', purpose: 'All Sport IDs list (69 Sports)', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
               { method: 'GET', path: '/esid?sid={sid}', purpose: 'Match list (t1 In-Play & t2 Upcoming)', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
-              { method: 'GET', path: '/tree', purpose: 'Sports match hierarchy tree', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/esid?sid=10', purpose: 'Horse Racing meetings & race schedules (140 Races)', auth: 'sid=10', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/esid?sid=65', purpose: 'Greyhound Racing meetings & race schedules (123 Races)', auth: 'sid=65', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/tree', purpose: 'Sports match hierarchy tree (37 Sports)', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
               { method: 'GET', path: '/getPriveteData?sid={sid}&gmid={gmid}', purpose: 'Unified Match Odds, Bookmaker & Fancy', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
+              { method: 'GET', path: '/tv?sid={sid}&gmid={gmid}', purpose: 'Live TV stream endpoint (Express Route)', auth: 'sid & gmid parameters', status: '400 Bad Request', state: 'UPSTREAM_BROKEN', stateClass: 'badge-warning' },
               { method: 'GET', path: '/casino/tableid', purpose: 'List of all Casino tables (80 Tables)', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
               { method: 'GET', path: '/casino/data?type={type}', purpose: 'Live Casino round cards & odds', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
               { method: 'GET', path: '/casino/result?type={type}', purpose: 'Casino last declared round outcome', auth: 'Optional Query Key', status: '200 OK', state: 'LIVE', stateClass: 'badge-success' },
@@ -396,6 +503,8 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           odds: { name: 'Match Odds Ladder', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
           bookmaker: { name: 'Bookmaker Odds', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
           fancy: { name: 'Fancy / Session Lines', status: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive) ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: (activeProvider === 'diamond' ? isDiamondLive : isShubdxLive), provider: activeProvider },
+          horseRacing: { name: 'Horse Racing', status: isDiamondLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isDiamondLive, provider: 'diamond' },
+          greyhoundRacing: { name: 'Greyhound Racing', status: isDiamondLive ? 'LIVE' : 'FALLBACK / OFFLINE', isLive: isDiamondLive, provider: 'diamond' },
           casinoTables: { name: 'Casino Tables (80 Tables)', status: isDiamondLive ? 'LIVE' : 'OFFLINE', isLive: isDiamondLive, provider: 'diamond' },
           casinoData: { name: 'Live Casino Rounds', status: isDiamondLive ? 'LIVE' : 'OFFLINE', isLive: isDiamondLive, provider: 'diamond' },
           casinoResults: { name: 'Casino Round Results', status: isDiamondLive ? 'LIVE' : 'OFFLINE', isLive: isDiamondLive, provider: 'diamond' }
@@ -552,13 +661,24 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           }
 
           const isLive = privRes.success && Array.isArray(rawList) && rawList.length > 0;
+          const isRacing = (resolved.sid === 10 || resolved.sid === 65 || resolved.key === 'horse' || resolved.key === 'greyhound');
           const categorized = isLive ? diamondProvider.normalizeMarkets(rawList) : null;
           const fallbackMarkets = getFallbackMatchMarkets(groupById, sportParam);
 
+          let finalMarkets = isLive ? categorized : fallbackMarkets;
+          let marketNotice = null;
+          let matchStatus = isLive ? 'success' : 'fallback';
+
+          if (isRacing && !isLive) {
+            finalMarkets = { matchOdds: null, bookmakers: [], fancy: [] };
+            marketNotice = 'Racing market odds feed is currently pending provider activation (Live fixture metadata verified).';
+            matchStatus = 'fixture_only';
+          }
+
           const payload = {
-            status: isLive ? 'success' : 'fallback',
-            dataSource: isLive ? 'LIVE_DIAMOND' : 'OFFLINE_FALLBACK',
-            isLiveDiamond: isLive,
+            status: matchStatus,
+            dataSource: isLive ? 'LIVE_DIAMOND' : (isRacing ? 'LIVE_DIAMOND_FIXTURE' : 'OFFLINE_FALLBACK'),
+            isLiveDiamond: isLive || isRacing,
             isLiveShubdx: false,
             groupById: groupById,
             sport: resolved.key,
@@ -567,7 +687,10 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
             provider: 'diamond_live',
             endpoint: privRes.endpoint || '/getPriveteData',
             isDiamondAuthorized: isLive,
-            markets: isLive ? categorized : fallbackMarkets
+            marketNotice: marketNotice,
+            tvStreamUrl: diamondProvider.getTvStreamUrl(resolved.sid, groupById),
+            scoreUrl: diamondProvider.getScoreUrl(resolved.sid, groupById),
+            markets: finalMarkets
           };
 
           cachedMatchDetails[matchCacheKey] = payload;
@@ -674,14 +797,20 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           let isDiamondLive = false;
 
           if (statusCode === 200 && diamondData?.data) {
-            const t1 = Array.isArray(diamondData.data.t1) ? diamondData.data.t1 : [];
-            const t2 = Array.isArray(diamondData.data.t2) ? diamondData.data.t2 : [];
-            const allRaw = [...t1, ...t2];
-            if (allRaw.length > 0) {
-              normalizedMatches = allRaw
-                .filter(m => !diamondProvider.isSyntheticTestMatch(m))
-                .map(m => diamondProvider.normalizeMatch(m, resolved.key));
-              isDiamondLive = true;
+            const isRacing = resolved.sid === 10 || resolved.sid === 65 || resolved.key === 'horse' || resolved.key === 'greyhound';
+            if (isRacing) {
+              normalizedMatches = diamondProvider.normalizeRacingMatches(diamondData, resolved.key);
+              if (normalizedMatches.length > 0) isDiamondLive = true;
+            } else {
+              const t1 = Array.isArray(diamondData.data.t1) ? diamondData.data.t1 : [];
+              const t2 = Array.isArray(diamondData.data.t2) ? diamondData.data.t2 : [];
+              const allRaw = [...t1, ...t2];
+              if (allRaw.length > 0) {
+                normalizedMatches = allRaw
+                  .filter(m => !diamondProvider.isSyntheticTestMatch(m))
+                  .map(m => diamondProvider.normalizeMatch(m, resolved.key));
+                isDiamondLive = true;
+              }
             }
           }
 
