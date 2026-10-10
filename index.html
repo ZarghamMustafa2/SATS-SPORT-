@@ -12306,24 +12306,13 @@
         const inplayNavTab = document.querySelectorAll('.mobile-bottom-nav .mobile-nav-tab')[1];
         if (inplayNavTab) inplayNavTab.classList.add('active');
 
-        const defaultCricketMatches = [
-          { isLive: true, inPlay: true, team1: 'Keonjhar Miners', team2: 'Kataka Panthers', competition: 'Odisha Cricket League', b1: '1.55', bS1: '93.21', l1: '1.58', lS1: '136.79', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '2.74', bS2: '1.49', l2: '2.82', lS2: '51.23' },
-          { isLive: true, inPlay: true, team1: 'Rourkela Steelers', team2: 'Puri Titans', competition: 'Odisha Cricket League', b1: '1.37', bS1: '2.4K', l1: '2.54', lS1: '1.8K', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.66', bS2: '1.1K', l2: '4.6', lS2: '890' },
-          { isLive: true, inPlay: true, team1: 'Bahamas', team2: 'Bermuda', competition: 'ICC T20 World Cup Qualifiers', b1: '3.25', bS1: '400', l1: '4.3', lS1: '250', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.31', bS2: '6.2K', l2: '1.44', lS2: '8.1K' },
-          { isLive: true, inPlay: true, team1: 'Rishikesh River Kings', team2: 'Dehradun Warriors', competition: 'Uttarakhand Premier League', b1: '1.55', bS1: '80', l1: '3.8', lS1: '10', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.36', bS2: '20', l2: '2.8', lS2: '10' },
-          { isLive: true, inPlay: true, team1: 'Titans', team2: 'Western Province', competition: 'South Africa T20 Challenge', b1: '2.4', bS1: '69', l1: '2.46', lS1: '180', b2Draw: '-', bS2Draw: '', l2Draw: '-', lS2Draw: '', b2: '1.69', bS2: '263', l2: '1.7', lS2: '100' }
-        ];
-
         const allCricket = window.liveDiamondCricketMatches || window.liveSportbexCricketMatches || [];
         const liveCricket = allCricket.filter(m => m.inPlay || m.isLive);
-        let cricketMatches = liveCricket.length > 0 ? liveCricket : defaultCricketMatches;
+        let cricketMatches = liveCricket;
 
         const allSoccer = window.liveDiamondSoccerMatches || [];
         const liveSoccer = allSoccer.filter(m => m.inPlay || m.isLive);
-        let soccerMatches = liveSoccer.length > 0 ? liveSoccer : [
-          { isLive: true, inPlay: true, team1: 'Arsenal', team2: 'Chelsea', competition: 'English Premier League', b1: '2.14', bS1: '12k', l1: '2.18', lS1: '8k', b2Draw: '3.40', bS2Draw: '5k', l2Draw: '3.55', lS2Draw: '3k', b2: '3.10', bS2: '4k', l2: '3.25', lS2: '2k' },
-          { isLive: true, inPlay: true, team1: 'Real Madrid', team2: 'Barcelona', competition: 'Spanish La Liga', b1: '2.05', bS1: '45k', l1: '2.08', lS1: '33k', b2Draw: '3.60', bS2Draw: '15k', l2Draw: '3.75', lS2Draw: '10k', b2: '3.30', bS2: '12k', l2: '3.45', lS2: '8k' }
-        ];
+        let soccerMatches = liveSoccer;
 
         const allTennis = window.liveDiamondTennisMatches || [];
         const liveTennis = allTennis.filter(m => m.inPlay || m.isLive);
@@ -12354,7 +12343,7 @@
             <span id="chev-inplayCricket" style="color:#ffffff; font-size:13px; font-weight:700;">^</span>
           </div>
           <div id="list-inplayCricket" style="margin:0 10px; background:transparent;">
-            ${cricketMatches.map((m, idx) => buildMatchRow(m, idx)).join('')}
+            ${cricketMatches.length > 0 ? cricketMatches.map((m, idx) => buildMatchRow(m, idx)).join('') : '<div style="padding:16px 12px; font-size:13px; color:#888; text-align:center; background:#1e1e1e; border-radius:0 0 8px 8px;">No live cricket matches in-play right now.</div>'}
           </div>
 
           <!-- Soccer Section -->
@@ -12363,7 +12352,7 @@
             <span id="chev-inplaySoccer" style="color:#ffffff; font-size:13px; font-weight:700;">^</span>
           </div>
           <div id="list-inplaySoccer" style="margin:0 10px; background:transparent;">
-            ${soccerMatches.map((m, idx) => buildMatchRow(m, idx)).join('')}
+            ${soccerMatches.length > 0 ? soccerMatches.map((m, idx) => buildMatchRow(m, idx)).join('') : '<div style="padding:16px 12px; font-size:13px; color:#888; text-align:center; background:#1e1e1e; border-radius:0 0 8px 8px;">No live soccer matches in-play right now.</div>'}
           </div>
 
           <!-- Tennis Section -->
@@ -12388,8 +12377,8 @@
         return;
       }
 
-      function renderSportCompGroups(sportKey, heroBanner, liveList, defaultMatches) {
-        let matchesToRender = liveList && liveList.length > 0 ? liveList : defaultMatches;
+      function renderSportCompGroups(sportKey, heroBanner, liveList) {
+        let matchesToRender = liveList && liveList.length > 0 ? liveList : [];
 
         if (filterComp && filterComp !== 'all') {
           const compLower = filterComp.toLowerCase();
@@ -12429,6 +12418,14 @@
           html += buildSportAccordion(safeId, `${compName} (${compMatches.length})`, flag, compMatches);
         }
 
+        if (compEntries.length === 0) {
+          html += `
+            <div style="text-align:center; padding:32px 16px; color:#888; font-size:13px; background:#1a1a1a; margin:10px; border-radius:8px;">
+              No ${sportKey} matches currently available from live feed.
+            </div>
+          `;
+        }
+
         if (!isSearching && compEntries.length > displayLimit) {
           const remaining = compEntries.length - displayLimit;
           html += `
@@ -12445,11 +12442,7 @@
       if (currentSelectedSport === 'cricket') {
         const heroBanner = `<img loading="lazy" decoding="async" src="https://www.satsport.co.in/assets/images/banners/4.png" style="width:calc(100% - 20px); height:55px; object-fit:cover; border-radius:8px; margin:6px 10px 4px 10px; display:block;" alt="Cricket Banner">`;
         const liveList = window.liveDiamondCricketMatches || window.liveSportbexCricketMatches || [];
-        const defaultMatches = [
-          { time: 'Tomorrow 01:00 am', team1: 'South Africa', team2: 'Australia', competition: 'One Day Internationals', b1: '2.24', bS1: '466', l1: '2.26', lS1: '11', b2: '1.79', bS2: '200', l2: '1.8', lS2: '571' },
-          { time: 'Tomorrow 01:30 am', team1: 'India', team2: 'West Indies', competition: 'One Day Internationals', b1: '1.13', bS1: '26.1K', l1: '1.14', lS1: '21.17K', b2: '8.2', bS2: '22', l2: '8.8', lS2: '3.38K' }
-        ];
-        renderSportCompGroups('cricket', heroBanner, liveList, defaultMatches);
+        renderSportCompGroups('cricket', heroBanner, liveList);
         return;
       }
 
@@ -12457,11 +12450,7 @@
       if (currentSelectedSport === 'soccer') {
         const heroBanner = `<img loading="lazy" decoding="async" src="https://www.satsport.co.in/assets/images/banners/1.png" style="width:calc(100% - 20px); height:55px; object-fit:cover; border-radius:8px; margin:6px 10px 4px 10px; display:block;" alt="Soccer Banner">`;
         const liveList = window.liveDiamondSoccerMatches || [];
-        const defaultMatches = [
-          { time: 'Tomorrow 07:30 pm', team1: 'Arsenal', team2: 'Chelsea', competition: 'English Premier League', b1: '1.85', bS1: '45K', l1: '1.87', lS1: '32K', b2Draw: '3.75', bS2Draw: '18K', l2Draw: '3.85', lS2Draw: '12K', b2: '4.2', bS2: '22K', l2: '4.4', lS2: '15K' },
-          { time: 'Tomorrow 10:00 pm', team1: 'Manchester City', team2: 'Liverpool', competition: 'English Premier League', b1: '2.05', bS1: '62K', l1: '2.08', lS1: '48K', b2Draw: '3.6', bS2Draw: '24K', l2Draw: '3.7', lS2Draw: '16K', b2: '3.5', bS2: '31K', l2: '3.6', lS2: '20K' }
-        ];
-        renderSportCompGroups('soccer', heroBanner, liveList, defaultMatches);
+        renderSportCompGroups('soccer', heroBanner, liveList);
         return;
       }
 
@@ -12469,10 +12458,7 @@
       if (currentSelectedSport === 'tennis') {
         const heroBanner = `<img loading="lazy" decoding="async" src="https://www.satsport.co.in/assets/images/banners/2.png" style="width:calc(100% - 20px); height:55px; object-fit:cover; border-radius:8px; margin:6px 10px 4px 10px; display:block;" alt="Tennis Banner">`;
         const liveList = window.liveDiamondTennisMatches || [];
-        const defaultMatches = [
-          { time: 'Today 04:30 pm', team1: 'Martin Damm Jr', team2: 'Hubert Hurkacz', competition: 'ATP Chengdu 2026', b1: '3.55', bS1: '140', l1: '3.7', lS1: '85', b2: '1.32', bS2: '8.4K', l2: '1.34', lS2: '6.2K' }
-        ];
-        renderSportCompGroups('tennis', heroBanner, liveList, defaultMatches);
+        renderSportCompGroups('tennis', heroBanner, liveList);
         return;
       }
 

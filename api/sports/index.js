@@ -663,22 +663,89 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           const isLive = privRes.success && Array.isArray(rawList) && rawList.length > 0;
           const isRacing = (resolved.sid === 10 || resolved.sid === 65 || resolved.key === 'horse' || resolved.key === 'greyhound');
           const categorized = isLive ? diamondProvider.normalizeMarkets(rawList) : null;
-          const fallbackMarkets = getFallbackMatchMarkets(groupById, sportParam);
 
-          let finalMarkets = isLive ? categorized : fallbackMarkets;
+          let finalMarkets = null;
           let marketNotice = null;
-          let matchStatus = isLive ? 'success' : 'fallback';
+          let matchStatus = 'success';
 
-          if (isRacing && !isLive) {
+          if (isLive) {
+            finalMarkets = categorized;
+            matchStatus = 'success';
+          } else if (isRacing) {
             finalMarkets = { matchOdds: null, bookmakers: [], fancy: [] };
             marketNotice = 'Racing market odds feed is currently pending provider activation (Live fixture metadata verified).';
             matchStatus = 'fixture_only';
+          } else {
+            // Find fixture in cached matches across sports to extract REAL runners and REAL visible odds
+            let foundFixture = null;
+            for (const cKey of Object.keys(cachedMatches)) {
+              const mList = cachedMatches[cKey]?.matches || [];
+              const matchObj = mList.find(m => String(m.gmid) === String(groupById) || String(m.id) === String(groupById));
+              if (matchObj) {
+                foundFixture = matchObj;
+                break;
+              }
+            }
+
+            if (foundFixture) {
+              const t1 = foundFixture.team1 || foundFixture.name || 'Runner 1';
+              const t2 = foundFixture.team2 || '';
+              const runners = [];
+
+              if (t1) {
+                runners.push({
+                  selectionId: 1,
+                  runnerName: t1,
+                  status: 'ACTIVE',
+                  back: foundFixture.b1 && foundFixture.b1 !== '-' ? [{ price: parseFloat(foundFixture.b1), size: parseFloat(foundFixture.bS1) || 100 }] : [],
+                  lay: foundFixture.l1 && foundFixture.l1 !== '-' ? [{ price: parseFloat(foundFixture.l1), size: parseFloat(foundFixture.lS1) || 100 }] : []
+                });
+              }
+
+              if (t2) {
+                runners.push({
+                  selectionId: 2,
+                  runnerName: t2,
+                  status: 'ACTIVE',
+                  back: foundFixture.b2 && foundFixture.b2 !== '-' ? [{ price: parseFloat(foundFixture.b2), size: parseFloat(foundFixture.bS2) || 100 }] : [],
+                  lay: foundFixture.l2 && foundFixture.l2 !== '-' ? [{ price: parseFloat(foundFixture.l2), size: parseFloat(foundFixture.lS2) || 100 }] : []
+                });
+              }
+
+              if (foundFixture.b2Draw && foundFixture.b2Draw !== '-') {
+                runners.push({
+                  selectionId: 3,
+                  runnerName: 'The Draw',
+                  status: 'ACTIVE',
+                  back: [{ price: parseFloat(foundFixture.b2Draw), size: parseFloat(foundFixture.bS2Draw) || 100 }],
+                  lay: foundFixture.l2Draw && foundFixture.l2Draw !== '-' ? [{ price: parseFloat(foundFixture.l2Draw), size: parseFloat(foundFixture.lS2Draw) || 100 }] : []
+                });
+              }
+
+              finalMarkets = {
+                matchOdds: runners.length > 0 ? {
+                  marketId: `mo_${groupById}`,
+                  marketName: 'Match Odds',
+                  status: foundFixture.inPlay ? 'OPEN' : 'UPCOMING',
+                  inPlay: Boolean(foundFixture.inPlay),
+                  runners: runners
+                } : null,
+                bookmakers: [],
+                fancy: []
+              };
+              matchStatus = 'fixture_only';
+              marketNotice = 'Bookmaker and Fancy session markets are not currently active from provider for this fixture.';
+            } else {
+              finalMarkets = { matchOdds: null, bookmakers: [], fancy: [] };
+              matchStatus = 'session_closed';
+              marketNotice = 'Live market session currently closed or unmounted on provider.';
+            }
           }
 
           const payload = {
             status: matchStatus,
-            dataSource: isLive ? 'LIVE_DIAMOND' : (isRacing ? 'LIVE_DIAMOND_FIXTURE' : 'OFFLINE_FALLBACK'),
-            isLiveDiamond: isLive || isRacing,
+            dataSource: isLive ? 'LIVE_DIAMOND' : (isRacing ? 'LIVE_DIAMOND_FIXTURE' : (finalMarkets?.matchOdds ? 'LIVE_FIXTURE_ODDS' : 'SESSION_CLOSED')),
+            isLiveDiamond: isLive || isRacing || Boolean(finalMarkets?.matchOdds),
             isLiveShubdx: false,
             groupById: groupById,
             sport: resolved.key,
@@ -709,12 +776,12 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
       } catch (err) {
         console.error('Error fetching Diamond fetchmatch:', err.message);
         return sendJson(res, 200, {
-          status: 'fallback',
-          dataSource: 'OFFLINE_FALLBACK',
+          status: 'error',
+          dataSource: 'SESSION_CLOSED',
           isLiveDiamond: false,
           groupById: groupById,
           sport: sportParam,
-          markets: getFallbackMatchMarkets(groupById, sportParam),
+          markets: { matchOdds: null, bookmakers: [], fancy: [] },
           message: err.message
         });
       }
@@ -740,7 +807,7 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
         };
       }
 
-      const fallbackMarkets = getFallbackMatchMarkets(groupById, sportsname);
+      const fallbackMarkets = { matchOdds: null, bookmakers: [], fancy: [] };
 
       return sendJson(res, 200, {
         status: isLiveShubdx ? 'success' : 'unauthorized',
@@ -1265,225 +1332,11 @@ function getFallbackMatches(sport = 'cricket') {
   ];
 }
 
-// Full categorized markets matching Shubdx fetchmatch documentation
+// Fallback markets return null/empty to prevent static fake odds
 function getFallbackMatchMarkets(groupById, sport = 'cricket') {
   return {
-    matchOdds: {
-      op: 'Betfair',
-      id: '1.252484033',
-      groupById: groupById || '35124684',
-      name: 'Match Odds',
-      exchangeId: '1',
-      btype: 'ODDS',
-      mtype: 'MATCH_ODDS',
-      inPlay: true,
-      status: 'OPEN',
-      providerId: 1,
-      matched: 1278818,
-      runners: [
-        {
-          id: 6847358,
-          name: 'Wellington Firebirds',
-          back: [
-            { price: 1.59, size: 6.45, line: null },
-            { price: 1.58, size: 1590.3, line: null },
-            { price: 1.57, size: 3327.82, line: null }
-          ],
-          lay: [
-            { price: 1.6, size: 2135.53, line: null },
-            { price: 1.61, size: 4794.34, line: null },
-            { price: 1.62, size: 3.29, line: null }
-          ],
-          lastPriceTraded: 1.6,
-          totalMatched: 1245351.4,
-          status: 'ACTIVE'
-        },
-        {
-          id: 6847359,
-          name: 'Otago Volts',
-          back: [
-            { price: 2.62, size: 4800.12, line: null },
-            { price: 2.60, size: 1200.0, line: null }
-          ],
-          lay: [
-            { price: 2.66, size: 1250.0, line: null },
-            { price: 2.70, size: 3500.0, line: null }
-          ],
-          lastPriceTraded: 2.64,
-          totalMatched: 33466.6,
-          status: 'ACTIVE'
-        }
-      ]
-    },
-    bookmakers: [
-      {
-        op: 'BB_BM',
-        id: '1.2671800_SB',
-        groupById: groupById || '35124684',
-        name: 'BOOKMAKER',
-        exchangeId: '5',
-        btype: 'ODDS',
-        mtype: 'MATCH_ODDS_SB',
-        inPlay: true,
-        status: 'OPEN',
-        providerId: 5,
-        matched: null,
-        runners: [
-          {
-            id: 6847358,
-            name: 'Wellington Firebirds',
-            back: [{ price: 1.60, size: 500, line: null }],
-            lay: [{ price: 1.65, size: 500, line: null }],
-            status: 'ACTIVE'
-          },
-          {
-            id: 6847359,
-            name: 'Otago Volts',
-            back: [{ price: 2.55, size: 500, line: null }],
-            lay: [{ price: 2.62, size: 500, line: null }],
-            status: 'ACTIVE'
-          }
-        ]
-      }
-    ],
-    fancy: {
-      'Fancy': [
-        {
-          op: 'BB_FANCY',
-          id: '1.252484033-4874860.FY',
-          groupById: groupById || '35124684',
-          name: '10 Over WF',
-          exchangeId: '1',
-          btype: 'LINE',
-          mtype: 'INNINGS_RUNS',
-          inPlay: true,
-          status: 'OPEN',
-          oddsType: 'HAAR_JEET',
-          providerId: 2,
-          dTtabGroupName: 'Fancy',
-          runners: [
-            {
-              id: 1,
-              name: '10 Over WF',
-              back: [{ price: 100, size: 250, line: 89 }],
-              lay: [{ price: 100, size: 250, line: 88 }],
-              status: 'ACTIVE'
-            }
-          ]
-        },
-        {
-          op: 'BB_FANCY',
-          id: '1.252484033-4874861.FY',
-          groupById: groupById || '35124684',
-          name: '15 Over WF',
-          exchangeId: '1',
-          btype: 'LINE',
-          mtype: 'INNINGS_RUNS',
-          inPlay: true,
-          status: 'OPEN',
-          oddsType: 'HAAR_JEET',
-          providerId: 2,
-          dTtabGroupName: 'Fancy',
-          runners: [
-            {
-              id: 2,
-              name: '15 Over WF',
-              back: [{ price: 100, size: 200, line: 138 }],
-              lay: [{ price: 100, size: 200, line: 136 }],
-              status: 'ACTIVE'
-            }
-          ]
-        }
-      ],
-      'Run Bhav': [
-        {
-          op: 'BB_FANCY',
-          id: '1.252484033-4874862.FY',
-          groupById: groupById || '35124684',
-          name: 'Lambi WF 1',
-          exchangeId: '1',
-          btype: 'LINE',
-          mtype: 'INNINGS_RUNS',
-          inPlay: true,
-          status: 'OPEN',
-          oddsType: 'HAAR_JEET',
-          providerId: 2,
-          dTtabGroupName: 'Run Bhav',
-          runners: [
-            {
-              id: 3,
-              name: 'Lambi WF 1',
-              back: [{ price: 100, size: 300, line: 178 }],
-              lay: [{ price: 100, size: 300, line: 175 }],
-              status: 'ACTIVE'
-            }
-          ]
-        }
-      ],
-      'Odd Even': [
-        {
-          op: 'BB_FANCY',
-          id: '1.252484033-4874863.FY',
-          groupById: groupById || '35124684',
-          name: '10 Over WF Odd/Even',
-          exchangeId: '1',
-          btype: 'LINE',
-          mtype: 'ODD_EVEN',
-          inPlay: true,
-          status: 'OPEN',
-          oddsType: 'HAAR_JEET',
-          providerId: 2,
-          dTtabGroupName: 'Odd Even',
-          runners: [
-            {
-              id: 4,
-              name: 'Odd',
-              back: [{ price: 95, size: 100, line: 1 }],
-              lay: [{ price: 105, size: 100, line: 1 }],
-              status: 'ACTIVE'
-            },
-            {
-              id: 5,
-              name: 'Even',
-              back: [{ price: 95, size: 100, line: 2 }],
-              lay: [{ price: 105, size: 100, line: 2 }],
-              status: 'ACTIVE'
-            }
-          ]
-        }
-      ],
-      'Over by Over Session Market': []
-    },
-    premium: [
-      {
-        id: '1.63403885.877.maxovers=20~total=175.5~inningnr=1_BR',
-        groupById: groupById || '35124684',
-        name: '1st innings - Wellington Firebirds total',
-        exchangeId: '5',
-        btype: 'ODDS',
-        mtype: 'MATCH_ODDS_SB',
-        inPlay: false,
-        status: 'OPEN',
-        providerId: 5,
-        tabGroupName: 'Premium Cricket',
-        runners: [
-          {
-            id: 1,
-            name: 'over 175.5',
-            back: [{ price: 1.37, size: 100, line: null }],
-            lay: [],
-            status: 'ACTIVE'
-          },
-          {
-            id: 2,
-            name: 'under 175.5',
-            back: [{ price: 2.85, size: 100, line: null }],
-            lay: [],
-            status: 'ACTIVE'
-          }
-        ]
-      }
-    ],
-    other: []
+    matchOdds: null,
+    bookmakers: [],
+    fancy: []
   };
 }
