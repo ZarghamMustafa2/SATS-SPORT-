@@ -4,7 +4,6 @@
 const shubdx = require('../../lib/shubdx');
 const diamondProvider = require('../../lib/providers/diamond');
 const settingsDb = require('../../lib/settings_db');
-const authDb = require('../../lib/auth_db');
 const { parseJsonBody, getRequestSession, sendJson } = require('../../lib/http_util');
 
 function getActiveProvider() {
@@ -23,9 +22,12 @@ let lastCacheTimes = {};
 let lastLiveTimes = {};
 let cachedMatchDetails = {};
 let lastMatchDetailsTimes = {};
+let cachedSportsDirectory = null;
+let lastSportsDirectoryTime = 0;
 let inFlightRequests = {}; // Promise deduplication map for concurrent requests
 const ALLMATCHES_CACHE_TTL_MS = 6000;
 const FETCHMATCH_CACHE_TTL_MS = 3000;
+const DIRECTORY_CACHE_TTL_MS = 300000; // 5 minutes cache for sports directory
 const LIVE_STALE_TTL_MS = 180000; // 3 minutes stale cache retention during upstream proxy session drops
 
 module.exports = async function handler(req, res) {
@@ -90,51 +92,82 @@ module.exports = async function handler(req, res) {
 
   // 0.05 DYNAMIC SPORTS DIRECTORY (GET)
   if (req.method === 'GET' && (action === 'sports' || action === 'directory' || pathname === '/api/sports/directory')) {
+    const now = Date.now();
+    if (cachedSportsDirectory && (now - lastSportsDirectoryTime < DIRECTORY_CACHE_TTL_MS)) {
+      res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+      return sendJson(res, 200, cachedSportsDirectory);
+    }
+
+    if (inFlightRequests['directory']) {
+      try {
+        const inFlightRes = await inFlightRequests['directory'];
+        res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+        return sendJson(res, 200, inFlightRes);
+      } catch (e) {}
+    }
+
     try {
-      const sportsRes = await diamondProvider.getSports();
-      const rawSports = sportsRes.data?.data || [];
+      const dirPromise = (async () => {
+        const sportsRes = await diamondProvider.getSports();
+        const rawSports = sportsRes.data?.data || [];
 
-      // Categorize into Primary, Racing, Other Active, and All
-      const primaryIds = [4, 1, 2]; // Cricket, Football, Tennis
-      const racingIds = [10, 65];   // Horse Racing, Greyhound Racing
+        // Categorize into Primary, Racing, Other Active, and All
+        const primaryIds = [4, 1, 2]; // Cricket, Football, Tennis
+        const racingIds = [10, 65];   // Horse Racing, Greyhound Racing
 
-      const primary = [];
-      const racing = [];
-      const otherActive = [];
-      const all = [];
+        const primary = [];
+        const racing = [];
+        const otherActive = [];
+        const all = [];
 
-      rawSports.forEach(s => {
-        const item = {
-          sid: s.eid,
-          name: s.ename,
-          oid: s.oid,
-          active: s.active,
-          isDefault: Boolean(s.isdefault)
+        rawSports.forEach(s => {
+          const item = {
+            sid: s.eid,
+            name: s.ename,
+            oid: s.oid,
+            active: s.active,
+            isDefault: Boolean(s.isdefault)
+          };
+          all.push(item);
+
+          if (primaryIds.includes(s.eid)) {
+            primary.push(item);
+          } else if (racingIds.includes(s.eid)) {
+            racing.push(item);
+          } else if ([8, 15, 69, 18, 58, 11, 40].includes(s.eid) || s.active) {
+            otherActive.push(item);
+          }
+        });
+
+        const responsePayload = {
+          status: 'success',
+          provider: 'diamond',
+          timestamp: new Date().toISOString(),
+          primarySports: primary,
+          racingSports: racing,
+          otherActiveSports: otherActive,
+          allSportsCount: all.length,
+          sports: all
         };
-        all.push(item);
 
-        if (primaryIds.includes(s.eid)) {
-          primary.push(item);
-        } else if (racingIds.includes(s.eid)) {
-          racing.push(item);
-        } else if ([8, 15, 69, 18, 58, 11, 40].includes(s.eid) || s.active) {
-          otherActive.push(item);
-        }
+        cachedSportsDirectory = responsePayload;
+        lastSportsDirectoryTime = Date.now();
+        return responsePayload;
+      })();
+
+      inFlightRequests['directory'] = dirPromise;
+      dirPromise.finally(() => {
+        delete inFlightRequests['directory'];
       });
 
-      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
-      return sendJson(res, 200, {
-        status: 'success',
-        provider: 'diamond',
-        timestamp: new Date().toISOString(),
-        primarySports: primary,
-        racingSports: racing,
-        otherActiveSports: otherActive,
-        allSportsCount: all.length,
-        sports: all
-      });
+      const finalPayload = await dirPromise;
+      res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+      return sendJson(res, 200, finalPayload);
     } catch (err) {
       console.error('Error fetching sports directory:', err.message);
+      if (cachedSportsDirectory) {
+        return sendJson(res, 200, cachedSportsDirectory);
+      }
       return sendJson(res, 500, { status: 'error', message: err.message });
     }
   }
@@ -308,6 +341,7 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
 
   // Strict Role Guard: API Management is restricted ONLY to Company Account
   async function authorizeCompanyAccount() {
+    const authDb = require('../../lib/auth_db');
     await authDb.hydrateUsersAsync();
 
     let session = getRequestSession(req, authDb);

@@ -12507,6 +12507,14 @@
           tennisMatches = tennisMatches.filter(matchFilter);
         }
 
+        const inplaySig = `inplay|${window._sportsSearchQuery || ''}|${cricketMatches.length}|${soccerMatches.length}|${tennisMatches.length}|` +
+          [...cricketMatches, ...soccerMatches, ...tennisMatches].map(m => (m.id || m.gmid) + ':' + m.b1 + ':' + m.l1 + ':' + m.b2 + ':' + m.l2 + ':' + (m.b2Draw || '') + ':' + (m.l2Draw || '')).join(';');
+
+        if (cont.dataset.lastInplaySig === inplaySig) {
+          return;
+        }
+        cont.dataset.lastInplaySig = inplaySig;
+
         let inplayHtml = `
           <!-- In-Play Matches Heading Card -->
           <div class="inplay-heading-card" style="background:#ffffff; height:38px; border-radius:8px; display:flex; align-items:center; padding:0 12px; margin:8px 10px 6px 10px; position:relative; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
@@ -12575,7 +12583,8 @@
         const compGroups = groupMatchesByComp(matchesToRender);
         const compEntries = Object.entries(compGroups);
         const isSearching = Boolean(window._sportsSearchQuery);
-        const displayLimit = isSearching ? compEntries.length : (window._compDisplayLimits?.[sportKey] || 20);
+        const defaultLimit = (sportKey === 'soccer' ? 15 : 20);
+        const displayLimit = isSearching ? compEntries.length : (window._compDisplayLimits?.[sportKey] || defaultLimit);
 
         // Check data signature to avoid destructive DOM rebuilds when odds haven't changed
         const topMatchesSig = matchesToRender.slice(0, 30).map(m => (m.id || m.gmid) + ':' + m.b1 + ':' + m.l1 + ':' + m.b2 + ':' + m.l2 + ':' + (m.b2Draw || '') + ':' + (m.l2Draw || '')).join(';');
@@ -12673,6 +12682,26 @@
 
         const countryKeys = Object.keys(countryGroups);
 
+        const raceSig = `${currentSelectedSport}|${liveRaces.length}|` + liveRaces.slice(0, 30).map(r => (r.gmid || r.id) + ':' + (r.time || r.stime)).join(';');
+        if (cont.dataset.lastRaceSig === raceSig) {
+          return;
+        }
+        cont.dataset.lastRaceSig = raceSig;
+
+        window.toggleCountrySection = function(id) {
+          const el = document.getElementById('country-tracks-' + id);
+          const icon = document.getElementById('country-icon-' + id);
+          if (el) {
+            if (el.style.display === 'none') {
+              el.style.display = 'flex';
+              if (icon) icon.innerText = '▲';
+            } else {
+              el.style.display = 'none';
+              if (icon) icon.innerText = '▼';
+            }
+          }
+        };
+
         let raceHtml = `
           <!-- Racing Header Card -->
           <div style="background:#ffffff; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; padding:0 14px; margin:8px 10px 6px 10px; position:relative; box-shadow:0 1px 3px rgba(0,0,0,0.06); box-sizing:border-box;">
@@ -12707,19 +12736,21 @@
                 <div style="display:inline-block; width:22px; height:22px; border:3px solid #ffc21d; border-top-color:transparent; border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:8px;"></div>
                 <div style="font-size:13px; font-weight:600;">Loading authentic ${sportLabel} fixtures...</div>
               </div>
-            ` : countryKeys.map(cKey => {
+            ` : countryKeys.map((cKey, cIdx) => {
               const tracks = countryGroups[cKey];
               const trackNames = Object.keys(tracks);
               const cLabel = flagMap[cKey] || `${cKey} Region`;
+              const safeCKey = String(cKey).replace(/[^a-zA-Z0-9_-]/g, '_');
+              const isDefaultOpen = (cIdx < 2 || countryKeys.length <= 2);
               return `
                 <!-- Country Region Bar -->
-                <div style="background:#171717; color:#ffc21d; font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; margin-top:8px;">
+                <div onclick="toggleCountrySection('${safeCKey}')" style="background:#171717; color:#ffc21d; font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; margin-top:8px; cursor:pointer;">
                   <span>${cLabel} (${trackNames.length} Tracks)</span>
-                  <span style="color:#fff;">▲</span>
+                  <span id="country-icon-${safeCKey}" style="color:#fff;">${isDefaultOpen ? '▲' : '▼'}</span>
                 </div>
 
                 <!-- Meetings / Tracks List -->
-                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                <div id="country-tracks-${safeCKey}" style="display:${isDefaultOpen ? 'flex' : 'none'}; flex-direction:column; gap:8px; margin-bottom:12px;">
                   ${trackNames.map(tName => {
                     const races = tracks[tName];
                     return `
@@ -12783,6 +12814,12 @@
         if (!dir && typeof fetchSportsDirectory === 'function') {
           fetchSportsDirectory();
         }
+
+        const dirSig = `othersports|${dir?.sports?.length || 0}`;
+        if (cont.dataset.lastDirSig === dirSig && dir) {
+          return;
+        }
+        if (dir) cont.dataset.lastDirSig = dirSig;
 
         const otherActive = [
           { sid: 8, name: 'Table Tennis', key: 'tabletennis', icon: '🏓' },
@@ -13701,6 +13738,8 @@
       }
 
       window.fetchSportsDirectory = function() {
+        if (window._isFetchingDirectory) return;
+        window._isFetchingDirectory = true;
         fetch(getApiUrl('/api/sports?action=directory'))
           .then(res => res.json())
           .then(data => {
@@ -13711,7 +13750,10 @@
               }
             }
           })
-          .catch(err => console.warn('Sports directory fetch:', err.message));
+          .catch(err => console.warn('Sports directory fetch:', err.message))
+          .finally(() => {
+            window._isFetchingDirectory = false;
+          });
       };
 
       function fetchGenericSportData(sportKey) {
