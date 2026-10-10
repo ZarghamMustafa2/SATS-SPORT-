@@ -7681,7 +7681,7 @@
           <div class="modal-statement">Please confirm if you are 18 years old and above as of today.</div>
         </div>
         <div class="modal-btn-row">
-          <button class="modal-confirm-btn btn-verification btn-confirm" id="ageConfirmBtn" onclick="proceedToLoginModal()">Confirm</button>
+          <button class="modal-confirm-btn btn-verification btn-confirm" id="ageConfirmBtn" onclick="handleAgeConfirm()">Confirm</button>
           <button class="modal-exit-btn btn-verification" onclick="closeModals()">Exit</button>
         </div>
       </div>
@@ -9044,33 +9044,172 @@
     }
     window.closeBlogReader = closeBlogReader;
 
-    // Modal Handlers
-    function openGameModal(gameName) {
-      document.getElementById('ageModalBackdrop').classList.add('show');
-    }
+    // ==========================================================================
+    // 18+ AGE CONFIRMATION & SESSION LIFECYCLE CONTROLLER
+    // ==========================================================================
+    window._satsAgeConfirmed = null;
+    window._pendingGameAction = null;
+    window._pendingLoginAction = false;
 
-    function proceedToLoginModal() {
-      document.getElementById('ageModalBackdrop').classList.remove('show');
-      document.getElementById('loginModalBackdrop').classList.add('show');
+    function isAgeConfirmed() {
+      try {
+        if (window._satsAgeConfirmed === true) return true;
+        if (sessionStorage.getItem('sats_age_confirmed') === 'true') {
+          window._satsAgeConfirmed = true;
+          return true;
+        }
+        if (localStorage.getItem('sats_age_confirmed') === 'true') {
+          window._satsAgeConfirmed = true;
+          return true;
+        }
+      } catch (e) {
+        if (window._satsAgeConfirmed === true) return true;
+      }
+      return false;
     }
+    window.isAgeConfirmed = isAgeConfirmed;
 
-    function openMobileLogin() {
+    function setAgeConfirmed(confirmed) {
+      const isConf = Boolean(confirmed);
+      window._satsAgeConfirmed = isConf;
+      try {
+        if (isConf) {
+          sessionStorage.setItem('sats_age_confirmed', 'true');
+          localStorage.setItem('sats_age_confirmed', 'true');
+        } else {
+          sessionStorage.removeItem('sats_age_confirmed');
+          localStorage.removeItem('sats_age_confirmed');
+        }
+      } catch (e) {}
+    }
+    window.setAgeConfirmed = setAgeConfirmed;
+
+    function resetAgeConfirmation() {
+      setAgeConfirmed(false);
+    }
+    window.resetAgeConfirmation = resetAgeConfirmation;
+
+    function handleAgeConfirm() {
+      // 1. Persist confirmation state for the valid session
+      setAgeConfirmed(true);
+
+      // 2. Close 18+ verification popup
       const ageModal = document.getElementById('ageModalBackdrop');
-      if (ageModal) {
-        ageModal.classList.add('show');
-      } else {
-        proceedToLoginModal();
+      if (ageModal) ageModal.classList.remove('show');
+
+      // 3. Resolve context: if triggered from an explicit login action by unauthenticated user
+      const isLoginIntent = window._pendingLoginAction === true;
+      window._pendingLoginAction = false;
+
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
+      const user = window.currentUser || localStorage.getItem('current_user');
+
+      if (isLoginIntent && !token && !user) {
+        const loginModal = document.getElementById('loginModalBackdrop');
+        if (loginModal) loginModal.classList.add('show');
+      } else if (window._pendingGameAction) {
+        const gName = window._pendingGameAction;
+        window._pendingGameAction = null;
+        if (token || user) {
+          if (typeof showToast === 'function') {
+            showToast('Launching ' + gName + '...', 'success');
+          }
+        } else {
+          const loginModal = document.getElementById('loginModalBackdrop');
+          if (loginModal) loginModal.classList.add('show');
+        }
       }
     }
+    window.handleAgeConfirm = handleAgeConfirm;
+
+    function proceedToLoginModal() {
+      handleAgeConfirm();
+    }
+    window.proceedToLoginModal = proceedToLoginModal;
 
     function confirmAge() {
-      proceedToLoginModal();
+      handleAgeConfirm();
     }
+    window.confirmAge = confirmAge;
+
+    function openGameModal(gameName) {
+      // If age is NOT confirmed yet for this session, display 18+ modal once
+      if (!isAgeConfirmed()) {
+        window._pendingGameAction = gameName || 'Game';
+        const ageModal = document.getElementById('ageModalBackdrop');
+        if (ageModal) ageModal.classList.add('show');
+        return;
+      }
+
+      // Age is confirmed. Check login state:
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
+      const user = window.currentUser || localStorage.getItem('current_user');
+
+      if (!token && !user) {
+        // Prompt login directly - NO repeating age modal
+        const loginModal = document.getElementById('loginModalBackdrop');
+        if (loginModal) {
+          loginModal.classList.add('show');
+        } else {
+          window.location.href = '/login';
+        }
+        return;
+      }
+
+      // User is logged in and age is confirmed: Launch game
+      if (typeof showToast === 'function') {
+        showToast('Launching ' + (gameName || 'Game') + '...', 'success');
+      }
+    }
+    window.openGameModal = openGameModal;
+
+    function openMobileLogin() {
+      const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
+      const user = window.currentUser || localStorage.getItem('current_user');
+      if (token || user) {
+        if (typeof toggleUserProfileDropdown === 'function') {
+          toggleUserProfileDropdown();
+        }
+        return;
+      }
+
+      if (!isAgeConfirmed()) {
+        window._pendingLoginAction = true;
+        const ageModal = document.getElementById('ageModalBackdrop');
+        if (ageModal) {
+          ageModal.classList.add('show');
+          return;
+        }
+      }
+
+      const loginModal = document.getElementById('loginModalBackdrop');
+      if (loginModal) {
+        loginModal.classList.add('show');
+      } else {
+        window.location.href = '/login';
+      }
+    }
+    window.openMobileLogin = openMobileLogin;
 
     function closeModals() {
-      document.getElementById('ageModalBackdrop').classList.remove('show');
-      document.getElementById('loginModalBackdrop').classList.remove('show');
+      window._pendingLoginAction = false;
+      window._pendingGameAction = null;
+      const ageModal = document.getElementById('ageModalBackdrop');
+      const loginModal = document.getElementById('loginModalBackdrop');
+      if (ageModal) ageModal.classList.remove('show');
+      if (loginModal) loginModal.classList.remove('show');
     }
+    window.closeModals = closeModals;
+
+    function checkAgeVerificationOnLoad() {
+      if (!isAgeConfirmed()) {
+        const ageModal = document.getElementById('ageModalBackdrop');
+        if (ageModal) {
+          ageModal.classList.add('show');
+        }
+      }
+    }
+    window.checkAgeVerificationOnLoad = checkAgeVerificationOnLoad;
 
     // Production vs Local API Base URL Resolver
     function getApiUrl(endpoint) {
@@ -9292,6 +9431,7 @@
         const data = result.data;
 
         if (result.ok && data.status === 'success') {
+          setAgeConfirmed(true);
           if (errBox) errBox.style.display = 'none';
           if (data.token) localStorage.setItem('auth_token', data.token);
           if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
@@ -10501,6 +10641,7 @@
 
       localStorage.removeItem('auth_token');
       localStorage.removeItem('current_user');
+      resetAgeConfirmation();
       window.currentUser = null;
       window.placedBetsList = [];
       updateBetsMetrics();
@@ -10636,7 +10777,10 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', verifyAndEnforceAuth);
+    window.addEventListener('DOMContentLoaded', () => {
+      verifyAndEnforceAuth();
+      checkAgeVerificationOnLoad();
+    });
     window.addEventListener('pageshow', (event) => {
       // Prevents back button from displaying cached authenticated state after logout
       verifyAndEnforceAuth();

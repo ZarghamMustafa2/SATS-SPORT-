@@ -525,6 +525,8 @@
           } else {
             if (data.token) localStorage.setItem('auth_token', data.token);
             if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
+            sessionStorage.setItem('sats_age_confirmed', 'true');
+            localStorage.setItem('sats_age_confirmed', 'true');
           }
 
           showAlert('Login successful! Redirecting...', true);
@@ -602,6 +604,8 @@
           showAlert('Account registered successfully! Redirecting...', true);
           if (data.token) localStorage.setItem('auth_token', data.token);
           if (data.user) localStorage.setItem('current_user', JSON.stringify(data.user));
+          sessionStorage.setItem('sats_age_confirmed', 'true');
+          localStorage.setItem('sats_age_confirmed', 'true');
 
           setTimeout(() => {
             window.location.href = '/';
