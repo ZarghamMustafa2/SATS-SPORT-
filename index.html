@@ -2959,6 +2959,7 @@
     }
     .sport-filter-pills-row {
       display: flex;
+      align-items: center;
       gap: 8px;
       padding: 10px 16px;
       background: #ffffff;
@@ -2967,6 +2968,13 @@
       border-top: none;
       border-radius: 0 0 8px 8px;
       overflow-x: auto;
+      overflow-y: hidden !important;
+      touch-action: pan-x;
+      overscroll-behavior-x: contain;
+      overscroll-behavior-y: none;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      transform: none !important;
     }
     .sport-pill-btn {
       display: flex;
@@ -4847,8 +4855,12 @@
         align-items: center !important;
         gap: 6px !important;
         overflow-x: auto !important;
-        scrollbar-width: none !important;
+        overflow-y: hidden !important;
+        touch-action: pan-x !important;
+        overscroll-behavior-x: contain !important;
+        overscroll-behavior-y: none !important;
         -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
         flex: 1 !important;
       }
       .mobile-race-pills-scroll::-webkit-scrollbar {
@@ -4918,15 +4930,26 @@
       }
       .sport-filter-pills-row {
         display: flex !important;
-        padding: 4px 0 !important;
+        align-items: center !important;
+        padding: 4px 0 8px 0 !important;
         margin: 0 6px 8px !important;
         gap: 6px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        max-height: 48px !important;
         overflow-x: auto !important;
+        overflow-y: hidden !important;
+        touch-action: pan-x !important;
+        overscroll-behavior-x: contain !important;
+        overscroll-behavior-y: none !important;
+        -webkit-overflow-scrolling: touch !important;
         scrollbar-width: none !important;
         background: transparent !important;
         border: none !important;
         width: calc(100% - 12px) !important;
         box-sizing: border-box !important;
+        position: relative !important;
+        transform: none !important;
       }
       .sport-filter-pills-row::-webkit-scrollbar {
         display: none !important;
@@ -14021,6 +14044,64 @@
       modal.classList.add('show');
     };
 
+    // Strict horizontal-only scroll locking for sports filter pills row
+    function initSportFilterPillsScrollLock() {
+      const row = document.querySelector('.sport-filter-pills-row');
+      if (!row) return;
+
+      // 1. Strictly lock vertical scroll offset to 0 at all times
+      row.scrollTop = 0;
+      row.addEventListener('scroll', function() {
+        if (row.scrollTop !== 0) {
+          row.scrollTop = 0;
+        }
+      }, { passive: true });
+
+      // 2. Desktop mouse horizontal-only drag scrolling
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+      let hasMoved = false;
+
+      row.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        isDown = true;
+        hasMoved = false;
+        startX = e.pageX - row.offsetLeft;
+        scrollLeft = row.scrollLeft;
+      });
+
+      window.addEventListener('mouseup', function() {
+        if (isDown) {
+          isDown = false;
+        }
+      });
+
+      window.addEventListener('mousemove', function(e) {
+        if (!isDown) return;
+        const x = e.pageX - row.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        if (Math.abs(walk) > 4) {
+          hasMoved = true;
+          row.scrollLeft = scrollLeft - walk;
+        }
+      });
+
+      // Prevent accidental button clicks when user was dragging/swiping
+      row.addEventListener('click', function(e) {
+        if (hasMoved) {
+          e.preventDefault();
+          e.stopPropagation();
+          hasMoved = false;
+        }
+      }, true);
+
+      // 3. Desktop wheel listener: ensures row never scrolls vertically on wheel
+      row.addEventListener('wheel', function() {
+        row.scrollTop = 0;
+      }, { passive: true });
+    }
+
     // Initialize races meetings, inplay matches, and header nav scroller on load
     document.addEventListener('DOMContentLoaded', function() {
       hideLoader();
@@ -14028,6 +14109,7 @@
       if (typeof renderRacesMeetings === 'function') renderRacesMeetings();
       if (typeof selectSport === 'function') selectSport('inplay');
       if (typeof initSportbexLiveIntegration === 'function') initSportbexLiveIntegration();
+      initSportFilterPillsScrollLock();
     });
 
   </script>
