@@ -4027,7 +4027,7 @@
       .top-header {
         height: 60px !important;
         padding: 0 12px !important;
-        overflow: hidden !important;
+        overflow: visible !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
@@ -4038,6 +4038,22 @@
         right: 0 !important;
         width: 100% !important;
         z-index: 100000 !important;
+      }
+      .notif-popover {
+        position: absolute !important;
+        top: calc(100% + 8px) !important;
+        right: -36px !important;
+        width: 280px !important;
+        max-width: calc(100vw - 20px) !important;
+        z-index: 100002 !important;
+      }
+      .user-dropdown-menu {
+        position: absolute !important;
+        top: calc(100% + 8px) !important;
+        right: 0 !important;
+        min-width: 210px !important;
+        max-width: calc(100vw - 20px) !important;
+        z-index: 100002 !important;
       }
       .header-left {
         display: flex !important;
@@ -5398,6 +5414,11 @@
       .header-user-btn {
         height: 26px !important;
         padding: 0 4px !important;
+      }
+      .notif-popover {
+        right: -54px !important;
+        width: 260px !important;
+        max-width: calc(100vw - 12px) !important;
       }
     }
 
@@ -10813,6 +10834,10 @@
 
     // DEDICATED MY MARKETS MODAL CONTROLLER
     async function openMyMarketsDialog() {
+      const u = document.getElementById('userProfileDropdown');
+      if (u) u.classList.remove('show');
+      const p = document.getElementById('notificationsPopover');
+      if (p) p.classList.remove('show');
       const token = (typeof getAuthToken === 'function' ? getAuthToken() : null) || localStorage.getItem('auth_token');
       if (!token && !window.currentUser) {
         window.location.href = '/login?redirect=/my-bets';
@@ -10945,6 +10970,10 @@
     let currentDwHistTab = 'deposit';
 
     function openDepositModal(initialView) {
+      const u = document.getElementById('userProfileDropdown');
+      if (u) u.classList.remove('show');
+      const p = document.getElementById('notificationsPopover');
+      if (p) p.classList.remove('show');
       const token = localStorage.getItem('auth_token');
       if (!token) {
         window.location.href = '/login?redirect=/deposit';
@@ -11649,6 +11678,10 @@
 
     // 7. GENERIC DIALOG MODALS (Account, Policy, Promos)
     function openAccountModal(type) {
+      const u = document.getElementById('userProfileDropdown');
+      if (u) u.classList.remove('show');
+      const p = document.getElementById('notificationsPopover');
+      if (p) p.classList.remove('show');
       const token = localStorage.getItem('auth_token');
       if (!token) {
         const dest = (type === 'statement' ? '/statement' : (type === 'bets' ? '/my-bets' : '/account'));
