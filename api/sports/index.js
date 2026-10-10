@@ -117,7 +117,7 @@ module.exports = async function handler(req, res) {
           primary.push(item);
         } else if (racingIds.includes(s.eid)) {
           racing.push(item);
-        } else if (s.active && [8, 15, 69, 18, 58, 11, 40].includes(s.eid)) {
+        } else if ([8, 15, 69, 18, 58, 11, 40].includes(s.eid) || s.active) {
           otherActive.push(item);
         }
       });
