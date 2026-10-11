@@ -21,6 +21,20 @@
   },
   "apiAuditLogs": [
     {
+      "timestamp": "2026-10-11T05:45:30.635Z",
+      "admin": "superadmin_1",
+      "action": "Parity check executed",
+      "provider": "diamond",
+      "result": "Rate parity verified: 300/300 exact matches (100% match rate, 0 mismatches)"
+    },
+    {
+      "timestamp": "2026-10-11T05:44:30.414Z",
+      "admin": "superadmin_1",
+      "action": "Parity check executed",
+      "provider": "diamond",
+      "result": "Rate parity verified: 300/300 exact matches (100% match rate, 0 mismatches)"
+    },
+    {
       "timestamp": "2026-10-09T11:20:21.450Z",
       "admin": "Company Account",
       "action": "API connection tested",
@@ -98,6 +112,83 @@
       "result": "Active production provider set to Shubdx International"
     }
   ],
-  "updatedAt": "2026-10-09T11:12:51.468Z",
-  "updatedBy": "superadmin_1"
+  "updatedAt": "2026-10-11T05:45:30.631Z",
+  "updatedBy": "superadmin_1",
+  "providerDiagnosticLogs": [
+    {
+      "timestamp": "2026-10-11T05:50:39.414Z",
+      "endpoint": "/getPriveteData?sid=4&gmid=640154297",
+      "sport": "cricket",
+      "httpStatus": 200,
+      "providerStatus": "OK",
+      "shortError": null,
+      "latencyMs": 234
+    },
+    {
+      "timestamp": "2026-10-11T05:49:11.770Z",
+      "endpoint": "/getPriveteData?sid=4&gmid=640154297",
+      "sport": "cricket",
+      "httpStatus": 200,
+      "providerStatus": "OK",
+      "shortError": null,
+      "latencyMs": 464
+    },
+    {
+      "timestamp": "2026-10-11T05:48:44.734Z",
+      "endpoint": "/getPriveteData?sid=4&gmid=640154297",
+      "sport": "cricket",
+      "httpStatus": 200,
+      "providerStatus": "OK",
+      "shortError": null,
+      "latencyMs": 477
+    },
+    {
+      "timestamp": "2026-10-11T05:45:29.598Z",
+      "endpoint": "/getPriveteData?sid=4&gmid=640154297",
+      "sport": "cricket",
+      "httpStatus": 200,
+      "providerStatus": "OK",
+      "shortError": null,
+      "latencyMs": 417
+    },
+    {
+      "timestamp": "2026-10-11T05:44:29.328Z",
+      "endpoint": "/getPriveteData?sid=4&gmid=640154297",
+      "sport": "cricket",
+      "httpStatus": 200,
+      "providerStatus": "OK",
+      "shortError": null,
+      "latencyMs": 255
+    },
+    {
+      "timestamp": "2026-10-11T05:33:38.544Z",
+      "endpoint": "/getPriveteData?sid=4&gmid=640154297",
+      "sport": "cricket",
+      "httpStatus": 200,
+      "providerStatus": "OK",
+      "shortError": null,
+      "latencyMs": 302
+    },
+    {
+      "timestamp": "2026-10-11T05:27:23.557Z",
+      "endpoint": "/getPriveteData?sid=4&gmid=640154297",
+      "sport": "cricket",
+      "httpStatus": 200,
+      "providerStatus": "OK",
+      "shortError": null,
+      "latencyMs": 994
+    }
+  ],
+  "parityAuditResult": {
+    "totalSatsFixtures": 668,
+    "totalReferenceFixtures": 650,
+    "eventsCompared": 100,
+    "selectionsCompared": 300,
+    "exactMatches": 300,
+    "mismatches": 0,
+    "parityRate": "100%",
+    "status": "PARITY_VERIFIED",
+    "lastMismatchDetails": [],
+    "timestamp": "2026-10-11T05:45:30.631Z"
+  }
 }

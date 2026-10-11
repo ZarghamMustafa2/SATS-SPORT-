@@ -102,7 +102,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // 2. SPORTS & SHUBDX GATEWAY
-  if (pathname.startsWith('/api/sports')) {
+  if (pathname.startsWith('/api/sports') || pathname.startsWith('/api/admin/api-management')) {
     return sportsHandler(req, res);
   }
 
