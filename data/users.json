@@ -4334,5 +4334,102 @@
     "lastLogin": null,
     "createdAt": "2026-10-10T16:30:25.688Z",
     "tokenVersion": 0
+  },
+  {
+    "id": "usr_1791966244392_168",
+    "username": "MalikDemo4776",
+    "passwordHash": "959d4e7c7c238d7149b0704f2a986fe296310944938a0ae637f40111433787a9be53c7ab9786b722f7654cbfc8ae2ca2438801efdc383f3b0dca6c83eb9c6f0a",
+    "passwordSalt": "293d24e4d9a60607d2876c790a90e289",
+    "role": "user",
+    "status": "active",
+    "parentId": null,
+    "createdBy": "SELF_REGISTER",
+    "credit": "50,000",
+    "balance": "50,000 Rs.",
+    "pl": "0 Rs.",
+    "share": "0%",
+    "exp": "1,500 Rs.",
+    "avail": "48,500 Rs.",
+    "domain": "satsport.co",
+    "phone": "",
+    "reference": "",
+    "notes": "",
+    "canBet": true,
+    "canSettlePL": false,
+    "commission": "2.00",
+    "lastLogin": "2026-10-18T20:04:09.726Z",
+    "createdAt": "2026-10-14T08:24:04.392Z",
+    "tokenVersion": 1,
+    "bets": [
+      {
+        "id": "bet_1791966511492_889",
+        "userId": "usr_1791966244392_168",
+        "username": "MalikDemo4776",
+        "runner": "Total Runs - YES",
+        "event": "Australia W vs Bangladesh W",
+        "type": "Back",
+        "odds": 87,
+        "stake": 500,
+        "liability": 500,
+        "potentialProfit": 43000,
+        "status": "matched",
+        "marketId": "1.252489230",
+        "eventId": "35128277",
+        "shubdxBetId": "47950619",
+        "settlementStatus": "confirmed",
+        "settlementResponse": {
+          "message": "Bet successfully placed."
+        },
+        "fancyRate": 0,
+        "fancyPrice": 0,
+        "placedAt": "2026-10-14T08:28:31.492Z"
+      },
+      {
+        "id": "bet_1791966393129_469",
+        "userId": "usr_1791966244392_168",
+        "username": "MalikDemo4776",
+        "runner": "Bangladesh W",
+        "event": "Australia W vs Bangladesh W",
+        "type": "Back",
+        "odds": 190,
+        "stake": 500,
+        "liability": 500,
+        "potentialProfit": 94500,
+        "status": "matched",
+        "marketId": "1.252489230",
+        "eventId": "35128277",
+        "shubdxBetId": "27667211",
+        "settlementStatus": "confirmed",
+        "settlementResponse": {
+          "message": "Bet successfully placed."
+        },
+        "fancyRate": 0,
+        "fancyPrice": 0,
+        "placedAt": "2026-10-14T08:26:33.129Z"
+      },
+      {
+        "id": "bet_1791966355531_608",
+        "userId": "usr_1791966244392_168",
+        "username": "MalikDemo4776",
+        "runner": "Bangladesh W",
+        "event": "Australia W vs Bangladesh W",
+        "type": "Back",
+        "odds": 190,
+        "stake": 500,
+        "liability": 500,
+        "potentialProfit": 94500,
+        "status": "matched",
+        "marketId": "1.252489230",
+        "eventId": "35128277",
+        "shubdxBetId": "57535281",
+        "settlementStatus": "confirmed",
+        "settlementResponse": {
+          "message": "Bet successfully placed."
+        },
+        "fancyRate": 0,
+        "fancyPrice": 0,
+        "placedAt": "2026-10-14T08:25:55.531Z"
+      }
+    ]
   }
 ]

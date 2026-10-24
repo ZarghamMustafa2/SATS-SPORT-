@@ -94,15 +94,19 @@ module.exports = async function handler(req, res) {
   // 0.05 DYNAMIC SPORTS DIRECTORY (GET)
   if (req.method === 'GET' && (action === 'sports' || action === 'directory' || pathname === '/api/sports/directory')) {
     const now = Date.now();
-    if (cachedSportsDirectory && (now - lastSportsDirectoryTime < DIRECTORY_CACHE_TTL_MS)) {
-      res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    if (cachedSportsDirectory && cachedSportsDirectory.allSportsCount > 0 && (now - lastSportsDirectoryTime < DIRECTORY_CACHE_TTL_MS)) {
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
       return sendJson(res, 200, cachedSportsDirectory);
     }
 
     if (inFlightRequests['directory']) {
       try {
         const inFlightRes = await inFlightRequests['directory'];
-        res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+        if (inFlightRes.status === 'success' && inFlightRes.isLiveFromProvider) {
+          res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+        } else {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        }
         return sendJson(res, 200, inFlightRes);
       } catch (e) {}
     }
@@ -110,50 +114,73 @@ module.exports = async function handler(req, res) {
     try {
       const dirPromise = (async () => {
         const sportsRes = await diamondProvider.getSports();
-        const rawSports = sportsRes.data?.data || [];
+        const rawSports = sportsRes.data?.data;
+        const isLive = sportsRes.success && Array.isArray(rawSports) && rawSports.length > 0;
 
-        // Categorize into Primary, Racing, Other Active, and All
-        const primaryIds = [4, 1, 2]; // Cricket, Football, Tennis
-        const racingIds = [10, 65];   // Horse Racing, Greyhound Racing
+        if (isLive) {
+          // Categorize into Primary, Racing, Other Active, and All
+          const primaryIds = [4, 1, 2]; // Cricket, Football, Tennis
+          const racingIds = [10, 65];   // Horse Racing, Greyhound Racing
 
-        const primary = [];
-        const racing = [];
-        const otherActive = [];
-        const all = [];
+          const primary = [];
+          const racing = [];
+          const otherActive = [];
+          const all = [];
 
-        rawSports.forEach(s => {
-          const item = {
-            sid: s.eid,
-            name: s.ename,
-            oid: s.oid,
-            active: s.active,
-            isDefault: Boolean(s.isdefault)
+          rawSports.forEach(s => {
+            const item = {
+              sid: s.eid,
+              name: s.ename,
+              oid: s.oid,
+              active: s.active,
+              isDefault: Boolean(s.isdefault)
+            };
+            all.push(item);
+
+            if (primaryIds.includes(s.eid)) {
+              primary.push(item);
+            } else if (racingIds.includes(s.eid)) {
+              racing.push(item);
+            } else if ([8, 15, 69, 18, 58, 11, 40].includes(s.eid) || s.active) {
+              otherActive.push(item);
+            }
+          });
+
+          const responsePayload = {
+            status: 'success',
+            provider: 'diamond',
+            isLiveFromProvider: true,
+            timestamp: new Date().toISOString(),
+            primarySports: primary,
+            racingSports: racing,
+            otherActiveSports: otherActive,
+            allSportsCount: all.length,
+            sports: all
           };
-          all.push(item);
 
-          if (primaryIds.includes(s.eid)) {
-            primary.push(item);
-          } else if (racingIds.includes(s.eid)) {
-            racing.push(item);
-          } else if ([8, 15, 69, 18, 58, 11, 40].includes(s.eid) || s.active) {
-            otherActive.push(item);
-          }
+          cachedSportsDirectory = responsePayload;
+          lastSportsDirectoryTime = Date.now();
+          return responsePayload;
+        }
+
+        // Upstream returned 401 or non-200: DO NOT poison cache with empty array!
+        // Retain existing valid cache if available
+        if (cachedSportsDirectory && cachedSportsDirectory.allSportsCount > 0) {
+          return {
+            ...cachedSportsDirectory,
+            isStaleRetained: true,
+            upstreamStatus: sportsRes.statusCode,
+            clientIpSeen: sportsRes.clientIpSeen || null
+          };
+        }
+
+        // Otherwise return standard 69-sport registry as fallback structure
+        const fallbackDirectory = diamondProvider.getFallbackSportsDirectory({
+          statusCode: sportsRes.statusCode,
+          message: sportsRes.data?.message || 'Access denied / unauthorized',
+          clientIpSeen: sportsRes.clientIpSeen || null
         });
-
-        const responsePayload = {
-          status: 'success',
-          provider: 'diamond',
-          timestamp: new Date().toISOString(),
-          primarySports: primary,
-          racingSports: racing,
-          otherActiveSports: otherActive,
-          allSportsCount: all.length,
-          sports: all
-        };
-
-        cachedSportsDirectory = responsePayload;
-        lastSportsDirectoryTime = Date.now();
-        return responsePayload;
+        return fallbackDirectory;
       })();
 
       inFlightRequests['directory'] = dirPromise;
@@ -162,14 +189,21 @@ module.exports = async function handler(req, res) {
       });
 
       const finalPayload = await dirPromise;
-      res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+      if (finalPayload.status === 'success' && finalPayload.isLiveFromProvider) {
+        res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+      } else {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
       return sendJson(res, 200, finalPayload);
     } catch (err) {
       console.error('Error fetching sports directory:', err.message);
-      if (cachedSportsDirectory) {
+      if (cachedSportsDirectory && cachedSportsDirectory.allSportsCount > 0) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         return sendJson(res, 200, cachedSportsDirectory);
       }
-      return sendJson(res, 500, { status: 'error', message: err.message });
+      const fallbackDir = diamondProvider.getFallbackSportsDirectory({ error: err.message });
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      return sendJson(res, 200, fallbackDir);
     }
   }
 
@@ -434,10 +468,10 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
           activeProvider: activeProvider,
           providerName: activeProvider === 'diamond' ? 'Diamond Betting API (v1.0.0)' : 'Shubdx International',
           baseUrl: activeProvider === 'diamond' ? providersConf.diamond?.baseUrl : providersConf.shubdx?.baseUrl,
-          mode: 'READ-ONLY LIVE (7/13 LIVE)',
+          mode: isDiamondLive ? 'READ-ONLY LIVE (7/13 LIVE)' : 'OFFLINE / UNAUTHORIZED (HTTP 401)',
           keyConfigured: providersConf.diamond?.hasKey ? 'YES' : 'NO',
-          lastSuccessTimestamp: diamondMetrics.lastSuccessTimestamp || new Date().toISOString(),
-          lastError: diamondMetrics.lastError || null,
+          lastSuccessTimestamp: diamondMetrics.lastSuccessTimestamp || null,
+          lastError: diamondMetrics.lastError || (isDiamondLive ? null : { timestamp: new Date().toISOString(), statusCode: diamondHealth.statusCode || 401, message: diamondDiag.error || 'Access denied (HTTP 401)' }),
           averageLatencyMs: diamondMetrics.averageLatencyMs || diamondHealth.latencyMs || 0,
           latestLatencyMs: diamondMetrics.latestLatencyMs || diamondHealth.latencyMs || 0,
           dataSource: activeDiag.dataSource,
@@ -445,12 +479,14 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
             inMemory: true,
             allMatchesTtl: '6s',
             fetchMatchTtl: '3s',
-            directoryTtl: '300s',
+            directoryTtl: '60s',
             staleGraceTtl: '180s'
           },
           providerHealth: isDiamondLive ? 'HEALTHY' : 'DEGRADED',
           networkReachability: diamondDiag.networkReachability,
-          authentication: diamondDiag.authentication
+          authentication: diamondDiag.authentication,
+          clientIpSeen: diamondDiag.clientIpSeen,
+          isAccessDenied: !isDiamondLive && (diamondHealth.statusCode === 401 || diamondHealth.isAccessDenied)
         },
         sportsSummary: sportsSummary,
         racing: racingDiag,
@@ -501,8 +537,8 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
             hasKey: providersConf.diamond?.hasKey || false,
             keyConfigured: providersConf.diamond?.hasKey ? 'YES' : 'NO',
             maskedKey: providersConf.diamond?.hasKey ? 'Configured (Hidden)' : 'Not Configured',
-            mode: 'READ-ONLY LIVE',
-            liveEndpointsCount: '7 / 13 LIVE',
+            mode: isDiamondLive ? 'READ-ONLY LIVE (7/13 LIVE)' : 'OFFLINE / UNAUTHORIZED (HTTP 401)',
+            liveEndpointsCount: isDiamondLive ? '7 / 13 LIVE' : '0 / 13 LIVE',
             overallStatus: isDiamondLive ? 'READ-ONLY LIVE (7/13 LIVE)' : diamondDiag.overallStatus,
             connectionStatus: isDiamondLive ? 'CONNECTED (READ-ONLY LIVE - 7/13 ENDPOINTS)' : diamondDiag.connectionStatus,
             networkReachability: diamondDiag.networkReachability,
@@ -517,16 +553,16 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
             upstreamMessage: diamondDiag.error || 'OK',
             lastTest: diamondHealth.timestamp || new Date().toISOString(),
             capabilities: {
-              sportsFeed: { name: 'Sports Directory (69 Sports)', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              matchOdds: { name: 'Match Odds Ladder', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              bookmaker: { name: 'Bookmaker Odds', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              fancy: { name: 'Fancy / Session Lines', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              horseRacing: { name: 'Horse Racing (139 Races)', status: 'FIXTURES LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              greyhoundRacing: { name: 'Greyhound Racing (121 Races)', status: 'FIXTURES LIVE', code: 'LIVE', badgeClass: 'badge-success' },
+              sportsFeed: { name: 'Sports Directory (69 Sports)', status: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
+              matchOdds: { name: 'Match Odds Ladder', status: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
+              bookmaker: { name: 'Bookmaker Odds', status: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
+              fancy: { name: 'Fancy / Session Lines', status: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
+              horseRacing: { name: 'Horse Racing (139 Races)', status: isDiamondLive ? 'FIXTURES LIVE' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
+              greyhoundRacing: { name: 'Greyhound Racing (121 Races)', status: isDiamondLive ? 'FIXTURES LIVE' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
               racingOdds: { name: 'Racing Market Odds', status: 'NOT VERIFIED / UPSTREAM BLOCKED', code: 'UPSTREAM_BLOCKED', badgeClass: 'badge-warning' },
-              casinoTables: { name: 'Casino Tables (80 Tables)', status: 'LIVE', code: 'LIVE', badgeClass: 'badge-success' },
-              casinoData: { name: 'Casino Live Data', status: 'LIVE (HTTP 200)', code: 'LIVE', badgeClass: 'badge-success' },
-              casinoResult: { name: 'Casino Round Results', status: 'LIVE (HTTP 200)', code: 'LIVE', badgeClass: 'badge-success' },
+              casinoTables: { name: 'Casino Tables (80 Tables)', status: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
+              casinoData: { name: 'Casino Live Data', status: isDiamondLive ? 'LIVE (HTTP 200)' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
+              casinoResult: { name: 'Casino Round Results', status: isDiamondLive ? 'LIVE (HTTP 200)' : 'UNAUTHORIZED (HTTP 401)', code: isDiamondLive ? 'LIVE' : 'UNAUTHORIZED', badgeClass: isDiamondLive ? 'badge-success' : 'badge-danger' },
               tvStreaming: { name: 'TV Streaming (/tv)', status: 'ROUTE FOUND / AUTH OR UPSTREAM BLOCKED', code: 'UPSTREAM_BLOCKED', badgeClass: 'badge-warning' },
               matchDetails: { name: 'Match Details (/getDetailsData)', status: 'UPSTREAM BROKEN (HTTP 400)', code: 'UPSTREAM_BROKEN', badgeClass: 'badge-danger' },
               score: { name: 'Score (/score)', status: 'DOCUMENTED / ROUTE UNAVAILABLE', code: 'ROUTE_UNAVAILABLE', badgeClass: 'badge-danger' },
@@ -1060,12 +1096,17 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
             provider: isDiamondLive ? 'diamond_live' : 'offline_fallback',
             isDiamondAuthorized: isDiamondLive,
             endpoint: diamondRes.endpoint || '/esid',
+            upstreamStatusCode: statusCode,
+            clientIpSeen: diamondRes.clientIpSeen || null,
+            error: isDiamondLive ? null : (diamondRes.isAccessDenied ? 'Access denied (HTTP 401) - Provider IP whitelist or API key required' : (diamondData?.message || `Provider returned HTTP ${statusCode}`)),
             count: isDiamondLive ? normalizedMatches.length : fallbackMatches.length,
             matches: isDiamondLive ? normalizedMatches : fallbackMatches
           };
 
-          cachedMatches[cacheKey] = responsePayload;
-          lastCacheTimes[cacheKey] = Date.now();
+          if (isDiamondLive) {
+            cachedMatches[cacheKey] = responsePayload;
+            lastCacheTimes[cacheKey] = Date.now();
+          }
           return responsePayload;
         })();
 
@@ -1075,7 +1116,11 @@ function evaluateDiagnostics(providerId, providerName, endpoint, healthData, lat
         });
 
         const resultPayload = await fetchPromise;
-        res.setHeader('Cache-Control', 'public, max-age=3, stale-while-revalidate=6');
+        if (resultPayload.isLiveDiamond) {
+          res.setHeader('Cache-Control', 'public, max-age=3, stale-while-revalidate=6');
+        } else {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        }
         return sendJson(res, 200, resultPayload);
       } catch (err) {
         console.error('Error fetching Diamond allmatches:', err.message);

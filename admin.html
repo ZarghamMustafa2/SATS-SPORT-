@@ -3098,6 +3098,7 @@ Boland v Knights                        </a>
                                                         <span class="text-muted ml-2">| Last Success: <span id="apiProviderLastSuccess">Just now</span></span>
                                                     </div>
                                                 </div>
+                                                <div id="apiAuthAlertContainer" style="display: none; margin-top: 12px;"></div>
                                             </div>
                                             <div class="col-12 col-md-4 text-md-right">
                                                 <div class="alert alert-info mb-0" style="font-size: 12px; padding: 8px 12px; border-left: 4px solid #0284c7; text-align: left;">
@@ -7898,53 +7899,77 @@ Boland v Knights                        </a>
             if (activeBaseUrlEl) activeBaseUrlEl.innerText = data.activeBaseUrl || (isDiamond ? 'http://46.202.166.33:3009' : 'https://shubdxinternational.com');
             if (egressIpEl) egressIpEl.innerText = data.serverEgressIp || 'Detecting...';
 
+            var isDiamondAuthorized = isDiamond && (data.activeStatus === 'CONNECTED' || data.isAuthorized === true);
             if (statusBadge) {
                 var isConn = data.activeStatus === 'CONNECTED';
-                statusBadge.innerText = 'OVERALL STATUS: ' + (data.activeStatus || (isDiamond ? 'CONNECTED' : 'NOT CONNECTED'));
+                statusBadge.innerText = 'OVERALL STATUS: ' + (data.activeStatus || 'NOT CONNECTED');
                 statusBadge.className = 'badge ' + (isConn ? 'badge-success' : 'badge-danger');
             }
 
             if (authBadge) {
                 var isAuth = data.activeAuth === 'AUTHENTICATED';
-                authBadge.innerText = 'AUTH: ' + (data.activeAuth || (isDiamond ? 'AUTHENTICATED' : 'IP WHITELIST REQUIRED'));
-                authBadge.className = 'badge ' + (isAuth ? 'badge-success' : 'badge-warning');
+                authBadge.innerText = 'AUTH: ' + (data.activeAuth || 'IP WHITELIST OR KEY REQUIRED');
+                authBadge.className = 'badge ' + (isAuth ? 'badge-success' : 'badge-danger');
             }
 
             if (sourceBadge) {
-                var isLive = data.dataSource === 'LIVE' || data.dataSource === 'LIVE_API' || data.dataSource === 'LIVE_DIAMOND';
+                var isLive = (data.dataSource === 'LIVE' || data.dataSource === 'LIVE_API' || data.dataSource === 'LIVE_DIAMOND') && isDiamondAuthorized;
                 sourceBadge.innerText = 'DATA SOURCE: ' + (isLive ? (data.dataSource || 'LIVE') : 'FALLBACK');
                 sourceBadge.className = 'badge ' + (isLive ? 'badge-success' : 'badge-secondary');
             }
 
             if (pHealthBadge) {
-                var isHealthy = pSummary.providerHealth === 'HEALTHY' || data.activeStatus === 'CONNECTED';
-                pHealthBadge.innerText = isHealthy ? 'HEALTHY (LIVE)' : 'DEGRADED';
-                pHealthBadge.className = 'badge ' + (isHealthy ? 'badge-success' : 'badge-warning');
+                var isHealthy = pSummary.providerHealth === 'HEALTHY' && isDiamondAuthorized;
+                pHealthBadge.innerText = isHealthy ? 'HEALTHY (LIVE)' : 'DEGRADED / UNAUTHORIZED';
+                pHealthBadge.className = 'badge ' + (isHealthy ? 'badge-success' : 'badge-danger');
             }
 
             if (pLatencyDisplay) {
-                var lat = pSummary.latestLatencyMs || pSummary.averageLatencyMs || (isDiamond ? 428 : 0);
+                var lat = pSummary.latestLatencyMs || pSummary.averageLatencyMs || 0;
                 pLatencyDisplay.innerText = lat + 'ms';
             }
 
             if (pLastSuccess) {
-                var lastTime = pSummary.lastSuccessTimestamp ? new Date(pSummary.lastSuccessTimestamp).toLocaleTimeString() : 'Just now';
+                var lastTime = pSummary.lastSuccessTimestamp ? new Date(pSummary.lastSuccessTimestamp).toLocaleTimeString() : 'None recorded';
                 pLastSuccess.innerText = lastTime;
             }
 
-            // 2. Active Provider Operational Summary Card
+            // Active Provider Operational Summary Card
             if (document.getElementById('psProviderName')) document.getElementById('psProviderName').innerText = pSummary.providerName || (isDiamond ? 'Diamond Betting API (v1.0.0)' : 'Shubdx International');
             if (document.getElementById('psBaseUrl')) document.getElementById('psBaseUrl').innerText = pSummary.baseUrl || (isDiamond ? 'http://46.202.166.33:3009' : 'https://shubdxinternational.com');
-            if (document.getElementById('psMode')) document.getElementById('psMode').innerText = pSummary.mode || 'READ-ONLY LIVE (7/13 LIVE)';
+            if (document.getElementById('psMode')) document.getElementById('psMode').innerText = pSummary.mode || (isDiamond ? (isDiamondAuthorized ? 'READ-ONLY LIVE (7/13 LIVE)' : 'OFFLINE / UNAUTHORIZED (HTTP 401)') : 'STANDALONE');
             if (document.getElementById('psKeyConfigured')) document.getElementById('psKeyConfigured').innerText = pSummary.keyConfigured || 'NO';
-            if (document.getElementById('psLatencyDisplay')) document.getElementById('psLatencyDisplay').innerText = (pSummary.averageLatencyMs || 428) + 'ms';
-            if (document.getElementById('psDataSource')) document.getElementById('psDataSource').innerText = pSummary.dataSource || 'LIVE_DIAMOND';
-            if (document.getElementById('psLastSuccess')) document.getElementById('psLastSuccess').innerText = pSummary.lastSuccessTimestamp ? new Date(pSummary.lastSuccessTimestamp).toLocaleString() : 'Just now';
+            if (document.getElementById('psLatencyDisplay')) document.getElementById('psLatencyDisplay').innerText = (pSummary.averageLatencyMs || pSummary.latestLatencyMs || 0) + 'ms';
+            if (document.getElementById('psDataSource')) document.getElementById('psDataSource').innerText = (isDiamondAuthorized ? (pSummary.dataSource || 'LIVE_DIAMOND') : 'FALLBACK');
+            if (document.getElementById('psLastSuccess')) document.getElementById('psLastSuccess').innerText = pSummary.lastSuccessTimestamp ? new Date(pSummary.lastSuccessTimestamp).toLocaleString() : 'None';
             if (document.getElementById('psLastError')) document.getElementById('psLastError').innerText = pSummary.lastError ? (pSummary.lastError.message || 'Error recorded') : 'None';
             if (document.getElementById('psHealthBadge')) {
                 var hBadge = document.getElementById('psHealthBadge');
-                hBadge.innerText = pSummary.providerHealth || 'HEALTHY';
-                hBadge.className = 'badge ' + (pSummary.providerHealth === 'HEALTHY' ? 'badge-success' : 'badge-warning');
+                var isH = pSummary.providerHealth === 'HEALTHY' && isDiamondAuthorized;
+                hBadge.innerText = isH ? 'HEALTHY' : 'DEGRADED / UNAUTHORIZED';
+                hBadge.className = 'badge ' + (isH ? 'badge-success' : 'badge-danger');
+            }
+
+            // Provider Alert Container
+            var alertCont = document.getElementById('apiAuthAlertContainer');
+            if (alertCont) {
+                if (!isDiamondAuthorized && (data.activeStatus !== 'CONNECTED' || (data.activeAuth && (data.activeAuth.includes('UNAUTHORIZED') || data.activeAuth.includes('WHITELIST'))))) {
+                    var seenIp = data.serverEgressIp || pSummary.clientIpSeen || 'Detecting...';
+                    alertCont.style.display = 'block';
+                    alertCont.innerHTML = '<div class="alert alert-danger mb-0" style="background: #fef2f2; border: 1px solid #f87171; border-left: 5px solid #dc2626; color: #991b1b; padding: 12px 16px; border-radius: 6px;">' +
+                        '<div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;"><i class="fas fa-exclamation-triangle mr-1"></i> Provider Authorization Required (HTTP 401 Unauthorized)</div>' +
+                        '<div style="font-size: 13px; line-height: 1.5;">' +
+                        'The Diamond API provider at <code>' + (data.activeBaseUrl || 'http://46.202.166.33:3009') + '</code> requires client authorization. The provider reported server egress IP: <code style="background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 2px 6px; border-radius: 4px;">' + seenIp + '</code>.<br>' +
+                        '<strong>Actions to restore live data:</strong>' +
+                        '<ul style="margin: 6px 0 0 18px; padding: 0;">' +
+                        '<li>Whitelist this IP (<code>' + seenIp + '</code>) in the provider server\'s authorized IP list.</li>' +
+                        '<li>OR click <strong>Configure Diamond API</strong> above and enter your provider <strong>API Key</strong>.</li>' +
+                        '</ul>' +
+                        '</div></div>';
+                } else {
+                    alertCont.style.display = 'none';
+                    alertCont.innerHTML = '';
+                }
             }
 
             // 3. Provider Cards Row
@@ -7972,19 +7997,29 @@ Boland v Knights                        </a>
 
             if (providers.diamond) {
                 var d = providers.diamond;
+                var isDLive = d.isAuthorized === true;
                 var diamondBadge = document.getElementById('diamondStatusBadge');
                 if (diamondBadge) {
-                    diamondBadge.innerText = d.overallStatus || 'READ-ONLY LIVE (7/13)';
-                    diamondBadge.className = 'badge badge-success';
+                    diamondBadge.innerText = isDLive ? (d.overallStatus || 'LIVE') : 'NOT CONNECTED (HTTP 401)';
+                    diamondBadge.className = 'badge ' + (isDLive ? 'badge-success' : 'badge-danger');
                 }
                 var dNet = document.getElementById('diamondNetworkBadge');
                 if (dNet) dNet.innerText = d.networkReachability || 'REACHABLE';
                 var dAuth = document.getElementById('diamondAuthBadge');
-                if (dAuth) dAuth.innerText = d.authentication || 'AUTHENTICATED';
+                if (dAuth) {
+                    dAuth.innerText = isDLive ? (d.authentication || 'AUTHENTICATED') : 'UNAUTHORIZED (HTTP 401)';
+                    dAuth.className = 'badge ' + (isDLive ? 'badge-success' : 'badge-danger');
+                }
                 var dData = document.getElementById('diamondDataBadge');
-                if (dData) dData.innerText = d.dataAvailability || 'REAL LIVE DATA';
+                if (dData) {
+                    dData.innerText = isDLive ? (d.dataAvailability || 'REAL LIVE DATA') : 'NO DATA (AUTH REQUIRED)';
+                    dData.className = 'badge ' + (isDLive ? 'badge-success' : 'badge-secondary');
+                }
                 var dOver = document.getElementById('diamondOverallBadge');
-                if (dOver) dOver.innerText = d.overallStatus || 'READ-ONLY LIVE';
+                if (dOver) {
+                    dOver.innerText = isDLive ? (d.overallStatus || 'LIVE') : 'NOT CONNECTED (HTTP 401)';
+                    dOver.className = 'badge ' + (isDLive ? 'badge-success' : 'badge-danger');
+                }
                 var dUrl = document.getElementById('diamondCardBaseUrl');
                 if (dUrl) dUrl.innerText = d.baseUrl || 'http://46.202.166.33:3009';
                 var dKey = document.getElementById('diamondCardKey');
